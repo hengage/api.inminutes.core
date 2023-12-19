@@ -1,3 +1,6 @@
+import dotenv from "dotenv"
+dotenv.config()
+
 import { App } from "./app/app";
 import { NODE_ENV, PORT } from "./config";
 
