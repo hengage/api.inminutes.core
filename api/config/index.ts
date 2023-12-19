@@ -1,0 +1,1 @@
+export { NODE_ENV, PORT } from "./secrets.config";
