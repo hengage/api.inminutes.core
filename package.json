@@ -2,7 +2,7 @@
   "name": "in_minutes_server",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/server.js",
+  "main": "api/server.ts",
   "scripts": {
     "dev-start": "nodemon --watch api/server.ts",
     "start": "node dist/server.js",

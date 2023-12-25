@@ -1,11 +1,11 @@
 import { ICustomer } from "../customers.interface";
 import { Customer } from "../models/customers.model";
 
-class CustomerRepository {
+class CustomersRepository {
     async signup (payload: any): Promise<ICustomer["_id"]> {
         const customer = await new Customer({
             firstName: payload.firstName,
-            lastName: payload.lasstName,
+            lastName: payload.lastName,
             phoneNumber: payload.phoneNumber,
             email: payload.email,
             password: payload.password,
@@ -17,4 +17,4 @@ class CustomerRepository {
     }
 }
 
-export const customerRepo = new CustomerRepository()
+export const customersRepo = new CustomersRepository()

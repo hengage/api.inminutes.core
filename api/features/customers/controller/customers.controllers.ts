@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { customerRepo } from "../repo/customers.repo";
+import { customersRepo } from "../repo/customers.repo";
 import { STATUS_CODES } from "../../../utils";
 
-class CustomerController {
+class CustomersController {
   async signup(req: Request, res: Response) {
     try {
-      const customer = await customerRepo.signup(req.body);
+      const customer = await customersRepo.signup(req.body);
       res.status(STATUS_CODES.CREATED).json({
         message: "Success",
         data: { customer },
@@ -19,4 +19,4 @@ class CustomerController {
   }
 }
 
-export const customerController = new CustomerController();
+export const customersController = new CustomersController();

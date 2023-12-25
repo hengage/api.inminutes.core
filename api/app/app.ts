@@ -1,9 +1,10 @@
-import express, { Express } from "express";
+import express, { Express, Request, Response, Router } from "express";
 import { Server } from "http";
 import fileUpload from "express-fileupload";
 
 import { dbConfig } from "../config";
 import { centralErrorHandler } from "../middleware";
+import { routes } from "../routes";
 
 class App {
   public app: Express;
@@ -14,6 +15,7 @@ class App {
 
     this.connectDb()
     this.initializeMiddleware()
+    this.initializeRoutes()
     this.initializeCentralErrorMiddleware()
   }
 
@@ -33,6 +35,14 @@ class App {
   }
 
   
+  private initializeRoutes() {
+    this.app.get("/", (req: Request, res: Response) => {
+      res.send("Express typeScript app is set");
+    });
+
+    this.app.use("/api", routes.router);
+  }
+
   private initializeCentralErrorMiddleware() {
     this.app.use(
       centralErrorHandler.handle404Error,

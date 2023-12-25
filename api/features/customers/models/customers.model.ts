@@ -19,7 +19,7 @@ const customerSchema = new Schema<ICustomer>(
   },
   {
     timestamps: true,
-    _id: false,
+    // _id: false,
   }
 );
 
