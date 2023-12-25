@@ -6,8 +6,7 @@ const customerSchema = new Schema<ICustomer>(
   {
     _id: {
       type: String,
-      unique: true,
-      default: () => generateUniqueString(4),
+      default: () => generateUniqueString(5),
     },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
