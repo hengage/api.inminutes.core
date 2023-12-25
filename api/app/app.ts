@@ -3,6 +3,7 @@ import { Server } from "http";
 import fileUpload from "express-fileupload";
 
 import { dbConfig } from "../config";
+import { centralErrorHandler } from "../middleware";
 
 class App {
   public app: Express;
@@ -13,6 +14,7 @@ class App {
 
     this.connectDb()
     this.initializeMiddleware()
+    this.initializeCentralErrorMiddleware()
   }
 
   private async connectDb() {
@@ -28,6 +30,14 @@ class App {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(fileUpload({ useTempFiles: true }));
+  }
+
+  
+  private initializeCentralErrorMiddleware() {
+    this.app.use(
+      centralErrorHandler.handle404Error,
+      centralErrorHandler.handle404OrServerError
+    );
   }
 
   listenToPort(port: string | number, node_env: string): Server {
