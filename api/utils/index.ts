@@ -1,1 +1,6 @@
-export { generateUniqueString, toLowerCaseSetter } from "./strings.utils";
+export {
+  generateUniqueString,
+  toLowerCaseSetter,
+  encryptValue,
+  compareValues,
+} from "./strings.utils";

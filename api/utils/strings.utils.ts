@@ -1,5 +1,5 @@
 import crypto from "crypto";
-
+import bcrypt from "bcrypt";
 import { DateTime } from "luxon";
 
 function generateUniqueString(length: number) {
@@ -14,6 +14,17 @@ function toLowerCaseSetter(value: string): string {
   return value?.toLowerCase();
 }
 
-export {
-    generateUniqueString, toLowerCaseSetter
+async function encryptValue(value: string): Promise<string> {
+  // try {
+    const saltRounds = 10;
+    const hashedValue = await bcrypt.hash(value, saltRounds);
+    return hashedValue;
+  // } catch (error: any) {
+  //   throw new Error(error.message);
+  // }
 }
+async function compareValues(plainValue: string, hashValue: string) {
+  return bcrypt.compare(plainValue, hashValue);
+}
+
+export { generateUniqueString, toLowerCaseSetter, encryptValue, compareValues };
