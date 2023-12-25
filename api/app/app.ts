@@ -1,8 +1,9 @@
 import express, { Express, Request, Response, Router } from "express";
 import { Server } from "http";
 import fileUpload from "express-fileupload";
+import passport from "passport";
 
-import { dbConfig } from "../config";
+import { dbConfig, passportStrategySetup, serilizeUser } from "../config";
 import { centralErrorHandler } from "../middleware";
 import { routes } from "../routes";
 
@@ -15,6 +16,7 @@ class App {
 
     this.connectDb()
     this.initializeMiddleware()
+    this.initializePassport()
     this.initializeRoutes()
     this.initializeCentralErrorMiddleware()
   }
@@ -34,7 +36,13 @@ class App {
     this.app.use(fileUpload({ useTempFiles: true }));
   }
 
-  
+  private initializePassport() {
+    serilizeUser(); // Initialize the serializeUser function
+    passportStrategySetup(); // Initialize the passport strategy
+    this.app.use(passport.initialize());
+    this.app.use(passport.session());
+  }
+
   private initializeRoutes() {
     this.app.get("/", (req: Request, res: Response) => {
       res.send("Express typeScript app is set");
