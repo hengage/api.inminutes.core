@@ -1,5 +1,7 @@
 import express, { Express } from "express";
 import { Server } from "http";
+import fileUpload from "express-fileupload";
+
 import { dbConfig } from "../config";
 
 class App {
@@ -10,6 +12,7 @@ class App {
     this.router = express.Router();
 
     this.connectDb()
+    this.initializeMiddleware()
   }
 
   private async connectDb() {
@@ -19,6 +22,12 @@ class App {
     } catch (error: any) {
       console.error(error.message);
     }
+  }
+
+  private initializeMiddleware() {
+    this.app.use(express.json());
+    this.app.use(express.urlencoded({ extended: true }));
+    this.app.use(fileUpload({ useTempFiles: true }));
   }
 
   listenToPort(port: string | number, node_env: string): Server {
