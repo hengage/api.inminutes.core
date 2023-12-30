@@ -5,4 +5,5 @@ export {
   toLowerCaseSetter,
   encryptValue,
   compareValues,
+  generateJWTToken
 } from "./strings.utils";

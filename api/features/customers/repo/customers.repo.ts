@@ -3,7 +3,10 @@ import { ICustomer } from "../customers.interface";
 import { Customer } from "../models/customers.model";
 
 class CustomersRepository {
-  async signup(payload: any): Promise<ICustomer["_id"]> {
+  // async signup(payload: any): Promise<Partial<ICustomer>> {
+  async signup(
+    payload: any
+  ): Promise<{ _id: ICustomer["_id"]; phoneNumber: ICustomer["phoneNumber"] }> {
     const {
       firstName,
       lastName,
@@ -14,8 +17,8 @@ class CustomersRepository {
       address,
     } = payload;
 
-    await usersService.isPhoneNumberTaken(phoneNumber)
-    await usersService.isEmailTaken(email)
+    await usersService.isPhoneNumberTaken(phoneNumber);
+    await usersService.isEmailTaken(email);
 
     const customer = await new Customer({
       firstName: firstName,
@@ -27,7 +30,10 @@ class CustomersRepository {
       address: address,
     }).save();
 
-    return customer._id;
+    return {
+      _id: customer._id,
+      phoneNumber: customer.phoneNumber,
+    };
   }
 }
 
