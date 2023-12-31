@@ -21,7 +21,7 @@ class AuthRoutes {
 
     this.router.route("password/reset").post(passwordController.resetPassword);
 
-    this.router.use(verifyAuthTokenMiddleware)    
+    this.router.use(verifyAuthTokenMiddleware);
     this.router
       .route("password/change")
       .post(passwordController.changePassword);
