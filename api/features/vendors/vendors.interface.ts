@@ -1,10 +1,10 @@
 import { Document } from "mongoose";
-import { PAYMENT_OPTIONS } from "../../utils";
+import { ACCOUNT_STATUS, PAYMENT_OPTIONS } from "../../utils";
 
 export interface IVendorDocument extends Document {
   _id: string;
   businessName: string;
-  buinessPhoto: string;
+  businessLogo: string;
   email: string;
   phoneNumber: string;
   password: string;
@@ -13,13 +13,11 @@ export interface IVendorDocument extends Document {
     coordinates: [number, number];
   };
   paymentOptions: PAYMENT_OPTIONS[];
-  accountStatus: string;
+  accountStatus: ACCOUNT_STATUS;
   approved: boolean;
   rating: {
     totalRatingSum: number;
     ratingCount: number;
     averageRating: number;
   };
-  dateJoined: Date;
-  dateUpdated: Date;
 }
