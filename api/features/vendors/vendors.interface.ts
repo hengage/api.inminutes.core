@@ -1,4 +1,5 @@
 import { Document } from "mongoose";
+import { PAYMENT_OPTIONS } from "../../utils";
 
 export interface IVendorDocument extends Document {
   _id: string;
@@ -11,7 +12,7 @@ export interface IVendorDocument extends Document {
     type: string;
     coordinates: [number, number];
   };
-  paymentOptions: String[];
+  paymentOptions: PAYMENT_OPTIONS[];
   accountStatus: string;
   approved: boolean;
   rating: {
