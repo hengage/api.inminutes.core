@@ -8,8 +8,8 @@ class CustomersRepository {
     payload: any
   ): Promise<{ _id: ICustomer["_id"]; phoneNumber: ICustomer["phoneNumber"] }> {
     const {
-      firstName,
-      lastName,
+      fullName,
+      displayName,
       phoneNumber,
       email,
       password,
@@ -21,13 +21,13 @@ class CustomersRepository {
     await usersService.isEmailTaken(email);
 
     const customer = await new Customer({
-      firstName: firstName,
-      lastName: lastName,
-      phoneNumber: phoneNumber,
-      email: email,
-      password: password,
-      dateOfBirth: dateOfBirth,
-      address: address,
+      fullName,
+      displayName,
+      phoneNumber,
+      email,
+      password,
+      dateOfBirth,
+      address,
     }).save();
 
     return {

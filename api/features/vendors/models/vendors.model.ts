@@ -4,6 +4,7 @@ import {
   ACCOUNT_STATUS,
   PAYMENT_OPTIONS,
   generateUniqueString,
+  toLowerCaseSetter,
 } from "../../../utils";
 
 const vendorSchema = new Schema<IVendorDocument>(
@@ -16,9 +17,15 @@ const vendorSchema = new Schema<IVendorDocument>(
       type: String,
       required: true,
       unique: true,
+      set: toLowerCaseSetter,
     },
     businessLogo: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      set: toLowerCaseSetter,
+    },
     phoneNumber: { type: String, required: true, unique: true },
     password: { type: String, required: true, unique: true },
     location: {

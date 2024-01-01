@@ -2,8 +2,8 @@ import { Document } from "mongoose";
 
 export interface ICustomer extends Document {
     _id: string;
-    firstName: string;
-    lastName: string;
+    fullName: string;
+    displayName: string;
     phoneNumber: string;
     email: string;
     password: string;
