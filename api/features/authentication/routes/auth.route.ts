@@ -19,11 +19,11 @@ class AuthRoutes {
       .route("/verify/phone-number/check-code")
       .post(verifyController.checkVerificationCode);
 
-    this.router.route("password/reset").post(passwordController.resetPassword);
+    this.router.route("/password/reset").post(passwordController.resetPassword);
 
     this.router.use(verifyAuthTokenMiddleware);
     this.router
-      .route("password/change")
+      .route("/password/change")
       .post(passwordController.changePassword);
   }
 }
