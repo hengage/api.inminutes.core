@@ -1,0 +1,1 @@
+export { Vendor } from "./models/vendors.model";

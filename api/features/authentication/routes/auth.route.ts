@@ -2,6 +2,7 @@ import { Router } from "express";
 import { verifyController } from "../controllers/verify.controller";
 import { passwordController } from "../controllers/password.controller";
 import { verifyAuthTokenMiddleware } from "../../../middleware";
+import { authController } from "../controllers/auth.controller";
 
 class AuthRoutes {
   public router = Router();
@@ -11,6 +12,7 @@ class AuthRoutes {
   }
 
   public initializeRoutes(): void {
+    this.router.route("/check-phone-exists").post(authController.checkPhoneNumberIstaken)
     this.router
       .route("/verify/phone-number/send-code")
       .post(verifyController.sendVerificationCode);
