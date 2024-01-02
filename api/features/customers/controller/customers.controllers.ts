@@ -28,6 +28,22 @@ class CustomersController {
       });
     }
   }
+
+  async getProfile(req: Request, res: Response) {
+    const _id = (req as any).user._id;
+    try {
+      const customer = await customersRepo.getProfile(_id);
+      res.status(STATUS_CODES.OK).json({
+        message: "Fetched customer profile",
+        data: { customer },
+      });
+    } catch (error: any) {
+      res.status(error.status || STATUS_CODES.SERVER_ERROR).json({
+        message: "Error getting profile",
+        error: error.message || "Server error",
+      });
+    }
+  }
 }
 
 export const customersController = new CustomersController();
