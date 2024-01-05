@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
 import { customersRepo } from "../repo/customers.repo";
-import { STATUS_CODES, generateJWTToken } from "../../../utils";
+import {
+  STATUS_CODES,
+  generateJWTToken,
+  handleErrorResponse,
+} from "../../../utils";
 
 class CustomersController {
   async signup(req: Request, res: Response) {
@@ -22,10 +26,7 @@ class CustomersController {
         },
       });
     } catch (error: any) {
-      res.status(error.status || STATUS_CODES.SERVER_ERROR).json({
-        message: "Failed",
-        error: error.message || "Server error",
-      });
+      handleErrorResponse(res, error);
     }
   }
 

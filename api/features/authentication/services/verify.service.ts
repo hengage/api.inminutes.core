@@ -33,7 +33,6 @@ class VerifyService {
     recipientPhoneNumber: string,
     otpCode: string
   ) => {
-    try {
       const verificationCheck = await this.twilioClient.verify.v2
         .services(this.verifyServiceSID)
         .verificationChecks.create({
@@ -41,14 +40,12 @@ class VerifyService {
           code: otpCode,
         });
 
+      console.log(verificationCheck)
       if (verificationCheck.status === "approved") {
         return true;
       } else {
         throw new HandleException(STATUS_CODES.BAD_REQUEST, "Invalid otp");
       }
-    } catch (error) {
-      throw error;
-    }
   };
 }
 
