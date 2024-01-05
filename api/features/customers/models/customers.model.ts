@@ -20,6 +20,7 @@ const customerSchema = new Schema<ICustomer>(
     displayName: {
       type: String,
       required: true,
+      unique: true,
       set: toLowerCaseSetter,
     },
     email: {
