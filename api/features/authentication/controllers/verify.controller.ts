@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { STATUS_CODES } from "../../../utils";
+import { STATUS_CODES, handleErrorResponse } from "../../../utils";
 import { verifyService } from "../services/verify.service";
 
 class VerifyController {
@@ -11,10 +11,7 @@ class VerifyController {
         message: "OTP sent",
       });
     } catch (error: any) {
-      res.status(error.status || STATUS_CODES.SERVER_ERROR).json({
-        message: "Failed to send otp",
-        error: error.message,
-      });
+      handleErrorResponse(res, error, "Failed to send otp");
     }
   };
 
@@ -26,10 +23,7 @@ class VerifyController {
         message: "Verification successful",
       });
     } catch (error: any) {
-      res.status(error.status || STATUS_CODES.SERVER_ERROR).json({
-        message: "Verification failed",
-        error: error.message,
-      });
+      handleErrorResponse(res, error);
     }
   };
 }

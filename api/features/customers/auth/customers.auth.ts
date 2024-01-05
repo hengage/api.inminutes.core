@@ -1,6 +1,10 @@
 import passport from "passport";
 import { Request, Response, NextFunction } from "express";
-import { STATUS_CODES, generateJWTToken } from "../../../utils";
+import {
+  STATUS_CODES,
+  generateJWTToken,
+  handleErrorResponse,
+} from "../../../utils";
 import { ICustomer } from "../customers.interface";
 
 class CustomersAuthentication {
@@ -13,7 +17,11 @@ class CustomersAuthentication {
           return next(err);
         }
         if (!user) {
-          return res.status(401).json({ message: info.message });
+          // return res.status(401).json({ message: info.message });
+          return handleErrorResponse(res, {
+            status: STATUS_CODES.UNAUTHORIZED,
+            message: info.message,
+          });
         }
         console.log({ user });
         const jwtPayload = {
