@@ -5,10 +5,12 @@ import {
   generateJWTToken,
   handleErrorResponse,
 } from "../../../utils";
+import { validateCustomer } from "../validators/customers.validator";
 
 class CustomersController {
   async signup(req: Request, res: Response) {
     try {
+      await validateCustomer.signUp(req.body)
       const customer = await customersRepo.signup(req.body);
       const jwtPayload = {
         _id: customer._id,
