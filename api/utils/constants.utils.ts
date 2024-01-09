@@ -17,7 +17,6 @@ export enum PAYMENT_OPTIONS {
 
 export enum ACCOUNT_STATUS {
   ACTIVE = "active",
-  APPROVED = "approved",
   INACTIVE = "inactive",
   SUSPENDED = "suspended",
 }

@@ -49,6 +49,7 @@ const vendorSchema = new Schema<IVendorDocument>(
       default: ACCOUNT_STATUS.INACTIVE,
       enum: Object.values(ACCOUNT_STATUS),
     },
+    approved: { type: Boolean, default: false },
     rating: {
       totalRatingSum: { type: Number, default: 0 },
       ratingCount: { type: Number, default: 0 },
