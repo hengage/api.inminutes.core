@@ -4,10 +4,8 @@ import { Customer } from "../models/customers.model";
 class CustomersService {
   async checkDisplayNameIstaken(displayName: string) {
     const customer = await Customer.findOne({ displayName })
-      .select(displayName)
+      .select('displayName')
       .lean();
-
-    console.log({ customer });
 
     if (customer) {
       throw new HandleException(
