@@ -7,10 +7,12 @@ import {
 import { vendorsRepo } from "../repository/vendors.repo";
 import { usersService } from "../../../services";
 import { vendorsService } from "../services/vendor.services";
+import { validateVendor } from "../validators/vendors.validators";
 
 class VendorsController {
   async signup(req: Request, res: Response) {
     try {
+      await validateVendor.signUp(req.body)
       await vendorsService.checkBusinnessNameIstaken(req.body.businessName);
       await usersService.isEmailTaken(req.body.email);
       await usersService.isPhoneNumberTaken(req.body.phoneNumber);
