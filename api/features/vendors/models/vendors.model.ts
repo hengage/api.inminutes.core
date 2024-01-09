@@ -3,6 +3,7 @@ import { IVendorDocument } from "../vendors.interface";
 import {
   ACCOUNT_STATUS,
   PAYMENT_OPTIONS,
+  encryptValue,
   generateUniqueString,
   toLowerCaseSetter,
 } from "../../../utils";
@@ -58,5 +59,15 @@ const vendorSchema = new Schema<IVendorDocument>(
   },
   { timestamps: true }
 );
+
+vendorSchema.pre("save", async function (next) {
+  if (this.isModified("password")) {
+    try {
+      this.password = await encryptValue(this.password);
+    } catch (error: any) {
+      return next(error);
+    }
+  }
+});
 
 export const Vendor = model<IVendorDocument>("vendor", vendorSchema);
