@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { customersRoutes } from "./features/customers";
 import { authRoutes } from "./features/authentication";
+import { vendorsRoutes } from "./features/vendors";
 
 class Routes {
   /*
@@ -16,8 +17,9 @@ class Routes {
   }
 
   private initializeRoutes() {
-    this.router.use("/customers", customersRoutes.router);
     this.router.use("/auth", authRoutes.router);
+    this.router.use("/customers", customersRoutes.router);
+    this.router.use("/vendors", vendorsRoutes.router);
   }
 }
 

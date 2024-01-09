@@ -46,7 +46,7 @@ const vendorSchema = new Schema<IVendorDocument>(
     ],
     accountStatus: {
       type: String,
-      default: ACCOUNT_STATUS.INACTIVE,
+      default: ACCOUNT_STATUS.ACTIVE,
       enum: Object.values(ACCOUNT_STATUS),
     },
     approved: { type: Boolean, default: false },
