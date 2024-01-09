@@ -6,11 +6,13 @@ import {
   handleErrorResponse,
 } from "../../../utils";
 import { validateCustomer } from "../validators/customers.validator";
+import { customersService } from "../services/customers.services";
 
 class CustomersController {
   async signup(req: Request, res: Response) {
     try {
       await validateCustomer.signUp(req.body)
+      await customersService.checkDisplayNameIstaken(req.body.displayName)
       const customer = await customersRepo.signup(req.body);
       const jwtPayload = {
         _id: customer._id,
