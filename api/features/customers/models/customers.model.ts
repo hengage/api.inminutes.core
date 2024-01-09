@@ -1,12 +1,12 @@
 import { Schema, model } from "mongoose";
-import { ICustomer } from "../customers.interface";
+import { ICustomerDocument } from "../customers.interface";
 import {
   encryptValue,
   generateUniqueString,
   toLowerCaseSetter,
 } from "../../../utils";
 
-const customerSchema = new Schema<ICustomer>(
+const customerSchema = new Schema<ICustomerDocument>(
   {
     _id: {
       type: String,
@@ -50,4 +50,4 @@ customerSchema.pre("save", async function (next) {
   }
 });
 
-export const Customer = model<ICustomer>("Customer", customerSchema);
+export const Customer = model<ICustomerDocument>("Customer", customerSchema);

@@ -1,9 +1,9 @@
 import joi from "joi";
 import { HandleException, STATUS_CODES } from "../../../utils";
-import { ICustomer } from "../customers.interface";
+import { ICustomerDocument } from "../customers.interface";
 
 class ValidateCustomer {
-  signUp = async (payload: ICustomer) => {
+  signUp = async (payload: ICustomerDocument) => {
     const signUpSchema = joi.object({
       fullName: joi.string().required(),
       displayName: joi.string().required(),
@@ -25,7 +25,7 @@ class ValidateCustomer {
     return;
   };
 
-  login = async (payload: Partial<ICustomer>) => {
+  login = async (payload: Partial<ICustomerDocument>) => {
     const loginSchema = joi.object({
       phoneNumber: joi.string().required(),
       password: joi.string().required(),

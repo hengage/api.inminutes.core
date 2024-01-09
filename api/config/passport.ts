@@ -1,4 +1,4 @@
-import { Customer, ICustomer } from "../features/customers";
+import { Customer, ICustomerDocument } from "../features/customers";
 import { compareValues } from "../utils";
 
 import { Strategy } from "passport-local";
@@ -32,7 +32,7 @@ const serializeUser = () => {
     done(null, user);
   });
 
-  passport.deserializeUser(function (user: ICustomer, done) {
+  passport.deserializeUser(function (user: ICustomerDocument, done) {
     done(null, user);
   });
 };

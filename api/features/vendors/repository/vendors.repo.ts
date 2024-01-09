@@ -1,7 +1,8 @@
 import { Vendor } from "../models/vendors.model";
+import { IVendorDocument, IVendorSignup } from "../vendors.interface";
 
 class VendorsRepository {
-  async signup(payload: any) {
+  async signup(payload: IVendorSignup): Promise<Partial<IVendorDocument>> {
     const {
       businessName,
       businessLogo,
@@ -12,7 +13,7 @@ class VendorsRepository {
       location,
     } = payload;
 
-    const vendor = Vendor.create({
+    const vendor = await Vendor.create({
       businessName,
       businessLogo,
       email,
@@ -24,8 +25,14 @@ class VendorsRepository {
       },
     });
 
-    return vendor;
+    return {
+      _id: vendor._id,
+      businessName: vendor.businessName,
+      businessLogo: vendor.businessLogo,
+      email: vendor.email,
+      phoneNumber: vendor.phoneNumber,
+    };
   }
 }
 
-export const vendorsRepo = new VendorsRepository()
+export const vendorsRepo = new VendorsRepository();

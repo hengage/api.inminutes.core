@@ -5,7 +5,7 @@ import {
   generateJWTToken,
   handleErrorResponse,
 } from "../../../utils";
-import { ICustomer } from "../customers.interface";
+import { ICustomerDocument } from "../customers.interface";
 import { validateCustomer } from "../validators/customers.validator";
 
 class CustomersAuthentication {
@@ -20,7 +20,7 @@ class CustomersAuthentication {
       passport.authenticate(
         "local",
         { session: false },
-        async (err: any, user: ICustomer, info: any) => {
+        async (err: any, user: ICustomerDocument, info: any) => {
           if (err) {
             return next(err);
           }

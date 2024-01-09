@@ -22,3 +22,13 @@ export interface IVendorDocument extends Document {
     averageRating: number;
   };
 }
+
+export interface IVendorSignup {
+  businessName: string;
+  businessLogo: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+  address: string;
+  location: [number, number];
+}
