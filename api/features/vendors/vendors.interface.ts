@@ -8,6 +8,7 @@ export interface IVendorDocument extends Document {
   email: string;
   phoneNumber: string;
   password: string;
+  address: string;
   location: {
     type: string;
     coordinates: [number, number];
