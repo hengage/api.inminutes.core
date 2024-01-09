@@ -8,7 +8,7 @@ class PasswordService {
     accountType: string
   ) {
     const AccountModel = await usersService.getUserAccountModel(accountType);
-    const account = await (AccountModel as any).findOne({ phoneNumber });
+    const account = await (AccountModel as any).findOne({ phoneNumber }).select("phoneNumber password");
     if (!account) {
       throw new HandleException(STATUS_CODES.NOT_FOUND, "User not found");
     }
@@ -25,7 +25,7 @@ class PasswordService {
   ) {
     try {
       const AccountModel = await usersService.getUserAccountModel(accountType);
-      const account = await (AccountModel as any).findById(accountId);
+      const account = await (AccountModel as any).findById(accountId).select("password");
 
       if (!account) {
         throw new HandleException(STATUS_CODES.NOT_FOUND, "User not found");
