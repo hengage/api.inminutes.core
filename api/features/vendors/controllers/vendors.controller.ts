@@ -6,10 +6,12 @@ import {
 } from "../../../utils";
 import { vendorsRepo } from "../repository/vendors.repo";
 import { usersService } from "../../../services";
+import { vendorsService } from "../services/vendor.services";
 
 class VendorsController {
   async signup(req: Request, res: Response) {
     try {
+      await vendorsService.checkBusinnessNameIstaken(req.body.businessName);
       await usersService.isEmailTaken(req.body.email);
       await usersService.isPhoneNumberTaken(req.body.phoneNumber);
 
