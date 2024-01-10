@@ -1,3 +1,4 @@
+import { HandleException, STATUS_CODES, compareValues } from "../../../utils";
 import { Vendor } from "../models/vendors.model";
 import { IVendorDocument, IVendorSignup } from "../vendors.interface";
 
@@ -31,6 +32,26 @@ class VendorsRepository {
       businessLogo: vendor.businessLogo,
       email: vendor.email,
       phoneNumber: vendor.phoneNumber,
+    };
+  }
+
+  async login(email: string, password: string) {
+    const vendor = await Vendor.findOne({ email }).select(
+      "email phoneNumber password"
+    );
+
+    if (!vendor) {
+      throw new HandleException(STATUS_CODES.NOT_FOUND, "Invalid credentials");
+    }
+
+    const passwordsMatch = await compareValues(password, vendor.password);
+    if (!passwordsMatch) {
+      throw new HandleException(STATUS_CODES.NOT_FOUND, "Invalid credentials");
+    }
+
+    return {
+      _id: vendor._id,
+      email: vendor.email,
     };
   }
 }

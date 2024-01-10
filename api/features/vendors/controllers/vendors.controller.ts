@@ -12,19 +12,36 @@ import { validateVendor } from "../validators/vendors.validators";
 class VendorsController {
   async signup(req: Request, res: Response) {
     try {
-      await validateVendor.signUp(req.body)
+      await validateVendor.signUp(req.body);
       await vendorsService.checkBusinnessNameIstaken(req.body.businessName);
       await usersService.isEmailTaken(req.body.email);
       await usersService.isPhoneNumberTaken(req.body.phoneNumber);
 
       const vendor = await vendorsRepo.signup(req.body);
 
-      const jwtPayload = { _id: vendor._id, phoneNumber: vendor.phoneNumber };
+      const jwtPayload = { _id: vendor._id, email: vendor.email };
       const accessToken = generateJWTToken(jwtPayload, "1h");
       const refreshToken = generateJWTToken(jwtPayload, "14d");
 
       res.status(STATUS_CODES.CREATED).json({
         message: "Success",
+        data: { vendor, accessToken, refreshToken },
+      });
+    } catch (error: any) {
+      handleErrorResponse(res, error);
+    }
+  }
+
+  async login(req: Request, res: Response) {
+    try {
+      const vendor = await vendorsRepo.login(req.body.email, req.body.password);
+
+      const jwtPayload = { _id: vendor._id, email: vendor.email };
+      const accessToken = generateJWTToken(jwtPayload, "1h");
+      const refreshToken = generateJWTToken(jwtPayload, "14d");
+
+      res.status(STATUS_CODES.OK).json({
+        message: "Login successful",
         data: { vendor, accessToken, refreshToken },
       });
     } catch (error: any) {
