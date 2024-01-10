@@ -19,7 +19,7 @@ class VendorsController {
 
       const vendor = await vendorsRepo.signup(req.body);
 
-      const jwtPayload = { _id: vendor._id, email: vendor.email };
+      const jwtPayload = { _id: vendor._id, phoneNumber: vendor.phoneNumber };
       const accessToken = generateJWTToken(jwtPayload, "1h");
       const refreshToken = generateJWTToken(jwtPayload, "14d");
 
@@ -37,7 +37,7 @@ class VendorsController {
       await validateVendor.login(req.body);
       const vendor = await vendorsRepo.login(req.body.email, req.body.password);
 
-      const jwtPayload = { _id: vendor._id, email: vendor.email };
+      const jwtPayload = { _id: vendor._id, PhoneNumber: vendor.phoneNumber };
       const accessToken = generateJWTToken(jwtPayload, "1h");
       const refreshToken = generateJWTToken(jwtPayload, "14d");
 

@@ -12,7 +12,9 @@ class AuthRoutes {
   }
 
   public initializeRoutes(): void {
-    this.router.route("/check-phone-exists").post(authController.checkPhoneNumberIstaken)
+    this.router
+      .route("/check-phone-exists")
+      .post(authController.checkPhoneNumberIstaken);
     this.router
       .route("/verify/phone-number/send-code")
       .post(verifyController.sendVerificationCode);
@@ -22,6 +24,10 @@ class AuthRoutes {
       .post(verifyController.checkVerificationCode);
 
     this.router.route("/password/reset").post(passwordController.resetPassword);
+
+    this.router
+      .route("/refresh-access-token")
+      .post(authController.refreshAccessToken);
 
     this.router.use(verifyAuthTokenMiddleware);
     this.router

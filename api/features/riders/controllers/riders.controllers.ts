@@ -33,7 +33,7 @@ class RidersController {
     try {
       const rider = await ridersRepo.login(req.body.email, req.body.password);
 
-      const jwtPayload = { _id: rider._id, email: rider.email };
+      const jwtPayload = { _id: rider._id, phoneNumber: rider.phoneNumber };
       const accessToken = generateJWTToken(jwtPayload, "1h");
       const refreshToken = generateJWTToken(jwtPayload, "14d");
 

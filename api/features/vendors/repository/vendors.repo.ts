@@ -51,7 +51,7 @@ class VendorsRepository {
 
     return {
       _id: vendor._id,
-      email: vendor.email,
+      phoneNumber: vendor.phoneNumber,
     };
   }
 

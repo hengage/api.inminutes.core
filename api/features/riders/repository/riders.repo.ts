@@ -53,7 +53,7 @@ class RidersRepository {
 
     return {
       _id: rider._id,
-      email: rider.email,
+      phoneNumber: rider.phoneNumber,
     };
   }
 
