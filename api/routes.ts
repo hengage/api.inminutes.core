@@ -3,6 +3,7 @@ import { customersRoutes } from "./features/customers";
 import { authRoutes } from "./features/authentication";
 import { vendorsRoutes } from "./features/vendors";
 import { mediaRoutes } from "./features/media";
+import { ridersRoutes } from "./features/riders";
 
 class Routes {
   /*
@@ -21,8 +22,9 @@ class Routes {
     this.router.use("/auth", authRoutes.router);
     this.router.use("/customers", customersRoutes.router);
     this.router.use("/vendors", vendorsRoutes.router);
+    this.router.use("/riders", ridersRoutes.router);
 
-    this.router.use("/media", mediaRoutes.router)
+    this.router.use("/media", mediaRoutes.router);
   }
 }
 

@@ -1,0 +1,1 @@
+export { ridersRoutes } from "./routes/riders.routes";
