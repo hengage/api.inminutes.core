@@ -27,7 +27,7 @@ class ValidateVendor {
   login = async (payload: { email: string; password: string }) => {
     const loginSchema = joi.object({
       email: joi.string().required(),
-      phoneNumber: joi.string().required(),
+      password: joi.string().required(),
     });
 
     const { error } = loginSchema.validate(payload, {
