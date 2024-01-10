@@ -7,12 +7,13 @@ import {
 } from "../../../utils";
 import { validateCustomer } from "../validators/customers.validator";
 import { customersService } from "../services/customers.services";
+import { usersService } from "../../../services";
 
 class CustomersController {
   async signup(req: Request, res: Response) {
     try {
       await validateCustomer.signUp(req.body)
-      await customersService.checkDisplayNameIstaken(req.body.displayName)
+      await usersService.isDisplayNameTaken(req.body.displayName)
       const customer = await customersRepo.signup(req.body);
       const jwtPayload = {
         _id: customer._id,

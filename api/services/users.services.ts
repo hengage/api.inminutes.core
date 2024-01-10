@@ -1,4 +1,5 @@
 import { Customer } from "../features/customers";
+import { Rider } from "../features/riders";
 import { Vendor } from "../features/vendors";
 import { HandleException, STATUS_CODES } from "../utils";
 
@@ -47,6 +48,30 @@ class UsersService {
       throw new HandleException(
         STATUS_CODES.CONFLICT,
         "Phone number is already taken"
+      );
+    }
+    return false;
+  }
+
+  public async isDisplayNameTaken(displayName: string) {
+    const customer = await Customer.findOne({
+      displayName: { $eq: displayName },
+    })
+      .select("displayName")
+      .lean()
+      .exec();
+
+    const rider = await Rider.findOne({
+      displayName: { $eq: displayName },
+    })
+      .select("displayName")
+      .lean()
+      .exec();
+
+    if (customer || rider) {
+      throw new HandleException(
+        STATUS_CODES.CONFLICT,
+        "Display name is already taken"
       );
     }
     return false;
