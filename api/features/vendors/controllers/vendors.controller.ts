@@ -34,6 +34,7 @@ class VendorsController {
 
   async login(req: Request, res: Response) {
     try {
+      await validateVendor.login(req.body)
       const vendor = await vendorsRepo.login(req.body.email, req.body.password);
 
       const jwtPayload = { _id: vendor._id, email: vendor.email };

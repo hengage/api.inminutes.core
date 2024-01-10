@@ -23,6 +23,23 @@ class ValidateVendor {
     }
     return;
   };
+
+  login = async (payload: { email: string; password: string }) => {
+    const loginSchema = joi.object({
+      email: joi.string().required(),
+      phoneNumber: joi.string().required(),
+    });
+
+    const { error } = loginSchema.validate(payload, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
+
+    if (error) {
+      throw new HandleException(STATUS_CODES.BAD_REQUEST, error.message);
+    }
+    return;
+  };
 }
 
 export const validateVendor = new ValidateVendor();
