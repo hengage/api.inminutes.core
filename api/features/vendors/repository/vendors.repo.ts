@@ -54,6 +54,18 @@ class VendorsRepository {
       email: vendor.email,
     };
   }
+
+  async getMe(id: string): Promise<IVendorDocument> {
+    const vendor = await Vendor.findById(id)
+      .select("-updatedAt -password -accountStatus -location -__v")
+      .lean();
+
+    if (!vendor) {
+      throw new HandleException(STATUS_CODES.NOT_FOUND, "Vendor not found");
+    }
+
+    return vendor;
+  }
 }
 
 export const vendorsRepo = new VendorsRepository();

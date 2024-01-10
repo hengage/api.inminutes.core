@@ -34,7 +34,7 @@ class VendorsController {
 
   async login(req: Request, res: Response) {
     try {
-      await validateVendor.login(req.body)
+      await validateVendor.login(req.body);
       const vendor = await vendorsRepo.login(req.body.email, req.body.password);
 
       const jwtPayload = { _id: vendor._id, email: vendor.email };
@@ -44,6 +44,19 @@ class VendorsController {
       res.status(STATUS_CODES.OK).json({
         message: "Login successful",
         data: { vendor, accessToken, refreshToken },
+      });
+    } catch (error: any) {
+      handleErrorResponse(res, error);
+    }
+  }
+
+  async getMe(req: Request, res: Response) {
+    const id = (req as any).user._id;
+    try {
+      const vendor = await vendorsRepo.getMe(id);
+      res.status(STATUS_CODES.OK).json({
+        message: "Success",
+        data: { vendor },
       });
     } catch (error: any) {
       handleErrorResponse(res, error);
