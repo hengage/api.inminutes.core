@@ -1,5 +1,6 @@
 import { Customer } from "../features/customers";
 import { Rider } from "../features/riders";
+import { ridersController } from "../features/riders/controllers/riders.controllers";
 import { Vendor } from "../features/vendors";
 import { HandleException, STATUS_CODES } from "../utils";
 
@@ -19,7 +20,14 @@ class UsersService {
       .lean()
       .exec();
 
-    if (customer || vendor) {
+    const rider = await Rider.findOne({
+      email: { $eq: email },
+    })
+      .select("email")
+      .lean()
+      .exec();
+
+    if (customer || vendor || rider) {
       throw new HandleException(
         STATUS_CODES.CONFLICT,
         "Email is already taken"
@@ -44,7 +52,14 @@ class UsersService {
       .lean()
       .exec();
 
-    if (customer || vendor) {
+    const rider = await Rider.findOne({
+      phoneNumber: { $eq: phoneNumber },
+    })
+      .select("email")
+      .lean()
+      .exec();
+
+    if (customer || vendor || rider) {
       throw new HandleException(
         STATUS_CODES.CONFLICT,
         "Phone number is already taken"
