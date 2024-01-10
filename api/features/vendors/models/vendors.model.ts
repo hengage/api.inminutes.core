@@ -60,6 +60,8 @@ const vendorSchema = new Schema<IVendorDocument>(
   { timestamps: true }
 );
 
+vendorSchema.index({ location: "2dsphere" });
+
 vendorSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
     try {

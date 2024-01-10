@@ -7,6 +7,10 @@ export interface IRiderDocument extends Document {
   phoneNumber: string;
   email: string;
   password: string;
+  location: {
+    type: string;
+    coordinates: [number, number];
+  };
   dateOfBirth: Date;
   residentialAddress: string;
 }

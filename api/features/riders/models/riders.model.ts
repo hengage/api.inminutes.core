@@ -27,11 +27,22 @@ const riderSchema = new Schema<IRiderDocument>(
     },
     phoneNumber: { type: String, required: true, unique: true },
     password: { type: String, required: true, unique: true },
+    location: {
+      type: {
+        type: String,
+        default: "Point",
+      },
+      coordinates: {
+        type: [Number, Number],
+      },
+    },
     dateOfBirth: { type: Date, required: true },
     residentialAddress: { type: String, required: true },
   },
   { timestamps: true }
 );
+
+riderSchema.index({ location: "2dsphere" });
 
 riderSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
