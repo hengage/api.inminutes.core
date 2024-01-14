@@ -33,8 +33,10 @@ export interface IVendorSignup {
   phoneNumber: string;
   password: string;
   address: string;
+  location: string;
   residentialAddress: string;
-  location: [number, number];
+  category: string;
+  subCategory: string;
 }
 
 export interface IVendorCategoryDocument {
@@ -46,5 +48,5 @@ export interface IVendorCategoryDocument {
 export interface IVendorSubCategoryDocument {
   _id: string;
   name: string;
-  category: IVendorCategoryDocument
+  category: IVendorCategoryDocument;
 }

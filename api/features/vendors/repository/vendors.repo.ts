@@ -11,8 +11,10 @@ class VendorsRepository {
       phoneNumber,
       password,
       address,
-      residentialAddress,
       location,
+      residentialAddress,
+      category,
+      subCategory,
     } = payload;
 
     const vendor = await Vendor.create({
@@ -26,6 +28,8 @@ class VendorsRepository {
         coordinates: location,
       },
       residentialAddress,
+      category,
+      subCategory,
     });
 
     return {

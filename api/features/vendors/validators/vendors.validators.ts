@@ -12,6 +12,8 @@ class ValidateVendor {
       email: joi.string().required(),
       address: joi.string().required(),
       residentialAddress: joi.string().required(),
+      category: joi.string().required(),
+      subCategory: joi.string(),
       location: joi.array().required(),
     }).unknown(false);
 
