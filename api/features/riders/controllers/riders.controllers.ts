@@ -6,10 +6,12 @@ import {
 } from "../../../utils";
 import { usersService } from "../../../services";
 import { ridersRepo } from "../repository/riders.repo";
+import { validateRider } from "../validators/riders.validators";
 
 class RidersController {
   async signup(req: Request, res: Response) {
     try {
+      await validateRider.signUp(req.body)
       await usersService.isEmailTaken(req.body.email);
       await usersService.isPhoneNumberTaken(req.body.phoneNumber);
       await usersService.isDisplayNameTaken(req.body.displayName);
@@ -31,6 +33,7 @@ class RidersController {
 
   async login(req: Request, res: Response) {
     try {
+      await validateRider.login(req.body)
       const rider = await ridersRepo.login(req.body.email, req.body.password);
 
       const jwtPayload = { _id: rider._id, phoneNumber: rider.phoneNumber };

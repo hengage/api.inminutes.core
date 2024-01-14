@@ -34,6 +34,7 @@ const riderSchema = new Schema<IRiderDocument>(
       },
       coordinates: {
         type: [Number, Number],
+        default: [0, 0]
       },
     },
     dateOfBirth: { type: Date, required: true },

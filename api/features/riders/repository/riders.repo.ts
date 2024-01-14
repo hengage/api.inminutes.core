@@ -12,7 +12,6 @@ class RidersRepository {
       password,
       dateOfBirth,
       residentialAddress,
-      location,
     } = payload;
 
     const rider = await Rider.create({
@@ -23,9 +22,6 @@ class RidersRepository {
       password,
       dateOfBirth,
       residentialAddress,
-      location: {
-        coordinates: location,
-      },
     });
 
     return {
