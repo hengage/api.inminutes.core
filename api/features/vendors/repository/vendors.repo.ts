@@ -11,6 +11,7 @@ class VendorsRepository {
       phoneNumber,
       password,
       address,
+      residentialAddress,
       location,
     } = payload;
 
@@ -24,6 +25,7 @@ class VendorsRepository {
       location: {
         coordinates: location,
       },
+      residentialAddress,
     });
 
     return {

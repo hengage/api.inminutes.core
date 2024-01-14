@@ -13,6 +13,7 @@ export interface IVendorDocument extends Document {
     type: string;
     coordinates: [number, number];
   };
+  residentialAddress: string;
   paymentOptions: PAYMENT_OPTIONS[];
   accountStatus: ACCOUNT_STATUS;
   approved: boolean;
@@ -30,5 +31,6 @@ export interface IVendorSignup {
   phoneNumber: string;
   password: string;
   address: string;
+  residentialAddress: string;
   location: [number, number];
 }

@@ -28,7 +28,7 @@ const vendorSchema = new Schema<IVendorDocument>(
       set: toLowerCaseSetter,
     },
     phoneNumber: { type: String, required: true, unique: true },
-    password: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
     address: { type: String, required: true },
     location: {
       type: {
@@ -39,6 +39,7 @@ const vendorSchema = new Schema<IVendorDocument>(
         type: [Number, Number],
       },
     },
+    residentialAddress: { type: String, required: true },
     paymentOptions: [
       {
         type: String,
