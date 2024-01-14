@@ -4,6 +4,7 @@ import { authRoutes } from "./features/authentication";
 import { vendorsRoutes } from "./features/vendors";
 import { mediaRoutes } from "./features/media";
 import { ridersRoutes } from "./features/riders";
+import { adminOpsRoutes } from "./features/adminOperations";
 
 class Routes {
   /*
@@ -23,6 +24,7 @@ class Routes {
     this.router.use("/customers", customersRoutes.router);
     this.router.use("/vendors", vendorsRoutes.router);
     this.router.use("/riders", ridersRoutes.router);
+    this.router.use("/admin", adminOpsRoutes.router)
 
     this.router.use("/media", mediaRoutes.router);
   }
