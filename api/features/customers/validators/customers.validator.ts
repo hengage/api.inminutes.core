@@ -15,8 +15,9 @@ class ValidateCustomer {
     });
 
     const { error } = signUpSchema.validate(payload, {
+      allowUnknown: false,
       abortEarly: false,
-      stripUnknown: true,
+      // stripUnknown: true,
     });
 
     if (error) {
@@ -32,8 +33,9 @@ class ValidateCustomer {
     });
 
     const { error } = loginSchema.validate(payload, {
+      allowUnknown: false,
       abortEarly: false,
-      stripUnknown: true,
+      // stripUnknown: true,
     });
 
     if (error) {

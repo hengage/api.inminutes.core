@@ -1,8 +1,9 @@
 import joi from "joi";
 import { HandleException, STATUS_CODES } from "../../../utils";
+import { IVendorSignup } from "../vendors.interface";
 
 class ValidateVendor {
-  signUp = async (payload: any) => {
+  signUp = async (payload: IVendorSignup) => {
     const signUpSchema = joi.object({
       businessName: joi.string().required(),
       businessLogo: joi.string().required(),
@@ -10,12 +11,14 @@ class ValidateVendor {
       password: joi.string().required(),
       email: joi.string().required(),
       address: joi.string().required(),
+      residentialAddress: joi.string().required(),
       location: joi.array().required(),
-    });
+    }).unknown(false);
 
     const { error } = signUpSchema.validate(payload, {
+      allowUnknown: false,
       abortEarly: false,
-      stripUnknown: true,
+      // stripUnknown: true,
     });
 
     if (error) {
@@ -31,8 +34,9 @@ class ValidateVendor {
     });
 
     const { error } = loginSchema.validate(payload, {
+      allowUnknown: false,
       abortEarly: false,
-      stripUnknown: true,
+      // stripUnknown: true,
     });
 
     if (error) {
