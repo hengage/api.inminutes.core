@@ -14,6 +14,8 @@ export interface IVendorDocument extends Document {
     coordinates: [number, number];
   };
   residentialAddress: string;
+  category: IVendorCategoryDocument;
+  subCategory: IVendorSubCategoryDocument;
   paymentOptions: PAYMENT_OPTIONS[];
   accountStatus: ACCOUNT_STATUS;
   approved: boolean;
@@ -33,4 +35,16 @@ export interface IVendorSignup {
   address: string;
   residentialAddress: string;
   location: [number, number];
+}
+
+export interface IVendorCategoryDocument {
+  _id: string;
+  name: string;
+  image: string;
+}
+
+export interface IVendorSubCategoryDocument {
+  _id: string;
+  name: string;
+  category: IVendorCategoryDocument
 }
