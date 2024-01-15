@@ -1,0 +1,32 @@
+import {
+  VendorCategory,
+  VendorSubCategory,
+} from "../models/vendorsCategory.model";
+import {
+  IVendorCategoryDocument,
+  IVendorSubCategoryDocument,
+} from "../vendors.interface";
+
+class VendorsCategoryService {
+  async getCategories(): Promise<IVendorCategoryDocument[]> {
+    const catgories = await VendorCategory.find()
+      .select("name image")
+      .lean()
+      .exec();
+
+    return catgories;
+  }
+
+  async getSubCategoriesByCategory(
+    categoryId: string
+  ): Promise<IVendorSubCategoryDocument[]> {
+    const catgories = await VendorSubCategory.find({ category: categoryId })
+      .select("name")
+      .lean()
+      .exec();
+
+    return catgories;
+  }
+}
+
+export const vendorsCategoryService = new VendorsCategoryService();
