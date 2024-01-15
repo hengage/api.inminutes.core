@@ -14,13 +14,15 @@ class VendorsRoutes {
     this.router.route("/register").post(vendorsController.signup);
     this.router.route("/login").post(vendorsController.login);
 
+    this.router.route("/category").get(vendorsCategoryController.getCategories);
+    this.router
+      .route("/category/:categoryId/sub-category")
+      .get(vendorsCategoryController.getSubCategoriesByCategory);
+
     this.router.use(verifyAuthTokenMiddleware);
 
     this.router.route("/me").get(vendorsController.getMe);
-
-    this.router.route("/category").get(vendorsCategoryController.getCategories)
-    this.router.route("/category/:categoryId/sub-category").get(vendorsCategoryController.getSubCategoriesByCategory)
   }
 }
 
-export const vendorsRoutes = new VendorsRoutes()
+export const vendorsRoutes = new VendorsRoutes();
