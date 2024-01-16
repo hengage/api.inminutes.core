@@ -1,6 +1,6 @@
 import { Document } from "mongoose";
 
-export interface ProductCategory extends Document {
+export interface IProductCategoryDocument extends Document {
   _id: string;
   name: string;
 }
@@ -14,5 +14,5 @@ export interface IProductDocument extends Document {
   cost: string;
   tags: string[];
   addOns: [{ item: string; cost: string }];
-  category: ProductCategory
+  category: IProductCategoryDocument
 }

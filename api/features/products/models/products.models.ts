@@ -1,8 +1,11 @@
 import { Schema, model } from "mongoose";
 import { generateUniqueString } from "../../../utils";
-import { IProductDocument } from "../products.interface";
+import {
+  IProductCategoryDocument,
+  IProductDocument,
+} from "../products.interface";
 
-const productCategprySchema = new Schema(
+const productCategprySchema = new Schema<IProductCategoryDocument>(
   {
     _id: {
       type: String,
@@ -40,5 +43,8 @@ const productSchema = new Schema<IProductDocument>(
   { timestamps: true }
 );
 
-export const ProductCategory = model("productCategory", productCategprySchema);
+export const ProductCategory = model<IProductCategoryDocument>(
+  "productCategory",
+  productCategprySchema
+);
 export const Product = model<IProductDocument>("product", productSchema);
