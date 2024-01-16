@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { adminOpsVendorsRoutes } from "./vendors.routes";
+import { adminOpsProductsRoutes } from "./products.routes";
 
 class AdminOpsRoutes {
- 
   public router: Router;
 
   constructor() {
@@ -12,6 +12,7 @@ class AdminOpsRoutes {
 
   private initializeRoutes() {
     this.router.use("/vendors", adminOpsVendorsRoutes.router);
+    this.router.use("/products", adminOpsProductsRoutes.router);
   }
 }
 

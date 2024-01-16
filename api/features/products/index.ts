@@ -1,0 +1,1 @@
+export { ProductCategory } from "./models/products.models";
