@@ -12,11 +12,17 @@ export const STATUS_CODES = {
 };
 
 export enum PAYMENT_OPTIONS {
-  BANK_TRANSFER = 'bank transfer'
+  BANK_TRANSFER = "bank transfer",
 }
 
 export enum ACCOUNT_STATUS {
   ACTIVE = "active",
   INACTIVE = "inactive",
   SUSPENDED = "suspended",
+}
+
+export enum PRODUCT_STATUS {
+  PENDING = "pending",
+  APPROVED = "approved",
+  REJECTED = "rejected",
 }

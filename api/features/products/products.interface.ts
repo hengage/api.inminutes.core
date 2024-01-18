@@ -1,5 +1,6 @@
 import { Document } from "mongoose";
 import { IVendorDocument } from "../vendors";
+import { PRODUCT_STATUS } from "../../utils";
 
 export interface IProductCategoryDocument extends Document {
   _id: string;
@@ -17,5 +18,5 @@ export interface IProductDocument extends Document {
   addOns: [{ item: string; cost: string }];
   category: IProductCategoryDocument;
   vendor: IVendorDocument["_id"];
-  approved: boolean;
+  status: PRODUCT_STATUS;
 }

@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { generateUniqueString } from "../../../utils";
+import { PRODUCT_STATUS, generateUniqueString } from "../../../utils";
 import {
   IProductCategoryDocument,
   IProductDocument,
@@ -39,8 +39,12 @@ const productSchema = new Schema<IProductDocument>(
       },
     ],
     category: { type: String, required: true, ref: "ProductCategory" },
-    vendor: {type: String, required: true, ref: "Vendor"},
-    approved: { type: Boolean, default: false },
+    vendor: { type: String, required: true, ref: "Vendor" },
+    status: {
+      type: String,
+      default: PRODUCT_STATUS.PENDING,
+      enum: Object.values(PRODUCT_STATUS),
+    },
   },
   { timestamps: true }
 );

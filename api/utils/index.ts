@@ -1,7 +1,7 @@
 export { handleErrorResponse } from "./response.utils";
 
 export { HandleException } from "./handleException.utils";
-export { STATUS_CODES, PAYMENT_OPTIONS, ACCOUNT_STATUS } from "./constants.utils";
+export { STATUS_CODES, PAYMENT_OPTIONS, ACCOUNT_STATUS, PRODUCT_STATUS } from "./constants.utils";
 export {
   generateUniqueString,
   toLowerCaseSetter,
