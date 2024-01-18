@@ -39,6 +39,7 @@ const productSchema = new Schema<IProductDocument>(
       },
     ],
     category: { type: String, required: true, ref: "ProductCategory" },
+    vendor: {type: String, required: true, ref: "Vendor"},
     approved: { type: Boolean, default: false },
   },
   { timestamps: true }
