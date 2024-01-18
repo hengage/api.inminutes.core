@@ -14,5 +14,6 @@ export interface IProductDocument extends Document {
   cost: string;
   tags: string[];
   addOns: [{ item: string; cost: string }];
-  category: IProductCategoryDocument
+  category: IProductCategoryDocument;
+  approved: boolean;
 }
