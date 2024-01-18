@@ -4,18 +4,23 @@ import { IVendorSignup } from "../vendors.interface";
 
 class ValidateVendor {
   signUp = async (payload: IVendorSignup) => {
-    const signUpSchema = joi.object({
-      businessName: joi.string().required(),
-      businessLogo: joi.string().required(),
-      phoneNumber: joi.string().required(),
-      password: joi.string().required(),
-      email: joi.string().required(),
-      address: joi.string().required(),
-      residentialAddress: joi.string().required(),
-      category: joi.string().required(),
-      subCategory: joi.string(),
-      location: joi.array().required(),
-    }).unknown(false);
+    const signUpSchema = joi
+      .object({
+        businessName: joi.string().required().label("Business name"),
+        businessLogo: joi.string().required().label("Business logo"),
+        phoneNumber: joi.string().required().label("Phone number"),
+        password: joi.string().required().label("Password"),
+        email: joi.string().required().label("Email"),
+        address: joi.string().required().label("Address"),
+        residentialAddress: joi
+          .string()
+          .required()
+          .label("Residential address"),
+        category: joi.string().required().label("Category"),
+        subCategory: joi.string().label("Subcategory"),
+        location: joi.array().required().label("Location"),
+      })
+      .unknown(false);
 
     const { error } = signUpSchema.validate(payload, {
       allowUnknown: false,

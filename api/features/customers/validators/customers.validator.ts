@@ -6,12 +6,12 @@ class ValidateCustomer {
   signUp = async (payload: ICustomerDocument) => {
     const signUpSchema = joi.object({
       fullName: joi.string().required(),
-      displayName: joi.string().required(),
-      phoneNumber: joi.string().required(),
-      email: joi.string().required(),
-      dateOfBirth: joi.string().required(),
-      address: joi.string().required(),
-      password: joi.string().required(),
+      displayName: joi.string().label("Display name").required(),
+      phoneNumber: joi.string().label("Phone number").required(),
+      email: joi.string().label("Email").required(),
+      dateOfBirth: joi.string().label("Date of birth").required(),
+      address: joi.string().label("Address").required(),
+      password: joi.string().label("Password").required(),
     });
 
     const { error } = signUpSchema.validate(payload, {

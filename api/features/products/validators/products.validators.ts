@@ -4,14 +4,14 @@ import { HandleException, STATUS_CODES } from "../../../utils";
 class ValidateProducts {
   addProduct = async (payload: any) => {
     const productSchema = Joi.object({
-      name: Joi.string().required(),
-      image: Joi.string().required(),
+      name: Joi.string().required().label("Name"),
+      image: Joi.string().required().label("Image"),
       description: Joi.string().required(),
-      quantity: Joi.number().required(),
-      cost: Joi.string().required(),
-      category: Joi.string().required(),
-      addOns: Joi.array(),
-      tags: Joi.array(),
+      quantity: Joi.number().required().label("Quantity"),
+      cost: Joi.string().required().label("Cost"),
+      category: Joi.string().required().label("Category"),
+      addOns: Joi.array().label("Add Ons"),
+      tags: Joi.array().label("Tags"),
     });
 
     const { error } = productSchema.validate(payload, {

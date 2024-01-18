@@ -5,13 +5,13 @@ import { IRiderDocument } from "../riders.interface";
 class ValidateRider {
   signUp = async (payload: Partial<IRiderDocument>) => {
     const signUpSchema = joi.object({
-      fullName: joi.string().required(),
-      displayName: joi.string().required(),
-      phoneNumber: joi.string().required(),
-      email: joi.string().required(),
-      password: joi.string().required(),
-      dateOfBirth: joi.string().required(),
-      residentialAddress: joi.string().required(),
+      fullName: joi.string().required().label("Full name"),
+      displayName: joi.string().required().label("Display name"),
+      phoneNumber: joi.string().required().label("Phone number"),
+      email: joi.string().required().label("Email"),
+      password: joi.string().required().label("Password"),
+      dateOfBirth: joi.string().required().label("Date of birth"),
+      residentialAddress: joi.string().required().label("Residential address"),
     });
 
     const { error } = signUpSchema.validate(payload, {
