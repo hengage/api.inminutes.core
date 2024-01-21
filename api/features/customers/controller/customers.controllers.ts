@@ -64,6 +64,19 @@ class CustomersController {
       handleErrorResponse(res, error);
     }
   }
+
+  async deleteAccount (req: Request, res: Response) {
+    const customer = (req as any).user._id;
+
+    try {
+      await customersRepo.deleteAccount(customer)
+      res.status(STATUS_CODES.OK).json({
+        message: "Success"
+      })
+    } catch (error: any) {
+    handleErrorResponse(res, error);      
+    }
+  }
 }
 
 export const customersController = new CustomersController();

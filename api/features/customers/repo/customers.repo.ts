@@ -1,6 +1,9 @@
 import { usersService } from "../../../services";
 import { HandleException, STATUS_CODES } from "../../../utils";
-import { ICustomerDocument, IUpdateCustomerProfile } from "../customers.interface";
+import {
+  ICustomerDocument,
+  IUpdateCustomerProfile,
+} from "../customers.interface";
 import { Customer } from "../models/customers.model";
 
 class CustomersRepository {
@@ -61,6 +64,16 @@ class CustomersRepository {
       throw new HandleException(STATUS_CODES.NOT_FOUND, "Customer not found");
     }
     return customer;
+  }
+
+  async deleteAccount(customerId: string) {
+    const result = await Customer.deleteOne({ _id: customerId });
+
+    if (result.deletedCount === 0) {
+      throw new HandleException(STATUS_CODES.NOT_FOUND, "Customer not found");
+    }
+
+    console.log("Customer deleted successfully", customerId);
   }
 }
 
