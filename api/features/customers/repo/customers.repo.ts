@@ -1,6 +1,6 @@
 import { usersService } from "../../../services";
 import { HandleException, STATUS_CODES } from "../../../utils";
-import { ICustomerDocument } from "../customers.interface";
+import { ICustomerDocument, IUpdateCustomerProfile } from "../customers.interface";
 import { Customer } from "../models/customers.model";
 
 class CustomersRepository {
@@ -44,6 +44,22 @@ class CustomersRepository {
       throw new HandleException(STATUS_CODES.NOT_FOUND, "Customer not found");
     }
 
+    return customer;
+  }
+
+  async updateProfile(customerId: string, payload: IUpdateCustomerProfile) {
+    const select = Object.keys(payload);
+    select.push("-_id");
+
+    const customer = await Customer.findByIdAndUpdate(
+      customerId,
+      { $set: payload },
+      { new: true }
+    ).select(select);
+
+    if (!customer) {
+      throw new HandleException(STATUS_CODES.NOT_FOUND, "Customer not found");
+    }
     return customer;
   }
 }

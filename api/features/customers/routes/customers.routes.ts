@@ -16,6 +16,7 @@ class CustomersRoutes {
 
     this.router.use(verifyAuthTokenMiddleware);
     this.router.route("/me").get(customersController.getProfile);
+    this.router.route("/").patch(customersController.updateProfile);
   }
 }
 

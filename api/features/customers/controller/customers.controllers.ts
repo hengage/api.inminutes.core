@@ -12,8 +12,8 @@ import { usersService } from "../../../services";
 class CustomersController {
   async signup(req: Request, res: Response) {
     try {
-      await validateCustomer.signUp(req.body)
-      await usersService.isDisplayNameTaken(req.body.displayName)
+      await validateCustomer.signUp(req.body);
+      await usersService.isDisplayNameTaken(req.body.displayName);
       const customer = await customersRepo.signup(req.body);
       const jwtPayload = {
         _id: customer._id,
@@ -48,6 +48,20 @@ class CustomersController {
         message: "Error getting profile",
         error: error.message || "Server error",
       });
+    }
+  }
+
+  async updateProfile(req: Request, res: Response) {
+    const customer = (req as any).user._id;
+
+    try {
+      const profile = await customersRepo.updateProfile(customer, req.body);
+      res.status(STATUS_CODES.OK).json({
+        message: "Success",
+        data: { profile },
+      });
+    } catch (error: any) {
+      handleErrorResponse(res, error);
     }
   }
 }
