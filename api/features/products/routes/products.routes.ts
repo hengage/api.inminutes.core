@@ -11,6 +11,7 @@ class ProductsRoutes {
     this.router.use(verifyAuthTokenMiddleware);
     this.router.route("/").post(productsController.addProduct);
     this.router.route("/:productId").delete(productsController.deleteProduct);
+    this.router.route("/category").get(productsController.getCategories);
   }
 }
 

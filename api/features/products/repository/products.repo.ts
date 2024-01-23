@@ -1,5 +1,5 @@
 import { HandleException, STATUS_CODES } from "../../../utils";
-import { Product } from "../models/products.models";
+import { Product, ProductCategory } from "../models/products.models";
 
 class ProductsRepository {
   async addProduct(payload: any, vendor: string) {
@@ -26,6 +26,14 @@ class ProductsRepository {
       cost: product.cost,
       addOns: product.addOns,
     };
+  }
+
+  async getCategories() {
+    const categories = await ProductCategory.find()
+      .select("_id name")
+      .lean()
+      .exec();
+    return categories;
   }
 
   async decreaseproductQuantity(productId: string, quantity: number) {

@@ -19,6 +19,18 @@ class ProductsController {
     }
   }
 
+  async getCategories(req: Request, res: Response) {
+    try {
+      const categories = await productsRepo.getCategories();
+      res.status(STATUS_CODES.OK).json({
+        message: "success",
+        data: { categories },
+      });
+    } catch (error: any) {
+      handleErrorResponse(res, error);
+    }
+  }
+
   async deleteProduct(req: Request, res: Response) {
     try {
       const vendor = (req as any).user;
