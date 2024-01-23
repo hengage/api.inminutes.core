@@ -43,6 +43,25 @@ class ValidateCustomer {
     }
     return;
   };
+
+  updateProfile = async (payload: Partial<ICustomerDocument>) => {
+    const updateProfileSchema = joi.object({
+      fullName: joi.string(),
+      email: joi.string(),
+      dateOfBirth: joi.string(),
+      address: joi.string(),
+    });
+
+    const { error } = updateProfileSchema.validate(payload, {
+      allowUnknown: false,
+      abortEarly: false,
+    });
+
+    if (error) {
+      throw new HandleException(STATUS_CODES.BAD_REQUEST, error.message);
+    }
+    return;
+  };
 }
 
 export const validateCustomer = new ValidateCustomer();

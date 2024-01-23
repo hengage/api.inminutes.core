@@ -55,6 +55,7 @@ class CustomersController {
     const customer = (req as any).user._id;
 
     try {
+      await validateCustomer.updateProfile(req.body);
       const profile = await customersRepo.updateProfile(customer, req.body);
       res.status(STATUS_CODES.OK).json({
         message: "Success",
@@ -65,16 +66,16 @@ class CustomersController {
     }
   }
 
-  async deleteAccount (req: Request, res: Response) {
+  async deleteAccount(req: Request, res: Response) {
     const customer = (req as any).user._id;
 
     try {
-      await customersRepo.deleteAccount(customer)
+      await customersRepo.deleteAccount(customer);
       res.status(STATUS_CODES.OK).json({
-        message: "Success"
-      })
+        message: "Success",
+      });
     } catch (error: any) {
-    handleErrorResponse(res, error);      
+      handleErrorResponse(res, error);
     }
   }
 }
