@@ -8,8 +8,9 @@ class ProductsRoutes {
     this.initializeRoutes();
   }
   initializeRoutes() {
-    this.router.use(verifyAuthTokenMiddleware)
+    this.router.use(verifyAuthTokenMiddleware);
     this.router.route("/").post(productsController.addProduct);
+    this.router.route("/:productId").delete(productsController.deleteProduct);
   }
 }
 

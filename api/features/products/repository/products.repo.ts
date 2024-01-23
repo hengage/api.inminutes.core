@@ -36,6 +36,19 @@ class ProductsRepository {
     product.quantity -= quantity;
     await product.save();
   }
+
+  async deleteProduct(productId: string, vendorId: string) {
+    const result = await Product.deleteOne({
+      _id: productId,
+      vendor: vendorId,
+    });
+
+    if (result.deletedCount === 0) {
+      throw new HandleException(STATUS_CODES.NOT_FOUND, "Product not found");
+    }
+
+    console.log(" Deleted product", productId);
+  }
 }
 
 export const productsRepo = new ProductsRepository();
