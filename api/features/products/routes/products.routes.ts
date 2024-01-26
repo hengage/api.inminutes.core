@@ -9,9 +9,12 @@ class ProductsRoutes {
   }
   initializeRoutes() {
     this.router.use(verifyAuthTokenMiddleware);
+
+    this.router.route("/category").get(productsController.getCategories);
+
+    this.router.route("/:productId").get(productsController.productDetails);
     this.router.route("/").post(productsController.addProduct);
     this.router.route("/:productId").delete(productsController.deleteProduct);
-    this.router.route("/category").get(productsController.getCategories);
   }
 }
 

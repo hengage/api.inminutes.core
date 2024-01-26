@@ -5,6 +5,18 @@ import { productsRepo } from "../repository/products.repo";
 import { validateProducts } from "../validators/products.validators";
 
 class ProductsController {
+  async getCategories(req: Request, res: Response) {
+    try {
+      const categories = await productsRepo.getCategories();
+      res.status(STATUS_CODES.OK).json({
+        message: "success",
+        data: { categories },
+      });
+    } catch (error: any) {
+      handleErrorResponse(res, error);
+    }
+  }
+
   async addProduct(req: Request, res: Response) {
     try {
       await validateProducts.addProduct(req.body);
@@ -19,17 +31,17 @@ class ProductsController {
     }
   }
 
-  async getCategories(req: Request, res: Response) {
-    try {
-      const categories = await productsRepo.getCategories();
-      res.status(STATUS_CODES.OK).json({
-        message: "success",
-        data: { categories },
-      });
-    } catch (error: any) {
-      handleErrorResponse(res, error);
-    }
+ async productDetails(req: Request, res: Response) {
+  try {
+    const product = await productsRepo.productDetails(req.params.productId)
+    res.status(STATUS_CODES.CREATED).json({
+      message: "Success",
+      data: { product },
+    });
+  } catch (error: any) {
+    handleErrorResponse(res, error);
   }
+ }
 
   async deleteProduct(req: Request, res: Response) {
     try {

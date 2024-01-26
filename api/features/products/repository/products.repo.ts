@@ -45,6 +45,13 @@ class ProductsRepository {
     await product.save();
   }
 
+  async productDetails(productId: string) {
+    const product = await Product.findById(productId)
+    .select("-__v -updatedAt -createdAt -status");
+
+    return product
+  }
+
   async deleteProduct(productId: string, vendorId: string) {
     const result = await Product.deleteOne({
       _id: productId,
