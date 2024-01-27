@@ -1,4 +1,5 @@
 import { HandleException, STATUS_CODES } from "../../../utils";
+import { Product } from "../../products";
 import { Vendor } from "../models/vendors.model";
 
 class VendorsService {
@@ -15,6 +16,21 @@ class VendorsService {
     }
 
     return;
+  }
+
+  async getProducts(vendorId: string, page: number) {
+    const query = { vendor: vendorId };
+
+    const options = {
+      page,
+      limit: 20,
+      select: "name image cost",
+      leanWithId: false,
+      lean: true,
+    };
+
+    const products = await Product.paginate(query, options);
+    return products;
   }
 }
 

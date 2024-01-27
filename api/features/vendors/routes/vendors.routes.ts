@@ -22,6 +22,7 @@ class VendorsRoutes {
     this.router.use(verifyAuthTokenMiddleware);
 
     this.router.route("/me").get(vendorsController.getMe);
+    this.router.route("/products").get(vendorsController.getProducts);
   }
 }
 

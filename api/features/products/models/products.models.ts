@@ -1,4 +1,7 @@
-import { Schema, model } from "mongoose";
+import { PaginateModel, Schema, model } from "mongoose";
+
+import paginate from "mongoose-paginate-v2";
+
 import { PRODUCT_STATUS, generateUniqueString } from "../../../utils";
 import {
   IProductCategoryDocument,
@@ -49,8 +52,13 @@ const productSchema = new Schema<IProductDocument>(
   { timestamps: true }
 );
 
+productSchema.plugin(paginate);
+
 export const ProductCategory = model<IProductCategoryDocument>(
   "productCategory",
   productCategprySchema
 );
-export const Product = model<IProductDocument>("product", productSchema);
+export const Product = model<IProductDocument, PaginateModel<IProductDocument>>(
+  "product",
+  productSchema
+);

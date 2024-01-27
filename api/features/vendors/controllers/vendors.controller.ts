@@ -62,6 +62,20 @@ class VendorsController {
       handleErrorResponse(res, error);
     }
   }
+
+  async getProducts(req: Request, res: Response) {
+    const page = parseInt(req.query.page as string) || 1;
+    const vendor = (req as any).user;
+    try {
+      const products = await vendorsService.getProducts(vendor._id, page);
+      res.status(STATUS_CODES.OK).json({
+        message: "success",
+        data: { products },
+      });
+    } catch (error: any) {
+      handleErrorResponse(res, error);
+    }
+  }
 }
 
 export const vendorsController = new VendorsController();
