@@ -12,6 +12,9 @@ class AdminOpsProductsRoutes {
     this.router
       .route("/category")
       .post(adminOpsForProductsController.createCategory);
+    this.router
+      .route("/:productId/approve")
+      .patch(adminOpsForProductsController.approveProduct);
   }
 }
 

@@ -1,5 +1,5 @@
-import { HandleException, STATUS_CODES } from "../../../utils";
-import { ProductCategory } from "../../products";
+import { HandleException, PRODUCT_STATUS, STATUS_CODES } from "../../../utils";
+import { Product, ProductCategory } from "../../products";
 
 class AdminOpsForProductsService {
   async createCategory(payload: any) {
@@ -23,6 +23,16 @@ class AdminOpsForProductsService {
       _id: category._id,
       name: category.name,
     };
+  }
+
+  async approveProduct(productId: string) {
+    await Product.findByIdAndUpdate(
+      productId,
+      {
+        $set: { status: PRODUCT_STATUS.APPROVED },
+      },
+      { new: true }
+    );
   }
 }
 
