@@ -1,4 +1,4 @@
-import { emitEvent } from "../../../services";
+import { convertLatLngToCell, emitEvent } from "../../../services";
 import { HandleException, STATUS_CODES, compareValues } from "../../../utils";
 import { Vendor } from "../models/vendors.model";
 import { IVendorDocument, IVendorSignup } from "../vendors.interface";
@@ -77,6 +77,7 @@ class VendorsRepository {
 
     return vendor;
   }
+
 }
 
 export const vendorsRepo = new VendorsRepository();

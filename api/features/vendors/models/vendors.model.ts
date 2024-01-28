@@ -39,7 +39,7 @@ const vendorSchema = new Schema<IVendorDocument>(
         type: [Number, Number],
       },
     },
-    h3Index: { type: String },
+    h3Index: { type: String, index: true },
     residentialAddress: { type: String, required: true },
     category: { type: String, required: true, ref: "VendorCategory" },
     subCategory: { type: String, ref: "VendorSubCategory" },
@@ -64,7 +64,7 @@ const vendorSchema = new Schema<IVendorDocument>(
   { timestamps: true }
 );
 
-vendorSchema.index({ location: "2dsphere", h3Index: "2dsphere" });
+vendorSchema.index({ location: "2dsphere", });
 
 vendorSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
