@@ -1,3 +1,4 @@
+import { emitEvent } from "../../../services";
 import { HandleException, STATUS_CODES, compareValues } from "../../../utils";
 import { Rider } from "../models/riders.model";
 import { IRiderDocument } from "../riders.interface";
@@ -22,6 +23,10 @@ class RidersRepository {
       password,
       dateOfBirth,
       residentialAddress,
+    });
+
+    emitEvent("create-wallet", {
+      riderId: rider._id,
     });
 
     return {

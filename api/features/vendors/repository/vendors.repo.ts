@@ -1,3 +1,4 @@
+import { emitEvent } from "../../../services";
 import { HandleException, STATUS_CODES, compareValues } from "../../../utils";
 import { Vendor } from "../models/vendors.model";
 import { IVendorDocument, IVendorSignup } from "../vendors.interface";
@@ -30,6 +31,10 @@ class VendorsRepository {
       residentialAddress,
       category,
       subCategory,
+    });
+
+    emitEvent("create-wallet", {
+      vendorId: vendor._id,
     });
 
     return {

@@ -1,0 +1,1 @@
+export { walletRepo } from "./repository/wallet.repository";
