@@ -34,6 +34,16 @@ class AdminOpsForProductsService {
       { new: true }
     );
   }
+ 
+  async rejectProduct(productId: string) {
+    await Product.findByIdAndUpdate(
+      productId,
+      {
+        $set: { status: PRODUCT_STATUS.REJECTED },
+      },
+      { new: true }
+    );
+  }
 }
 
 export const adminOpsForProductsService = new AdminOpsForProductsService();

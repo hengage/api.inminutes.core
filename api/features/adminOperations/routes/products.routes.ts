@@ -12,9 +12,14 @@ class AdminOpsProductsRoutes {
     this.router
       .route("/category")
       .post(adminOpsForProductsController.createCategory);
-    this.router
+   
+      this.router
       .route("/:productId/approve")
       .patch(adminOpsForProductsController.approveProduct);
+   
+      this.router
+      .route("/:productId/reject")
+      .patch(adminOpsForProductsController.rejectProduct);
   }
 }
 

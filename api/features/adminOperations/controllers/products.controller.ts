@@ -27,6 +27,17 @@ class AdminOpsForProductsController {
       return handleErrorResponse(res, error);
     }
   }
+
+  async rejectProduct(req: Request, res: Response) {
+    try {
+      await adminOpsForProductsService.rejectProduct(req.params.productId);
+      res.status(STATUS_CODES.CREATED).json({
+        message: "Success",
+      });
+    } catch (error: any) {
+      return handleErrorResponse(res, error);
+    }
+  }
 }
 
 export const adminOpsForProductsController =
