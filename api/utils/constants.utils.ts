@@ -26,3 +26,14 @@ export enum PRODUCT_STATUS {
   APPROVED = "approved",
   REJECTED = "rejected",
 }
+
+export enum WALLET_STATUS {
+  ACTIVE = "active",
+  SUSPENDED = "suspended",
+  CLOSED = "closed",
+}
+
+export enum WITHDRAWAL_CHANNEL {
+  BANK_TRANSFER = "bank transfer",
+  MOBILE_MONEY = "mobile money",
+}
