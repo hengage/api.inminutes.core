@@ -1,10 +1,10 @@
 import { Schema, model } from "mongoose";
-import { IWalletDocument } from "./wallet.interface";
+import { IWalletDocument } from "../wallet.interface";
 import {
   WALLET_STATUS,
   WITHDRAWAL_CHANNEL,
   generateUniqueString,
-} from "../../utils";
+} from "../../../utils";
 
 const walletSchema = new Schema<IWalletDocument>(
   {
@@ -14,7 +14,6 @@ const walletSchema = new Schema<IWalletDocument>(
     },
     rider: { type: String, ref: "Rider" },
     vendor: { type: String, ref: "Vendor" },
-    ownerAccountType: { type: String, required: true },
     balance: { type: String, default: "0" },
     transactionCount: { type: Number, default: 0 },
     totalEarnings: { type: String, default: "0" },

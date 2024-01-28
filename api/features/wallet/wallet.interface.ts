@@ -7,7 +7,6 @@ export interface IWalletDocument extends Document {
   _id: string;
   rider: IRiderDocument;
   vendor: IVendorDocument;
-  ownerAccountType: string;
   balance: string;
   transactionCount: number;
   totalEarnings: string;
