@@ -2,7 +2,7 @@ import { convertLatLngToCell, emitEvent } from "../../../services";
 import { HandleException, STATUS_CODES, compareValues } from "../../../utils";
 import { Vendor } from "../models/vendors.model";
 import { IVendorDocument, IVendorSignup } from "../vendors.interface";
-
+import h3 from "h3-js";
 class VendorsRepository {
   async signup(payload: IVendorSignup): Promise<Partial<IVendorDocument>> {
     const {
@@ -78,6 +78,15 @@ class VendorsRepository {
     return vendor;
   }
 
+  async findVendorsByLocation(coordinates: [lng: number, lat: number]) {
+    const origin = convertLatLngToCell(coordinates);
+    const hexBoundary = h3.cellToBoundary(origin);
+    console.log({ hexBoundary });
+    const query = { h3Index: origin };
+
+    const vendors = await Vendor.find(query);
+    console.log({ vendors });
+  }
 }
 
 export const vendorsRepo = new VendorsRepository();
