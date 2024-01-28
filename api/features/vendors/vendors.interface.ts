@@ -13,6 +13,7 @@ export interface IVendorDocument extends Document {
     type: string;
     coordinates: [number, number];
   };
+  h3Index: string,
   residentialAddress: string;
   category: IVendorCategoryDocument;
   subCategory: IVendorSubCategoryDocument;
