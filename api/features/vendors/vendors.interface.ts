@@ -34,7 +34,7 @@ export interface IVendorSignup {
   phoneNumber: string;
   password: string;
   address: string;
-  location: string;
+  location: [number, number];
   residentialAddress: string;
   category: string;
   subCategory: string;

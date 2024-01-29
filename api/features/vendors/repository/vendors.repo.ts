@@ -28,6 +28,7 @@ class VendorsRepository {
       location: {
         coordinates: location,
       },
+      h3Index: convertLatLngToCell(location),
       residentialAddress,
       category,
       subCategory,
@@ -80,12 +81,19 @@ class VendorsRepository {
 
   async findVendorsByLocation(coordinates: [lng: number, lat: number]) {
     const origin = convertLatLngToCell(coordinates);
-    const hexBoundary = h3.cellToBoundary(origin);
-    console.log({ hexBoundary });
     const query = { h3Index: origin };
 
     const vendors = await Vendor.find(query);
     console.log({ vendors });
+  }
+
+  async changeH3IndexResolution() {
+    const vendors = await Vendor.find();
+    vendors.forEach(async (vendor) => {
+      vendor.h3Index = convertLatLngToCell(vendor.location.coordinates);
+      await vendor.save();
+      console.log("changed vendor location");
+    });
   }
 }
 
