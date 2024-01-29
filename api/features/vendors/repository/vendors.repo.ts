@@ -79,12 +79,35 @@ class VendorsRepository {
     return vendor;
   }
 
-  async findVendorsByLocation(coordinates: [lng: number, lat: number]) {
+  async findVendorsByLocation(
+    coordinates: [lng: number, lat: number],
+    page: number,
+    limit: number
+  ) {
     const origin = convertLatLngToCell(coordinates);
     const query = { h3Index: origin };
 
-    const vendors = await Vendor.find(query);
-    console.log({ vendors });
+    const options = {
+      page,
+      limit,
+      select:  {
+        "businessName": 1,
+        "businessLogo": 1,
+        "location": {
+          "coordinates": 1,
+        },
+        "category": 1,
+        "address": 1,
+        "rating": {
+          "averageRating": 1,
+        },
+      },
+      leanWithId: false,
+      lean: true,
+    };
+
+    const vendors = await Vendor.paginate(query, options);
+    return vendors
   }
 
   async changeH3IndexResolution() {

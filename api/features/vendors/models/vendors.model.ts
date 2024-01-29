@@ -1,4 +1,7 @@
-import { Schema, model } from "mongoose";
+import { PaginateModel, Schema, model } from "mongoose";
+
+import paginate from "mongoose-paginate-v2";
+
 import { IVendorDocument } from "../vendors.interface";
 import {
   ACCOUNT_STATUS,
@@ -64,7 +67,8 @@ const vendorSchema = new Schema<IVendorDocument>(
   { timestamps: true }
 );
 
-vendorSchema.index({ location: "2dsphere", });
+vendorSchema.plugin(paginate);
+vendorSchema.index({ location: "2dsphere" });
 
 vendorSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
@@ -76,4 +80,7 @@ vendorSchema.pre("save", async function (next) {
   }
 });
 
-export const Vendor = model<IVendorDocument>("vendor", vendorSchema);
+export const Vendor = model<IVendorDocument, PaginateModel<IVendorDocument>>(
+  "vendor",
+  vendorSchema
+);
