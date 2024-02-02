@@ -96,10 +96,10 @@ class UsersService {
     switch (accountType) {
       case "customer":
         return Customer;
-      // case "vendor":
-      //   return Vendor;
-      // case "rider":
-      //   return DriverRider;
+      case "vendor":
+        return Vendor;
+      case "rider":
+        return Rider;
       default:
         throw new HandleException(
           STATUS_CODES.BAD_REQUEST,
