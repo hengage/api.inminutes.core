@@ -25,6 +25,8 @@ class VendorsRoutes {
     this.router.route("/products").get(vendorsController.getProducts);
 
     this.router.route("/nearby").get(vendorsController.getNearByVendors);
+
+    this.router.route("/category/:categoryId/vendors").get(vendorsController.getVendorsByCategory)
   }
 }
 

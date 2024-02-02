@@ -96,6 +96,23 @@ class VendorsController {
       handleErrorResponse(res, error);
     }
   }
+
+  async getVendorsByCategory(req: Request, res: Response) {
+    const page = parseInt(req.query.page as string) || 1;
+    try {
+      const vendors = await vendorsRepo.getVendorsByCategory({
+        categoryId: req.params.categoryId,
+        page,
+      });
+
+      res.status(STATUS_CODES.OK).json({
+        message: "success",
+        data: { vendors },
+      });
+    } catch (error: any) {
+      handleErrorResponse(res, error);
+    }
+  }
 }
 
 export const vendorsController = new VendorsController();

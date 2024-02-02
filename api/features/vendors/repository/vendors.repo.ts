@@ -80,28 +80,28 @@ class VendorsRepository {
   }
 
   async findVendorsByLocation(params: {
-    coordinates: [lng: number, lat: number]
-    page: number,
-    limit: number}
-  ) {
-    const {coordinates, page, limit} = params;
-    
+    coordinates: [lng: number, lat: number];
+    page: number;
+    limit: number;
+  }) {
+    const { coordinates, page, limit } = params;
+
     const origin = convertLatLngToCell(coordinates);
     const query = { h3Index: origin };
 
     const options = {
       page,
       limit,
-      select:  {
-        "businessName": 1,
-        "businessLogo": 1,
-        "location": {
-          "coordinates": 1,
+      select: {
+        businessName: 1,
+        businessLogo: 1,
+        location: {
+          coordinates: 1,
         },
-        "category": 1,
-        "address": 1,
-        "rating": {
-          "averageRating": 1,
+        category: 1,
+        address: 1,
+        rating: {
+          averageRating: 1,
         },
       },
       leanWithId: false,
@@ -109,7 +109,7 @@ class VendorsRepository {
     };
 
     const vendors = await Vendor.paginate(query, options);
-    return vendors
+    return vendors;
   }
 
   async changeH3IndexResolution() {
@@ -119,6 +119,33 @@ class VendorsRepository {
       await vendor.save();
       console.log("changed vendor location");
     });
+  }
+
+  async getVendorsByCategory(params: { categoryId: string; page: number }) {
+    const query = { category: params.categoryId };
+
+    const options = {
+      page: params.page,
+      limit: 14,
+      select: {
+        businessName: 1,
+        businessLogo: 1,
+        location: {
+          coordinates: 1,
+        },
+        category: 1,
+        address: 1,
+        rating: {
+          averageRating: 1,
+        },
+      },
+      leanWithId: false,
+      lean: true,
+    };
+
+    const vendors = await Vendor.paginate(query, options);
+
+    return vendors;
   }
 }
 
