@@ -4,6 +4,7 @@ dotenv.config();
 import { App } from "./app/app";
 import { NODE_ENV, PORT } from "./config";
 import { vendorsRepo } from "./features/vendors/repository/vendors.repo";
+import { SocketIo } from "./services/socket.services";
 
 const app = new App();
 
@@ -24,4 +25,7 @@ const app = new App();
   );
 })();
 
-app.listenToPort(PORT, NODE_ENV);
+const server = app.listenToPort(PORT, NODE_ENV);
+
+const InitializeWebSocket = new SocketIo(server);
+InitializeWebSocket.connectSocket();
