@@ -1,9 +1,10 @@
 import { Server } from "http";
 
 import { Socket } from "socket.io";
+import { listenToCustomerEvents } from "./customer.socket";
 const socketIO = require("socket.io");
 
-class SocketIo {
+class SocketIO {
   private io: Socket;
 
   constructor(server: Server) {
@@ -13,6 +14,7 @@ class SocketIo {
   public connectSocket() {
     this.io.on("connection", (socket: Socket) => {
       console.log("User connected");
+      listenToCustomerEvents(socket)
 
       socket.on("disconnect", async () => {
         console.log("User disconnected");
@@ -21,4 +23,4 @@ class SocketIo {
   }
 }
 
-export { SocketIo };
+export { SocketIO };
