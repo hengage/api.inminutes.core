@@ -76,6 +76,26 @@ class VendorsController {
       handleErrorResponse(res, error);
     }
   }
+
+  async getNearByVendors(req: Request, res: Response) {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+
+    try {
+      const vendors = await vendorsRepo.findVendorsByLocation({
+        page,
+        limit,
+        coordinates: req.body.coordinates,
+      });
+
+      res.status(STATUS_CODES.OK).json({
+        message: "message",
+        data: { vendors },
+      });
+    } catch (error: any) {
+      handleErrorResponse(res, error);
+    }
+  }
 }
 
 export const vendorsController = new VendorsController();

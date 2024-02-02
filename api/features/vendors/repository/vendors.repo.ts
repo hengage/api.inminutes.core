@@ -79,11 +79,13 @@ class VendorsRepository {
     return vendor;
   }
 
-  async findVendorsByLocation(
-    coordinates: [lng: number, lat: number],
+  async findVendorsByLocation(params: {
+    coordinates: [lng: number, lat: number]
     page: number,
-    limit: number
+    limit: number}
   ) {
+    const {coordinates, page, limit} = params;
+    
     const origin = convertLatLngToCell(coordinates);
     const query = { h3Index: origin };
 
