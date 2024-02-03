@@ -26,7 +26,12 @@ class VendorsRoutes {
 
     this.router.route("/nearby").get(vendorsController.getNearByVendors);
 
-    this.router.route("/category/:categoryId/vendors").get(vendorsController.getVendorsByCategory)
+    this.router
+      .route("/category/:categoryId/vendors")
+      .get(vendorsController.getVendorsByCategory);
+    this.router
+      .route("/:vendorId/products/")
+      .get(vendorsController.getProductsAndGroupByCategory);
   }
 }
 

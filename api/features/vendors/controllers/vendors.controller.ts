@@ -113,6 +113,21 @@ class VendorsController {
       handleErrorResponse(res, error);
     }
   }
+
+  async getProductsAndGroupByCategory(req: Request, res: Response) {
+    try {
+      const products = await vendorsService.getProductsAndGroupByCategory(
+        req.params.vendorId
+      );
+
+      res.status(STATUS_CODES.OK).json({
+        message: "success",
+        data: { products },
+      });
+    } catch (error: any) {
+      handleErrorResponse(res, error);
+    }
+  }
 }
 
 export const vendorsController = new VendorsController();

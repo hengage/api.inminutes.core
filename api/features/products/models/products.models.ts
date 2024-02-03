@@ -8,7 +8,7 @@ import {
   IProductDocument,
 } from "../products.interface";
 
-const productCategprySchema = new Schema<IProductCategoryDocument>(
+const productCategorySchema = new Schema<IProductCategoryDocument>(
   {
     _id: {
       type: String,
@@ -55,8 +55,8 @@ const productSchema = new Schema<IProductDocument>(
 productSchema.plugin(paginate);
 
 export const ProductCategory = model<IProductCategoryDocument>(
-  "productCategory",
-  productCategprySchema
+  "ProductCategory",
+  productCategorySchema
 );
 export const Product = model<IProductDocument, PaginateModel<IProductDocument>>(
   "product",

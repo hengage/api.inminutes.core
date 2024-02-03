@@ -47,9 +47,10 @@ class ProductsRepository {
 
   async productDetails(productId: string) {
     const product = await Product.findById(productId)
-    .select("-__v -updatedAt -createdAt -status");
+      .select("-__v -updatedAt -createdAt -status")
+      .populate({ path: "category", select: "name" });
 
-    return product
+    return product;
   }
 
   async deleteProduct(productId: string, vendorId: string) {

@@ -31,17 +31,17 @@ class ProductsController {
     }
   }
 
- async productDetails(req: Request, res: Response) {
-  try {
-    const product = await productsRepo.productDetails(req.params.productId)
-    res.status(STATUS_CODES.CREATED).json({
-      message: "Success",
-      data: { product },
-    });
-  } catch (error: any) {
-    handleErrorResponse(res, error);
+  async productDetails(req: Request, res: Response) {
+    try {
+      const product = await productsRepo.productDetails(req.params.productId);
+      res.status(STATUS_CODES.CREATED).json({
+        message: "Success",
+        data: { product },
+      });
+    } catch (error: any) {
+      handleErrorResponse(res, error);
+    }
   }
- }
 
   async deleteProduct(req: Request, res: Response) {
     try {

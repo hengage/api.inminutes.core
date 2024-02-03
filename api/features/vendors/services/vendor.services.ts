@@ -32,6 +32,60 @@ class VendorsService {
     const products = await Product.paginate(query, options);
     return products;
   }
+
+  
+  async getProductsAndGroupByCategory(vendorId: string) {
+    const pipeline = [
+      { $match: { vendor: vendorId } },
+      {
+        $group: {
+          _id: "$category",
+          categoryGroup: {
+            $push: {
+              _id: "$_id",
+              name: "$name",
+              image: "$image",
+              category: "$category",
+              cost: "$cost",
+            },
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "productcategories",
+          let: { categoryId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ["$_id", "$$categoryId"] }
+              }
+            },
+            {
+              $project: {
+                name: 1,
+                _id: 1
+              }
+            }
+          ],
+          as: "categoryInfo",
+        },
+      },
+      // {
+      //   $unwind: "$categoryInfo",
+      // },
+      {
+        $project: {
+          _id: 1,
+          categoryGroup: 1,
+          category: "$categoryInfo",
+        },
+      },
+    ];
+
+    const products = await Product.aggregate(pipeline);
+    return products;
+  }
 }
 
 export const vendorsService = new VendorsService();
