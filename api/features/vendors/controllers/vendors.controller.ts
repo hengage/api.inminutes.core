@@ -115,9 +115,11 @@ class VendorsController {
   }
 
   async getProductsAndGroupByCategory(req: Request, res: Response) {
+    const page = parseInt(req.query.page as string) || 1
+    const limit = parseInt(req.query.limit as string) || 10
     try {
       const products = await vendorsService.getProductsAndGroupByCategory(
-        req.params.vendorId
+        {vendorId: req.params.vendorId, page, limit}
       );
 
       res.status(STATUS_CODES.OK).json({

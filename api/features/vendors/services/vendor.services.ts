@@ -33,8 +33,13 @@ class VendorsService {
     return products;
   }
 
-  
-  async getProductsAndGroupByCategory(vendorId: string) {
+  async getProductsAndGroupByCategory(params: {
+    vendorId: string;
+    page: number;
+    limit: number;
+  }) {
+    const { vendorId, page, limit } = params;
+
     const pipeline = [
       { $match: { vendor: vendorId } },
       {
@@ -58,22 +63,22 @@ class VendorsService {
           pipeline: [
             {
               $match: {
-                $expr: { $eq: ["$_id", "$$categoryId"] }
-              }
+                $expr: { $eq: ["$_id", "$$categoryId"] },
+              },
             },
             {
               $project: {
                 name: 1,
-                _id: 1
-              }
-            }
+                _id: 1,
+              },
+            },
           ],
           as: "categoryInfo",
         },
       },
-      // {
-      //   $unwind: "$categoryInfo",
-      // },
+      {
+        $unwind: "$categoryInfo",
+      },
       {
         $project: {
           _id: 1,
@@ -81,10 +86,39 @@ class VendorsService {
           category: "$categoryInfo",
         },
       },
+      {
+        $unwind: "$categoryGroup",
+      },
+      {
+        $skip: (page - 1) * limit,
+      },
+      {
+        $limit: limit,
+      },
+      {
+        $group: {
+          _id: "$_id",
+          categoryGroup: { $push: "$categoryGroup" },
+          category: { $first: "$category.name" },
+        },
+      },
     ];
 
+    const totalCount = await Product.countDocuments({ vendor: vendorId });
+
+    const totalPages = Math.ceil(totalCount / limit);
+    const hasNextPage = page * limit < totalCount;
+    const hasPrevPage = page > 1;
+
     const products = await Product.aggregate(pipeline);
-    return products;
+    return {
+      docs: products,
+      currentPage: page,
+      limit,
+      totalPages: totalPages,
+      hasNextPage: hasNextPage,
+      hasPrevPage: hasPrevPage,
+    };
   }
 }
 
