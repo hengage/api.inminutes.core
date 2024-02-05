@@ -24,6 +24,22 @@ class ValidateProducts {
     }
     return;
   };
+
+  async productSearch(payload: { term: string }) {
+    const productSearchSchema = Joi.object({
+      term: Joi.string().required().label("Search term"),
+    });
+
+    const { error } = productSearchSchema.validate(payload, {
+      allowUnknown: false,
+      abortEarly: false,
+    });
+
+    if (error) {
+      throw new HandleException(STATUS_CODES.BAD_REQUEST, error.message);
+    }
+    return;
+  }
 }
 
 export const validateProducts = new ValidateProducts();

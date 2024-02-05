@@ -60,7 +60,11 @@ class ProductsController {
     const page = parseInt(req.query.page as string);
 
     try {
-      const products = await productsRepo.searchProducts({ page, term: req.body.term });
+      await validateProducts.productSearch(req.body);
+      const products = await productsRepo.searchProducts({
+        page,
+        term: req.body.term,
+      });
       res.status(STATUS_CODES.OK).json({
         message: "success",
         data: { products },
