@@ -39,6 +39,7 @@ const productSchema = new Schema<IProductDocument>(
       {
         item: { type: String },
         cost: { type: String },
+        _id: false,
       },
     ],
     category: { type: String, required: true, ref: "ProductCategory" },
