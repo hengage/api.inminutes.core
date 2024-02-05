@@ -37,3 +37,13 @@ export enum WITHDRAWAL_CHANNEL {
   BANK_TRANSFER = "bank transfer",
   MOBILE_MONEY = "mobile money",
 }
+
+export enum ORDER_STATUS {
+  REQUEST_RECEIVED = "request received",
+  REQUEST_CONFIRMED = "request confirmed",
+  PICKED_UP = "picked up",
+  IN_TRANSIT = "in transit",
+  NEARBY = "nearby",
+  ARRIVED = "arrived",
+  DELIVERED = "delivered",
+}
