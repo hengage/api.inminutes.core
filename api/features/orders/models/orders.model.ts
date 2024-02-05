@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { generateUniqueString } from "../../../utils";
+import { ORDER_STATUS, generateUniqueString } from "../../../utils";
 import { IOrdersDocument } from "../orders.interface";
 
 const orderSchema = new Schema<IOrdersDocument>({
@@ -29,6 +29,11 @@ const orderSchema = new Schema<IOrdersDocument>({
   deliveryFee: { type: String, required: true },
   totalProductCost: { type: String, required: true },
   totalCost: { type: String, required: true },
+  status: {
+    type: String,
+    enum: Object.values(ORDER_STATUS),
+    default: ORDER_STATUS.PENDING,
+  },
 });
 
 orderSchema.index({ deliveryLocation: "2dsphere" });

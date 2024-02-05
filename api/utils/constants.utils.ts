@@ -39,6 +39,7 @@ export enum WITHDRAWAL_CHANNEL {
 }
 
 export enum ORDER_STATUS {
+  PENDING = "pending",
   REQUEST_RECEIVED = "request received",
   REQUEST_CONFIRMED = "request confirmed",
   PICKED_UP = "picked up",
