@@ -65,6 +65,22 @@ class ProductsRepository {
 
     console.log(" Deleted product", productId);
   }
+
+  async searchProducts(params: {term: string, page: number}) {
+    const query = { name: { $regex: params.term, $options: "i" } };
+
+    const options = {
+      page: params.page  || 1,
+      limit: 20,
+      select: "name cost image",
+      populate: [{ path: "vendor", select: "businessName" }],
+      lean: true,
+      leanWithId: false,
+    };
+
+    const products = await Product.paginate(query, options);
+    return products;
+  }
 }
 
 export const productsRepo = new ProductsRepository();

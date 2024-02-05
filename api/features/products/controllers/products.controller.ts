@@ -55,6 +55,20 @@ class ProductsController {
       handleErrorResponse(res, error);
     }
   }
+
+  async searchProducts(req: Request, res: Response) {
+    const page = parseInt(req.query.page as string);
+
+    try {
+      const products = await productsRepo.searchProducts({ page, term: req.body.term });
+      res.status(STATUS_CODES.OK).json({
+        message: "success",
+        data: { products },
+      });
+    } catch (error: any) {
+      handleErrorResponse(res, error);
+    }
+  }
 }
 
 export const productsController = new ProductsController();

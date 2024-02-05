@@ -12,6 +12,7 @@ class ProductsRoutes {
 
     this.router.route("/category").get(productsController.getCategories);
 
+    this.router.route("/search").get(productsController.searchProducts);
     this.router.route("/:productId").get(productsController.productDetails);
     this.router.route("/").post(productsController.addProduct);
     this.router.route("/:productId").delete(productsController.deleteProduct);

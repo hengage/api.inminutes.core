@@ -29,7 +29,7 @@ const productSchema = new Schema<IProductDocument>(
       type: String,
       default: () => generateUniqueString(5),
     },
-    name: { type: String, required: true },
+    name: { type: String, required: true, index: true },
     image: { type: String, required: true },
     description: { type: String, required: true },
     quantity: { type: Number, required: true },

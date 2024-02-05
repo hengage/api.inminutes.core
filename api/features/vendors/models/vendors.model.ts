@@ -81,6 +81,6 @@ vendorSchema.pre("save", async function (next) {
 });
 
 export const Vendor = model<IVendorDocument, PaginateModel<IVendorDocument>>(
-  "vendor",
+  "Vendor",
   vendorSchema
 );
