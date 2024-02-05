@@ -13,10 +13,10 @@ export interface IOrderItem {
   quantity: number;
   cost: string;
   vendor: IVendorDocument["_id"];
-  addOns: IAddOn[];
+  addOns?: IAddOn[];
 }
 
-export interface IOrdersDocuments extends Document {
+export interface IOrdersDocument extends Document {
   _id: string;
   customer: string;
   rider?: string;
