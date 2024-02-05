@@ -6,6 +6,7 @@ import { mediaRoutes } from "./features/media";
 import { ridersRoutes } from "./features/riders";
 import { adminOpsRoutes } from "./features/adminOperations";
 import { productsRoutes } from "./features/products";
+import { ordersRoutes } from "./features/orders";
 
 class Routes {
   /*
@@ -26,6 +27,7 @@ class Routes {
     this.router.use("/vendors", vendorsRoutes.router);
     this.router.use("/riders", ridersRoutes.router);
     this.router.use("/products", productsRoutes.router);
+    this.router.use("/orders", ordersRoutes.router);
     this.router.use("/admin", adminOpsRoutes.router)
 
     this.router.use("/media", mediaRoutes.router);

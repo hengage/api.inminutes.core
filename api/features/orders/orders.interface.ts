@@ -29,7 +29,7 @@ export interface IOrdersDocument extends Document {
   };
   h3Index: string;
   deliveryFee: string;
-  totalProductCost: string;
+  totalProductsCost: string;
   totalCost: string;
   status: ORDER_STATUS;
 }
