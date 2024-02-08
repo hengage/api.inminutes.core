@@ -47,4 +47,5 @@ export enum ORDER_STATUS {
   NEARBY = "nearby",
   ARRIVED = "arrived",
   DELIVERED = "delivered",
+  CANCELLED = "cancelled",
 }
