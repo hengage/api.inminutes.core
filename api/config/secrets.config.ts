@@ -10,3 +10,6 @@ export const TWILIO_VERIFY_SID = process.env.TWILIO_VERIFY_SID;
 export const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY;
 export const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET;
 export const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
+
+export const ONE_SIGNAL_APP_ID = process.env.ONE_SIGNAL_APP_ID;
+export const ONE_SIGNAL_API_KEY = process.env.ONE_SIGNAL_API_KEY;
