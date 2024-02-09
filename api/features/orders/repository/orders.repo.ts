@@ -41,6 +41,28 @@ class OrderRepository {
     await order.save();
     return {orderId: order._id}
   }
+
+  async assignRiderAndUpdateStatusToInTransit(params: {
+    orderId: string;
+    riderId: string;
+  }) {
+    const { orderId, riderId } = params;
+    console.log({orderrepo: orderId})
+    const order = await Order.findByIdAndUpdate(
+      orderId,
+      {
+        $set: { rider: riderId, status: ORDER_STATUS.IN_TRANSIT },
+      },
+      { new: true }
+    )
+      .select("rider status")
+
+    if(!order) {
+      throw new HandleException(STATUS_CODES.NOT_FOUND, "Order not found")
+    }
+
+    return order._id
+  }
 }
 
 export const orderRepo = new OrderRepository();

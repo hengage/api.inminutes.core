@@ -2,14 +2,14 @@ import { ORDER_STATUS } from "../../../utils";
 import { orderRepo } from "../repository/orders.repo";
 
 class OrdersService {
-//   async requestReceived(orderId: string) {
-//     const order = await orderRepo.updateStatus({
-//       orderId,
-//       status: ORDER_STATUS.REQUEST_RECEIVED,
-//     });
+  //   async requestReceived(orderId: string) {
+  //     const order = await orderRepo.updateStatus({
+  //       orderId,
+  //       status: ORDER_STATUS.REQUEST_RECEIVED,
+  //     });
 
-//     return order;
-//   }
+  //     return order;
+  //   }
 
   async requestConfirmed(orderId: string) {
     const order = await orderRepo.updateStatus({
@@ -20,19 +20,19 @@ class OrdersService {
     return order;
   }
 
-//   async pickedUp(orderId: string) {
-//     const order = await orderRepo.updateStatus({
-//       orderId,
-//       status: ORDER_STATUS.PICKED_UP,
-//     });
+  //   async pickedUp(orderId: string) {
+  //     const order = await orderRepo.updateStatus({
+  //       orderId,
+  //       status: ORDER_STATUS.PICKED_UP,
+  //     });
 
-//     return order;
-//   }
+  //     return order;
+  //   }
 
-  async inTransit(orderId: string) {
-    const order = await orderRepo.updateStatus({
-      orderId,
-      status: ORDER_STATUS.IN_TRANSIT,
+  async inTransit(params: { orderId: string; riderId: string }) {
+    const order = await orderRepo.assignRiderAndUpdateStatusToInTransit({
+      orderId: params.orderId,
+      riderId: params.riderId,
     });
 
     return order;

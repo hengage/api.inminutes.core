@@ -13,8 +13,10 @@ function listenToOrderevents(socket: Socket) {
   });
 
   socket.on("order-in-transit", async (message) => {
+    const {orderId, riderId} = message
+    console.log({orderId, riderId})
     try {
-      const order = await ordersService.inTransit(message.orderId);
+      const order = await ordersService.inTransit({orderId, riderId});
       socket.emit("order-now-in-transit", order);
     } catch (error: any) {
       socket.emit("order-in-transit-error", error.message);
