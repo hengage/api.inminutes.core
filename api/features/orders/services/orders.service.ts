@@ -18,10 +18,12 @@ class OrdersService {
       status: ORDER_STATUS.REQUEST_CONFIRMED,
     });
 
-    await notificationService.createNotification(
-      "847c28273"
-    );
-
+    await notificationService.createNotification({
+      // headings: { en: "Custom Title" },
+      contents: { en: "Order confirmed" },
+      data: { orderId: order._id },
+      userId: order.customer,
+    });
     return order;
   }
 
