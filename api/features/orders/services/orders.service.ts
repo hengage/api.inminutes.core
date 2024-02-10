@@ -1,4 +1,5 @@
 import { ORDER_STATUS } from "../../../utils";
+import { notificationService } from "../../notifications";
 import { orderRepo } from "../repository/orders.repo";
 
 class OrdersService {
@@ -16,6 +17,10 @@ class OrdersService {
       orderId,
       status: ORDER_STATUS.REQUEST_CONFIRMED,
     });
+
+    await notificationService.createNotification(
+      "847c28273"
+    );
 
     return order;
   }

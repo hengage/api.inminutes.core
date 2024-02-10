@@ -25,7 +25,7 @@ class OrderRepository {
   }
 
   async updateStatus(params: { orderId: string; status: ORDER_STATUS }) {
-    const order = await Order.findById(params.orderId).select("status");
+    const order = await Order.findById(params.orderId).select("status customer");
 
     if (!order) {
       throw new HandleException(STATUS_CODES.NOT_FOUND, "Order not found");
@@ -39,7 +39,7 @@ class OrderRepository {
 
     order.status = params.status;
     await order.save();
-    return { orderId: order._id };
+    return order
   }
 
   async assignRiderAndUpdateStatusToInTransit(params: {
