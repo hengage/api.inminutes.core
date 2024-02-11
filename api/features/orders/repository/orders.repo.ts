@@ -56,13 +56,13 @@ class OrderRepository {
         $set: { rider: riderId, status: ORDER_STATUS.IN_TRANSIT },
       },
       { new: true }
-    ).select("rider status");
+    ).select("rider status customer");
 
     if (!order) {
       throw new HandleException(STATUS_CODES.NOT_FOUND, "Order not found");
     }
 
-    return order._id;
+    return order;
   }
 
   private async checkRiderIsAlreadyAssigned(orderId: string) {
