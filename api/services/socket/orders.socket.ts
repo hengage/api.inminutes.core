@@ -12,11 +12,22 @@ function listenToOrderevents(socket: Socket) {
     }
   });
 
-  socket.on("order-in-transit", async (message) => {
+  socket.on("pick_up-order", async (message) => {
     const {orderId, riderId} = message
     console.log({orderId, riderId})
     try {
-      const order = await ordersService.inTransit({orderId, riderId});
+      const order = await ordersService.pickedUp({orderId, riderId});
+      socket.emit("order-picked_up", order);
+    } catch (error: any) {
+      socket.emit("pick_up-order-error", error.message);
+    }
+  });
+
+  socket.on("order-in-transit", async (message) => {
+    const {orderId} = message
+    console.log({message})
+    try {
+      const order = await ordersService.inTransit(orderId);
       socket.emit("order-now-in-transit", order);
     } catch (error: any) {
       socket.emit("order-in-transit-error", error.message);

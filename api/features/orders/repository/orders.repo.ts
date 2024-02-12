@@ -42,7 +42,7 @@ class OrderRepository {
     return order
   }
 
-  async assignRiderAndUpdateStatusToInTransit(params: {
+  async assignRiderAndUpdateStatusToPickedUp(params: {
     orderId: string;
     riderId: string;
   }) {
@@ -53,7 +53,7 @@ class OrderRepository {
     const order = await Order.findByIdAndUpdate(
       orderId,
       {
-        $set: { rider: riderId, status: ORDER_STATUS.IN_TRANSIT },
+        $set: { rider: riderId, status: ORDER_STATUS.PICKED_UP },
       },
       { new: true }
     ).select("rider status customer");
