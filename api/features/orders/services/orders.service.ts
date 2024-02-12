@@ -1,6 +1,7 @@
 import { ORDER_STATUS } from "../../../utils";
 import { notificationService } from "../../notifications";
 import { orderRepo } from "../repository/orders.repo";
+import { validateOrders } from "../validation/orders.validation";
 
 class OrdersService {
   //   async requestReceived(orderId: string) {
@@ -29,6 +30,10 @@ class OrdersService {
   }
 
   async pickedUp(params: { orderId: string; riderId: string }) {
+    await validateOrders.assignRiderAndUpdateStatusToPickedUp({
+      orderId: params.orderId,
+      riderId: params.riderId
+    })
     const order = await orderRepo.assignRiderAndUpdateStatusToPickedUp({
       orderId: params.orderId,
       riderId: params.riderId,
