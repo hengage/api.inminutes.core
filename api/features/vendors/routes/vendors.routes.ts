@@ -2,6 +2,7 @@ import { Router } from "express";
 import { vendorsController } from "../controllers/vendors.controller";
 import { verifyAuthTokenMiddleware } from "../../../middleware";
 import { vendorsCategoryController } from "../controllers/category.controller";
+import { vendorsOrdersController } from "../controllers/vendorsOrders.controller";
 
 class VendorsRoutes {
   router = Router();
@@ -32,6 +33,10 @@ class VendorsRoutes {
     this.router
       .route("/:vendorId/products/")
       .get(vendorsController.getProductsAndGroupByCategory);
+
+    this.router
+      .route("/order-metrics")
+      .get(vendorsOrdersController.orderMetrics);
   }
 }
 

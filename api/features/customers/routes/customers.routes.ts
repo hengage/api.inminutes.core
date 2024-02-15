@@ -20,7 +20,7 @@ class CustomersRoutes {
     this.router.route("/").patch(customersController.updateProfile);
     this.router.route("/").delete(customersController.deleteAccount);
 
-    this.router.route("/orders-metrics").get(customersOrdersController.orderMetrics);
+    this.router.route("/order-metrics").get(customersOrdersController.orderMetrics);
   }
 }
 
