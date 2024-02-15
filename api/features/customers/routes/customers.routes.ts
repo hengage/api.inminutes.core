@@ -2,6 +2,7 @@ import { Router } from "express";
 import { customersController } from "../controller/customers.controllers";
 import { customersAuthentication } from "../auth/customers.auth";
 import { verifyAuthTokenMiddleware } from "../../../middleware";
+import { customersOrdersController } from "../controller/customersOrders.controller";
 
 class CustomersRoutes {
   public router = Router();
@@ -18,6 +19,8 @@ class CustomersRoutes {
     this.router.route("/me").get(customersController.getProfile);
     this.router.route("/").patch(customersController.updateProfile);
     this.router.route("/").delete(customersController.deleteAccount);
+
+    this.router.route("/orders-metrics").get(customersOrdersController.orderMetrics);
   }
 }
 
