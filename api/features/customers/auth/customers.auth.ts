@@ -7,8 +7,23 @@ import {
 } from "../../../utils";
 import { ICustomerDocument } from "../customers.interface";
 import { validateCustomer } from "../validators/customers.validator";
+import { Twilio } from "twilio";
+import {
+  TWILIO_ACCOUNT_SID,
+  TWILIO_AUTH_TOKEN,
+  TWILIO_VERIFY_SID,
+} from "../../../config";
+import { customersService } from "../services/customers.services";
 
 class CustomersAuthentication {
+  private twilioClient: Twilio;
+  private verifyServiceSID: string;
+
+  constructor() {
+    this.twilioClient = new Twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
+    this.verifyServiceSID = `${TWILIO_VERIFY_SID}`;
+  }
+
   public async login(
     req: Request,
     res: Response,
@@ -51,6 +66,23 @@ class CustomersAuthentication {
       return handleErrorResponse(res, error);
     }
   }
+
+  sendVerificationCode = async (recipientPhoneNumber: string) => {
+    const phoneNumber = recipientPhoneNumber.substring(1);
+    try {
+      await customersService.checkPhoneNumberIstaken(phoneNumber);
+
+      const verification = await this.twilioClient.verify.v2
+        .services(this.verifyServiceSID)
+        .verifications.create({
+          to: recipientPhoneNumber,
+          channel: "sms",
+        });
+      return verification;
+    } catch (error) {
+      throw error;
+    }
+  };
 }
 
 export const customersAuthentication = new CustomersAuthentication();

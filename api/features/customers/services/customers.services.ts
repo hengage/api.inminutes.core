@@ -16,6 +16,22 @@ class CustomersService {
 
     return;
   }
+
+  async checkPhoneNumberIstaken(phoneNumber: string) {
+    const customer = await Customer.findOne({ phoneNumber })
+      .select('phoneNumber')
+      .lean();
+
+    if (customer) {
+      throw new HandleException(
+        STATUS_CODES.CONFLICT,
+        `Looks like you already have a customer account, ` +
+        `please try to login instead`
+      );
+    }
+
+    return;
+  }
 }
 
 export const customersService = new CustomersService();

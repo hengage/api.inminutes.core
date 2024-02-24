@@ -8,8 +8,22 @@ import {
 import { validateCustomer } from "../validators/customers.validator";
 import { customersService } from "../services/customers.services";
 import { usersService } from "../../../services";
+import { customersAuthentication } from "../auth/customers.auth";
 
 class CustomersController {
+  async signupVerificationCode(req: Request, res: Response) {
+    const { recipientPhoneNumber } = req.body;
+
+    try {
+      await customersAuthentication.sendVerificationCode(recipientPhoneNumber);
+      res.status(STATUS_CODES.OK).json({
+        message: "OTP sent",
+      });
+    } catch (error: any) {
+      handleErrorResponse(res, error);
+    }
+  }
+
   async signup(req: Request, res: Response) {
     try {
       await validateCustomer.signUp(req.body);

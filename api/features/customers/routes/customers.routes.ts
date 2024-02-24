@@ -12,6 +12,7 @@ class CustomersRoutes {
   }
 
   public initializeRoutes() {
+    this.router.post("/send-otp", customersController.signupVerificationCode)
     this.router.post(`/signup`, customersController.signup);
     this.router.post("/login", customersAuthentication.login);
 
