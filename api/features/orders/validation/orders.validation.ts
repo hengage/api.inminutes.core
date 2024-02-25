@@ -2,7 +2,7 @@ import Joi from "joi";
 import { HandleException, STATUS_CODES } from "../../../utils";
 
 class ValidateOrders {
-  assignRiderAndUpdateStatusToPickedUp = async (payload: {
+  assignRider = async (payload: {
     orderId: string;
     riderId: string;
   }) => {

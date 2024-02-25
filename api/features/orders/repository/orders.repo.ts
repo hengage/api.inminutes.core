@@ -24,6 +24,30 @@ class OrderRepository {
     return order;
   }
 
+  
+  async assignRider(params: {
+    orderId: string;
+    riderId: string;
+  }) {
+    const { orderId, riderId } = params;
+    console.log({ orderrepo: orderId });
+
+    await this.checkRiderIsAlreadyAssigned(orderId);
+    const order = await Order.findByIdAndUpdate(
+      orderId,
+      {
+        $set: { rider: riderId },
+      },
+      { new: true }
+    ).select("rider status customer");
+
+    if (!order) {
+      throw new HandleException(STATUS_CODES.NOT_FOUND, "Order not found");
+    }
+
+    return order;
+  }
+
   async updateStatus(params: { orderId: string; status: ORDER_STATUS }) {
     const order = await Order.findById(params.orderId).select("status customer");
 
@@ -40,29 +64,6 @@ class OrderRepository {
     order.status = params.status;
     await order.save();
     return order
-  }
-
-  async assignRiderAndUpdateStatusToPickedUp(params: {
-    orderId: string;
-    riderId: string;
-  }) {
-    const { orderId, riderId } = params;
-    console.log({ orderrepo: orderId });
-
-    await this.checkRiderIsAlreadyAssigned(orderId);
-    const order = await Order.findByIdAndUpdate(
-      orderId,
-      {
-        $set: { rider: riderId, status: ORDER_STATUS.PICKED_UP },
-      },
-      { new: true }
-    ).select("rider status customer");
-
-    if (!order) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, "Order not found");
-    }
-
-    return order;
   }
 
   private async checkRiderIsAlreadyAssigned(orderId: string) {

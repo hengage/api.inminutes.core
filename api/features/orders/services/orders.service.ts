@@ -29,14 +29,25 @@ class OrdersService {
     return { orderId: order._id };
   }
 
-  async pickedUp(params: { orderId: string; riderId: string }) {
-    await validateOrders.assignRiderAndUpdateStatusToPickedUp({
-      orderId: params.orderId,
-      riderId: params.riderId
-    })
-    const order = await orderRepo.assignRiderAndUpdateStatusToPickedUp({
+  async assignRider(params: { orderId: string; riderId: string }) {
+    await validateOrders.assignRider({
       orderId: params.orderId,
       riderId: params.riderId,
+    });
+
+    const order = await orderRepo.assignRider({
+      orderId: params.orderId,
+      riderId: params.riderId,
+    });
+
+    return { orderId: order._id };
+  }
+
+  async pickedUp(orderId: string) {
+    console.log({ orderfromservice: orderId });
+    const order = await orderRepo.updateStatus({
+      orderId,
+      status: ORDER_STATUS.PICKED_UP,
     });
 
     await notificationService.createNotification({
