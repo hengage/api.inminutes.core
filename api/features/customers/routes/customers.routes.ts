@@ -12,7 +12,7 @@ class CustomersRoutes {
   }
 
   public initializeRoutes() {
-    this.router.post("/send-otp", customersController.signupVerificationCode)
+    this.router.post("/send-otp", customersController.signupVerificationCode);
     this.router.post(`/signup`, customersController.signup);
     this.router.post("/login", customersAuthentication.login);
 
@@ -21,7 +21,10 @@ class CustomersRoutes {
     this.router.route("/").patch(customersController.updateProfile);
     this.router.route("/").delete(customersController.deleteAccount);
 
-    this.router.route("/order-metrics").get(customersOrdersController.orderMetrics);
+    this.router.route("/orders").get(customersOrdersController.orders);
+    this.router
+      .route("/order-metrics")
+      .get(customersOrdersController.orderMetrics);
   }
 }
 

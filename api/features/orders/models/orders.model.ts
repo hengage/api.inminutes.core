@@ -1,6 +1,7 @@
-import { Schema, model } from "mongoose";
+import { PaginateModel, Schema, model } from "mongoose";
 import { ORDER_STATUS, generateUniqueString } from "../../../utils";
 import { IOrdersDocument } from "../orders.interface";
+import paginate from "mongoose-paginate-v2";
 
 const orderSchema = new Schema<IOrdersDocument>(
   {
@@ -45,5 +46,9 @@ const orderSchema = new Schema<IOrdersDocument>(
 );
 
 orderSchema.index({ deliveryLocation: "2dsphere" });
+orderSchema.plugin(paginate);
 
-export const Order = model<IOrdersDocument>("Order", orderSchema);
+export const Order = model<IOrdersDocument, PaginateModel<IOrdersDocument>>(
+  "Order",
+  orderSchema
+);
