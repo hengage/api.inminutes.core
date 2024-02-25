@@ -27,6 +27,7 @@ const orderSchema = new Schema<IOrdersDocument>(
         _id: false,
       },
     ],
+    vendor: { type: String, ref: "Vendor" },
     deliveryAddress: { type: String, required: true },
     deliveryLocation: {
       type: { type: String, default: "Point" },

@@ -11,6 +11,7 @@ class OrderRepository {
     const order = Order.create({
       customer: customer,
       items: payload.items,
+      vendor: payload.vendor,
       deliveryAddress: payload.deliveryAddress,
       deliveryLocation: {
         coordinates: payload.deliveryLocation,

@@ -21,7 +21,7 @@ export interface IOrdersDocument extends Document {
   customer: string;
   rider?: string;
   items: IOrderItem[];
-
+  vendor: IVendorDocument["_id"];
   deliveryAddress: string;
   deliveryLocation: {
     type: string;
