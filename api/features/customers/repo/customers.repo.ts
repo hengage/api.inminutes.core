@@ -5,6 +5,7 @@ import {
   IUpdateCustomerProfile,
 } from "../customers.interface";
 import { Customer } from "../models/customers.model";
+import { customersService } from "../services/customers.services";
 
 class CustomersRepository {
   async signup(payload: any): Promise<Partial<ICustomerDocument>> {
@@ -18,8 +19,11 @@ class CustomersRepository {
       address,
     } = payload;
 
-    await usersService.isPhoneNumberTaken(phoneNumber);
-    await usersService.isEmailTaken(email);
+    await Promise.all([
+      usersService.isDisplayNameTaken(displayName),
+      customersService.checkPhoneNumberIstaken(phoneNumber),
+      customersService.checkEmailIstaken(email),
+    ]);
 
     const customer = await new Customer({
       fullName,

@@ -2,15 +2,15 @@ import { HandleException, STATUS_CODES } from "../../../utils";
 import { Customer } from "../models/customers.model";
 
 class CustomersService {
-  async checkDisplayNameIstaken(displayName: string) {
-    const customer = await Customer.findOne({ displayName })
-      .select('displayName')
+  async checkEmailIstaken(email: string) {
+    const customer = await Customer.findOne({ email })
+      .select('email')
       .lean();
 
     if (customer) {
       throw new HandleException(
         STATUS_CODES.CONFLICT,
-        "Display name already taken"
+        "Email already taken"
       );
     }
 

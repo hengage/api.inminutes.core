@@ -27,7 +27,6 @@ class CustomersController {
   async signup(req: Request, res: Response) {
     try {
       await validateCustomer.signUp(req.body);
-      await usersService.isDisplayNameTaken(req.body.displayName);
       const customer = await customersRepo.signup(req.body);
       const jwtPayload = {
         _id: customer._id,
