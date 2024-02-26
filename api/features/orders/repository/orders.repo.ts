@@ -25,7 +25,29 @@ class OrderRepository {
     return order;
   }
 
-  
+  async orderDetails(orderId: string) {
+    const order = await Order.findById(orderId)
+    .select({
+      deliveryAddress: 1,
+      deliveryLocation:{
+        coordinates: 1
+      },
+      totalProductsCost: 1,
+      deliveryFee: 1,
+      totalCost: 1,
+      status: 1,
+      createdAt: 1
+    })
+    .populate({
+      path: "customer", select: "fullName phoneNumber",
+    })
+    .populate({path: "vendor", select: "businessName phoneNumber email",})
+    .populate({path: "rider", select: "fullName phoneNumber",})
+    .lean()
+    .exec()
+    return order
+  } 
+
   async assignRider(params: {
     orderId: string;
     riderId: string;

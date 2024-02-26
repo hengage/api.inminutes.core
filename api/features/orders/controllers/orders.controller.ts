@@ -18,6 +18,18 @@ class OrderController {
       handleErrorResponse(res, error);
     }
   }
+
+  async orderDetails(req: Request, res: Response) {
+    try {
+      const order = await orderRepo.orderDetails(req.params.orderId)
+      res.status(STATUS_CODES.OK).json({
+        message: "success",
+        data: { order },
+      });
+    } catch (error: any) {
+      handleErrorResponse(res, error);
+    }
+  }
 }
 
 export const ordersController = new OrderController();
