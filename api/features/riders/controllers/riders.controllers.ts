@@ -12,9 +12,6 @@ class RidersController {
   async signup(req: Request, res: Response) {
     try {
       await validateRider.signUp(req.body)
-      await usersService.isEmailTaken(req.body.email);
-      await usersService.isPhoneNumberTaken(req.body.phoneNumber);
-      await usersService.isDisplayNameTaken(req.body.displayName);
 
       const rider = await ridersRepo.signup(req.body);
 

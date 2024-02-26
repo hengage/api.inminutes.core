@@ -1,7 +1,8 @@
-import { emitEvent } from "../../../services";
+import { emitEvent, usersService } from "../../../services";
 import { HandleException, STATUS_CODES, compareValues } from "../../../utils";
 import { Rider } from "../models/riders.model";
 import { IRiderDocument } from "../riders.interface";
+import { ridersService } from "../services/riders.service";
 
 class RidersRepository {
   async signup(payload: any): Promise<Partial<IRiderDocument>> {
@@ -14,6 +15,12 @@ class RidersRepository {
       dateOfBirth,
       residentialAddress,
     } = payload;
+
+    await Promise.all([
+      usersService.isDisplayNameTaken(displayName),
+      ridersService.checkEmailIstaken(email),
+      ridersService.checkPhoneNumberIstaken(phoneNumber),
+    ]);
 
     const rider = await Rider.create({
       fullName,
