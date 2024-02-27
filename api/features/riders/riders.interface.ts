@@ -11,6 +11,7 @@ export interface IRiderDocument extends Document {
     type: string;
     coordinates: [number, number];
   };
+  h3Index: string;
   dateOfBirth: Date;
   residentialAddress: string;
 }

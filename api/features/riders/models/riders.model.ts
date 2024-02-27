@@ -37,6 +37,7 @@ const riderSchema = new Schema<IRiderDocument>(
         default: [0, 0]
       },
     },
+    h3Index: { type: String, index: true },
     dateOfBirth: { type: Date, required: true },
     residentialAddress: { type: String, required: true },
   },

@@ -1,4 +1,8 @@
-import { emitEvent, usersService } from "../../../services";
+import {
+  convertLatLngToCell,
+  emitEvent,
+  usersService,
+} from "../../../services";
 import { HandleException, STATUS_CODES, compareValues } from "../../../utils";
 import { Rider } from "../models/riders.model";
 import { IRiderDocument } from "../riders.interface";
@@ -75,6 +79,21 @@ class RidersRepository {
     }
 
     return rider;
+  }
+
+  async updateLocation(params: {
+    riderId: string;
+    coordinates: [number, number];
+  }) {
+    const { riderId, coordinates } = params;
+    const rider = await Rider.findById(riderId).select("location");
+
+    if (!rider) {
+      throw new HandleException(STATUS_CODES.NOT_FOUND, "rider not found");
+    }
+    rider.location.coordinates = coordinates;
+    rider.h3Index = convertLatLngToCell(params.coordinates);
+    await rider.save();
   }
 }
 
