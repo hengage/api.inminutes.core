@@ -18,6 +18,31 @@ class VendorsService {
     return;
   }
 
+  async checkEmailIstaken(email: string) {
+    const vendor = await Vendor.findOne({ email }).select("email").lean();
+
+    if (vendor) {
+      throw new HandleException(STATUS_CODES.CONFLICT, "Email already taken");
+    }
+
+    return;
+  }
+
+  async checkPhoneNumberIstaken(phoneNumber: string) {
+    const vendor = await Vendor.findOne({ phoneNumber })
+      .select("phoneNumber")
+      .lean();
+
+    if (vendor) {
+      throw new HandleException(
+        STATUS_CODES.CONFLICT,
+        "Phone number is already taken"
+      );
+    }
+
+    return;
+  }
+
   async getProducts(vendorId: string, page: number) {
     const query = { vendor: vendorId };
 

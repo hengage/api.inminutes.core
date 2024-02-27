@@ -13,9 +13,6 @@ class VendorsController {
   async signup(req: Request, res: Response) {
     try {
       await validateVendor.signUp(req.body);
-      await vendorsService.checkBusinnessNameIstaken(req.body.businessName);
-      await usersService.isEmailTaken(req.body.email);
-      await usersService.isPhoneNumberTaken(req.body.phoneNumber);
 
       const vendor = await vendorsRepo.signup(req.body);
 
