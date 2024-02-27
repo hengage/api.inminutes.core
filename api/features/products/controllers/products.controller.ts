@@ -73,6 +73,24 @@ class ProductsController {
       handleErrorResponse(res, error);
     }
   }
+
+  async getProductsByCategory(req: Request, res: Response) {
+    const page = parseInt(req.query.page as string) || 1
+    try {
+      const products = await productsRepo.getProductsByCategory({
+        categoryId: req.params.categoryId,
+        page
+      })
+
+      console.log({products})
+      res.status(STATUS_CODES.OK).json({
+        message: "success",
+        data: {products}
+      })
+    } catch (error: any) {
+      handleErrorResponse(res, error)
+    }
+  }
 }
 
 export const productsController = new ProductsController();
