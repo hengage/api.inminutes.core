@@ -95,6 +95,14 @@ class RidersRepository {
     rider.h3Index = convertLatLngToCell(params.coordinates);
     await rider.save();
   }
+
+  async findNearbyRiders(coordinates: [number, number]) {
+    const origin = convertLatLngToCell(coordinates);
+    const riders = await Rider.find({ h3Index: origin }).select("_id fullName");
+
+    console.log({ riders });
+    return riders;
+  }
 }
 
 export const ridersRepo = new RidersRepository();

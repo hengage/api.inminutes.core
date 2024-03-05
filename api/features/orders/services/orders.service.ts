@@ -1,5 +1,6 @@
 import { ORDER_STATUS } from "../../../utils";
 import { notificationService } from "../../notifications";
+import { ridersService } from "../../riders";
 import { orderRepo } from "../repository/orders.repo";
 import { validateOrders } from "../validation/orders.validation";
 
@@ -19,12 +20,19 @@ class OrdersService {
       status: ORDER_STATUS.REQUEST_CONFIRMED,
     });
 
-    await notificationService.createNotification({
-      // headings: { en: "Custom Title" },
-      contents: { en: "Order confirmed" },
-      data: { orderId: order._id },
-      userId: order.customer,
-    });
+     await Promise.all([
+      notificationService.createNotification({
+        // headings: { en: "Custom Title" },
+        contents: { en: "Order confirmed" },
+        data: { orderId: order._id },
+        userId: order.customer,
+      }),
+
+      ridersService.findAndNotifyRIdersOfOrder({
+        coordinates: order.vendor.location.coordinates,
+        orderId: order._id
+      })
+    ]);
 
     return { orderId: order._id };
   }

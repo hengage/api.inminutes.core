@@ -27,31 +27,29 @@ class OrderRepository {
 
   async orderDetails(orderId: string) {
     const order = await Order.findById(orderId)
-    .select({
-      deliveryAddress: 1,
-      deliveryLocation:{
-        coordinates: 1
-      },
-      totalProductsCost: 1,
-      deliveryFee: 1,
-      totalCost: 1,
-      status: 1,
-      createdAt: 1
-    })
-    .populate({
-      path: "customer", select: "fullName phoneNumber",
-    })
-    .populate({path: "vendor", select: "businessName phoneNumber email",})
-    .populate({path: "rider", select: "fullName phoneNumber",})
-    .lean()
-    .exec()
-    return order
-  } 
+      .select({
+        deliveryAddress: 1,
+        deliveryLocation: {
+          coordinates: 1,
+        },
+        totalProductsCost: 1,
+        deliveryFee: 1,
+        totalCost: 1,
+        status: 1,
+        createdAt: 1,
+      })
+      .populate({
+        path: "customer",
+        select: "fullName phoneNumber",
+      })
+      .populate({ path: "vendor", select: "businessName phoneNumber email" })
+      .populate({ path: "rider", select: "fullName phoneNumber" })
+      .lean()
+      .exec();
+    return order;
+  }
 
-  async assignRider(params: {
-    orderId: string;
-    riderId: string;
-  }) {
+  async assignRider(params: { orderId: string; riderId: string }) {
     const { orderId, riderId } = params;
     console.log({ orderrepo: orderId });
 
@@ -72,7 +70,9 @@ class OrderRepository {
   }
 
   async updateStatus(params: { orderId: string; status: ORDER_STATUS }) {
-    const order = await Order.findById(params.orderId).select("status customer");
+    const order = await Order.findById(params.orderId)
+      .select("status customer")
+      .populate({ path: "vendor", select: "location.coordinates" });
 
     if (!order) {
       throw new HandleException(STATUS_CODES.NOT_FOUND, "Order not found");
@@ -86,7 +86,7 @@ class OrderRepository {
 
     order.status = params.status;
     await order.save();
-    return order
+    return order;
   }
 
   private async checkRiderIsAlreadyAssigned(orderId: string) {
