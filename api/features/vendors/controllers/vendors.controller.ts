@@ -100,6 +100,7 @@ class VendorsController {
       const vendors = await vendorsRepo.getVendorsByCategory({
         categoryId: req.params.categoryId,
         page,
+        coordinates: req.body.coordinates
       });
 
       res.status(STATUS_CODES.OK).json({
@@ -117,6 +118,7 @@ class VendorsController {
       const vendors = await vendorsRepo.getVendorsBySubCategory({
         subCategoryId: req.params.subCategoryId,
         page,
+        coordinates: req.body.coordinates
       });
 
       console.log(vendors.docs)

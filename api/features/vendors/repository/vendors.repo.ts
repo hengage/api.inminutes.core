@@ -127,8 +127,14 @@ class VendorsRepository {
     });
   }
 
-  async getVendorsByCategory(params: { categoryId: string; page: number }) {
-    const query = { category: params.categoryId };
+  async getVendorsByCategory(params: {
+    categoryId: string;
+    page: number;
+    coordinates: [lng: number, lat: number];
+  }) {
+
+    const origin = convertLatLngToCell(params.coordinates);
+    const query = { category: params.categoryId, h3Index: origin };
 
     const options = {
       page: params.page,
@@ -154,9 +160,15 @@ class VendorsRepository {
     return vendors;
   }
 
-  async getVendorsBySubCategory(params: { subCategoryId: string; page: number }) {
-    const query = { subCategory: params.subCategoryId };
-console.log({subcatId: params.subCategoryId})
+  async getVendorsBySubCategory(params: {
+    subCategoryId: string;
+    page: number;
+    coordinates: [lng: number, lat: number];
+  }) {
+    const origin = convertLatLngToCell(params.coordinates);
+
+    const query = { subCategory: params.subCategoryId,  h3Index: origin };
+    console.log({ subcatId: params.subCategoryId });
     const options = {
       page: params.page,
       limit: 14,
