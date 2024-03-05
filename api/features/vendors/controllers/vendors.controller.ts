@@ -110,6 +110,26 @@ class VendorsController {
       handleErrorResponse(res, error);
     }
   }
+  
+  async getVendorsBySubCategory(req: Request, res: Response) {
+    const page = parseInt(req.query.page as string) || 1;
+    try {
+      const vendors = await vendorsRepo.getVendorsBySubCategory({
+        subCategoryId: req.params.subCategoryId,
+        page,
+      });
+
+      console.log(vendors.docs)
+
+      res.status(STATUS_CODES.OK).json({
+        message: "success",
+        data: { vendors },
+      });
+    } catch (error: any) {
+      handleErrorResponse(res, error);
+    }
+  }
+
 
   async getProductsAndGroupByCategory(req: Request, res: Response) {
     const page = parseInt(req.query.page as string) || 1

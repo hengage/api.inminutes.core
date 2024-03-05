@@ -30,6 +30,15 @@ class VendorsRoutes {
     this.router
       .route("/category/:categoryId/vendors")
       .get(vendorsController.getVendorsByCategory);
+
+    this.router
+      .route("/subcategory/:subCategoryId/vendors")
+      .get(vendorsController.getVendorsBySubCategory);
+
+    this.router
+      .route("/category/local-market/sub-categories")
+      .get(vendorsCategoryController.getLocalMarketSubcategories);
+
     this.router
       .route("/:vendorId/products/")
       .get(vendorsController.getProductsAndGroupByCategory);

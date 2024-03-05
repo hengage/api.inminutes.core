@@ -29,6 +29,19 @@ class VendorsCategoryController {
       return handleErrorResponse(res, error);
     }
   }
+
+  async getLocalMarketSubcategories(req: Request, res: Response) {
+    try {
+      const subCatgories =
+        await vendorsCategoryService.getLocalMarketSubcategories();
+      res.status(STATUS_CODES.OK).json({
+        success: true,
+        message: subCatgories,
+      });
+    } catch (error: any) {
+      handleErrorResponse(res, error);
+    }
+  }
 }
 
 export const vendorsCategoryController = new VendorsCategoryController();

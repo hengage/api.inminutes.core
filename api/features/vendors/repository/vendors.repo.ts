@@ -153,6 +153,33 @@ class VendorsRepository {
 
     return vendors;
   }
+
+  async getVendorsBySubCategory(params: { subCategoryId: string; page: number }) {
+    const query = { subCategory: params.subCategoryId };
+console.log({subcatId: params.subCategoryId})
+    const options = {
+      page: params.page,
+      limit: 14,
+      select: {
+        businessName: 1,
+        businessLogo: 1,
+        location: {
+          coordinates: 1,
+        },
+        // category: 1,
+        address: 1,
+        rating: {
+          averageRating: 1,
+        },
+      },
+      leanWithId: false,
+      lean: true,
+    };
+
+    const vendors = await Vendor.paginate(query, options);
+
+    return vendors;
+  }
 }
 
 export const vendorsRepo = new VendorsRepository();

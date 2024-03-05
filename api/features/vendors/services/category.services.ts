@@ -27,6 +27,15 @@ class VendorsCategoryService {
 
     return catgories;
   }
+
+  async getLocalMarketSubcategories() {
+    const subCatgories = await VendorSubCategory.find({ category: "447c0000" })
+      .select("name")
+      .lean()
+      .exec();
+
+    return subCatgories;
+  }
 }
 
 export const vendorsCategoryService = new VendorsCategoryService();
