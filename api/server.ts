@@ -9,7 +9,7 @@ import { SocketIO } from "./services/socket/socket.services";
 const app = new App();
 
 // (async () => {
-//   await vendorsRepo.findVendorsByLocation({coordinates: 
+//   await vendorsRepo.findVendorsByLocation({coordinates:
 //     [
 //       // 6.491115447705142, 3.3566839017924868
 //       // adeniran ogunsanya
@@ -23,6 +23,10 @@ const app = new App();
 //     page: 1,
 //     limit: 10
 // });
+// })();
+
+// (async () => {
+//   await vendorsRepo.changeH3IndexResolution();
 // })();
 
 const server = app.listenToPort(PORT, NODE_ENV);
