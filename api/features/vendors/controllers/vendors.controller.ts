@@ -121,7 +121,7 @@ class VendorsController {
         coordinates: req.body.coordinates
       });
 
-      console.log(vendors.docs)
+      // console.log(vendors)
 
       res.status(STATUS_CODES.OK).json({
         message: "success",

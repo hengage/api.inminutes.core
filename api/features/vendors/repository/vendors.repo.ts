@@ -132,7 +132,6 @@ class VendorsRepository {
     page: number;
     coordinates: [lng: number, lat: number];
   }) {
-
     const origin = convertLatLngToCell(params.coordinates);
     const query = { category: params.categoryId, h3Index: origin };
 
@@ -165,30 +164,67 @@ class VendorsRepository {
     page: number;
     coordinates: [lng: number, lat: number];
   }) {
-    const origin = convertLatLngToCell(params.coordinates);
+    const { page, coordinates } = params;
+    const limit = 20;
 
-    const query = { subCategory: params.subCategoryId,  h3Index: origin };
-    console.log({ subcatId: params.subCategoryId });
-    const options = {
-      page: params.page,
-      limit: 14,
-      select: {
-        businessName: 1,
-        businessLogo: 1,
-        location: {
-          coordinates: 1,
-        },
-        // category: 1,
-        address: 1,
-        rating: {
-          averageRating: 1,
+    // const origin = convertLatLngToCell(params.coordinates);
+    // const query = { subCategory: params.subCategoryId,  h3Index: origin };
+
+    const query = {
+      subCategory: params.subCategoryId,
+      location: {
+        $near: {
+          $geometry: { type: "Point", coordinates },
+          $maxDistance: 17000,
         },
       },
-      leanWithId: false,
-      lean: true,
     };
 
-    const vendors = await Vendor.paginate(query, options);
+    const docs = await Vendor.find(query).select({
+      businessName: 1,
+      businessLogo: 1,
+      location: { coordinates: 1 },
+      // category: 1,
+      address: 1,
+      rating: {
+        averageRating: 1,
+      },
+    });
+
+    const totalDocs = docs.length;
+    const totalPages = Math.ceil(totalDocs / limit);
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+
+    // const options = {
+    //   page: params.page,
+    //   limit: 14,
+    //   select: {
+    //     businessName: 1,
+    //     businessLogo: 1,
+    //     location: {
+    //       coordinates: 1,
+    //     },
+    //     // category: 1,
+    //     address: 1,
+    //     rating: {
+    //       averageRating: 1,
+    //     },
+    //   },
+    //   leanWithId: false,
+    //   lean: true,
+    // };
+
+    // const vendors = await Vendor.paginate(query, options);
+    const vendors = {
+      docs,
+      totalDocs,
+      limit,
+      totalPages,
+      page,
+      hasNextPage,
+      hasPrevPage,
+    };
 
     return vendors;
   }
