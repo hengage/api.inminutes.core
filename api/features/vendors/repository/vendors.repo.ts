@@ -132,13 +132,42 @@ class VendorsRepository {
     page: number;
     coordinates: [lng: number, lat: number];
   }) {
-    const origin = convertLatLngToCell(params.coordinates);
-    const query = { category: params.categoryId, h3Index: origin };
+    const { categoryId, coordinates, page } = params;
+    const limit = 20;
+    // const origin = convertLatLngToCell(params.coordinates);
+    // const query = { category: params.categoryId, h3Index: origin };
 
-    const options = {
-      page: params.page,
-      limit: 14,
-      select: {
+    const query = {
+      category: categoryId,
+      location: {
+        $near: {
+          $geometry: { type: "Point", coordinates },
+          $maxDistance: 17000,
+        },
+      },
+    };
+
+    // const options = {
+    //   page: params.page,
+    //   limit: 14,
+    //   select: {
+    //     businessName: 1,
+    //     businessLogo: 1,
+    //     location: {
+    //       coordinates: 1,
+    //     },
+    //     category: 1,
+    //     address: 1,
+    //     rating: {
+    //       averageRating: 1,
+    //     },
+    //   },
+    //   leanWithId: false,
+    //   lean: true,
+    // };
+
+    const docs = await Vendor.find(query)
+      .select({
         businessName: 1,
         businessLogo: 1,
         location: {
@@ -149,12 +178,26 @@ class VendorsRepository {
         rating: {
           averageRating: 1,
         },
-      },
-      leanWithId: false,
-      lean: true,
+      })
+      .lean()
+      .exec();
+
+    const totalDocs = docs.length;
+    const totalPages = Math.ceil(totalDocs / limit);
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+
+    const vendors = {
+      docs,
+      totalDocs,
+      limit,
+      totalPages,
+      page,
+      hasNextPage,
+      hasPrevPage,
     };
 
-    const vendors = await Vendor.paginate(query, options);
+    // const vendors = await Vendor.paginate(query, options);
 
     return vendors;
   }
