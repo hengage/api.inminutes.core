@@ -20,6 +20,7 @@ class OrderRepository {
       deliveryFee: payload.deliveryFee,
       totalProductsCost: payload.totalProductsCost,
       totalCost: payload.totalCost,
+      instruction: payload.instruction
     });
 
     return order;

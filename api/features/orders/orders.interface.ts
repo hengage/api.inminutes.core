@@ -31,5 +31,6 @@ export interface IOrdersDocument extends Document {
   deliveryFee: string;
   totalProductsCost: string;
   totalCost: string;
+  instruction: string;
   status: ORDER_STATUS;
 }

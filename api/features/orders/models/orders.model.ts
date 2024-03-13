@@ -37,6 +37,7 @@ const orderSchema = new Schema<IOrdersDocument>(
     deliveryFee: { type: String, required: true },
     totalProductsCost: { type: String, required: true },
     totalCost: { type: String, required: true },
+    instruction: { type: String },
     status: {
       type: String,
       enum: Object.values(ORDER_STATUS),
