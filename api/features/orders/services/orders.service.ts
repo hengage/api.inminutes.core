@@ -1,6 +1,7 @@
 import { ORDER_STATUS } from "../../../utils";
 import { notificationService } from "../../notifications";
 import { ridersService } from "../../riders";
+import { Order } from "../models/orders.model";
 import { orderRepo } from "../repository/orders.repo";
 import { validateOrders } from "../validation/orders.validation";
 
@@ -14,13 +15,46 @@ class OrdersService {
   //     return order;
   //   }
 
+  async create(params: { payload: any; customer: string }) {
+    const { payload, customer } = params;
+    const order = await orderRepo.create({ payload, customer });
+    const newOrder = await Order.findById(order.id)
+      .select({
+        deliveryAddress: 1,
+        deliveryLocation: { coordinates: 1 },
+        items: 1,
+        totalProductsCost: 1,
+        deliveryFee: 1,
+        totalCost: 1,
+        status: 1,
+      })
+      .populate({ path: "vendor", select: "_id" });
+
+    if (newOrder) {
+      console.log({ vendorId: newOrder.vendor._id });
+
+      notificationService.createNotification({
+        headings: { en: "New Order" },
+        contents: {
+          en:
+            `A new order has been placed. ` +
+            `Please confirm and fulfill the order as soon possible`,
+        },
+        data: { order: newOrder },
+        userId: newOrder.vendor._id,
+      });
+    }
+
+    return newOrder;
+  }
+
   async requestConfirmed(orderId: string) {
     const order = await orderRepo.updateStatus({
       orderId,
       status: ORDER_STATUS.REQUEST_CONFIRMED,
     });
 
-     await Promise.all([
+    await Promise.all([
       notificationService.createNotification({
         // headings: { en: "Custom Title" },
         contents: { en: "Order confirmed" },
@@ -30,8 +64,8 @@ class OrdersService {
 
       ridersService.findAndNotifyRIdersOfOrder({
         coordinates: order.vendor.location.coordinates,
-        orderId: order._id
-      })
+        orderId: order._id,
+      }),
     ]);
 
     return { orderId: order._id };

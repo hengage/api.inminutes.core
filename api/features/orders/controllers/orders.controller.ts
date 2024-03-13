@@ -2,13 +2,14 @@ import { Request, Response } from "express";
 
 import { STATUS_CODES, handleErrorResponse } from "../../../utils";
 import { orderRepo } from "../repository/orders.repo";
+import { ordersService } from "../services/orders.service";
 
 class OrderController {
   async create(req: Request, res: Response) {
     const customer = (req as any).user._id;
 
     try {
-      const order = await orderRepo.create({ payload: req.body, customer });
+      const order = await  ordersService.create({payload: req.body, customer})
 
       res.status(STATUS_CODES.CREATED).json({
         message: "success",
