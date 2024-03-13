@@ -92,13 +92,20 @@ class VendorsRepository {
   }) {
     const { coordinates, page, limit } = params;
 
-    const origin = convertLatLngToCell(coordinates);
-    const query = { h3Index: origin };
+    // const origin = convertLatLngToCell(coordinates);
+    // const query = { h3Index: origin };
 
-    const options = {
-      page,
-      limit,
-      select: {
+    const query = {
+      location: {
+        $near: {
+          $geometry: { type: "Point", coordinates },
+          $maxDistance: 17000,
+        },
+      },
+    };
+
+    const docs = await Vendor.find(query).select(
+      {
         businessName: 1,
         businessLogo: 1,
         location: {
@@ -110,11 +117,43 @@ class VendorsRepository {
           averageRating: 1,
         },
       },
-      leanWithId: false,
-      lean: true,
-    };
+    )
 
-    const vendors = await Vendor.paginate(query, options);
+    const totalDocs = docs.length;
+    const totalPages = Math.ceil(totalDocs / limit);
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+
+    // const options = {
+    //   page,
+    //   limit,
+    //   select: {
+    //     businessName: 1,
+    //     businessLogo: 1,
+    //     location: {
+    //       coordinates: 1,
+    //     },
+    //     category: 1,
+    //     address: 1,
+    //     rating: {
+    //       averageRating: 1,
+    //     },
+    //   },
+    //   leanWithId: false,
+    //   lean: true,
+    // };
+
+    // const vendors = await Vendor.paginate(query, options);
+
+    const vendors = {
+      docs,
+      totalDocs,
+      limit,
+      totalPages,
+      page,
+      hasNextPage,
+      hasPrevPage,
+    };
     return vendors;
   }
 
