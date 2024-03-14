@@ -10,6 +10,7 @@ const orderSchema = new Schema<IOrdersDocument>(
       default: () => generateUniqueString(5),
     },
     customer: { type: String, required: true, ref: "Customer" },
+    recipientPhoneNumber: { type: String },
     rider: { type: String, ref: "Rider", default: null },
     items: [
       {

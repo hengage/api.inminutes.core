@@ -10,6 +10,7 @@ class OrderRepository {
 
     const order = Order.create({
       customer: customer,
+      recipientPhoneNumber: payload.recipientPhoneNumber,
       items: payload.items,
       vendor: payload.vendor,
       deliveryAddress: payload.deliveryAddress,
