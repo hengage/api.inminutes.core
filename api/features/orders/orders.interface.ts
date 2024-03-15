@@ -19,6 +19,7 @@ export interface IOrderItem {
 export interface IOrdersDocument extends Document {
   _id: string;
   customer: string;
+  recipientPhoneNumber: string
   rider?: string;
   items: IOrderItem[];
   vendor: IVendorDocument;
