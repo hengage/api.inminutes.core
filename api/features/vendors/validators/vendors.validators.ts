@@ -51,6 +51,23 @@ class ValidateVendor {
     }
     return;
   };
+
+  getVendorsByCategory = async (payload: { email: string; password: string }) => {
+    const schema = joi.object({
+      coordinates: joi.array().required(),
+    });
+
+    const { error } = schema.validate(payload, {
+      allowUnknown: false,
+      abortEarly: false,
+      // stripUnknown: true,
+    });
+
+    if (error) {
+      throw new HandleException(STATUS_CODES.BAD_REQUEST, error.message);
+    }
+    return;
+  };
 }
 
 export const validateVendor = new ValidateVendor();

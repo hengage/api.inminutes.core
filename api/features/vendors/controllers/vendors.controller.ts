@@ -97,6 +97,7 @@ class VendorsController {
   async getVendorsByCategory(req: Request, res: Response) {
     const page = parseInt(req.query.page as string) || 1;
     try {
+      await validateVendor.getVendorsByCategory(req.body)
       const vendors = await vendorsRepo.getVendorsByCategory({
         categoryId: req.params.categoryId,
         page,
