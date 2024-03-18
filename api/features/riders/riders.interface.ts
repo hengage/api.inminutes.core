@@ -14,4 +14,5 @@ export interface IRiderDocument extends Document {
   h3Index: string;
   dateOfBirth: Date;
   residentialAddress: string;
+  currentlyWorking: boolean;
 }
