@@ -4,29 +4,33 @@ import { ordersService } from "../../features/orders";
 function listenToOrderevents(socket: Socket) {
   socket.on("confirm-order-request", async (message) => {
     console.log({ message });
+    const { orderId, distanceInKM } = message;
     try {
-      const order = await ordersService.requestConfirmed(message.orderId);
+      const order = await ordersService.requestConfirmed({
+        orderId,
+        distanceInKM: 20,
+      });
       socket.emit("order-request-confirmed", order);
     } catch (error: any) {
       socket.emit("confirm-order-request-error", error.message);
     }
   });
 
-  socket.on("assign-rider-to-order", async(message) => {
-    const {orderId, riderId} = message
+  socket.on("assign-rider-to-order", async (message) => {
+    const { orderId, riderId } = message;
     try {
-      const order = await ordersService.assignRider({orderId, riderId})
-      console.log("assigned rider")
-      socket.emit("rider-assigned-to-order", order)
+      const order = await ordersService.assignRider({ orderId, riderId });
+      console.log("assigned rider");
+      socket.emit("rider-assigned-to-order", order);
     } catch (error: any) {
-      console.log(error.message)
+      console.log(error.message);
       socket.emit("assign-rider-to-order-error", error.message);
     }
-  })
+  });
 
   socket.on("pick_up-order", async (message) => {
-    const {orderId}  = message
-    console.log(orderId)
+    const { orderId } = message;
+    console.log(orderId);
     try {
       const order = await ordersService.pickedUp(orderId);
       socket.emit("order-picked_up", order);
@@ -36,8 +40,8 @@ function listenToOrderevents(socket: Socket) {
   });
 
   socket.on("order-in-transit", async (message) => {
-    const {orderId} = message
-    console.log({message})
+    const { orderId } = message;
+    console.log({ message });
     try {
       const order = await ordersService.inTransit(orderId);
       socket.emit("order-now-in-transit", order);
@@ -72,7 +76,7 @@ function listenToOrderevents(socket: Socket) {
       socket.emit("order-delivered-error", error.message);
     }
   });
-  
+
   socket.on("cancel-order", async (message) => {
     try {
       const order = await ordersService.cancelled(message.orderId);
@@ -81,8 +85,6 @@ function listenToOrderevents(socket: Socket) {
       socket.emit("cancel-order-error", error.message);
     }
   });
-
-  
 }
 
 export { listenToOrderevents };

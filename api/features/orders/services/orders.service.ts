@@ -48,11 +48,14 @@ class OrdersService {
     return newOrder;
   }
 
-  async requestConfirmed(orderId: string) {
+  async requestConfirmed(params: { orderId: string, distanceInKM: number}) {
+const { orderId, distanceInKM } = params;
+
     const order = await orderRepo.updateStatus({
       orderId,
       status: ORDER_STATUS.REQUEST_CONFIRMED,
     });
+
 
     await Promise.all([
       notificationService.createNotification({
@@ -64,6 +67,7 @@ class OrdersService {
 
       ridersService.findAndNotifyRIdersOfOrder({
         coordinates: order.vendor.location.coordinates,
+        distanceInKM,
         orderId: order._id,
       }),
     ]);

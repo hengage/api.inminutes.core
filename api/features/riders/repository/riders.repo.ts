@@ -96,9 +96,39 @@ class RidersRepository {
     await rider.save();
   }
 
-  async findNearbyRiders(coordinates: [number, number]) {
-    const origin = convertLatLngToCell(coordinates);
-    const riders = await Rider.find({ h3Index: origin }).select("_id fullName");
+  async findNearbyRiders(params: {
+    coordinates: [number, number];
+    distanceInKM: number | 20;
+  }) {
+    const { coordinates, distanceInKM } = params;
+    // const origin = convertLatLngToCell(coordinates);
+    // const riders = await Rider.find({ h3Index: origin }).select("_id fullName");
+
+    const riders = await Rider.aggregate([
+      {
+        $geoNear: {
+          near: { type: "Point", coordinates },
+          distanceField: "distance",
+          maxDistance: distanceInKM * 1000, // convert kilometers to meters
+          spherical: true,
+        },
+      },
+      {
+        $match: { currentlyWorking: true },
+      },
+      {
+        $project: {
+          _id: 1,
+          firstName: 1,
+          lastName: 1,
+          phoneNumber: 1,
+          distance: 1,
+        },
+      },
+      {
+        $limit: 10,
+      },
+    ]);
 
     console.log({ riders });
     return riders;
