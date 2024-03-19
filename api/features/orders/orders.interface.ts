@@ -19,7 +19,7 @@ export interface IOrderItem {
 export interface IOrdersDocument extends Document {
   _id: string;
   customer: string;
-  recipientPhoneNumber: string
+  recipientPhoneNumber: string;
   rider?: string;
   items: IOrderItem[];
   vendor: IVendorDocument;
@@ -32,6 +32,8 @@ export interface IOrdersDocument extends Document {
   deliveryFee: string;
   totalProductsCost: string;
   totalCost: string;
+  type: "instant" | "scheduled";
+  scheduledDeliveryTime: Date;
   instruction: string;
   status: ORDER_STATUS;
 }

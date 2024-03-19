@@ -1,7 +1,6 @@
 import { convertLatLngToCell } from "../../../services";
 import { HandleException, ORDER_STATUS, STATUS_CODES } from "../../../utils";
 import { Order } from "../models/orders.model";
-import { IOrdersDocument } from "../orders.interface";
 
 class OrderRepository {
   create(params: { payload: any; customer: string }) {
@@ -21,7 +20,9 @@ class OrderRepository {
       deliveryFee: payload.deliveryFee,
       totalProductsCost: payload.totalProductsCost,
       totalCost: payload.totalCost,
-      instruction: payload.instruction
+      instruction: payload.instruction,
+      type: payload.type,
+      scheduledDeliveryTime: payload.scheduledDeliveryTime,
     });
 
     return order;
@@ -73,7 +74,7 @@ class OrderRepository {
 
   async updateStatus(params: { orderId: string; status: ORDER_STATUS }) {
     const order = await Order.findById(params.orderId)
-      .select("status customer")
+      .select("status customer type scheduledDeliveryTime")
       .populate({ path: "vendor", select: "location.coordinates" });
 
     if (!order) {

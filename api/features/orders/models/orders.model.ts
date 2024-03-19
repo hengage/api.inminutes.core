@@ -38,6 +38,8 @@ const orderSchema = new Schema<IOrdersDocument>(
     deliveryFee: { type: String, required: true },
     totalProductsCost: { type: String, required: true },
     totalCost: { type: String, required: true },
+    type: { type: String, required: true, enum: ["instant", "scheduled"] },
+    scheduledDeliveryTime: {type: Date},
     instruction: { type: String },
     status: {
       type: String,

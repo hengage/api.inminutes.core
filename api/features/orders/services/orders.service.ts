@@ -1,3 +1,4 @@
+import { agenda } from "../../../services";
 import { ORDER_STATUS } from "../../../utils";
 import { notificationService } from "../../notifications";
 import { ridersService } from "../../riders";
@@ -48,14 +49,13 @@ class OrdersService {
     return newOrder;
   }
 
-  async requestConfirmed(params: { orderId: string, distanceInKM: number}) {
-const { orderId, distanceInKM } = params;
+  async requestConfirmed(params: { orderId: string; distanceInKM: number }) {
+    const { orderId, distanceInKM } = params;
 
     const order = await orderRepo.updateStatus({
       orderId,
       status: ORDER_STATUS.REQUEST_CONFIRMED,
     });
-
 
     await Promise.all([
       notificationService.createNotification({
@@ -64,13 +64,30 @@ const { orderId, distanceInKM } = params;
         data: { orderId: order._id },
         userId: order.customer,
       }),
+    ]);
 
-      ridersService.findAndNotifyRIdersOfOrder({
+    if (order.type === "scheduled") {
+      console.log("schdeduled order", { order });
+      const fiveMinutesBefore = new Date(
+        order.scheduledDeliveryTime.getTime() - 5 * 60000
+      );
+      await agenda.schedule(
+        order.scheduledDeliveryTime,
+        "schedule-order-delivery",
+        {
+          coordinates: order.vendor.location.coordinates,
+          distanceInKM,
+          orderId: order._id,
+        }
+      );
+    } else {
+      console.log("Instant order");
+      await ridersService.findAndNotifyRIdersOfOrder({
         coordinates: order.vendor.location.coordinates,
         distanceInKM,
         orderId: order._id,
-      }),
-    ]);
+      });
+    }
 
     return { orderId: order._id };
   }
