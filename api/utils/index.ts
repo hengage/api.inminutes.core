@@ -1,3 +1,5 @@
+import { handleInstantOrScheduledDelivery } from "./delivery.utils";
+
 export { WALLET_STATUS, WITHDRAWAL_CHANNEL } from "./constants.utils";
 export { handleErrorResponse } from "./response.utils";
 

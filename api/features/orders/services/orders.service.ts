@@ -1,5 +1,6 @@
 import { agenda } from "../../../services";
 import { ORDER_STATUS } from "../../../utils";
+import { handleInstantOrScheduledDelivery } from "../../../utils/delivery.utils";
 import { notificationService } from "../../notifications";
 import { ridersService } from "../../riders";
 import { Order } from "../models/orders.model";
@@ -64,30 +65,9 @@ class OrdersService {
         data: { orderId: order._id },
         userId: order.customer,
       }),
+      
+      handleInstantOrScheduledDelivery({ order, distanceInKM }),
     ]);
-
-    if (order.type === "scheduled") {
-      console.log("schdeduled order", { order });
-      const fiveMinutesBefore = new Date(
-        order.scheduledDeliveryTime.getTime() - 5 * 60000
-      );
-      await agenda.schedule(
-        order.scheduledDeliveryTime,
-        "schedule-order-delivery",
-        {
-          coordinates: order.vendor.location.coordinates,
-          distanceInKM,
-          orderId: order._id,
-        }
-      );
-    } else {
-      console.log("Instant order");
-      await ridersService.findAndNotifyRIdersOfOrder({
-        coordinates: order.vendor.location.coordinates,
-        distanceInKM,
-        orderId: order._id,
-      });
-    }
 
     return { orderId: order._id };
   }
