@@ -5,7 +5,7 @@ const TimeSlotSchema = new Schema<ITimeSlotDocument>(
   {
     startTime: { type: Date, required: true },
     endTime: { type: Date, required: true },
-    riderId: { type: Schema.Types.ObjectId, ref: "Rider", required: true },
+    riderId: { type: String, ref: "Rider", required: true },
   },
   {
     timestamps: true,

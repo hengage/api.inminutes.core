@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { verifyAuthTokenMiddleware } from "../../../middleware";
 import { ridersController } from "../controllers/riders.controllers";
+import { timeSlotController } from "../controllers/timeSlot.controller";
 
 class RidersRoutes {
   router = Router();
@@ -16,6 +17,7 @@ class RidersRoutes {
     this.router.use(verifyAuthTokenMiddleware);
 
     this.router.route("/me").get(ridersController.getMe);
+    this.router.route("/book-slot").post(timeSlotController.bookSlot);
   }
 }
 
