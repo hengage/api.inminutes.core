@@ -2,8 +2,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import { Agenda } from "agenda";
-import { DB_URL } from "../../config/secrets.config";
-import { ridersService } from "../../features/riders";
+import { DB_URL } from "../config/secrets.config";
+import { ridersService } from "../features/riders";
 
 const agenda = new Agenda({
   db: {
