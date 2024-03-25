@@ -29,4 +29,18 @@ agenda.define("schedule-order-delivery", async (job: any) => {
   });
 });
 
+agenda.define("start-working", async (job: any) => {
+  const { riderId } = job.attrs.data;
+
+  // Update rider's currentlyWorking field to true
+  await ridersService.updateAvailability({ riderId, currentlyWorking: true });
+});
+
+agenda.define("end-working", async (job: any) => {
+  const { riderId } = job.attrs.data;
+
+  // Update rider's currentlyWorking field to false
+  await ridersService.updateAvailability({ riderId, currentlyWorking: false });
+});
+
 export { agenda };

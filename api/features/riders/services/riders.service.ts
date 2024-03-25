@@ -32,11 +32,14 @@ class RidersService {
 
   async findAndNotifyRIdersOfOrder(params: {
     coordinates: [number, number];
-    distanceInKM: number
+    distanceInKM: number;
     orderId: string;
   }) {
     const { coordinates, distanceInKM, orderId } = params;
-    const riders = await ridersRepo.findNearbyRiders({coordinates, distanceInKM});
+    const riders = await ridersRepo.findNearbyRiders({
+      coordinates,
+      distanceInKM,
+    });
 
     riders.forEach((rider) => {
       notificationService.createNotification({
@@ -48,6 +51,19 @@ class RidersService {
         userId: rider._id,
       });
     });
+  }
+
+  async updateAvailability(params: {
+    riderId: string;
+    currentlyWorking: boolean;
+  }) {
+    const { riderId, currentlyWorking } = params;
+    const rider = await ridersRepo.updateAvailability({
+      riderId,
+      currentlyWorking,
+    });
+    console.log({rider})
+    return rider;
   }
 }
 

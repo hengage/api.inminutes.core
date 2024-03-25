@@ -133,6 +133,23 @@ class RidersRepository {
     console.log({ riders });
     return riders;
   }
+
+  async updateAvailability(params: {
+    riderId: string;
+    currentlyWorking: true | false;
+  }) {
+    const { riderId, currentlyWorking } = params;
+
+    const rider = await Rider.findByIdAndUpdate(
+      riderId,
+      {
+        $set: { currentlyWorking },
+      },
+      { new: true }
+    )
+      .select("currentlyWorking")
+      .exec();
+  }
 }
 
 export const ridersRepo = new RidersRepository();
