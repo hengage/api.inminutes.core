@@ -16,3 +16,9 @@ export interface IRiderDocument extends Document {
   residentialAddress: string;
   currentlyWorking: boolean;
 }
+
+export interface ITimeSlotDocument extends Document {
+  startTime: Date;
+  endTime: Date;
+  riderId: IRiderDocument;
+}
