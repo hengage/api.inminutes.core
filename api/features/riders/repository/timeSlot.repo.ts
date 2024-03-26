@@ -1,4 +1,4 @@
-import { TimeSlot } from "../models/timeSlots.model";
+import { RiderTimeSlot } from "../models/timeSlots.model";
 
 class TimeSlotRepository {
   async bookSlot(params: {
@@ -8,7 +8,7 @@ class TimeSlotRepository {
   }) {
     const { riderId, startTime, endTime } = params;
 
-    const timeSlot = await TimeSlot.create({
+    const timeSlot = await RiderTimeSlot.create({
       riderId,
       startTime,
       endTime,

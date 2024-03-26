@@ -17,7 +17,7 @@ export interface IRiderDocument extends Document {
   currentlyWorking: boolean;
 }
 
-export interface ITimeSlotDocument extends Document {
+export interface IRiderTimeSlotDocument extends Document {
   startTime: Date;
   endTime: Date;
   riderId: IRiderDocument;
