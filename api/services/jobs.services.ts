@@ -33,13 +33,14 @@ agenda.define("start-working", async (job: any) => {
   const { riderId, slotId } = job.attrs.data;
 
   // Update rider's currentlyWorking field to true
-  console.log("Runing avalalbility operation", job.attrs.data)
+  console.log("Runing avalalbility to true", job.attrs.data)
   await ridersService.updateAvailability({ riderId, currentlyWorking: true });
 });
 
 agenda.define("end-working", async (job: any) => {
   const { riderId, slotId } = job.attrs.data;
 
+  console.log("Runing avalalbility to false", job.attrs.data)
   // Update rider's currentlyWorking field to false
   await ridersService.updateAvailability({ riderId, currentlyWorking: false });
 });

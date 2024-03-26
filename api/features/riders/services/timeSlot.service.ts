@@ -15,10 +15,10 @@ class TimeSlotService {
       slotId: slot._id,
     });
 
-    // await agenda.schedule(endTime, "end-working", {
-    //   riderId,
-    //   slotId: slot._id,
-    // });
+    await agenda.schedule(endTime, "end-working", {
+      riderId,
+      slotId: slot._id,
+    });
 
     return slot;
   }
