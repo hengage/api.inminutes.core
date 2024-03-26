@@ -149,6 +149,8 @@ class RidersRepository {
     )
       .select("currentlyWorking")
       .exec();
+
+    return rider;
   }
 }
 

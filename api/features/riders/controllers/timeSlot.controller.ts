@@ -5,7 +5,7 @@ import { timeSlotService } from "../services/timeSlot.service";
 class TimeSlotController {
   async bookSlot(req: Request, res: Response) {
     const riderId = (req as any).user._id;
-    console.log({body: req.body})
+    console.log({body: req.body, riderId})
     try {
       const slot = timeSlotService.bookSlot({
         riderId,
