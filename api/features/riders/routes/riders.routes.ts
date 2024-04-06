@@ -18,6 +18,7 @@ class RidersRoutes {
 
     this.router.route("/me").get(ridersController.getMe);
     this.router.route("/book-slot").post(timeSlotController.bookSlot);
+    this.router.route("/cancel-slot").post(timeSlotController.cancelSlot);
   }
 }
 

@@ -1,5 +1,6 @@
 import { agenda } from "../../../services";
 import { timeSlotRepo } from "../repository/timeSlot.repo";
+const mongoose = require('mongoose');
 
 class TimeSlotService {
   async bookSlot(params: {
@@ -21,6 +22,13 @@ class TimeSlotService {
     });
 
     return slot;
+  }
+
+  async cancelSlot(slotId: string) {
+    console.log({slotId})
+    const objectId = new mongoose.Types.ObjectId(slotId);
+    const cancelledTimeSlot = await agenda.cancel({ "data.slotId": objectId });
+    return cancelledTimeSlot
   }
 }
 
