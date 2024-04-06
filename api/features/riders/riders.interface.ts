@@ -1,4 +1,5 @@
 import { Document } from "mongoose";
+import { RIDER_WORK_SLOT_STATUS } from "../../utils";
 
 export interface IRiderDocument extends Document {
   _id: string;
@@ -21,4 +22,5 @@ export interface IRiderTimeSlotDocument extends Document {
   startTime: Date;
   endTime: Date;
   riderId: IRiderDocument;
+  status: RIDER_WORK_SLOT_STATUS
 }

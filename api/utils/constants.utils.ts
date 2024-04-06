@@ -49,3 +49,10 @@ export enum ORDER_STATUS {
   DELIVERED = "delivered",
   CANCELLED = "cancelled",
 }
+
+export enum RIDER_WORK_SLOT_STATUS {
+  PENDING = "pending",
+  STARTED = "started",
+  FINISHED = "finished",
+  CANCELLED = "cancelled",
+}

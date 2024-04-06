@@ -10,6 +10,7 @@ export {
   ACCOUNT_STATUS,
   PRODUCT_STATUS,
   ORDER_STATUS,
+  RIDER_WORK_SLOT_STATUS
 } from "./constants.utils";
 export {
   generateUniqueString,
