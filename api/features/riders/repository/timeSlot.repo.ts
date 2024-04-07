@@ -1,4 +1,5 @@
 import { RiderTimeSlot } from "../models/timeSlots.model";
+import { ClientSession } from "mongoose";
 
 class TimeSlotRepository {
   async bookSlot(params: {
@@ -17,14 +18,14 @@ class TimeSlotRepository {
     return timeSlot;
   }
 
-  async updateStatus(params: { slotId: string; status: string }) {
-    const { slotId, status } = params;
+  async updateStatus(params: { slotId: string; status: string, session: ClientSession }) {
+    const { slotId, status, session } = params;
     const slot = await RiderTimeSlot.findByIdAndUpdate(
       slotId,
       {
         $set: { status: status },
       },
-      { new: true }
+      { new: true, session }
     ).select("status");
     console.log({slot})
     return slot
