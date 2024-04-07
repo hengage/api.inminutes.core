@@ -2,7 +2,6 @@ import { string } from "joi";
 import { agenda } from "../../../services";
 import { RIDER_WORK_SLOT_STATUS } from "../../../utils";
 import { timeSlotRepo } from "../repository/timeSlot.repo";
-const mongoose = require("mongoose");
 
 class TimeSlotService {
   async bookSlot(params: {
@@ -28,13 +27,12 @@ class TimeSlotService {
 
   async cancelSlot(slotId: string) {
     console.log({ slotId });
-    const objectId = new mongoose.Types.ObjectId(slotId);
     const cancelledTimeSlot = await agenda.cancel({
-      "data.slotId": objectId,
+      "data.slotId": slotId,
     });
     
     await timeSlotRepo.updateStatus({
-      slotId: objectId,
+      slotId,
       status: RIDER_WORK_SLOT_STATUS.CANCELLED,
     });
     return cancelledTimeSlot;
