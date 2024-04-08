@@ -6,6 +6,7 @@ import { PRODUCT_STATUS, generateUniqueString } from "../../../utils";
 import {
   IProductCategoryDocument,
   IProductDocument,
+  IWishListDocument,
 } from "../products.interface";
 
 const productCategorySchema = new Schema<IProductCategoryDocument>(
@@ -55,11 +56,22 @@ const productSchema = new Schema<IProductDocument>(
 
 productSchema.plugin(paginate);
 
+const wishListSchema = new Schema<IWishListDocument>({
+  _id: {
+    type: String,
+    default: () => generateUniqueString(5),
+  },
+  customer: { type: String, ref: "Customer", required: true },
+  products: [{ type: String, ref: "Product" }],
+});
+
 export const ProductCategory = model<IProductCategoryDocument>(
   "ProductCategory",
   productCategorySchema
 );
 export const Product = model<IProductDocument, PaginateModel<IProductDocument>>(
-  "product",
+  "Product",
   productSchema
 );
+
+export const WishList = model<IWishListDocument>("WishList", wishListSchema);

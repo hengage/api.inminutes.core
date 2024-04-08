@@ -20,3 +20,9 @@ export interface IProductDocument extends Document {
   vendor: IVendorDocument["_id"];
   status: PRODUCT_STATUS;
 }
+
+export interface IWishListDocument extends Document {
+  _id: string;
+  customer: string;
+  products: Array<IProductDocument["_id"]>
+}
