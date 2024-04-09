@@ -9,6 +9,7 @@ import { validateCustomer } from "../validators/customers.validator";
 import { customersService } from "../services/customers.services";
 import { usersService } from "../../../services";
 import { customersAuthentication } from "../auth/customers.auth";
+import { productsRepo } from "../../products";
 
 class CustomersController {
   async signupVerificationCode(req: Request, res: Response) {
@@ -86,6 +87,20 @@ class CustomersController {
       await customersRepo.deleteAccount(customer);
       res.status(STATUS_CODES.OK).json({
         message: "Success",
+      });
+    } catch (error: any) {
+      handleErrorResponse(res, error);
+    }
+  }
+
+  async getWishList(req: Request, res: Response) {
+    const customerId = (req as any).user._id;
+    try {
+      const wishList = await productsRepo.getWishListForCustomer(customerId);
+      console.log({ wishList });
+      res.status(STATUS_CODES.OK).json({
+        message: "success",
+        data: { wishList },
       });
     } catch (error: any) {
       handleErrorResponse(res, error);

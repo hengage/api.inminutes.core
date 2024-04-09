@@ -121,6 +121,12 @@ class ProductsRepository {
 
     return wishList;
   }
+
+  async getWishListForCustomer(customerId: string) {
+    const wishList = await WishList.findOne({customer: customerId})
+    .populate({path: "products", select: "_id name image"})
+    return wishList
+  }
 }
 
 export const productsRepo = new ProductsRepository();

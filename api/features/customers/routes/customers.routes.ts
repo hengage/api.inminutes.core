@@ -25,6 +25,7 @@ class CustomersRoutes {
     this.router
       .route("/order-metrics")
       .get(customersOrdersController.orderMetrics);
+    this.router.route("/wishlist").get(customersController.getWishList)
   }
 }
 
