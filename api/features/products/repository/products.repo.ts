@@ -1,5 +1,5 @@
 import { HandleException, STATUS_CODES } from "../../../utils";
-import { Product, ProductCategory } from "../models/products.models";
+import { Product, ProductCategory, WishList } from "../models/products.models";
 
 class ProductsRepository {
   async addProduct(payload: any, vendor: string) {
@@ -98,6 +98,28 @@ class ProductsRepository {
 
     const products = await Product.paginate(query, options);
     return products;
+  }
+
+  async addToWishList(params: { customerId: string; productId: string }) {
+    const { customerId, productId } = params;
+    const wishList = await WishList.findOneAndUpdate(
+      { customer: customerId },
+      { $addToSet: { products: productId } },
+      { upsert: true, new: true }
+    );
+
+    return wishList;
+  }
+
+  async removeFromWishList(params: { customerId: string; productId: string }) {
+    const { customerId, productId } = params;
+    const wishList = await WishList.findOneAndUpdate(
+      { customer: customerId },
+      { $pull: { products: productId } },
+      { new: true }
+    );
+
+    return wishList;
   }
 }
 
