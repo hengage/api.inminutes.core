@@ -34,6 +34,20 @@ function listenForProductEvents(socket: Socket) {
       socket.emit("remove-product-from-wishlist-error", error.message);
     }
   });
+
+  socket.on("check-product-is-in-wishlist", async function (message) {
+    const { customerId, productId } = message;
+    try {
+      const isInWishList = await productsService.checkProductIsInCustomerWishList({
+        customerId,
+        productId,
+      });
+      console.log({isInWishList})
+      socket.emit("checked-if-product-in-wishlist", isInWishList);
+    } catch (error: any) {
+      socket.emit("check-product-is-in-wishlist-error", error.message);
+    }
+  });
 }
 
 export { listenForProductEvents };

@@ -123,9 +123,24 @@ class ProductsRepository {
   }
 
   async getWishListForCustomer(customerId: string) {
-    const wishList = await WishList.findOne({customer: customerId})
-    .populate({path: "products", select: "_id name image"})
-    return wishList
+    const wishList = await WishList.findOne({ customer: customerId }).populate({
+      path: "products",
+      select: "_id name image",
+    });
+    return wishList;
+  }
+
+  async checkProductIsInCustomerWishList(params: {
+    customerId: string;
+    productId: string;
+  }) {
+    const { customerId, productId } = params;
+    const isInWishList = await WishList.exists({
+      customer: customerId,
+      products: productId,
+    });
+
+    return isInWishList;
   }
 }
 
