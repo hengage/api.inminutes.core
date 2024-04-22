@@ -33,6 +33,7 @@ const customerSchema = new Schema<ICustomerDocument>(
     password: { type: String, required: true, unique: true },
     dateOfBirth: { type: Date, required: true },
     address: { type: String, required: true },
+    displayPhoto: { type: String },
   },
   {
     timestamps: true,

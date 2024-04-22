@@ -9,6 +9,7 @@ export interface ICustomerDocument extends Document {
   password: string;
   dateOfBirth: Date;
   address: string;
+  displayPhoto: string;
 }
 
 export interface IUpdateCustomerProfile {

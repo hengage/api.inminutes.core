@@ -70,6 +70,16 @@ class CustomersRepository {
     return customer;
   }
 
+  async updateDIsplayPhoto(customerId: string, displayPhoto: string) {
+    const customer = Customer.findByIdAndUpdate(
+      customerId,
+      { $set: { displayPhoto } },
+      { new: true }
+    ).select("displayPhoto");
+
+    return customer
+  }
+
   async deleteAccount(customerId: string) {
     const result = await Customer.deleteOne({ _id: customerId });
 

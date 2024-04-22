@@ -19,13 +19,16 @@ class CustomersRoutes {
     this.router.use(verifyAuthTokenMiddleware);
     this.router.route("/me").get(customersController.getProfile);
     this.router.route("/").patch(customersController.updateProfile);
+    this.router
+      .route("/update-photo")
+      .patch(customersController.updateDIsplayPhoto);
     this.router.route("/").delete(customersController.deleteAccount);
 
     this.router.route("/orders").get(customersOrdersController.orders);
     this.router
       .route("/order-metrics")
       .get(customersOrdersController.orderMetrics);
-    this.router.route("/wishlist").get(customersController.getWishList)
+    this.router.route("/wishlist").get(customersController.getWishList);
   }
 }
 

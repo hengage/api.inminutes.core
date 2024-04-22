@@ -80,6 +80,22 @@ class CustomersController {
     }
   }
 
+
+  async updateDIsplayPhoto(req: Request, res: Response) {
+    const customerId = (req as any).user._id;
+    const image = req.files as Record<string, any>;
+
+    try {
+      const customer = await customersService.updateProfilePhoto({customerId, image});
+      res.status(200).json({
+        message: "Success",
+        data: {customer}
+      })
+    } catch (error: any) {
+      handleErrorResponse(res, error);
+    }
+  }
+
   async deleteAccount(req: Request, res: Response) {
     const customer = (req as any).user._id;
 
