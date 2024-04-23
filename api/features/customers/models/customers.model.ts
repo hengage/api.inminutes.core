@@ -30,14 +30,17 @@ const customerSchema = new Schema<ICustomerDocument>(
       set: toLowerCaseSetter,
     },
     phoneNumber: { type: String, required: true, unique: true },
-    password: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
     dateOfBirth: { type: Date, required: true },
-    address: { type: String, required: true },
+    deliveryAddress: { type: String },
+    deliveryAddressCoords: { 
+      type: { type: String, default: "Point" },
+      coordinates: { type: [Number, Number] },
+     },
     displayPhoto: { type: String },
   },
   {
     timestamps: true,
-    // _id: false,
   }
 );
 

@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, response } from "express";
 import { customersRepo } from "../repo/customers.repo";
 import {
   STATUS_CODES,
@@ -80,17 +80,39 @@ class CustomersController {
     }
   }
 
-
   async updateDIsplayPhoto(req: Request, res: Response) {
     const customerId = (req as any).user._id;
     const image = req.files as Record<string, any>;
 
     try {
-      const customer = await customersService.updateProfilePhoto({customerId, image});
+      const customer = await customersService.updateProfilePhoto({
+        customerId,
+        image,
+      });
       res.status(200).json({
         message: "Success",
-        data: {customer}
-      })
+        data: { customer },
+      });
+    } catch (error: any) {
+      handleErrorResponse(res, error);
+    }
+  }
+
+  async updateDeliveryAddress(req: Request, res: Response) {
+    const customerId = (req as any).user._id;
+    const { address, coordinates } = req.body;
+
+    try {
+      const customer = await customersRepo.updateDeliveryAddress({
+        customerId,
+        address,
+        coordinates,
+      });
+
+      return res.status(200).json({
+        message: "success",
+        data: { customer },
+      });
     } catch (error: any) {
       handleErrorResponse(res, error);
     }

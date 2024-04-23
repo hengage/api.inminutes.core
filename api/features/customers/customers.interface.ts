@@ -8,7 +8,11 @@ export interface ICustomerDocument extends Document {
   email: string;
   password: string;
   dateOfBirth: Date;
-  address: string;
+  deliveryAddress: string;
+  deliveryAddressCoords: {
+    type: string;
+    coordinates: [number, number];
+  };
   displayPhoto: string;
 }
 

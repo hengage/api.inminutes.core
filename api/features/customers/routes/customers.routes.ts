@@ -22,6 +22,9 @@ class CustomersRoutes {
     this.router
       .route("/update-photo")
       .patch(customersController.updateDIsplayPhoto);
+    this.router
+      .route("/delivery-address")
+      .patch(customersController.updateDeliveryAddress);
     this.router.route("/").delete(customersController.deleteAccount);
 
     this.router.route("/orders").get(customersOrdersController.orders);

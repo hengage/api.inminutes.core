@@ -16,7 +16,7 @@ class CustomersRepository {
       email,
       password,
       dateOfBirth,
-      address,
+      deliveryAddress,
     } = payload;
 
     await Promise.all([
@@ -32,7 +32,7 @@ class CustomersRepository {
       email,
       password,
       dateOfBirth,
-      address,
+      deliveryAddress,
     }).save();
 
     return {
@@ -77,7 +77,34 @@ class CustomersRepository {
       { new: true }
     ).select("displayPhoto");
 
-    return customer
+    return customer;
+  }
+
+  async updateDeliveryAddress(params: {
+    customerId: string;
+    address: string;
+    coordinates: [number, number];
+  }) {
+    const { customerId, address, coordinates } = params;
+
+    const customer = await Customer.findByIdAndUpdate(
+      customerId,
+      {
+        $set: {
+          deliveryAddress: address,
+          deliveryAddressCoords: { coordinates },
+        },
+      },
+      {
+        new: true,
+        fields: ["deliveryAddress", "deliveryAddressCoords.coordinates"],
+      }
+    );
+
+    if (!customer) {
+      throw new HandleException(STATUS_CODES.NOT_FOUND, "Customer not found");
+    }
+    return customer;
   }
 
   async deleteAccount(customerId: string) {
