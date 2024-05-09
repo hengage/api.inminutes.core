@@ -16,11 +16,16 @@ export interface IRiderDocument extends Document {
   dateOfBirth: Date;
   residentialAddress: string;
   currentlyWorking: boolean;
+  rating: {
+    totalRatingSum: number;
+    ratingCount: number;
+    averageRating: number;
+  };
 }
 
 export interface IRiderTimeSlotDocument extends Document {
   startTime: Date;
   endTime: Date;
   riderId: IRiderDocument;
-  status: RIDER_WORK_SLOT_STATUS
+  status: RIDER_WORK_SLOT_STATUS;
 }

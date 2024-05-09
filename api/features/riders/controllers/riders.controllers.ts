@@ -11,7 +11,7 @@ import { validateRider } from "../validators/riders.validators";
 class RidersController {
   async signup(req: Request, res: Response) {
     try {
-      await validateRider.signUp(req.body)
+      await validateRider.signUp(req.body);
 
       const rider = await ridersRepo.signup(req.body);
 
@@ -30,7 +30,7 @@ class RidersController {
 
   async login(req: Request, res: Response) {
     try {
-      await validateRider.login(req.body)
+      await validateRider.login(req.body);
       const rider = await ridersRepo.login(req.body.email, req.body.password);
 
       const jwtPayload = { _id: rider._id, phoneNumber: rider.phoneNumber };
@@ -53,6 +53,17 @@ class RidersController {
       res.status(STATUS_CODES.OK).json({
         message: "Success",
         data: { rider },
+      });
+    } catch (error: any) {
+      handleErrorResponse(res, error);
+    }
+  }
+
+  async rate(req: Request, res: Response) {
+    try {
+      await ridersRepo.rate(req.params.riderId, parseInt(req.body.rating));
+      res.status(STATUS_CODES.OK).json({
+        message: "success",
       });
     } catch (error: any) {
       handleErrorResponse(res, error);

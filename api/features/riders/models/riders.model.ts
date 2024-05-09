@@ -34,13 +34,18 @@ const riderSchema = new Schema<IRiderDocument>(
       },
       coordinates: {
         type: [Number, Number],
-        default: [0, 0]
+        default: [0, 0],
       },
     },
     h3Index: { type: String, index: true },
     dateOfBirth: { type: Date, required: true },
     residentialAddress: { type: String, required: true },
-    currentlyWorking: { type: Boolean, default: false }
+    currentlyWorking: { type: Boolean, default: false },
+    rating: {
+      totalRatingSum: { type: Number, default: 0 },
+      ratingCount: { type: Number, default: 0 },
+      averageRating: { type: Number, default: 0 },
+    },
   },
   { timestamps: true }
 );

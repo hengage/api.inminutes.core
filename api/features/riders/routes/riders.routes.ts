@@ -19,7 +19,9 @@ class RidersRoutes {
     this.router.route("/me").get(ridersController.getMe);
     this.router.route("/book-slot").post(timeSlotController.bookSlot);
     this.router.route("/cancel-slot").post(timeSlotController.cancelSlot);
+
+    this.router.route("/:riderId/rate").patch(ridersController.rate);
   }
 }
 
-export const ridersRoutes = new RidersRoutes()
+export const ridersRoutes = new RidersRoutes();

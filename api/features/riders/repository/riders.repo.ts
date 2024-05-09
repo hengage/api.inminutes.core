@@ -152,6 +152,35 @@ class RidersRepository {
 
     return rider;
   }
+
+  async rate(id: string, rating: number) {
+    try {
+      const rider = await Rider.findOne({
+        _id: id,
+      }).select("rating");
+
+      if (!rider) {
+        throw new HandleException(
+          STATUS_CODES.NOT_FOUND,
+          "Rider not found"
+        );
+      }
+
+      // Increase the number of times the account has been rated
+      rider.rating.ratingCount += 1;
+
+      // Add the new rating to the sum of the previous ratings
+      rider.rating.totalRatingSum += rating;
+
+      // Calculate the average rating
+      rider.rating.averageRating =
+        rider.rating.totalRatingSum / rider.rating.ratingCount;
+
+      await rider.save();
+    } catch (error: any) {
+      throw new HandleException(error.status, error.message);
+    }
+  }
 }
 
 export const ridersRepo = new RidersRepository();
