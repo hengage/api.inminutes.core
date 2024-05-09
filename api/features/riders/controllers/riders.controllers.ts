@@ -60,8 +60,12 @@ class RidersController {
   }
 
   async rate(req: Request, res: Response) {
+    const rating  = parseInt(req.body.rating);
+
     try {
-      await ridersRepo.rate(req.params.riderId, parseInt(req.body.rating));
+      await validateRider.rate(req.body);
+
+      await ridersRepo.rate(req.params.riderId, rating);
       res.status(STATUS_CODES.OK).json({
         message: "success",
       });
