@@ -1,9 +1,9 @@
+import { ClientSession } from "mongoose";
 import { convertLatLngToCell, emitEvent } from "../../../services";
 import { HandleException, STATUS_CODES, compareValues } from "../../../utils";
 import { Vendor } from "../models/vendors.model";
 import { vendorsService } from "../services/vendor.services";
 import { IVendorDocument, IVendorSignup } from "../vendors.interface";
-import h3 from "h3-js";
 class VendorsRepository {
   async signup(payload: IVendorSignup): Promise<Partial<IVendorDocument>> {
     const {
@@ -311,7 +311,8 @@ class VendorsRepository {
     return vendors;
   }
 
-  async rate(id: string, rating: number) {
+  async updateRating(params: {id: string, rating: number, session: ClientSession}) {
+    const {id, rating, session} = params;
     try {
       const vendor = await Vendor.findOne({
         _id: id,
@@ -334,7 +335,7 @@ class VendorsRepository {
       vendor.rating.averageRating =
         vendor.rating.totalRatingSum / vendor.rating.ratingCount;
 
-      await vendor.save();
+      await vendor.save({session});
     } catch (error: any) {
       throw new HandleException(error.status, error.message);
     }

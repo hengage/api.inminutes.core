@@ -58,21 +58,6 @@ class RidersController {
       handleErrorResponse(res, error);
     }
   }
-
-  async rate(req: Request, res: Response) {
-    const rating  = parseInt(req.body.rating);
-
-    try {
-      await validateRider.rate(req.body);
-
-      await ridersRepo.rate(req.params.riderId, rating);
-      res.status(STATUS_CODES.OK).json({
-        message: "success",
-      });
-    } catch (error: any) {
-      handleErrorResponse(res, error);
-    }
-  }
 }
 
 export const ridersController = new RidersController();

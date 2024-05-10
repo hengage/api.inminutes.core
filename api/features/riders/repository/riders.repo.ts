@@ -1,3 +1,4 @@
+import { ClientSession } from "mongoose";
 import {
   convertLatLngToCell,
   emitEvent,
@@ -153,7 +154,8 @@ class RidersRepository {
     return rider;
   }
 
-  async rate(id: string, rating: number) {
+  async updateRating(params: {id: string, rating: number, session: ClientSession}) {
+    const {id, rating, session} = params;
     try {
       const rider = await Rider.findOne({
         _id: id,
@@ -176,7 +178,7 @@ class RidersRepository {
       rider.rating.averageRating =
         rider.rating.totalRatingSum / rider.rating.ratingCount;
 
-      await rider.save();
+      await rider.save({session});
     } catch (error: any) {
       throw new HandleException(error.status, error.message);
     }
