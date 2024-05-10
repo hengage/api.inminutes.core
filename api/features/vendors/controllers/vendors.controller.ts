@@ -150,6 +150,22 @@ class VendorsController {
       handleErrorResponse(res, error);
     }
   }
+
+  
+  async rate(req: Request, res: Response) {
+    const rating  = parseInt(req.body.rating);
+
+    try {
+      await validateVendor.rate(req.body);
+
+      await vendorsRepo.rate(req.params.vendorId, rating);
+      res.status(STATUS_CODES.OK).json({
+        message: "success",
+      });
+    } catch (error: any) {
+      handleErrorResponse(res, error);
+    }
+  }
 }
 
 export const vendorsController = new VendorsController();

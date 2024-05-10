@@ -310,6 +310,35 @@ class VendorsRepository {
 
     return vendors;
   }
+
+  async rate(id: string, rating: number) {
+    try {
+      const vendor = await Vendor.findOne({
+        _id: id,
+      }).select("rating");
+
+      if (!vendor) {
+        throw new HandleException(
+          STATUS_CODES.NOT_FOUND,
+          "vendor not found"
+        );
+      }
+
+      // Increase the number of times the account has been rated
+      vendor.rating.ratingCount += 1;
+
+      // Add the new rating to the sum of the previous ratings
+      vendor.rating.totalRatingSum += rating;
+
+      // Calculate the average rating
+      vendor.rating.averageRating =
+        vendor.rating.totalRatingSum / vendor.rating.ratingCount;
+
+      await vendor.save();
+    } catch (error: any) {
+      throw new HandleException(error.status, error.message);
+    }
+  }
 }
 
 export const vendorsRepo = new VendorsRepository();

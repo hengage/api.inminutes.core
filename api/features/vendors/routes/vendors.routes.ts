@@ -46,6 +46,8 @@ class VendorsRoutes {
     this.router
       .route("/order-metrics")
       .get(vendorsOrdersController.orderMetrics);
+      
+    this.router.route("/:vendorId/rate").patch(vendorsController.rate);
   }
 }
 
