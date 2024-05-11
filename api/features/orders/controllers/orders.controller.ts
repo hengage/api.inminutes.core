@@ -33,6 +33,19 @@ class OrderController {
       handleErrorResponse(res, error);
     }
   }
+
+  async submitOrderFeedback(req: Request, res: Response) {
+    const {vendorId, vendorRating, riderId, riderRating, remarkOnVendor, remarkOnRider } = req.body
+    const {orderId} = req.params
+    try {
+      await ordersService.submitOrderFeedback({orderId, vendorId, vendorRating, riderRating, riderId, remarkOnVendor, remarkOnRider})
+      res.status(200).json({
+        message: "Success"
+      })
+    } catch (error: any) {
+      handleErrorResponse(res, error);
+    }
+  }
 }
 
 export const ordersController = new OrderController();

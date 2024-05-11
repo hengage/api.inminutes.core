@@ -1,6 +1,7 @@
+import { ClientSession } from "mongoose";
 import { convertLatLngToCell } from "../../../services";
 import { HandleException, ORDER_STATUS, STATUS_CODES } from "../../../utils";
-import { Order } from "../models/orders.model";
+import { Order, OrderRemark } from "../models/orders.model";
 
 class OrderRepository {
   create(params: { payload: any; customer: string }) {
@@ -105,6 +106,26 @@ class OrderRepository {
         "Order already assigned to a rider"
       );
     }
+  }
+
+  public async createRemarkAndRating(createRemarkDto: any, session: ClientSession) {
+    const {
+      orderId,
+      remarkOnRider,
+      remarkOnVendor,
+      riderRating,
+      vendorRating,
+    } = createRemarkDto;
+
+    const remark = new OrderRemark({
+      order: orderId,
+      remarkOnRider,
+      remarkOnVendor,
+      riderRating,
+      vendorRating,
+    });
+
+    return await remark.save({ session });
   }
 }
 

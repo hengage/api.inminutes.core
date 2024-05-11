@@ -1,3 +1,5 @@
+export { vendorsRepo } from "./repository/vendors.repo";
+
 export {
   VendorCategory,
   VendorSubCategory,

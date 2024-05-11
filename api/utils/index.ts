@@ -1,4 +1,4 @@
-import { handleInstantOrScheduledDelivery } from "./delivery.utils";
+export { calculateAverageRating } from "./calculateRating";
 
 export { WALLET_STATUS, WITHDRAWAL_CHANNEL } from "./constants.utils";
 export { handleErrorResponse } from "./response.utils";

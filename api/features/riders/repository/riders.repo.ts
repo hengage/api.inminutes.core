@@ -4,7 +4,12 @@ import {
   emitEvent,
   usersService,
 } from "../../../services";
-import { HandleException, STATUS_CODES, compareValues } from "../../../utils";
+import {
+  HandleException,
+  STATUS_CODES,
+  calculateAverageRating,
+  compareValues,
+} from "../../../utils";
 import { Rider } from "../models/riders.model";
 import { IRiderDocument } from "../riders.interface";
 import { ridersService } from "../services/riders.service";
@@ -154,31 +159,23 @@ class RidersRepository {
     return rider;
   }
 
-  async updateRating(params: {id: string, rating: number, session: ClientSession}) {
-    const {id, rating, session} = params;
+  async updateRating(
+    updateRatingDto: { riderId: string; rating: number },
+    session: ClientSession
+  ) {
+    const { riderId, rating, } = updateRatingDto;
     try {
       const rider = await Rider.findOne({
-        _id: id,
+        _id: riderId,
       }).select("rating");
 
       if (!rider) {
-        throw new HandleException(
-          STATUS_CODES.NOT_FOUND,
-          "Rider not found"
-        );
+        throw new HandleException(STATUS_CODES.NOT_FOUND, "Rider not found");
       }
 
-      // Increase the number of times the account has been rated
-      rider.rating.ratingCount += 1;
+      rider.rating.averageRating = calculateAverageRating(rider, rating);
 
-      // Add the new rating to the sum of the previous ratings
-      rider.rating.totalRatingSum += rating;
-
-      // Calculate the average rating
-      rider.rating.averageRating =
-        rider.rating.totalRatingSum / rider.rating.ratingCount;
-
-      await rider.save({session});
+      await rider.save({ session });
     } catch (error: any) {
       throw new HandleException(error.status, error.message);
     }

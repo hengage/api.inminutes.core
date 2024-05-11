@@ -1,11 +1,12 @@
-import { agenda } from "../../../services";
-import { ORDER_STATUS } from "../../../utils";
+import mongoose from "mongoose";
+import { HandleException, ORDER_STATUS } from "../../../utils";
 import { handleInstantOrScheduledDelivery } from "../../../utils/delivery.utils";
 import { notificationService } from "../../notifications";
-import { ridersService } from "../../riders";
+import { ridersRepo, ridersService } from "../../riders";
 import { Order } from "../models/orders.model";
 import { orderRepo } from "../repository/orders.repo";
 import { validateOrders } from "../validation/orders.validation";
+import { vendorsRepo } from "../../vendors";
 
 class OrdersService {
   //   async requestReceived(orderId: string) {
@@ -65,7 +66,7 @@ class OrdersService {
         data: { orderId: order._id },
         userId: order.customer,
       }),
-      
+
       handleInstantOrScheduledDelivery({ order, distanceInKM }),
     ]);
 
@@ -176,6 +177,39 @@ class OrdersService {
     });
 
     return { orderId: order._id };
+  }
+
+  async submitOrderFeedback(dto: any) {
+    const {
+      orderId,
+      vendorId,
+      riderId,
+      vendorRating,
+      riderRating,
+      remarkOnVendor,
+      remarkOnRider,
+    } = dto;
+   
+    const session = await mongoose.startSession();
+    try {
+      session.startTransaction();
+
+      await ridersRepo.updateRating({riderId, rating: parseInt(riderRating)}, session)
+      await vendorsRepo.updateRating({ vendorId, rating: parseInt( vendorRating) }, session);
+      await orderRepo.createRemarkAndRating(
+        { orderId, vendorRating, riderRating, remarkOnVendor, remarkOnRider },
+        session
+      );
+
+      await session.commitTransaction();
+      await session.endSession();
+    } catch (error: any) {
+      await session.abortTransaction();
+      await session.endSession();
+      throw new HandleException(error.status, error.message);
+    } finally {
+      await session.endSession();
+    }
   }
 }
 

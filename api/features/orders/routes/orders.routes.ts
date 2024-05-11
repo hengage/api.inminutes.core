@@ -14,6 +14,9 @@ class OrdersRoutes {
     this.router.use(verifyAuthTokenMiddleware);
     this.router.route("/").post(ordersController.create);
     this.router.route("/:orderId").get(ordersController.orderDetails);
+    this.router
+      .route("/:orderId/rate-and-remark")
+      .post(ordersController.submitOrderFeedback);
   }
 }
 

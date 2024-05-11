@@ -39,7 +39,7 @@ const orderSchema = new Schema<IOrdersDocument>(
     totalProductsCost: { type: String, required: true },
     totalCost: { type: String, required: true },
     type: { type: String, required: true, enum: ["instant", "scheduled"] },
-    scheduledDeliveryTime: {type: Date},
+    scheduledDeliveryTime: { type: Date },
     instruction: { type: String },
     status: {
       type: String,
@@ -50,6 +50,21 @@ const orderSchema = new Schema<IOrdersDocument>(
   { timestamps: true }
 );
 
+const orderRemarkSchema = new Schema(
+  {
+    _id: {
+      type: String,
+      default: () => generateUniqueString(5),
+    },
+    order: { type: String, ref: "Order" },
+    remarkOnRider: { type: String },
+    remarkOnVendor: { type: String },
+    vendorRating: { type: String },
+    riderRating: { type: String },
+  },
+  { timestamps: { createdAt: true, updatedAt: false } }
+);
+
 orderSchema.index({ deliveryLocation: "2dsphere" });
 orderSchema.plugin(paginate);
 
@@ -57,3 +72,5 @@ export const Order = model<IOrdersDocument, PaginateModel<IOrdersDocument>>(
   "Order",
   orderSchema
 );
+
+export const OrderRemark = model("OrderRemark", orderRemarkSchema);
