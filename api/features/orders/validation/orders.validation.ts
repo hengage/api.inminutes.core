@@ -51,6 +51,44 @@ class ValidateOrders {
     }
     return;
   };
+
+  orderFeedback = async (payload: { rating: number }) => {
+    const schema = Joi.object({
+      vendorRating: Joi.number()
+        .integer()
+        .min(1)
+        .max(5)
+        .required()
+        .label("rating"),
+      riderRating: Joi.number()
+        .integer()
+        .min(1)
+        .max(5)
+        .required()
+        .label("rating"),
+      remarkOnVendor: Joi.string().label("remark on vendor"),
+      remarkOnRider: Joi.string().label("remark on rider"),
+      vendorId: Joi.string()
+        .when("vendorRating", {
+          then: Joi.string().required(),
+        })
+        .label("Vendor"),
+      riderId: Joi.string()
+        .when("riderRating", {
+          then: Joi.string().required(),
+        })
+        .label("Rider"),
+    });
+
+    const { error } = schema.validate(payload, {
+      allowUnknown: false,
+      abortEarly: false,
+    });
+
+    if (error) {
+      throw new HandleException(STATUS_CODES.BAD_REQUEST, error.message);
+    }
+  };
 }
 
 export const validateOrders = new ValidateOrders();

@@ -43,21 +43,6 @@ class ValidateRider {
     }
     return;
   };
-
-  rate = async (payload: {rating: number}) => {
-    const schema = joi.object({
-      rating: joi.number().integer().min(1).max(5).required(),
-    });
-
-    const { error } = schema.validate(payload, {
-      allowUnknown: false,
-      abortEarly: false,
-    });
-
-    if (error) {
-      throw new HandleException(STATUS_CODES.BAD_REQUEST, error.message);
-    }
-  };
 }
 
 export const validateRider = new ValidateRider();

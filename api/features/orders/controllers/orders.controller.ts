@@ -10,8 +10,8 @@ class OrderController {
     const customer = (req as any).user._id;
 
     try {
-      await validateOrders.create(req.body)
-      const order = await  ordersService.create({payload: req.body, customer})
+      await validateOrders.create(req.body);
+      const order = await ordersService.create({ payload: req.body, customer });
 
       res.status(STATUS_CODES.CREATED).json({
         message: "success",
@@ -24,7 +24,7 @@ class OrderController {
 
   async orderDetails(req: Request, res: Response) {
     try {
-      const order = await orderRepo.orderDetails(req.params.orderId)
+      const order = await orderRepo.orderDetails(req.params.orderId);
       res.status(STATUS_CODES.OK).json({
         message: "success",
         data: { order },
@@ -35,13 +35,29 @@ class OrderController {
   }
 
   async submitOrderFeedback(req: Request, res: Response) {
-    const {vendorId, vendorRating, riderId, riderRating, remarkOnVendor, remarkOnRider } = req.body
-    const {orderId} = req.params
+    const {
+      vendorId,
+      vendorRating,
+      riderId,
+      riderRating,
+      remarkOnVendor,
+      remarkOnRider,
+    } = req.body;
+    const { orderId } = req.params;
     try {
-      await ordersService.submitOrderFeedback({orderId, vendorId, vendorRating, riderRating, riderId, remarkOnVendor, remarkOnRider})
+      await validateOrders.orderFeedback(req.body)
+      await ordersService.submitOrderFeedback({
+        orderId,
+        vendorId,
+        vendorRating,
+        riderRating,
+        riderId,
+        remarkOnVendor,
+        remarkOnRider,
+      });
       res.status(200).json({
-        message: "Success"
-      })
+        message: "Success",
+      });
     } catch (error: any) {
       handleErrorResponse(res, error);
     }
