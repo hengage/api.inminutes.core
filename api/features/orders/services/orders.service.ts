@@ -189,17 +189,33 @@ class OrdersService {
       remarkOnVendor,
       remarkOnRider,
     } = dto;
-   
+
     const session = await mongoose.startSession();
     try {
       session.startTransaction();
 
-      await ridersRepo.updateRating({riderId, rating: parseInt(riderRating)}, session)
-      await vendorsRepo.updateRating({ vendorId, rating: parseInt( vendorRating) }, session);
-      await orderRepo.createRemarkAndRating(
-        { orderId, vendorRating, riderRating, remarkOnVendor, remarkOnRider },
-        session
-      );
+      const riderRatingPromise = riderRating
+        ? ridersRepo.updateRating(
+            { riderId, rating: parseInt(riderRating) },
+            session
+          )
+        : Promise.resolve(); // Resolve to empty if no rider rating
+
+      const vendorRatingPromise = vendorRating
+        ? vendorsRepo.updateRating(
+            { vendorId, rating: parseInt(vendorRating) },
+            session
+          )
+        : Promise.resolve(); // Resolve to empty if no vendor rating
+
+      await Promise.all([
+        riderRatingPromise,
+        vendorRatingPromise,
+        orderRepo.createRemarkAndRating(
+          { orderId, vendorRating, riderRating, remarkOnVendor, remarkOnRider },
+          session
+        ),
+      ]);
 
       await session.commitTransaction();
       await session.endSession();
