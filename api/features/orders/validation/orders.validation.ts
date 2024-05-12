@@ -58,13 +58,11 @@ class ValidateOrders {
         .integer()
         .min(1)
         .max(5)
-        .required()
         .label("rating"),
       riderRating: Joi.number()
         .integer()
         .min(1)
         .max(5)
-        .required()
         .label("rating"),
       remarkOnVendor: Joi.string().label("remark on vendor"),
       remarkOnRider: Joi.string().label("remark on rider"),
