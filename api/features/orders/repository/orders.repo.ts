@@ -1,7 +1,7 @@
 import { ClientSession } from "mongoose";
 import { convertLatLngToCell } from "../../../services";
 import { HandleException, ORDER_STATUS, STATUS_CODES } from "../../../utils";
-import { Order, OrderRemark } from "../models/orders.model";
+import { Order, OrderFeedback } from "../models/orders.model";
 
 class OrderRepository {
   create(params: { payload: any; customer: string }) {
@@ -117,7 +117,7 @@ class OrderRepository {
       vendorRating,
     } = createRemarkDto;
 
-    const remark = new OrderRemark({
+    const remark = new OrderFeedback({
       order: orderId,
       remarkOnRider,
       remarkOnVendor,

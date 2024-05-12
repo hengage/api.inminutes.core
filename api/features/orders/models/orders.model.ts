@@ -50,7 +50,7 @@ const orderSchema = new Schema<IOrdersDocument>(
   { timestamps: true }
 );
 
-const orderRemarkSchema = new Schema(
+const orderFeedbackSchema = new Schema(
   {
     _id: {
       type: String,
@@ -73,4 +73,4 @@ export const Order = model<IOrdersDocument, PaginateModel<IOrdersDocument>>(
   orderSchema
 );
 
-export const OrderRemark = model("OrderRemark", orderRemarkSchema);
+export const OrderFeedback = model("OrderFeedback", orderFeedbackSchema);
