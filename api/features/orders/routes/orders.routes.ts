@@ -13,10 +13,10 @@ class OrdersRoutes {
   initializeRoutes() {
     this.router.use(verifyAuthTokenMiddleware);
     this.router.route("/").post(ordersController.create);
-    this.router.route("/:orderId").get(ordersController.orderDetails);
     this.router
-      .route("/:orderId/rate-and-remark")
+      .route("/:orderId/feedback")
       .post(ordersController.submitOrderFeedback);
+    this.router.route("/:orderId").get(ordersController.orderDetails);
   }
 }
 
