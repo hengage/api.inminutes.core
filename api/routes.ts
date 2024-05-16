@@ -7,6 +7,7 @@ import { ridersRoutes } from "./features/riders";
 import { adminOpsRoutes } from "./features/adminOperations";
 import { productsRoutes } from "./features/products";
 import { ordersRoutes } from "./features/orders";
+import { transactionRoutes } from "./features/transactions";
 
 class Routes {
   /*
@@ -28,8 +29,8 @@ class Routes {
     this.router.use("/riders", ridersRoutes.router);
     this.router.use("/products", productsRoutes.router);
     this.router.use("/orders", ordersRoutes.router);
+    this.router.use("/transaction", transactionRoutes.router);
     this.router.use("/admin", adminOpsRoutes.router)
-
     this.router.use("/media", mediaRoutes.router);
   }
 }

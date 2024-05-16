@@ -13,3 +13,5 @@ export const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
 
 export const ONE_SIGNAL_APP_ID = process.env.ONE_SIGNAL_APP_ID;
 export const ONE_SIGNAL_API_KEY = process.env.ONE_SIGNAL_API_KEY;
+
+export const PAYSTACK_API_KEY = process.env.PAYSTACK_API_KEY;
