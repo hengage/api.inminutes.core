@@ -99,7 +99,7 @@ walletSchema.statics.debitWallet = async function (
   }
 
   wallet.balance = Big(wallet.balance).minus(dto.amount);
-  await wallet.save();
+  await wallet.save({session});
 
   return wallet;
 };
