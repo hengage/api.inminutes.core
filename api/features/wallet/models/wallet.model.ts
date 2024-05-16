@@ -1,10 +1,13 @@
-import { Schema, model } from "mongoose";
-import { IWalletDocument } from "../wallet.interface";
+import { ClientSession, Schema, model } from "mongoose";
+import { IWalletDocument, IWalletMethodsDocument } from "../wallet.interface";
 import {
+  HandleException,
+  STATUS_CODES,
   WALLET_STATUS,
   WITHDRAWAL_CHANNEL,
   generateUniqueString,
 } from "../../../utils";
+import Big from "big.js";
 
 const walletSchema = new Schema<IWalletDocument>(
   {
@@ -47,4 +50,61 @@ const walletSchema = new Schema<IWalletDocument>(
   }
 );
 
-export const Wallet = model<IWalletDocument>("Wallet", walletSchema);
+walletSchema.statics.creditWallet = async function (
+  dto: { amount: string; riderId?: string; vendorId?: string },
+  session?: ClientSession
+) {
+  const query: { rider?: string; vendor?: string } = {};
+
+  if (dto.riderId) {
+    query.rider = dto.riderId;
+  } else {
+    query.vendor = dto.vendorId;
+  }
+
+  const wallet = await this.findOne(query)
+    .select("balance totalEarnings")
+    .session(session);
+
+  if (!wallet) {
+    throw new HandleException(STATUS_CODES.NOT_FOUND, "wallet not found");
+  }
+
+  wallet.balance = Big(wallet.balance).plus(dto.amount);
+  wallet.totalEarnings = Big(wallet.totalEarnings).plus(dto.amount);
+
+  await wallet.save({ session });
+
+  return wallet;
+};
+
+walletSchema.statics.debitWallet = async function (
+  dto: { amount: string; riderId?: string; vendorId?: string },
+  session?: ClientSession
+) {
+  const query: { rider?: string; vendor?: string } = {};
+
+  if (dto.riderId) {
+    query.rider = dto.riderId;
+  } else {
+    query.vendor = dto.vendorId;
+  }
+
+  const wallet = await this.findOne(query)
+    .select("balance totalEarnings")
+    .session(session);
+
+  if (!wallet) {
+    throw new HandleException(STATUS_CODES.NOT_FOUND, "wallet not found");
+  }
+
+  wallet.balance = Big(wallet.balance).minus(dto.amount);
+  await wallet.save();
+
+  return wallet;
+};
+
+export const Wallet = model<IWalletDocument, IWalletMethodsDocument>(
+  "Wallet",
+  walletSchema
+);
