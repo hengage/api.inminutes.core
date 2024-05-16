@@ -4,7 +4,7 @@
   "description": "",
   "main": "api/server.ts",
   "scripts": {
-    "dev-start": "nodemon --watch api/server.ts",
+    "start-dev": "nodemon --watch api/server.ts",
     "start": "node dist/server.js",
     "build": "tsc"
   },
