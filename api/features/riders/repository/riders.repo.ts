@@ -26,11 +26,6 @@ class RidersRepository {
       residentialAddress,
     } = payload;
 
-    await Promise.all([
-      usersService.isDisplayNameTaken(displayName),
-      ridersService.checkEmailIstaken(email),
-      ridersService.checkPhoneNumberIstaken(phoneNumber),
-    ]);
 
     const rider = await Rider.create({
       fullName,

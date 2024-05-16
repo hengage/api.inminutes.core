@@ -14,6 +14,11 @@ class VendorsController {
     try {
       await validateVendor.signUp(req.body);
 
+      await Promise.all([
+        vendorsService.checkEmailIstaken(req.body.email),
+        vendorsService.checkPhoneNumberIstaken(req.body.phoneNumber),
+      ]);
+
       const vendor = await vendorsRepo.signup(req.body);
 
       const jwtPayload = { _id: vendor._id, phoneNumber: vendor.phoneNumber };

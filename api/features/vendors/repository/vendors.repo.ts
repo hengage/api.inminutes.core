@@ -24,11 +24,6 @@ class VendorsRepository {
       subCategory,
     } = payload;
 
-    await Promise.all([
-      vendorsService.checkEmailIstaken(email),
-      vendorsService.checkPhoneNumberIstaken(phoneNumber),
-    ]);
-
     const vendor = await Vendor.create({
       businessName,
       businessLogo,
