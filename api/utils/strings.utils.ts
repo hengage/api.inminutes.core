@@ -33,10 +33,30 @@ function generateJWTToken(payload: any, expiresIn: string): string {
   return jwt.sign(payload, `${JWT_SECRET_KEY}`, { expiresIn });
 }
 
+function generateReference() {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let reference = "";
+
+  // Generate reference with a combination of numbers and letters
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    reference += characters.charAt(randomIndex);
+  }
+
+  // Add current timestamp to the reference
+  const timestamp = new Date().getTime().toString();
+  reference += timestamp;
+  console.log({ reference });
+
+  return reference;
+}
+
 export {
   generateUniqueString,
   toLowerCaseSetter,
   encryptValue,
   compareValues,
   generateJWTToken,
+  generateReference,
 };

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { PAYSTACK_API_KEY } from "../../../config";
-import { HandleException } from "../../../utils";
+import { HandleException, generateReference } from "../../../utils";
 
 class TransactionService {
   private paystackAPIKey: string;
@@ -15,7 +15,7 @@ class TransactionService {
   async initialize(dto: { email: string; amount: string; metadata: any }) {
     const payload = {
       ...dto,
-      reference: "124Y7u0YU6549934",
+      reference: generateReference,
       channels: ["card", "ussd", "bank_transfer"],
     };
 

@@ -18,4 +18,5 @@ export {
   encryptValue,
   compareValues,
   generateJWTToken,
+  generateReference
 } from "./strings.utils";
