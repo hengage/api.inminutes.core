@@ -48,7 +48,11 @@ class ProductsRepository {
   async productDetails(productId: string) {
     const product = await Product.findById(productId)
       .select("-__v -updatedAt -createdAt -status")
-      .populate({ path: "category", select: "name" });
+      .populate({ path: "category", select: "name" })
+      .populate({
+        path: "vendor",
+        select: "businessName location.coordinates",
+      });
 
     return product;
   }
