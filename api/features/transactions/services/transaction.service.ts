@@ -12,9 +12,11 @@ class TransactionService {
     };
   }
 
-  async initialize(dto: { email: string; amount: string; metadata: any }) {
+  async initialize(params: { email: string; amount: string; metadata: any }) {
     const payload = {
-      ...dto,
+      amount: parseInt(params.amount) * 100,
+      email: params.email,
+      metadata: params.metadata,
       reference: generateReference,
       channels: ["card", "ussd", "bank_transfer"],
     };
