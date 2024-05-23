@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { handleErrorResponse } from "../../../utils";
+import { STATUS_CODES, handleErrorResponse } from "../../../utils";
 import { transactionService } from "../services/transaction.service";
 
 class TransactionController {
@@ -13,6 +13,16 @@ class TransactionController {
       });
     } catch (error: any) {
       handleErrorResponse(res, error);
+    }
+  }
+
+  webhook(req:Request, res:Response) {
+    try {
+      transactionService.webhook(req)
+      res.sendStatus(STATUS_CODES.OK)
+    } catch (error: any) {
+      console.log({error});
+      res.sendStatus(error.status)
     }
   }
 }

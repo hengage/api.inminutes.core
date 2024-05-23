@@ -10,6 +10,8 @@ class TransactionRoutes {
   }
 
   initializeRoutes() {
+    this.router.route("/webhook").post(transactionController.webhook);
+
     this.router.use(verifyAuthTokenMiddleware);
     
     this.router.route("/initialize").post(transactionController.initialize);

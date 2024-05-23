@@ -1,6 +1,14 @@
 import axios from "axios";
 import { PAYSTACK_API_KEY } from "../../../config";
-import { HandleException, generateReference } from "../../../utils";
+import {
+  HandleException,
+  STATUS_CODES,
+  generateReference,
+} from "../../../utils";
+// import *as crypto from "crypto";
+import { createHmac } from "crypto";
+import { PAYSTACK_SECRET } from "../../../config/secrets.config";
+import { Request } from "express";
 
 class TransactionService {
   private paystackAPIKey: string;
@@ -34,6 +42,22 @@ class TransactionService {
     } catch (error: any) {
       console.error({ error: error.response.data });
       throw new HandleException(error.status, error.message);
+    }
+  }
+
+  webhook(req: Request) {
+    const hash = createHmac("sha512", `${PAYSTACK_SECRET}`).update(
+      JSON.stringify(req.body)
+    );
+    console.log({ hash });
+
+    const digest = hash.digest("hex");
+    console.log({ digest });
+
+    if (digest === req.headers["x-paystack-signature"]) {
+      console.log(req.body);
+    } else {
+      throw new HandleException(STATUS_CODES.BAD_REQUEST, "Invalid signature");
     }
   }
 }
