@@ -1,5 +1,4 @@
 import axios from "axios";
-import { PAYSTACK_API_KEY } from "../../../config";
 import {
   HandleException,
   STATUS_CODES,
@@ -7,14 +6,14 @@ import {
 } from "../../../utils";
 // import *as crypto from "crypto";
 import { createHmac } from "crypto";
-import { PAYSTACK_SECRET } from "../../../config/secrets.config";
 import { Request } from "express";
+import { PAYSTACK_SECRET_KEY } from "../../../config";
 
 class TransactionService {
   private paystackAPIKey: string;
   private headers: Record<string, string>;
   constructor() {
-    this.paystackAPIKey = `${PAYSTACK_API_KEY}`;
+    this.paystackAPIKey = `${PAYSTACK_SECRET_KEY}`;
     this.headers = {
       Authorization: `Bearer ${this.paystackAPIKey}`,
     };
@@ -46,7 +45,7 @@ class TransactionService {
   }
 
   webhook(req: Request) {
-    const hash = createHmac("sha512", `${PAYSTACK_SECRET}`).update(
+    const hash = createHmac("sha512", `${PAYSTACK_SECRET_KEY}`).update(
       JSON.stringify(req.body)
     );
     console.log({ hash });
