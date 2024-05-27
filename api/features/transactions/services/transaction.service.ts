@@ -8,6 +8,7 @@ import {
 import { createHmac } from "crypto";
 import { Request } from "express";
 import { PAYSTACK_SECRET_KEY } from "../../../config";
+import { emitEvent } from "../../../services";
 
 class TransactionService {
   private paystackAPIKey: string;
@@ -48,13 +49,19 @@ class TransactionService {
     const hash = createHmac("sha512", `${PAYSTACK_SECRET_KEY}`).update(
       JSON.stringify(req.body)
     );
-    console.log({ hash });
-
     const digest = hash.digest("hex");
-    console.log({ digest });
 
     if (digest === req.headers["x-paystack-signature"]) {
       console.log(req.body);
+      const event = req.body;
+
+      if ((event.event = "charge.success")) {
+        const { purpose, orderId, vendorId } = event.metadata;
+
+        if (purpose === "product purchase") {
+          emitEvent("notify-vendor-of-new-order", { orderId, vendorId });
+        }
+      }
     } else {
       throw new HandleException(STATUS_CODES.BAD_REQUEST, "Invalid signature");
     }

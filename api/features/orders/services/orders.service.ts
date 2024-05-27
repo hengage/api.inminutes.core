@@ -31,22 +31,8 @@ class OrdersService {
         totalCost: 1,
         status: 1,
       })
-      .populate({ path: "vendor", select: "_id" });
-
-    if (newOrder) {
-      console.log({ vendorId: newOrder.vendor._id });
-
-      notificationService.createNotification({
-        headings: { en: "New Order" },
-        contents: {
-          en:
-            `A new order has been placed. ` +
-            `Please confirm and fulfill the order as soon possible`,
-        },
-        data: { order: newOrder },
-        userId: newOrder.vendor._id,
-      });
-    }
+      .populate({ path: "vendor", select: "_id" })
+      .populate({ path: "product", select: "name image" });
 
     return newOrder;
   }
