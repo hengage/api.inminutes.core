@@ -56,7 +56,8 @@ class TransactionService {
       const event = req.body;
 
       if ((event.event = "charge.success")) {
-        const { purpose, orderId, vendorId } = event.metadata;
+        console.log({ metadata: event.data.metadata });
+        const { purpose, orderId, vendorId } = event.data.metadata;
 
         if (purpose === "product purchase") {
           emitEvent("notify-vendor-of-new-order", { orderId, vendorId });
