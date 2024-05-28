@@ -1,6 +1,7 @@
 import { startSession } from "mongoose";
 import { Wallet } from "../models/wallet.model";
 import Big from "big.js";
+import { notificationService } from "../../notifications";
 
 class WalletService {
   async creditWallet(dto: {
@@ -65,6 +66,16 @@ class WalletService {
     try {
       const wallet = await Wallet.creditWallet({ amount, vendorId });
       console.log({ "Credited vendor": wallet });
+
+      await notificationService.createNotification({
+        headings: { en: "Your Earnings Are In!" },
+        contents: {
+          en:
+            `${amount} has been successfully credited to your wallet. ` +
+            `Head to your dashboard to see your new balance`,
+        },
+        userId: vendorId,
+      });
     } catch (error: any) {
       console.error({ error });
     }
@@ -77,6 +88,16 @@ class WalletService {
     try {
       const wallet = await Wallet.creditWallet({ amount, riderId });
       console.log({ "Credited rider": wallet });
+
+      await notificationService.createNotification({
+        headings: { en: "Your Earnings Are In!" },
+        contents: {
+          en:
+          `${amount} has been successfully credited to your wallet. ` +
+          `Head to your dashboard to see your new balance`,
+      },
+        userId: riderId,
+      });
     } catch (error: any) {
       console.error({ error });
     }
