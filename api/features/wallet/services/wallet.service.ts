@@ -58,6 +58,16 @@ class WalletService {
       await session.endSession();
     }
   }
+
+  async creditVendor(params: { vendorId: string; amount: string }) {
+    const { amount, vendorId } = params;
+    try {
+      const wallet = await Wallet.creditWallet({ amount, vendorId });
+      console.log({'Credited vendor': wallet });
+    } catch (error: any) {
+      console.error({ error });
+    }
+  }
 }
 
-export const Walletservice = new WalletService();
+export const walletservice = new WalletService();

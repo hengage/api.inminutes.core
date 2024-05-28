@@ -75,7 +75,7 @@ class OrderRepository {
 
   async updateStatus(params: { orderId: string; status: ORDER_STATUS }) {
     const order = await Order.findById(params.orderId)
-      .select("status customer type scheduledDeliveryTime")
+      .select("status customer type scheduledDeliveryTime totalProductsCost")
       .populate({ path: "vendor", select: "location.coordinates" });
 
     if (!order) {

@@ -63,7 +63,7 @@ walletSchema.statics.creditWallet = async function (
   }
 
   const wallet = await this.findOne(query)
-    .select("balance totalEarnings")
+    .select("balance totalEarnings transactionCount")
     .session(session);
 
   if (!wallet) {
@@ -72,7 +72,7 @@ walletSchema.statics.creditWallet = async function (
 
   wallet.balance = Big(wallet.balance).plus(dto.amount);
   wallet.totalEarnings = Big(wallet.totalEarnings).plus(dto.amount);
-
+  wallet.transactionCount ++
   await wallet.save({ session });
 
   return wallet;

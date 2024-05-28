@@ -7,6 +7,7 @@ import { Order } from "../models/orders.model";
 import { orderRepo } from "../repository/orders.repo";
 import { validateOrders } from "../validation/orders.validation";
 import { vendorsRepo } from "../../vendors";
+import { emitEvent } from "../../../services";
 
 class OrdersService {
   //   async requestReceived(orderId: string) {
@@ -151,6 +152,11 @@ class OrdersService {
       contents: { en: "Thank you for choosing InMinutes" },
       data: { orderId: order._id },
       userId: order.customer,
+    });
+
+    emitEvent("credit-vendor", {
+      vendorId: order.vendor._id,
+      amount: order.totalProductsCost,
     });
 
     return { orderId: order._id };

@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { walletRepo } from "../features/wallet";
+import { walletRepo, walletservice } from "../features/wallet";
 import { notificationService } from "../features/notifications";
 
 const eventEmitter = new EventEmitter();
@@ -23,7 +23,7 @@ eventEmitter.on("create-wallet", async (data) => {
 
 eventEmitter.on("notify-vendor-of-new-order", async (data) => {
   const { orderId, vendorId } = data;
-  
+
   try {
     notificationService.createNotification({
       headings: { en: "New Order" },
@@ -36,6 +36,13 @@ eventEmitter.on("notify-vendor-of-new-order", async (data) => {
       userId: vendorId,
     });
   } catch (error: any) {
-    console.error({error});
+    console.error({ error });
   }
+});
+
+eventEmitter.on("credit-vendor", async (data) => {
+  console.log({data})
+
+  const { vendorId, amount } = data;
+    await walletservice.creditVendor({vendorId, amount});
 });
