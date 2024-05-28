@@ -36,6 +36,7 @@ const orderSchema = new Schema<IOrdersDocument>(
     },
     h3Index: { type: String, required: true, index: true },
     deliveryFee: { type: String, required: true },
+    serviceFee: {type: String, default: "0"},
     totalProductsCost: { type: String, required: true },
     totalCost: { type: String, required: true },
     type: { type: String, required: true, enum: ["instant", "scheduled"] },

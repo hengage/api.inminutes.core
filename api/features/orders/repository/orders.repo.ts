@@ -19,6 +19,7 @@ class OrderRepository {
       },
       h3Index: convertLatLngToCell(payload.deliveryLocation),
       deliveryFee: payload.deliveryFee,
+      serviceFee: payload.serviceFee,
       totalProductsCost: payload.totalProductsCost,
       totalCost: payload.totalCost,
       instruction: payload.instruction,

@@ -1,5 +1,6 @@
 import { startSession } from "mongoose";
 import { Wallet } from "../models/wallet.model";
+import Big from "big.js";
 
 class WalletService {
   async creditWallet(dto: {
@@ -70,7 +71,9 @@ class WalletService {
   }
 
   async creditRider(params: { riderId: string; amount: string }) {
-    const { riderId, amount } = params;
+    let { riderId, amount } = params;
+    amount = Big(80).div(100).mul(amount).toString();
+
     try {
       const wallet = await Wallet.creditWallet({ amount, riderId });
       console.log({ "Credited rider": wallet });

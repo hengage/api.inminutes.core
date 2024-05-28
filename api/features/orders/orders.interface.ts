@@ -31,6 +31,7 @@ export interface IOrdersDocument extends Document {
   };
   h3Index: string;
   deliveryFee: string;
+  serviceFee: string;
   totalProductsCost: string;
   totalCost: string;
   type: "instant" | "scheduled";

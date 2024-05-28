@@ -12,6 +12,7 @@ class ValidateOrders {
       deliveryAddress: Joi.string().label("Delivery address").required(),
       deliveryLocation: Joi.array().label("Delivery location").required(),
       deliveryFee: Joi.string().label("Delivery fee").required(),
+      serviceFee: Joi.string().label("Service fee"),
       totalProductsCost: Joi.string().label("Total products cost").required(),
       totalCost: Joi.string().label("Total cost").required(),
       instruction: Joi.string().label("Instruction"),
