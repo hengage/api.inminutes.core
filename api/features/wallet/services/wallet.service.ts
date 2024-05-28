@@ -63,7 +63,17 @@ class WalletService {
     const { amount, vendorId } = params;
     try {
       const wallet = await Wallet.creditWallet({ amount, vendorId });
-      console.log({'Credited vendor': wallet });
+      console.log({ "Credited vendor": wallet });
+    } catch (error: any) {
+      console.error({ error });
+    }
+  }
+
+  async creditRider(params: { riderId: string; amount: string }) {
+    const { riderId, amount } = params;
+    try {
+      const wallet = await Wallet.creditWallet({ amount, riderId });
+      console.log({ "Credited rider": wallet });
     } catch (error: any) {
       console.error({ error });
     }

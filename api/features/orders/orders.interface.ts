@@ -2,6 +2,7 @@ import { Document } from "mongoose";
 
 import { ORDER_STATUS } from "../../utils";
 import { IVendorDocument } from "../vendors";
+import { IRiderDocument } from "../riders";
 
 export interface IAddOn {
   item: string;
@@ -20,7 +21,7 @@ export interface IOrdersDocument extends Document {
   _id: string;
   customer: string;
   recipientPhoneNumber: string;
-  rider?: string;
+  rider?: IRiderDocument;
   items: IOrderItem[];
   vendor: IVendorDocument;
   deliveryAddress: string;

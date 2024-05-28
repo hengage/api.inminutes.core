@@ -75,7 +75,9 @@ class OrderRepository {
 
   async updateStatus(params: { orderId: string; status: ORDER_STATUS }) {
     const order = await Order.findById(params.orderId)
-      .select("status customer type scheduledDeliveryTime totalProductsCost")
+      .select(
+        "status customer type scheduledDeliveryTime totalProductsCost rider deliveryFee"
+      )
       .populate({ path: "vendor", select: "location.coordinates" });
 
     if (!order) {
@@ -108,7 +110,10 @@ class OrderRepository {
     }
   }
 
-  public async createRemarkAndRating(createRemarkDto: any, session: ClientSession) {
+  public async createRemarkAndRating(
+    createRemarkDto: any,
+    session: ClientSession
+  ) {
     const {
       orderId,
       remarkOnRider,

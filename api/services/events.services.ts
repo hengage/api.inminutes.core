@@ -41,8 +41,12 @@ eventEmitter.on("notify-vendor-of-new-order", async (data) => {
 });
 
 eventEmitter.on("credit-vendor", async (data) => {
-  console.log({data})
-
+  console.log({ data });
   const { vendorId, amount } = data;
-    await walletservice.creditVendor({vendorId, amount});
+  await walletservice.creditVendor({ vendorId, amount });
+});
+
+eventEmitter.on("credit-rider", async (data) => {
+  const { riderId, amount } = data;
+  await walletservice.creditRider({ riderId, amount });
 });

@@ -158,8 +158,13 @@ class OrdersService {
       vendorId: order.vendor._id,
       amount: order.totalProductsCost,
     });
+    
+    emitEvent("credit-rider", {
+      riderId: order.rider,
+      amount: order.deliveryFee,
+    });
 
-    return { orderId: order._id };
+    return { orderId: order._id };                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
   }
 
   async cancelled(orderId: string) {
