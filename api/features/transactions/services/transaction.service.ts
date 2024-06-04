@@ -9,6 +9,7 @@ import { createHmac } from "crypto";
 import { Request } from "express";
 import { PAYSTACK_SECRET_KEY } from "../../../config";
 import { emitEvent } from "../../../services";
+import { IInitializeTransaction } from "../transactions.interface";
 
 class TransactionService {
   private paystackAPIKey: string;
@@ -20,7 +21,7 @@ class TransactionService {
     };
   }
 
-  async initialize(params: { email: string; amount: string; metadata: any }) {
+  async initialize(params: IInitializeTransaction) {
     const payload = {
       amount: parseInt(params.amount) * 100,
       email: params.email,

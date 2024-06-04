@@ -56,3 +56,8 @@ export enum RIDER_WORK_SLOT_STATUS {
   FINISHED = "finished",
   CANCELLED = "cancelled",
 }
+
+export enum PAYMENT_PURPOSE {
+  PRODUCT_PURCHASE = "product purchase",
+  PACKAGE_DELIVERY = "package delivery",
+}
