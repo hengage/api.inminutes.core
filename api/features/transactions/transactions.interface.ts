@@ -8,3 +8,14 @@ export interface IInitializeTransaction {
     vendorId?: string;
   };
 }
+
+export interface ICreateTransferRecipient {
+  accountName: string;
+  accountNumber: string;
+  bankCode: string,
+  currency: string;
+  recipientType: string;
+  metadata: {
+    channel: string;
+  },
+}

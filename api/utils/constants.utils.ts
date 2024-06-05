@@ -33,7 +33,7 @@ export enum WALLET_STATUS {
   CLOSED = "closed",
 }
 
-export enum WITHDRAWAL_CHANNEL {
+export enum CASHOUT_CHANNEL {
   BANK_TRANSFER = "bank transfer",
   MOBILE_MONEY = "mobile money",
 }

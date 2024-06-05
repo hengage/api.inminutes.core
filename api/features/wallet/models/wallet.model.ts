@@ -1,10 +1,10 @@
 import { ClientSession, Schema, model } from "mongoose";
 import { IWalletDocument, IWalletMethodsDocument } from "../wallet.interface";
 import {
+  CASHOUT_CHANNEL,
   HandleException,
   STATUS_CODES,
   WALLET_STATUS,
-  WITHDRAWAL_CHANNEL,
   generateUniqueString,
 } from "../../../utils";
 import Big from "big.js";
@@ -24,18 +24,18 @@ const walletSchema = new Schema<IWalletDocument>(
       type: String,
       default: "NGN",
     },
-    withdrawalDetails: [
+    cashoutAccounts: [
       {
         channel: {
           type: String,
-          enum: Object.values(WITHDRAWAL_CHANNEL),
+          enum: Object.values(CASHOUT_CHANNEL),
         },
-        type: { type: String },
-        bankName: String, // For bank names or mobile money service providers
+        bankName: String, 
         bankCode: String,
         accountName: String,
-        accountNumber: String, // Account number for both bank and mobile money
-        currency: String,
+        accountNumber: String,
+        currency:{ type: String, default:"NGN"},
+        recipientType:{type: String, default: "nuban"},
         recipientCode: String,
       },
     ],

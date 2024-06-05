@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { transactionController } from "../controllers/transactions.controller";
 import { verifyAuthTokenMiddleware } from "../../../middleware";
+import { transferController } from "../controllers/transfer.controller";
 
 class TransactionRoutes {
   router = Router();
@@ -13,8 +14,12 @@ class TransactionRoutes {
     this.router.route("/webhook").post(transactionController.webhook);
 
     this.router.use(verifyAuthTokenMiddleware);
-    
+
     this.router.route("/initialize").post(transactionController.initialize);
+
+    this.router
+      .route("/create-transfer-recipient")
+      .post(transferController.createTransferReipient);
   }
 }
 
