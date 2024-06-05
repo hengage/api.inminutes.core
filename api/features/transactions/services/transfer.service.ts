@@ -3,7 +3,7 @@ import axios from "axios";
 import { PAYSTACK_SECRET_KEY } from "../../../config";
 import { HandleException } from "../../../utils";
 import { ICreateTransferRecipient } from "../transactions.interface";
-import { walletRepo, walletservice } from "../../wallet";
+import { walletRepo, walletService } from "../../wallet";
 
 class TransferService {
   private paystackAPIKey: string;
@@ -18,7 +18,7 @@ class TransferService {
 
   async createRecipient(payload: ICreateTransferRecipient, walletId: string) {
     try {
-      await walletservice.checkDuplicateAccountNumber(
+      await walletService.checkDuplicateAccountNumber(
         walletId,
         payload.accountNumber
       );

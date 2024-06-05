@@ -3,6 +3,7 @@ import { Wallet } from "../models/wallet.model";
 import Big from "big.js";
 import { notificationService } from "../../notifications";
 import { HandleException, STATUS_CODES } from "../../../utils";
+import { walletRepo } from "../repository/wallet.repository";
 
 class WalletService {
   async creditWallet(dto: {
@@ -123,6 +124,14 @@ class WalletService {
     }
     return;
   }
+
+  async getCashoutAccounts(merchant: string, merchantId: string) {
+    const cashoutAccounts = await walletRepo.getCashoutAccounts(
+      merchant as "vendor" | "rider",
+      merchantId
+    );
+    return cashoutAccounts;
+  }
 }
 
-export const walletservice = new WalletService();
+export const walletService = new WalletService();

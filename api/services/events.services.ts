@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { walletRepo, walletservice } from "../features/wallet";
+import { walletRepo, walletService } from "../features/wallet";
 import { notificationService } from "../features/notifications";
 
 const eventEmitter = new EventEmitter();
@@ -43,10 +43,10 @@ eventEmitter.on("notify-vendor-of-new-order", async (data) => {
 eventEmitter.on("credit-vendor", async (data) => {
   console.log({ data });
   const { vendorId, amount } = data;
-  await walletservice.creditVendor({ vendorId, amount });
+  await walletService.creditVendor({ vendorId, amount });
 });
 
 eventEmitter.on("credit-rider", async (data) => {
   const { riderId, amount } = data;
-  await walletservice.creditRider({ riderId, amount });
+  await walletService.creditRider({ riderId, amount });
 });
