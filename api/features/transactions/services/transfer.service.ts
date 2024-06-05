@@ -3,6 +3,7 @@ import axios from "axios";
 import { PAYSTACK_SECRET_KEY } from "../../../config";
 import { HandleException } from "../../../utils";
 import { ICreateTransferRecipient } from "../transactions.interface";
+import { walletRepo } from "../../wallet";
 
 class TransferService {
   private paystackAPIKey: string;
@@ -15,16 +16,46 @@ class TransferService {
     };
   }
 
-  async createRecipient(params: ICreateTransferRecipient) {
+  async createRecipient(
+    payload: ICreateTransferRecipient,
+    merchant: "vendor" | "rider",
+    merchantId: string
+  ) {
     try {
       const response = await axios.post(
         "https://api.paystack.co/transferrecipient/",
-        params,
+        payload,
         { headers: this.headers }
       );
-      return response.data.data
+      const {
+        currency,
+        type: recipientType,
+        recipient_code: recipientCode,
+        metadata: { channel },
+        details: {
+          account_number: accountNumber,
+          account_name: accountName,
+          bank_code: bankCode,
+          bank_name: bankName,
+        },
+      } = response.data.data;
+
+      const cashoutAccount = {
+        channel,
+        currency,
+        recipientType,
+        accountName,
+        accountNumber,
+        bankCode,
+        bankName,
+        recipientCode,
+      };
+
+      await walletRepo.addCashoutAccount(cashoutAccount, merchant, merchantId);
+
+    //   return response.data.data;
     } catch (error: any) {
-      console.error({ error: error.response.data });
+      console.error({ error: error });
       throw new HandleException(error.status, error.message);
     }
   }

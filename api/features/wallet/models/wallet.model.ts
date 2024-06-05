@@ -37,6 +37,7 @@ const walletSchema = new Schema<IWalletDocument>(
         currency:{ type: String, default:"NGN"},
         recipientType:{type: String, default: "nuban"},
         recipientCode: String,
+        _id: false,
       },
     ],
     status: {

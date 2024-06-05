@@ -12,7 +12,7 @@ export interface IWalletDocument extends Document {
   transactionCount: number;
   totalEarnings: string;
   currency: "NGN";
-  cashoutAccounts: [ICashoutAccounts];
+  cashoutAccounts: [ICashoutAccount];
   status: WALLET_STATUS;
 }
 
@@ -28,7 +28,7 @@ export interface IWalletMethodsDocument extends Model<IWalletDocument> {
   ): Promise<IWalletDocument>;
 }
 
-export interface ICashoutAccounts {
+export interface ICashoutAccount {
   channel: string;
   bankName: string;
   bankCode: string;
