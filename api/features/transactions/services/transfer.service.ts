@@ -3,7 +3,7 @@ import axios from "axios";
 import { PAYSTACK_SECRET_KEY } from "../../../config";
 import { HandleException } from "../../../utils";
 import { ICreateTransferRecipient } from "../transactions.interface";
-import { walletRepo } from "../../wallet";
+import { walletRepo, walletservice } from "../../wallet";
 
 class TransferService {
   private paystackAPIKey: string;
@@ -16,15 +16,27 @@ class TransferService {
     };
   }
 
-  async createRecipient(
-    payload: ICreateTransferRecipient,
-    merchant: "vendor" | "rider",
-    merchantId: string
-  ) {
+  async createRecipient(payload: ICreateTransferRecipient, walletId: string) {
     try {
+      await walletservice.checkDuplicateAccountNumber(
+        walletId,
+        payload.accountNumber
+      );
+
+      const data = {
+        name: payload.accountName,
+        account_number: payload.accountNumber,
+        bank_code: payload.bankCode,
+        currency: payload.currency,
+        type: payload.recipientType,
+        metadata: {
+            channel: payload.metadata.channel
+        }
+      }
+
       const response = await axios.post(
         "https://api.paystack.co/transferrecipient/",
-        payload,
+        data,
         { headers: this.headers }
       );
       const {
@@ -51,14 +63,14 @@ class TransferService {
         recipientCode,
       };
 
-      await walletRepo.addCashoutAccount(cashoutAccount, merchant, merchantId);
+      await walletRepo.addCashoutAccount(cashoutAccount, walletId);
 
       //   return response.data.data;
     } catch (error: any) {
       console.error({ error: error });
       throw new HandleException(
-        error.response.status || error.status,
-        error.response.data || error.message
+         error.status || error.response.status,
+          error.message || error.response.data
       );
     }
   }

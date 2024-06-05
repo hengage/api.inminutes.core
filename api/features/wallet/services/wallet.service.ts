@@ -2,6 +2,7 @@ import { startSession } from "mongoose";
 import { Wallet } from "../models/wallet.model";
 import Big from "big.js";
 import { notificationService } from "../../notifications";
+import { HandleException, STATUS_CODES } from "../../../utils";
 
 class WalletService {
   async creditWallet(dto: {
@@ -93,14 +94,34 @@ class WalletService {
         headings: { en: "Your Earnings Are In!" },
         contents: {
           en:
-          `${amount} has been successfully credited to your wallet. ` +
-          `Head to your dashboard to see your new balance`,
-      },
+            `${amount} has been successfully credited to your wallet. ` +
+            `Head to your dashboard to see your new balance`,
+        },
         userId: riderId,
       });
     } catch (error: any) {
       console.error({ error });
     }
+  }
+
+  async checkDuplicateAccountNumber(walletId: string, accountNumber: string) {
+    const existingWallet = await Wallet.findOne({
+      _id: walletId,
+      "cashoutAccounts.accountNumber": accountNumber,
+    })
+      .select("cashoutAccounts.accountNumber")
+      .lean()
+      .exec();
+
+    console.log({ existingWallet });
+
+    if (existingWallet) {
+      throw new HandleException(
+        STATUS_CODES.CONFLICT,
+        "You've already added this account number. Please use a different one."
+      );
+    }
+    return;
   }
 }
 

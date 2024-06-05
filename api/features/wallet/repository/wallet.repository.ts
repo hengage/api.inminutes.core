@@ -14,20 +14,12 @@ class WalletRepository {
 
   async addCashoutAccount(
     cashoutAccount: ICashoutAccount,
-    merchant: "vendor" | "rider",
-    merchantId: string
+    walletId: string,
   ) {
-    const query: { vendor?: string; rider?: string } = {};
-
-    if (merchant === "vendor") {
-      query.vendor = merchantId;
-    } else if (merchant === "rider") {
-      query.rider = merchantId;
-    }
 
     try {
-      const wallet = await Wallet.findOneAndUpdate(
-        query,
+      const wallet = await Wallet.findByIdAndUpdate(
+        walletId,
         { $push: { cashoutAccounts: cashoutAccount } },
         { new: true, select: "-__v -updatedAt -createdAt" }
       ).lean();
