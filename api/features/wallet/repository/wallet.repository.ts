@@ -43,6 +43,23 @@ class WalletRepository {
       throw new HandleException(STATUS_CODES.NOT_FOUND, error.message);
     }
   }
+
+  async getCashoutAccounts(merchant: "vendor" | "rider", merchantId: string) {
+    const query: { vendor?: string; rider?: string } = {};
+
+    if (merchant === "vendor") {
+      query.vendor = merchantId;
+    } else if (merchant === "rider") {
+      query.rider = merchantId;
+    }
+
+    const cashoutAccounts = await Wallet.findOne(query)
+    .select('cashoutAccounts')
+    .lean()
+    .exec();
+
+    return cashoutAccounts
+  }
 }
 
 export const walletRepo = new WalletRepository();
