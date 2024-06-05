@@ -53,10 +53,13 @@ class TransferService {
 
       await walletRepo.addCashoutAccount(cashoutAccount, merchant, merchantId);
 
-    //   return response.data.data;
+      //   return response.data.data;
     } catch (error: any) {
       console.error({ error: error });
-      throw new HandleException(error.status, error.message);
+      throw new HandleException(
+        error.response.status || error.status,
+        error.response.data || error.message
+      );
     }
   }
 }
