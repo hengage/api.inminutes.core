@@ -21,14 +21,18 @@ const vendorSchema = new Schema<IVendorDocument>(
       type: String,
       required: true,
       unique: true,
-      set: toLowerCaseSetter,
+      set: function(value: string) {
+        return toLowerCaseSetter(value);
+      },
     },
     businessLogo: { type: String, required: true },
     email: {
       type: String,
       required: true,
       unique: true,
-      set: toLowerCaseSetter,
+      set: function(value: string) {
+        return toLowerCaseSetter(value);
+      },
     },
     phoneNumber: { type: String, required: true, unique: true },
     password: { type: String, required: true },

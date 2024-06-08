@@ -12,18 +12,25 @@ const riderSchema = new Schema<IRiderDocument>(
       type: String,
       default: () => generateUniqueString(5),
     },
-    fullName: { type: String, required: true, set: toLowerCaseSetter },
+    fullName: { type: String, required: true, 
+      set: function(value: string) {
+        return toLowerCaseSetter(value);
+      } },
     displayName: {
       type: String,
       required: true,
       unique: true,
-      set: toLowerCaseSetter,
+      set: function(value: string) {
+        return toLowerCaseSetter(value);
+      },
     },
     email: {
       type: String,
       required: true,
       unique: true,
-      set: toLowerCaseSetter,
+      set: function(value: string) {
+        return toLowerCaseSetter(value);
+      },
     },
     phoneNumber: { type: String, required: true, unique: true },
     password: { type: String, required: true, unique: true },

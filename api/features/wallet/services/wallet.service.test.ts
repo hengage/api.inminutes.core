@@ -1,8 +1,24 @@
 import { sum } from "./sum";
+import { walletService } from "./wallet.service";
+import {notificationService} from "../../notifications"
 
-
+// jest.mock('"../../notifications/services/notification.service')
 describe("sum module", () => {
-  test.only("adds 1 + 2 to equal 3", () => {
+  test("adds 1 + 2 to equal 3", () => {
     expect(sum(1, 2)).toBeNull();
   });
 });
+
+
+describe("test wallet service", () => {
+  test.only("it calls creditvendor method correctly", async () => {
+    jest.spyOn(walletService, "creditVendor").mockResolvedValue()
+
+    // walletService.creditVendor = jest.fn();
+    await walletService.creditVendor({vendorId: '123',amount: "4000"})
+
+    expect(walletService.creditVendor).toHaveBeenCalledTimes(1);
+    expect(walletService.creditVendor).toHaveBeenCalledWith({vendorId: '123',amount: "4000"})
+    jest.resetAllMocks()
+  })
+})
