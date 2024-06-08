@@ -5,7 +5,10 @@ import { Agenda } from "agenda";
 import { DB_URL } from "../config/secrets.config";
 import { ridersService } from "../features/riders";
 
-const agenda = new Agenda({
+var agenda: Agenda;
+if (process.env.NODE_ENV !== 'test') {
+
+agenda = new Agenda({
   db: {
     address: `${DB_URL}`,
     collection: "agenda",
@@ -15,7 +18,8 @@ const agenda = new Agenda({
 
 agenda
   .on("ready", () => console.log("Agenda started!"))
-  .on("error", () => console.log("Agenda connection error!"));
+  .on("error", () => console.log("Agenda connection error!"))
+  .stop()
 
 agenda.define("schedule-order-delivery", async (job: any) => {
   console.log("Running schedule");
@@ -44,5 +48,9 @@ agenda.define("end-working", async (job: any) => {
   // Update rider's currentlyWorking field to false
   await ridersService.updateAvailability({ riderId, currentlyWorking: false });
 });
+}
+
+
+
 
 export { agenda };
