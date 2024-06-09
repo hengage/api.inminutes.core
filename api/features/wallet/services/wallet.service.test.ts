@@ -1,4 +1,3 @@
-import { sum } from "./sum";
 import { walletService } from "./wallet.service";
 import { notificationService } from "../../notifications";
 import mongoose from "mongoose";
@@ -6,12 +5,6 @@ require("leaked-handles")
 
 
 // jest.mock('"../../notifications/services/notification.service')
-describe("sum module", () => {
-  test("adds 1 + 2 to equal 3", () => {
-    expect(sum(1, 2)).toBeNull();
-  });
-});
-
 describe("test wallet service", () => {
   afterAll(async() => {
    await   mongoose.connection.close();
