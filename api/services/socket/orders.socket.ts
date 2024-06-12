@@ -4,15 +4,26 @@ import { ordersService } from "../../features/orders";
 function listenToOrderevents(socket: Socket) {
   socket.on("confirm-order-request", async (message) => {
     console.log({ message });
-    const { orderId, distanceInKM } = message;
+    const { orderId } = message;
     try {
-      const order = await ordersService.requestConfirmed({
-        orderId,
-        distanceInKM: 20,
-      });
+      const order = await ordersService.requestConfirmed(orderId);
       socket.emit("order-request-confirmed", order);
     } catch (error: any) {
       socket.emit("confirm-order-request-error", error.message);
+    }
+  });
+
+  socket.on("order-ready-for-pick", async (message) => {
+    console.log({ message });
+    const { orderId  } = message;
+    try {
+      const order = await ordersService.ready({
+        orderId,
+        distanceInKM: 20,
+      });
+      socket.emit("order-now-ready-for-pick", order);
+    } catch (error: any) {
+      socket.emit("order-ready-for-pick-error", error.message);
     }
   });
 

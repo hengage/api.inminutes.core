@@ -41,24 +41,31 @@ class OrdersService {
     return newOrder;
   }
 
-  async requestConfirmed(params: { orderId: string; distanceInKM: number }) {
-    const { orderId, distanceInKM } = params;
-
+  async requestConfirmed(orderId: string) {
     const order = await orderRepo.updateStatus({
       orderId,
       status: ORDER_STATUS.REQUEST_CONFIRMED,
     });
 
-    await Promise.all([
       notificationService.createNotification({
         // headings: { en: "Custom Title" },
         contents: { en: "Order confirmed" },
         data: { orderId: order._id },
         userId: order.customer,
-      }),
+      })
 
-      handleInstantOrScheduledDelivery({ order, distanceInKM }),
-    ]);
+    return { orderId: order._id };
+  }
+
+  async ready(params: { orderId: string; distanceInKM: number }) {
+    const { orderId, distanceInKM } = params;
+
+    const order = await orderRepo.updateStatus({
+      orderId,
+      status: ORDER_STATUS.READY,
+    });
+
+    await  handleInstantOrScheduledDelivery({ order, distanceInKM })
 
     return { orderId: order._id };
   }

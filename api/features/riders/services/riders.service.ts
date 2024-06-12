@@ -45,7 +45,7 @@ class RidersService {
       notificationService.createNotification({
         headings: { en: "New Order Available" },
         contents: {
-          en: "A new order has been confirmed. Accept and deliver now!",
+          en: "A new order is ready for pickup. Accept and deliver!",
         },
         data: { orderId },
         userId: rider._id,

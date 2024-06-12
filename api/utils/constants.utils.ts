@@ -40,8 +40,8 @@ export enum CASHOUT_CHANNEL {
 
 export enum ORDER_STATUS {
   PENDING = "pending",
-  REQUEST_RECEIVED = "request received",
   REQUEST_CONFIRMED = "request confirmed",
+  READY = "ready",
   PICKED_UP = "picked up",
   IN_TRANSIT = "in transit",
   NEARBY = "nearby",
