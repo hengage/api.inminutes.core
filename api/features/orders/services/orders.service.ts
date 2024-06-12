@@ -33,8 +33,11 @@ class OrdersService {
         status: 1,
       })
       .populate({ path: "vendor", select: "_id" })
-      .populate({ path: "items.product", select: "name image" });
+      .populate({ path: "items.product", select: "name image" })
+      .lean()
+      .exec();
 
+      
     return newOrder;
   }
 
