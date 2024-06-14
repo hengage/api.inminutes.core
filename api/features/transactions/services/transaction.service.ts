@@ -56,7 +56,7 @@ class TransactionService {
       console.log(req.body);
       const event = req.body;
 
-      if ((event.event = "charge.success")) {
+      if (event.event === "charge.success") {
         console.log({ metadata: event.data.metadata });
         const { purpose, orderId, vendorId } = event.data.metadata;
 

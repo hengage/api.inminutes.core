@@ -16,14 +16,13 @@ export interface IWalletDocument extends Document {
   status: WALLET_STATUS;
 }
 
-
 export interface IWalletMethodsDocument extends Model<IWalletDocument> {
   creditWallet(
-    dto: {amount: string, riderId?: string, vendorId?: string},
+    dto: { amount: string; riderId?: string; vendorId?: string },
     session?: ClientSession
   ): Promise<IWalletDocument>;
   debitWallet(
-    dto: {amount: string, riderId?: string, vendorId?: string},
+    dto: { amount: string; riderId?: string; vendorId?: string },
     session?: ClientSession
   ): Promise<IWalletDocument>;
 }
@@ -37,4 +36,33 @@ export interface ICashoutAccount {
   currency: string;
   recipientType: string;
   recipientCode: string;
+}
+
+export interface ICashoutHistoryDocument extends Document {
+  vendor: IVendorDocument;
+  rider: IRiderDocument;
+  wallet: IWalletDocument;
+  amount: string;
+  recipientCode: string;
+  transferCode: string;
+  reference: string;
+  reason: string;
+  transactionFee: string;
+  bank?: string;
+  bankCode?: string;
+  accountNumber?: string;
+  status: string;
+  currency: string;
+}
+
+export interface createCashoutHistoryDTO {
+  vendor?: string;
+  rider?: string;
+  amount: string
+  wallet: string;
+  reference: string;
+  recipientCode: string;
+  transferCode: string;
+  status: string;
+  reason: string;
 }
