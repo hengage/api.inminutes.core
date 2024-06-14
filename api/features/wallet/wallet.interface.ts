@@ -54,3 +54,15 @@ export interface ICashoutHistoryDocument extends Document {
   status: string;
   currency: string;
 }
+
+export interface createCashoutHistoryDTO {
+  vendor?: string;
+  rider?: string;
+  amount: string
+  wallet: string;
+  reference: string;
+  recipientCode: string;
+  transferCode: string;
+  status: string;
+  reason: string;
+}
