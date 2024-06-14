@@ -1,9 +1,14 @@
 import { HandleException, STATUS_CODES } from "../../../utils";
-import { notificationService } from "../../notifications";
+import { NotificationService } from "../../notifications";
 import { Rider } from "../models/riders.model";
 import { ridersRepo } from "../repository/riders.repo";
 
 class RidersService {
+  private notificationService: NotificationService;
+
+  constructor() {
+    this.notificationService = new NotificationService()
+  }
   async checkEmailIstaken(email: string) {
     const rider = await Rider.findOne({ email }).select("email").lean();
 
@@ -42,7 +47,7 @@ class RidersService {
     });
 
     riders.forEach((rider) => {
-      notificationService.createNotification({
+      this.notificationService.createNotification({
         headings: { en: "New Order Available" },
         contents: {
           en: "A new order is ready for pickup. Accept and deliver!",

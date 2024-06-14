@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { HandleException, ORDER_STATUS } from "../../../utils";
 import { handleInstantOrScheduledDelivery } from "../../../utils/delivery.utils";
-import { notificationService } from "../../notifications";
+import { NotificationService } from "../../notifications";
 import { ridersRepo, ridersService } from "../../riders";
 import { Order } from "../models/orders.model";
 import { orderRepo } from "../repository/orders.repo";
@@ -10,15 +10,12 @@ import { vendorsRepo } from "../../vendors";
 import { emitEvent } from "../../../services";
 
 class OrdersService {
-  //   async requestReceived(orderId: string) {
-  //     const order = await orderRepo.updateStatus({
-  //       orderId,
-  //       status: ORDER_STATUS.REQUEST_RECEIVED,
-  //     });
+  private notificationService: NotificationService;
 
-  //     return order;
-  //   }
-
+  constructor() {
+    this.notificationService = new NotificationService();
+  }
+  
   async create(params: { payload: any; customer: string }) {
     const { payload, customer } = params;
     const order = await orderRepo.create({ payload, customer });
@@ -37,7 +34,6 @@ class OrdersService {
       .lean()
       .exec();
 
-      
     return newOrder;
   }
 
@@ -47,12 +43,12 @@ class OrdersService {
       status: ORDER_STATUS.REQUEST_CONFIRMED,
     });
 
-      notificationService.createNotification({
-        // headings: { en: "Custom Title" },
-        contents: { en: "Order confirmed" },
-        data: { orderId: order._id },
-        userId: order.customer,
-      })
+    this.notificationService.createNotification({
+      // headings: { en: "Custom Title" },
+      contents: { en: "Order confirmed" },
+      data: { orderId: order._id },
+      userId: order.customer,
+    });
 
     return { orderId: order._id };
   }
@@ -65,7 +61,7 @@ class OrdersService {
       status: ORDER_STATUS.READY,
     });
 
-    await  handleInstantOrScheduledDelivery({ order, distanceInKM })
+    await handleInstantOrScheduledDelivery({ order, distanceInKM });
 
     return { orderId: order._id };
   }
@@ -91,7 +87,7 @@ class OrdersService {
       status: ORDER_STATUS.PICKED_UP,
     });
 
-    await notificationService.createNotification({
+    await this.notificationService.createNotification({
       // headings: { en: "Custom Title" },
       contents: { en: "Your order has been picked up by the rider" },
       data: { orderId: order._id },
@@ -107,7 +103,7 @@ class OrdersService {
       status: ORDER_STATUS.NEARBY,
     });
 
-    await notificationService.createNotification({
+    await this.notificationService.createNotification({
       headings: { en: "Order in transit" },
       contents: { en: "Your order is on the way to the destination" },
       data: { orderId: order._id },
@@ -123,7 +119,7 @@ class OrdersService {
       status: ORDER_STATUS.NEARBY,
     });
 
-    await notificationService.createNotification({
+    await this.notificationService.createNotification({
       contents: {
         en:
           `Your order is close. ` +
@@ -142,7 +138,7 @@ class OrdersService {
       status: ORDER_STATUS.ARRIVED,
     });
 
-    await notificationService.createNotification({
+    await this.notificationService.createNotification({
       // headings: { en: "Custom Title" },
       contents: { en: "Your order has arrived the delivery location" },
       data: { orderId: order._id },
@@ -157,7 +153,7 @@ class OrdersService {
       status: ORDER_STATUS.DELIVERED,
     });
 
-    await notificationService.createNotification({
+    await this.notificationService.createNotification({
       headings: { en: "Order delivered" },
       contents: { en: "Thank you for choosing InMinutes" },
       data: { orderId: order._id },
@@ -168,13 +164,13 @@ class OrdersService {
       vendorId: order.vendor._id,
       amount: order.totalProductsCost,
     });
-    
+
     emitEvent("credit-rider", {
       riderId: order.rider,
       amount: order.deliveryFee,
     });
 
-    return { orderId: order._id };                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+    return { orderId: order._id };
   }
 
   async cancelled(orderId: string) {

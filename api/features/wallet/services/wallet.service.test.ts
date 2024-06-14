@@ -1,5 +1,5 @@
 import { walletService } from "./wallet.service";
-import { notificationService } from "../../notifications";
+import { NotificationService } from "../../notifications";
 import mongoose from "mongoose";
 require("leaked-handles")
 

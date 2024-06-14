@@ -1,8 +1,9 @@
 import { EventEmitter } from "events";
 import { walletRepo, walletService } from "../features/wallet";
-import { notificationService } from "../features/notifications";
+import { NotificationService } from "../features/notifications";
 
 const eventEmitter = new EventEmitter();
+const notificationService = new NotificationService()
 
 export const emitEvent = (eventName: string, message: any) => {
   console.log({ eventMessage: message });

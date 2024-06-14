@@ -3,7 +3,7 @@ import { ONE_SIGNAL_APP_ID } from "../../../config/secrets.config";
 import * as OneSignal from "@onesignal/node-onesignal";
 import { NotificationOptions } from "../notifications.interface";
 
-class NotificationService {
+export class NotificationService {
   private buildNotification(options: NotificationOptions) {
     const notification = new OneSignal.Notification();
 
@@ -31,5 +31,3 @@ class NotificationService {
     }
   }
 }
-
-export const notificationService = new NotificationService();
