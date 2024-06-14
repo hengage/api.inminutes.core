@@ -2,11 +2,11 @@ import { CashoutHistory } from "../models/cashout.model"
 import { ICashoutHistoryDocument } from "../wallet.interface"
 
 
-export class CashoutService {
+export class CashoutRepository {
     private cashoutHistoryModel = CashoutHistory
 
-    createHistory(cashoutData: any): Promise<ICashoutHistoryDocument> {
-        const cashoutHistory = new this.cashoutHistoryModel(cashoutData);
+    async createHistory(createCashoutHistoryDTO: any): Promise<ICashoutHistoryDocument> {
+        const cashoutHistory = new this.cashoutHistoryModel(createCashoutHistoryDTO);
         cashoutHistory.save();
         return cashoutHistory.toObject()
     }
