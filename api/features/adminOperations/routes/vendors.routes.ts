@@ -1,21 +1,25 @@
 import { Router } from "express";
-import { adminOpsVendorCategoryController } from "../controllers/vendorsCategory.controllers";
+import { AdminOpsVendorsCategoryController } from "../controllers/vendorsCategory.controllers";
 
-class AdminOpsVendorsRoutes {
+export class AdminOpsVendorsRoutes {
   public router: Router;
+  private adminOpsVendorCategoryController: AdminOpsVendorsCategoryController
+
   constructor() {
+    this.adminOpsVendorCategoryController = new AdminOpsVendorsCategoryController() 
+
     this.router = Router();
     this.initializeRoutes();
+
+
   }
 
   async initializeRoutes() {
     this.router
       .route("/category")
-      .post(adminOpsVendorCategoryController.createCategory);
+      .post(this.adminOpsVendorCategoryController.createCategory);
     this.router
       .route("/sub-category")
-      .post(adminOpsVendorCategoryController.createSubCategory);
+      .post(this.adminOpsVendorCategoryController.createSubCategory);
   }
 }
-
-export const adminOpsVendorsRoutes = new AdminOpsVendorsRoutes();

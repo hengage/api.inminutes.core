@@ -1,9 +1,13 @@
 import { Router } from "express";
-import { adminOpsForProductsController } from "../controllers/products.controller";
+import { AdminOpsForProductsController } from "../controllers/products.controller";
 
-class AdminOpsProductsRoutes {
+export class AdminOpsProductsRoutes {
   public router: Router;
+  private adminOpsForProductsController: AdminOpsForProductsController
+
   constructor() {
+    this.adminOpsForProductsController = new AdminOpsForProductsController()
+
     this.router = Router();
     this.initializeRoutes();
   }
@@ -11,16 +15,14 @@ class AdminOpsProductsRoutes {
   async initializeRoutes() {
     this.router
       .route("/category")
-      .post(adminOpsForProductsController.createCategory);
+      .post(this.adminOpsForProductsController.createCategory);
    
       this.router
       .route("/:productId/approve")
-      .patch(adminOpsForProductsController.approveProduct);
+      .patch(this.adminOpsForProductsController.approveProduct);
    
       this.router
       .route("/:productId/reject")
-      .patch(adminOpsForProductsController.rejectProduct);
+      .patch(this.adminOpsForProductsController.rejectProduct);
   }
 }
-
-export const adminOpsProductsRoutes = new AdminOpsProductsRoutes();

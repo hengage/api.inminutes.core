@@ -4,7 +4,7 @@ import { authRoutes } from "./features/authentication";
 import { vendorsRoutes } from "./features/vendors";
 import { mediaRoutes } from "./features/media";
 import { ridersRoutes } from "./features/riders";
-import { adminOpsRoutes } from "./features/adminOperations";
+import { AdminOpsRoutes } from "./features/adminOperations";
 import { productsRoutes } from "./features/products";
 import { ordersRoutes } from "./features/orders";
 import { transactionRoutes } from "./features/transactions";
@@ -16,8 +16,11 @@ class Routes {
         the routing configuration for the application, making it easier  to add, modify, or remove routes as needed.
     */
   public router: Router;
+  public adminOpsRoutes: AdminOpsRoutes
 
   constructor() {
+    this.adminOpsRoutes = new AdminOpsRoutes()
+
     this.router = Router();
     this.initializeRoutes();
   }
@@ -30,7 +33,7 @@ class Routes {
     this.router.use("/products", productsRoutes.router);
     this.router.use("/orders", ordersRoutes.router);
     this.router.use("/transaction", transactionRoutes.router);
-    this.router.use("/admin", adminOpsRoutes.router)
+    this.router.use("/admin", this.adminOpsRoutes.router)
     this.router.use("/media", mediaRoutes.router);
   }
 }

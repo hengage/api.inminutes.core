@@ -1,7 +1,7 @@
 import Joi from "joi";
 import { HandleException, STATUS_CODES } from "../../../utils";
 
-class ValidateadminVendorsOps {
+export class ValidateAdminVendorsOps {
   createCategory = async (payload: any) => {
     const createCategorySchema = Joi.object({
       name: Joi.string().required(),
@@ -34,5 +34,3 @@ class ValidateadminVendorsOps {
     }
   };
 }
-
-export const validateadminVendorsOps = new ValidateadminVendorsOps();
