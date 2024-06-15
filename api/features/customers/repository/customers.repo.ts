@@ -5,9 +5,39 @@ import {
   IUpdateCustomerProfile,
 } from "../customers.interface";
 import { Customer } from "../models/customers.model";
-import { customersService } from "../services/customers.services";
 
-class CustomersRepository {
+export class CustomersRepository {
+
+  async checkEmailIstaken(email: string) {
+    const customer = await Customer
+      .findOne({ email })
+      .select("email")
+      .lean();
+
+    if (customer) {
+      throw new HandleException(STATUS_CODES.CONFLICT, "Email already taken");
+    }
+
+    return;
+  }
+
+  async checkPhoneNumberIstaken(phoneNumber: string) {
+    const customer = await Customer
+      .findOne({ phoneNumber })
+      .select("phoneNumber")
+      .lean();
+
+    if (customer) {
+      throw new HandleException(
+        STATUS_CODES.CONFLICT,
+        `Looks like you already have a customer account, ` +
+          `please try to login instead`
+      );
+    }
+
+    return;
+  }
+
   async signup(payload: any): Promise<Partial<ICustomerDocument>> {
     const {
       fullName,
@@ -19,13 +49,7 @@ class CustomersRepository {
       deliveryAddress,
     } = payload;
 
-    await Promise.all([
-      usersService.isDisplayNameTaken(displayName),
-      customersService.checkPhoneNumberIstaken(phoneNumber),
-      customersService.checkEmailIstaken(email),
-    ]);
-
-    const customer = await new Customer({
+    const customer = new Customer({
       fullName,
       displayName,
       phoneNumber,
@@ -33,7 +57,9 @@ class CustomersRepository {
       password,
       dateOfBirth,
       deliveryAddress,
-    }).save();
+    })
+    
+    await customer.save();
 
     return {
       _id: customer._id,
@@ -117,5 +143,3 @@ class CustomersRepository {
     console.log("Customer deleted successfully", customerId);
   }
 }
-
-export const customersRepo = new CustomersRepository();

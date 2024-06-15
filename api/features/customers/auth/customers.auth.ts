@@ -6,22 +6,27 @@ import {
   handleErrorResponse,
 } from "../../../utils";
 import { ICustomerDocument } from "../customers.interface";
-import { validateCustomer } from "../validators/customers.validator";
+import { ValidateCustomer } from "../validators/customers.validator";
 import { Twilio } from "twilio";
 import {
   TWILIO_ACCOUNT_SID,
   TWILIO_AUTH_TOKEN,
   TWILIO_VERIFY_SID,
 } from "../../../config";
-import { customersService } from "../services/customers.services";
+import { CustomersRepository } from "../repository/customers.repo";
 
-class CustomersAuthentication {
+export class CustomersAuthentication {
   private twilioClient: Twilio;
   private verifyServiceSID: string;
+  private validateCustomer: ValidateCustomer;
+  private customersRepo: CustomersRepository;
 
   constructor() {
     this.twilioClient = new Twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
     this.verifyServiceSID = `${TWILIO_VERIFY_SID}`;
+
+    this.validateCustomer = new ValidateCustomer();
+    this.customersRepo = new CustomersRepository();
   }
 
   public async login(
@@ -30,7 +35,7 @@ class CustomersAuthentication {
     next: NextFunction
   ): Promise<void> {
     try {
-      await validateCustomer.login(req.body);
+      await this.validateCustomer.login(req.body);
 
       passport.authenticate(
         "local",
@@ -70,7 +75,7 @@ class CustomersAuthentication {
   sendVerificationCode = async (recipientPhoneNumber: string) => {
     const phoneNumber = recipientPhoneNumber.substring(1);
     try {
-      await customersService.checkPhoneNumberIstaken(phoneNumber);
+      await this.customersRepo.checkPhoneNumberIstaken(phoneNumber);
 
       const verification = await this.twilioClient.verify.v2
         .services(this.verifyServiceSID)
@@ -84,5 +89,3 @@ class CustomersAuthentication {
     }
   };
 }
-
-export const customersAuthentication = new CustomersAuthentication();
