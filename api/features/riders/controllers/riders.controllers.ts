@@ -4,7 +4,6 @@ import {
   generateJWTToken,
   handleErrorResponse,
 } from "../../../utils";
-import { ridersRepo } from "../repository/riders.repo";
 import { validateRider } from "../validators/riders.validators";
 import { ridersService } from "../services/riders.service";
 
@@ -50,7 +49,7 @@ class RidersController {
   async getMe(req: Request, res: Response) {
     const id = (req as any).user._id;
     try {
-      const rider = await ridersRepo.getMe(id);
+      const rider = await ridersService.getMe(id);
       res.status(STATUS_CODES.OK).json({
         message: "Success",
         data: { rider },

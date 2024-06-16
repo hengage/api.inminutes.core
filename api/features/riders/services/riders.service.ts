@@ -1,31 +1,38 @@
+import { ClientSession } from "mongoose";
 import { UsersService } from "../../../services";
 import { HandleException, STATUS_CODES } from "../../../utils";
 import { NotificationService } from "../../notifications";
 import { Rider } from "../models/riders.model";
-import { ridersRepo } from "../repository/riders.repo";
+import { RidersRepository } from "../repository/riders.repo";
 
 class RidersService {
   private notificationService: NotificationService;
   private usersService: UsersService;
+  private ridersRepo: RidersRepository;
 
   constructor() {
     this.usersService = new UsersService();
     this.notificationService = new NotificationService();
+    this.ridersRepo = new RidersRepository();
   }
 
   async signup(riderData: any) {
     await Promise.all([
       this.usersService.isDisplayNameTaken(riderData.displayName),
-      ridersRepo.checkEmailIstaken(riderData.email),
-      ridersRepo.checkPhoneNumberIstaken(riderData.phoneNumber),
+      this.ridersRepo.checkEmailIstaken(riderData.email),
+      this.ridersRepo.checkPhoneNumberIstaken(riderData.phoneNumber),
     ]);
 
-    return await ridersRepo.signup(riderData);
+    return await this.ridersRepo.signup(riderData);
   }
 
   async login(loginData: { email: string; password: string }) {
-    return await ridersRepo.login(loginData);
+    return await this.ridersRepo.login(loginData);
   }
+
+  async getMe(id: string) {
+    return await this.ridersRepo.getMe(id);
+    }
 
   async findAndNotifyRIdersOfOrder(params: {
     coordinates: [number, number];
@@ -33,7 +40,7 @@ class RidersService {
     orderId: string;
   }) {
     const { coordinates, distanceInKM, orderId } = params;
-    const riders = await ridersRepo.findNearbyRiders({
+    const riders = await this.ridersRepo.findNearbyRiders({
       coordinates,
       distanceInKM,
     });
@@ -55,13 +62,27 @@ class RidersService {
     currentlyWorking: boolean;
   }) {
     const { riderId, currentlyWorking } = params;
-    const rider = await ridersRepo.updateAvailability({
+    const rider = await this.ridersRepo.updateAvailability({
       riderId,
       currentlyWorking,
     });
     console.log({ rider });
     return rider;
   }
+
+  async updateLocation(updateLocationData: {riderId: string;
+    coordinates: [number, number];}) {
+    const {riderId, coordinates} = updateLocationData
+    await this.ridersRepo.updateLocation({ riderId, coordinates });
+  }
+
+  async updateRating(
+    ratingData: { riderId: string; rating: number },
+    session: ClientSession
+  ) {
+    return this.ridersRepo.updateRating(ratingData, session);
+  }
 }
+
 
 export const ridersService = new RidersService();

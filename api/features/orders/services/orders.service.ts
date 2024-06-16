@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { HandleException, ORDER_STATUS } from "../../../utils";
 import { handleInstantOrScheduledDelivery } from "../../../utils/delivery.utils";
 import { NotificationService } from "../../notifications";
-import { ridersRepo, ridersService } from "../../riders";
+import {  ridersService } from "../../riders";
 import { Order } from "../models/orders.model";
 import { OrdersRepository } from "../repository/orders.repo";
 import { ValidateOrders } from "../validation/orders.validation";
@@ -205,7 +205,7 @@ export class OrdersService {
       session.startTransaction();
 
       const riderRatingPromise = riderRating
-        ? ridersRepo.updateRating(
+        ? ridersService.updateRating(
             { riderId, rating: parseInt(riderRating) },
             session
           )

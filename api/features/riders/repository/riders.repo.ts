@@ -8,9 +8,8 @@ import {
 } from "../../../utils";
 import { Rider } from "../models/riders.model";
 import { IRiderDocument } from "../riders.interface";
-import { ridersService } from "../services/riders.service";
 
-class RidersRepository {
+export class RidersRepository {
   async checkEmailIstaken(email: string) {
     const rider = await Rider.findOne({ email }).select("email").lean();
 
@@ -176,10 +175,10 @@ class RidersRepository {
   }
 
   async updateRating(
-    updateRatingDto: { riderId: string; rating: number },
+    ratingData: { riderId: string; rating: number },
     session: ClientSession
   ) {
-    const { riderId, rating } = updateRatingDto;
+    const { riderId, rating } = ratingData;
     try {
       const rider = await Rider.findOne({
         _id: riderId,
@@ -197,5 +196,3 @@ class RidersRepository {
     }
   }
 }
-
-export const ridersRepo = new RidersRepository();
