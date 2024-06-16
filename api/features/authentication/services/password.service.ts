@@ -1,13 +1,18 @@
-import {  usersService } from "../../../services";
+import {  UsersService } from "../../../services";
 import { HandleException, STATUS_CODES, compareValues } from "../../../utils";
 
 class PasswordService {
+  private usersService: UsersService;
+
+  constructor() {
+    this.usersService = new UsersService()
+  }
   async resetPassword(
     phoneNumber: string,
     newPassword: string,
     accountType: string
   ) {
-    const AccountModel = await usersService.getUserAccountModel(accountType);
+    const AccountModel = await this.usersService.getUserAccountModel(accountType);
     const account = await (AccountModel as any).findOne({ phoneNumber }).select("phoneNumber password");
     if (!account) {
       throw new HandleException(STATUS_CODES.NOT_FOUND, "User not found");
@@ -24,7 +29,7 @@ class PasswordService {
     accountType: string
   ) {
     try {
-      const AccountModel = await usersService.getUserAccountModel(accountType);
+      const AccountModel = await this.usersService.getUserAccountModel(accountType);
       const account = await (AccountModel as any).findById(accountId).select("password");
 
       if (!account) {

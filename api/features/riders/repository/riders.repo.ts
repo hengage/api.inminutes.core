@@ -1,9 +1,5 @@
 import { ClientSession } from "mongoose";
-import {
-  convertLatLngToCell,
-  emitEvent,
-  usersService,
-} from "../../../services";
+import { convertLatLngToCell, emitEvent } from "../../../services";
 import {
   HandleException,
   STATUS_CODES,
@@ -25,7 +21,6 @@ class RidersRepository {
       dateOfBirth,
       residentialAddress,
     } = payload;
-
 
     const rider = await Rider.create({
       fullName,
@@ -158,7 +153,7 @@ class RidersRepository {
     updateRatingDto: { riderId: string; rating: number },
     session: ClientSession
   ) {
-    const { riderId, rating, } = updateRatingDto;
+    const { riderId, rating } = updateRatingDto;
     try {
       const rider = await Rider.findOne({
         _id: riderId,

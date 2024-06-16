@@ -1,12 +1,18 @@
 import { Request, Response } from "express";
 import { STATUS_CODES, handleErrorResponse } from "../../../utils";
-import { usersService } from "../../../services";
+import {UsersService } from "../../../services";
 import { authService } from "../services/auth.service";
 
 class AuthController {
+  private usersService: UsersService
+
+  constructor(){
+    this.usersService = new UsersService()
+  }
+
   async checkPhoneNumberIstaken(req: Request, res: Response) {
     try {
-      await usersService.isPhoneNumberTaken(req.body.phoneNumber);
+      await this.usersService.isPhoneNumberTaken(req.body.phoneNumber);
       res.status(STATUS_CODES.NO_CONTENT).json({
         message: "succesful",
       });

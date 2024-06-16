@@ -5,7 +5,6 @@ import {
   handleErrorResponse,
 } from "../../../utils";
 import { vendorsRepo } from "../repository/vendors.repo";
-import { usersService } from "../../../services";
 import { vendorsService } from "../services/vendor.services";
 import { validateVendor } from "../validators/vendors.validators";
 

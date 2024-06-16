@@ -1,4 +1,3 @@
-import { usersService } from "../../../services";
 import { HandleException, STATUS_CODES } from "../../../utils";
 import {
   ICustomerDocument,
@@ -7,7 +6,6 @@ import {
 import { Customer } from "../models/customers.model";
 
 export class CustomersRepository {
-
   async checkEmailIstaken(email: string) {
     const customer = await Customer
       .findOne({ email })

@@ -4,19 +4,25 @@ import {
   generateJWTToken,
   handleErrorResponse,
 } from "../../../utils";
-import { usersService } from "../../../services";
+import { UsersService } from "../../../services";
 import { ridersRepo } from "../repository/riders.repo";
 import { validateRider } from "../validators/riders.validators";
 import { ridersService } from "../services/riders.service";
 
 class RidersController {
+  private usersService: UsersService;
+
+  constructor(){
+    this.usersService = new UsersService();
+  }
+
   async signup(req: Request, res: Response) {
     try {
       await validateRider.signUp(req.body);
 
       
     await Promise.all([
-      usersService.isDisplayNameTaken(req.body.displayName),
+      this.usersService.isDisplayNameTaken(req.body.displayName),
       ridersService.checkEmailIstaken(req.body.email),
       ridersService.checkPhoneNumberIstaken(req.body.phoneNumber),
     ]);
