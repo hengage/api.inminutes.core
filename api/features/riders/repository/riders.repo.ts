@@ -11,7 +11,32 @@ import { IRiderDocument } from "../riders.interface";
 import { ridersService } from "../services/riders.service";
 
 class RidersRepository {
-  async signup(payload: any): Promise<Partial<IRiderDocument>> {
+  async checkEmailIstaken(email: string) {
+    const rider = await Rider.findOne({ email }).select("email").lean();
+
+    if (rider) {
+      throw new HandleException(STATUS_CODES.CONFLICT, "Email already taken");
+    }
+
+    return;
+  }
+
+  async checkPhoneNumberIstaken(phoneNumber: string) {
+    const rider = await Rider.findOne({ phoneNumber })
+      .select("phoneNumber")
+      .lean();
+
+    if (rider) {
+      throw new HandleException(
+        STATUS_CODES.CONFLICT,
+        `Looks like you already have a rider account, ` +
+          `please try to login instead`
+      );
+    }
+
+    return;
+  }
+  async signup(riderData: any): Promise<Partial<IRiderDocument>> {
     const {
       fullName,
       displayName,
@@ -20,7 +45,7 @@ class RidersRepository {
       password,
       dateOfBirth,
       residentialAddress,
-    } = payload;
+    } = riderData;
 
     const rider = await Rider.create({
       fullName,

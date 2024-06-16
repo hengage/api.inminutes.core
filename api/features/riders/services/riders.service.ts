@@ -9,30 +9,14 @@ class RidersService {
   constructor() {
     this.notificationService = new NotificationService()
   }
-  async checkEmailIstaken(email: string) {
-    const rider = await Rider.findOne({ email }).select("email").lean();
 
-    if (rider) {
-      throw new HandleException(STATUS_CODES.CONFLICT, "Email already taken");
-    }
+  async signup(riderData: any) {
+    await Promise.all([
+      ridersRepo.checkEmailIstaken(riderData.email),
+      ridersRepo.checkPhoneNumberIstaken(riderData.phoneNumber),
+    ]);
 
-    return;
-  }
-
-  async checkPhoneNumberIstaken(phoneNumber: string) {
-    const rider = await Rider.findOne({ phoneNumber })
-      .select("phoneNumber")
-      .lean();
-
-    if (rider) {
-      throw new HandleException(
-        STATUS_CODES.CONFLICT,
-        `Looks like you already have a rider account, ` +
-          `please try to login instead`
-      );
-    }
-
-    return;
+    return await ridersRepo.signup(riderData)
   }
 
   async findAndNotifyRIdersOfOrder(params: {

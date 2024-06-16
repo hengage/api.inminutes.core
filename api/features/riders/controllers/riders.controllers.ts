@@ -20,14 +20,10 @@ class RidersController {
     try {
       await validateRider.signUp(req.body);
 
-      
-    await Promise.all([
-      this.usersService.isDisplayNameTaken(req.body.displayName),
-      ridersService.checkEmailIstaken(req.body.email),
-      ridersService.checkPhoneNumberIstaken(req.body.phoneNumber),
-    ]);
 
-      const rider = await ridersRepo.signup(req.body);
+    this.usersService.isDisplayNameTaken(req.body.displayName)
+
+      const rider = await ridersService.signup(req.body);
 
       const jwtPayload = { _id: rider._id, email: rider.email };
       const accessToken = generateJWTToken(jwtPayload, "1h");
