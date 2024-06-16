@@ -1,23 +1,24 @@
 import { Router } from "express";
-import { ordersController } from "../controllers/orders.controller";
+import { OrdersController } from "../controllers/orders.controller";
 import { verifyAuthTokenMiddleware } from "../../../middleware";
 
-class OrdersRoutes {
+export class OrdersRoutes {
+  private ordersController: OrdersController;
   public router: Router;
 
   constructor() {
+    this.ordersController = new OrdersController();
+
     this.router = Router();
     this.initializeRoutes();
   }
 
   initializeRoutes() {
     this.router.use(verifyAuthTokenMiddleware);
-    this.router.route("/").post(ordersController.create);
+    this.router.route("/").post(this.ordersController.create);
     this.router
       .route("/:orderId/feedback")
-      .post(ordersController.submitOrderFeedback);
-    this.router.route("/:orderId").get(ordersController.orderDetails);
+      .post(this.ordersController.submitOrderFeedback);
+    this.router.route("/:orderId").get(this.ordersController.orderDetails);
   }
 }
-
-export const ordersRoutes = new OrdersRoutes();

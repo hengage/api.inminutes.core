@@ -6,10 +6,10 @@ import { MediaRoutes } from "./features/media";
 import { ridersRoutes } from "./features/riders";
 import { AdminOpsRoutes } from "./features/adminOperations";
 import { productsRoutes } from "./features/products";
-import { ordersRoutes } from "./features/orders";
+import { OrdersRoutes } from "./features/orders";
 import { transactionRoutes } from "./features/transactions";
 
-class Routes {
+export class Routes {
   /*
         Imports and sets up all the necessary routes classes for use in the application.
         The main purpose of this class is to provide a centralized location to manage
@@ -17,11 +17,13 @@ class Routes {
     */
   private mediaRoutes: MediaRoutes
   private adminOpsRoutes: AdminOpsRoutes
+  private ordersRoutes: OrdersRoutes
   public router: Router;
 
   constructor() {
     this.mediaRoutes = new MediaRoutes();
     this.adminOpsRoutes = new AdminOpsRoutes()
+    this.ordersRoutes = new OrdersRoutes();
 
     this.router = Router();
     this.initializeRoutes();
@@ -33,11 +35,9 @@ class Routes {
     this.router.use("/vendors", vendorsRoutes.router);
     this.router.use("/riders", ridersRoutes.router);
     this.router.use("/products", productsRoutes.router);
-    this.router.use("/orders", ordersRoutes.router);
+    this.router.use("/orders", this.ordersRoutes.router);
     this.router.use("/transaction", transactionRoutes.router);
     this.router.use("/admin", this.adminOpsRoutes.router)
     this.router.use("/media", this.mediaRoutes.router);
   }
 }
-
-export const routes = new Routes();

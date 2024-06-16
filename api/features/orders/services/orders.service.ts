@@ -4,21 +4,27 @@ import { handleInstantOrScheduledDelivery } from "../../../utils/delivery.utils"
 import { NotificationService } from "../../notifications";
 import { ridersRepo, ridersService } from "../../riders";
 import { Order } from "../models/orders.model";
-import { orderRepo } from "../repository/orders.repo";
-import { validateOrders } from "../validation/orders.validation";
+import { OrdersRepository } from "../repository/orders.repo";
+import { ValidateOrders } from "../validation/orders.validation";
 import { vendorsRepo } from "../../vendors";
 import { emitEvent } from "../../../services";
 
-class OrdersService {
+export class OrdersService {
   private notificationService: NotificationService;
+  private validateOrders: ValidateOrders
+  private ordersRepo: OrdersRepository
 
   constructor() {
     this.notificationService = new NotificationService();
+    this.ordersRepo = new OrdersRepository();
+    this.validateOrders = new ValidateOrders();
   }
   
-  async create(params: { payload: any; customer: string }) {
-    const { payload, customer } = params;
-    const order = await orderRepo.create({ payload, customer });
+  async create(params: { orderData: any; customer: string }) {
+    const { orderData, customer } = params;
+    await this.validateOrders.create(orderData);
+
+    const order = await this.ordersRepo.create({ orderData, customer });
     const newOrder = await Order.findById(order.id)
       .select({
         deliveryAddress: 1,
@@ -38,7 +44,7 @@ class OrdersService {
   }
 
   async requestConfirmed(orderId: string) {
-    const order = await orderRepo.updateStatus({
+    const order = await this.ordersRepo.updateStatus({
       orderId,
       status: ORDER_STATUS.REQUEST_CONFIRMED,
     });
@@ -56,7 +62,7 @@ class OrdersService {
   async ready(params: { orderId: string; distanceInKM: number }) {
     const { orderId, distanceInKM } = params;
 
-    const order = await orderRepo.updateStatus({
+    const order = await this.ordersRepo.updateStatus({
       orderId,
       status: ORDER_STATUS.READY,
     });
@@ -67,12 +73,12 @@ class OrdersService {
   }
 
   async assignRider(params: { orderId: string; riderId: string }) {
-    await validateOrders.assignRider({
+    await this.validateOrders.assignRider({
       orderId: params.orderId,
       riderId: params.riderId,
     });
 
-    const order = await orderRepo.assignRider({
+    const order = await this.ordersRepo.assignRider({
       orderId: params.orderId,
       riderId: params.riderId,
     });
@@ -82,7 +88,7 @@ class OrdersService {
 
   async pickedUp(orderId: string) {
     console.log({ orderfromservice: orderId });
-    const order = await orderRepo.updateStatus({
+    const order = await this.ordersRepo.updateStatus({
       orderId,
       status: ORDER_STATUS.PICKED_UP,
     });
@@ -98,7 +104,7 @@ class OrdersService {
   }
 
   async inTransit(orderId: string) {
-    const order = await orderRepo.updateStatus({
+    const order = await this.ordersRepo.updateStatus({
       orderId,
       status: ORDER_STATUS.NEARBY,
     });
@@ -114,7 +120,7 @@ class OrdersService {
   }
 
   async nearBy(orderId: string) {
-    const order = await orderRepo.updateStatus({
+    const order = await this.ordersRepo.updateStatus({
       orderId,
       status: ORDER_STATUS.NEARBY,
     });
@@ -133,7 +139,7 @@ class OrdersService {
   }
 
   async arrived(orderId: string) {
-    const order = await orderRepo.updateStatus({
+    const order = await this.ordersRepo.updateStatus({
       orderId,
       status: ORDER_STATUS.ARRIVED,
     });
@@ -148,7 +154,7 @@ class OrdersService {
   }
 
   async delivered(orderId: string) {
-    const order = await orderRepo.updateStatus({
+    const order = await this.ordersRepo.updateStatus({
       orderId,
       status: ORDER_STATUS.DELIVERED,
     });
@@ -174,7 +180,7 @@ class OrdersService {
   }
 
   async cancelled(orderId: string) {
-    const order = await orderRepo.updateStatus({
+    const order = await this.ordersRepo.updateStatus({
       orderId,
       status: ORDER_STATUS.CANCELLED,
     });
@@ -182,7 +188,7 @@ class OrdersService {
     return { orderId: order._id };
   }
 
-  async submitOrderFeedback(dto: any) {
+  async submitOrderFeedback(feedbackData: any) {
     const {
       orderId,
       vendorId,
@@ -191,10 +197,11 @@ class OrdersService {
       riderRating,
       remarkOnVendor,
       remarkOnRider,
-    } = dto;
+    } = feedbackData;
 
     const session = await mongoose.startSession();
     try {
+      await this.validateOrders.orderFeedback(feedbackData)
       session.startTransaction();
 
       const riderRatingPromise = riderRating
@@ -214,7 +221,7 @@ class OrdersService {
       await Promise.all([
         riderRatingPromise,
         vendorRatingPromise,
-        orderRepo.createRemarkAndRating(
+        this.ordersRepo.createRemarkAndRating(
           { orderId, vendorRating, riderRating, remarkOnVendor, remarkOnRider },
           session
         ),
@@ -231,5 +238,3 @@ class OrdersService {
     }
   }
 }
-
-export const ordersService = new OrdersService();

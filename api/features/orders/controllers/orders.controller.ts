@@ -1,18 +1,22 @@
 import { Request, Response } from "express";
 
 import { STATUS_CODES, handleErrorResponse } from "../../../utils";
-import { orderRepo } from "../repository/orders.repo";
-import { ordersService } from "../services/orders.service";
-import { validateOrders } from "../validation/orders.validation";
+import { OrdersRepository } from "../repository/orders.repo";
+import { OrdersService } from "../services/orders.service";
 
-class OrderController {
+export class OrdersController {
+  private ordersRepo: OrdersRepository;
+  private ordersService: OrdersService;
+
+  constructor(){
+    this.ordersRepo = new OrdersRepository();
+    this.ordersService = new OrdersService();
+  }
   async create(req: Request, res: Response) {
     const customer = (req as any).user._id;
 
     try {
-      await validateOrders.create(req.body);
-      const order = await ordersService.create({ payload: req.body, customer });
-
+      const order = await this.ordersService.create({ orderData: req.body, customer });
       res.status(STATUS_CODES.CREATED).json({
         message: "success",
         data: { order },
@@ -24,7 +28,7 @@ class OrderController {
 
   async orderDetails(req: Request, res: Response) {
     try {
-      const order = await orderRepo.orderDetails(req.params.orderId);
+      const order = await this.ordersRepo.orderDetails(req.params.orderId);
       res.status(STATUS_CODES.OK).json({
         message: "success",
         data: { order },
@@ -45,8 +49,7 @@ class OrderController {
     } = req.body;
     const { orderId } = req.params;
     try {
-      await validateOrders.orderFeedback(req.body)
-      await ordersService.submitOrderFeedback({
+      await this.ordersService.submitOrderFeedback({
         orderId,
         vendorId,
         vendorRating,
@@ -63,5 +66,3 @@ class OrderController {
     }
   }
 }
-
-export const ordersController = new OrderController();

@@ -6,14 +6,17 @@ import session from "express-session"
 
 import { dbConfig, passportStrategySetup, serializeUser } from "../config";
 import { centralErrorHandler } from "../middleware";
-import { routes } from "../routes";
+import { Routes } from "../routes";
 
 class App {
   public app: Express;
   public router: express.Router;
+  public apiRoutes
+
   constructor() {
     this.app = express();
     this.router = express.Router();
+    this.apiRoutes = new Routes
 
     this.connectDb();
     this.initializeMiddleware();
@@ -60,7 +63,7 @@ class App {
       res.send("Express typeScript app is set");
     });
 
-    this.app.use("/api", routes.router);
+    this.app.use("/api", this.apiRoutes.router);
   }
 
   private initializeCentralErrorMiddleware() {

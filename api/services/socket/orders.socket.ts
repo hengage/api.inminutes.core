@@ -1,6 +1,7 @@
 import { Socket } from "socket.io";
-import { ordersService } from "../../features/orders";
+import { OrdersService } from "../../features/orders";
 
+const ordersService = new OrdersService();
 function listenToOrderevents(socket: Socket) {
   socket.on("confirm-order-request", async (message) => {
     console.log({ message });
@@ -15,7 +16,7 @@ function listenToOrderevents(socket: Socket) {
 
   socket.on("order-ready-for-pick", async (message) => {
     console.log({ message });
-    const { orderId  } = message;
+    const { orderId } = message;
     try {
       const order = await ordersService.ready({
         orderId,
