@@ -1,11 +1,17 @@
 import { HandleException, STATUS_CODES } from "../../../utils";
 import { Product, ProductCategory, WishList } from "../models/products.models";
 
-class ProductsRepository {
+export class ProductsRepository {
+  private productModel = Product;
+  private productCategoryModel = ProductCategory;
+  private wishListModel = WishList;
+
+  constructor() {}
+
   async addProduct(payload: any, vendor: string) {
     const { name, image, description, quantity, cost, tags, addOns, category } =
       payload;
-    const product = await Product.create({
+    const product = await this.productModel.create({
       name,
       image,
       description,
@@ -29,7 +35,8 @@ class ProductsRepository {
   }
 
   async getCategories() {
-    const categories = await ProductCategory.find()
+    const categories = await this.productCategoryModel
+      .find()
       .select("_id name")
       .lean()
       .exec();
@@ -46,7 +53,8 @@ class ProductsRepository {
   }
 
   async productDetails(productId: string) {
-    const product = await Product.findById(productId)
+    const product = await this.productModel
+      .findById(productId)
       .select("-__v -updatedAt -createdAt -status")
       .populate({ path: "category", select: "name" })
       .populate({
@@ -58,7 +66,7 @@ class ProductsRepository {
   }
 
   async deleteProduct(productId: string, vendorId: string) {
-    const result = await Product.deleteOne({
+    const result = await this.productModel.deleteOne({
       _id: productId,
       vendor: vendorId,
     });
@@ -82,7 +90,7 @@ class ProductsRepository {
       leanWithId: false,
     };
 
-    const products = await Product.paginate(query, options);
+    const products = await this.productModel.paginate(query, options);
     return products;
   }
 
@@ -127,10 +135,12 @@ class ProductsRepository {
   }
 
   async getWishListForCustomer(customerId: string) {
-    const wishList = await WishList.findOne({ customer: customerId }).populate({
-      path: "products",
-      select: "_id name image",
-    });
+    const wishList = await this.wishListModel
+      .findOne({ customer: customerId })
+      .populate({
+        path: "products",
+        select: "_id name image",
+      });
     return wishList;
   }
 
@@ -139,7 +149,7 @@ class ProductsRepository {
     productId: string;
   }) {
     const { customerId, productId } = params;
-    const isInWishList = await WishList.exists({
+    const isInWishList = await this.wishListModel.exists({
       customer: customerId,
       products: productId,
     });
@@ -147,5 +157,3 @@ class ProductsRepository {
     return isInWishList;
   }
 }
-
-export const productsRepo = new ProductsRepository();

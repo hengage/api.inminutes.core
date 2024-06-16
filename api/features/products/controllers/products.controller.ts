@@ -1,13 +1,20 @@
 import { Request, Response } from "express";
 
 import { STATUS_CODES, handleErrorResponse } from "../../../utils";
-import { productsRepo } from "../repository/products.repo";
+import { ProductsRepository } from "../repository/products.repo";
 import { validateProducts } from "../validators/products.validators";
 
-class ProductsController {
+export class ProductsController {
+  private productsRepo: ProductsRepository;
+
+  constructor() {
+    this.productsRepo = new ProductsRepository()
+  }
+
+
   async getCategories(req: Request, res: Response) {
     try {
-      const categories = await productsRepo.getCategories();
+      const categories = await this.productsRepo.getCategories();
       res.status(STATUS_CODES.OK).json({
         message: "success",
         data: { categories },
@@ -21,7 +28,7 @@ class ProductsController {
     try {
       await validateProducts.addProduct(req.body);
       const vendor = (req as any).user._id;
-      const product = await productsRepo.addProduct(req.body, vendor);
+      const product = await this.productsRepo.addProduct(req.body, vendor);
       res.status(STATUS_CODES.CREATED).json({
         message: "Success",
         data: { product },
@@ -33,7 +40,7 @@ class ProductsController {
 
   async productDetails(req: Request, res: Response) {
     try {
-      const product = await productsRepo.productDetails(req.params.productId);
+      const product = await this.productsRepo.productDetails(req.params.productId);
       res.status(STATUS_CODES.CREATED).json({
         message: "Success",
         data: { product },
@@ -47,7 +54,7 @@ class ProductsController {
     try {
       const vendor = (req as any).user;
       console.log(vendor);
-      await productsRepo.deleteProduct(req.params.productId, vendor._id);
+      await this.productsRepo.deleteProduct(req.params.productId, vendor._id);
       res.status(STATUS_CODES.OK).json({
         message: "success",
       });
@@ -61,7 +68,7 @@ class ProductsController {
 
     try {
       await validateProducts.productSearch(req.body);
-      const products = await productsRepo.searchProducts({
+      const products = await this.productsRepo.searchProducts({
         page,
         term: req.body.term,
       });
@@ -77,7 +84,7 @@ class ProductsController {
   async getProductsByCategory(req: Request, res: Response) {
     const page = parseInt(req.query.page as string) || 1
     try {
-      const products = await productsRepo.getProductsByCategory({
+      const products = await this.productsRepo.getProductsByCategory({
         categoryId: req.params.categoryId,
         page
       })
@@ -92,5 +99,3 @@ class ProductsController {
     }
   }
 }
-
-export const productsController = new ProductsController();

@@ -8,19 +8,21 @@ import {
 import { ValidateCustomer } from "../validators/customers.validator";
 import { CustomersService } from "../services/customers.services";
 import { CustomersAuthentication } from "../auth/customers.auth";
-import { productsRepo } from "../../products";
+import { ProductsRepository } from "../../products";
 
 export class CustomersController {
   private validateCustomer: ValidateCustomer
   private customersAuthentication: CustomersAuthentication
   private customersRepo: CustomersRepository
   private customersService: CustomersService
+  private productsRepo: ProductsRepository
 
   constructor() {
     this.validateCustomer = new ValidateCustomer();
     this.customersAuthentication = new CustomersAuthentication();
     this.customersRepo = new CustomersRepository();
     this.customersService = new CustomersService();
+    this.productsRepo = new ProductsRepository();
   }
 
 
@@ -146,7 +148,7 @@ export class CustomersController {
   async getWishList(req: Request, res: Response) {
     const customerId = (req as any).user._id;
     try {
-      const wishList = await productsRepo.getWishListForCustomer(customerId);
+      const wishList = await this.productsRepo.getWishListForCustomer(customerId);
       console.log({ wishList });
       res.status(STATUS_CODES.OK).json({
         message: "success",

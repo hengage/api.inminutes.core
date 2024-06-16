@@ -3,7 +3,10 @@ import { Product, ProductCategory } from "../../products";
 
 export class AdminOpsForProductsService {
   private productCategoryModel = ProductCategory;
-  private productModel = Product;
+  private productModel = Product
+
+  constructor() {
+  }
 
   async createCategory(payload: any) {
     const categoryExists = await this.productCategoryModel
@@ -40,7 +43,7 @@ export class AdminOpsForProductsService {
   }
 
   async rejectProduct(productId: string) {
-    await this.productModel.findByIdAndUpdate(
+    await Product.findByIdAndUpdate(
       productId,
       {
         $set: { status: PRODUCT_STATUS.REJECTED },
