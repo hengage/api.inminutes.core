@@ -4,25 +4,16 @@ import {
   generateJWTToken,
   handleErrorResponse,
 } from "../../../utils";
-import { UsersService } from "../../../services";
 import { ridersRepo } from "../repository/riders.repo";
 import { validateRider } from "../validators/riders.validators";
 import { ridersService } from "../services/riders.service";
 
 class RidersController {
-  private usersService: UsersService;
-
-  constructor(){
-    this.usersService = new UsersService();
-  }
+  constructor() {}
 
   async signup(req: Request, res: Response) {
     try {
       await validateRider.signUp(req.body);
-
-
-    this.usersService.isDisplayNameTaken(req.body.displayName)
-
       const rider = await ridersService.signup(req.body);
 
       const jwtPayload = { _id: rider._id, email: rider.email };
@@ -41,7 +32,7 @@ class RidersController {
   async login(req: Request, res: Response) {
     try {
       await validateRider.login(req.body);
-      const rider = await ridersRepo.login(req.body.email, req.body.password);
+      const rider = await ridersService.login(req.body);
 
       const jwtPayload = { _id: rider._id, phoneNumber: rider.phoneNumber };
       const accessToken = generateJWTToken(jwtPayload, "1h");

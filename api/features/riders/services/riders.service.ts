@@ -1,3 +1,4 @@
+import { UsersService } from "../../../services";
 import { HandleException, STATUS_CODES } from "../../../utils";
 import { NotificationService } from "../../notifications";
 import { Rider } from "../models/riders.model";
@@ -5,18 +6,25 @@ import { ridersRepo } from "../repository/riders.repo";
 
 class RidersService {
   private notificationService: NotificationService;
+  private usersService: UsersService;
 
   constructor() {
-    this.notificationService = new NotificationService()
+    this.usersService = new UsersService();
+    this.notificationService = new NotificationService();
   }
 
   async signup(riderData: any) {
     await Promise.all([
+      this.usersService.isDisplayNameTaken(riderData.displayName),
       ridersRepo.checkEmailIstaken(riderData.email),
       ridersRepo.checkPhoneNumberIstaken(riderData.phoneNumber),
     ]);
 
-    return await ridersRepo.signup(riderData)
+    return await ridersRepo.signup(riderData);
+  }
+
+  async login(loginData: { email: string; password: string }) {
+    return await ridersRepo.login(loginData);
   }
 
   async findAndNotifyRIdersOfOrder(params: {
@@ -51,7 +59,7 @@ class RidersService {
       riderId,
       currentlyWorking,
     });
-    console.log({rider})
+    console.log({ rider });
     return rider;
   }
 }

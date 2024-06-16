@@ -70,7 +70,8 @@ class RidersRepository {
     };
   }
 
-  async login(email: string, password: string) {
+  async login(loginData: {email: string, password: string}) {
+    const {email, password} = loginData;
     const rider = await Rider.findOne({ email }).select(
       "email phoneNumber password"
     );
