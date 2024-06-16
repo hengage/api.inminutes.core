@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { DB_URL } from './secrets.config';
 
 
-class DBConfig {
+export class DBConfig {
     private db: mongoose.Connection | undefined
 
     constructor() {
@@ -45,6 +45,3 @@ class DBConfig {
 
     }
 }
-
-
-export const dbConfig = new DBConfig();
