@@ -1,3 +1,5 @@
+export { MediaUploadConfig } from "./cloudinary.config";
+
 export { DB_URL, PAYSTACK_SECRET_KEY  } from "./secrets.config";
 
 export { oneSignalClient } from "./oneSignal.config";

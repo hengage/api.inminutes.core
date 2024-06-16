@@ -5,7 +5,7 @@ import {
   CLOUDINARY_CLOUD_NAME,
 } from "./secrets.config";
 
-class MediaUploadConfig {
+export class MediaUploadConfig {
   constructor() {
     cloudinary.config({
       cloud_name: CLOUDINARY_CLOUD_NAME,
@@ -27,5 +27,3 @@ class MediaUploadConfig {
     return result.secure_url;
   }
 }
-
-export const mediaUploadConfig = new MediaUploadConfig();

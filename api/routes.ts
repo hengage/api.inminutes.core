@@ -2,7 +2,7 @@ import { Router } from "express";
 import { customersRoutes } from "./features/customers";
 import { authRoutes } from "./features/authentication";
 import { vendorsRoutes } from "./features/vendors";
-import { mediaRoutes } from "./features/media";
+import { MediaRoutes } from "./features/media";
 import { ridersRoutes } from "./features/riders";
 import { AdminOpsRoutes } from "./features/adminOperations";
 import { productsRoutes } from "./features/products";
@@ -15,10 +15,12 @@ class Routes {
         The main purpose of this class is to provide a centralized location to manage
         the routing configuration for the application, making it easier  to add, modify, or remove routes as needed.
     */
+  private mediaRoutes: MediaRoutes
+  private adminOpsRoutes: AdminOpsRoutes
   public router: Router;
-  public adminOpsRoutes: AdminOpsRoutes
 
   constructor() {
+    this.mediaRoutes = new MediaRoutes();
     this.adminOpsRoutes = new AdminOpsRoutes()
 
     this.router = Router();
@@ -34,7 +36,7 @@ class Routes {
     this.router.use("/orders", ordersRoutes.router);
     this.router.use("/transaction", transactionRoutes.router);
     this.router.use("/admin", this.adminOpsRoutes.router)
-    this.router.use("/media", mediaRoutes.router);
+    this.router.use("/media", this.mediaRoutes.router);
   }
 }
 

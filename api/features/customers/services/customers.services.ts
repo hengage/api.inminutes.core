@@ -1,11 +1,13 @@
 import { HandleException, STATUS_CODES } from "../../../utils";
-import { mediaService } from "../../media";
+import { MediaService } from "../../media";
 import { CustomersRepository } from "../repository/customers.repo";
 
 export class CustomersService {
+  private mediaService: MediaService;
   private customersRepo: CustomersRepository;
 
   constructor() {
+    this.mediaService = new MediaService()
     this.customersRepo = new CustomersRepository();
   }
 
@@ -24,7 +26,7 @@ export class CustomersService {
     image: Record<string, any>;
   }) {
     const { customerId, image } = params;
-    const displayPhotoUrl = await mediaService.uploadToCloudinary(
+    const displayPhotoUrl = await this.mediaService.uploadToCloudinary(
       image,
       "display-photo"
     );

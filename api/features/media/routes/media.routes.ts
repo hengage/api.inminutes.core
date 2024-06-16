@@ -1,18 +1,18 @@
 import { Router } from "express";
-import { mediaController } from "../controllers/media.controller";
+import { MediaController } from "../controllers/media.controller";
 
-class MediaRoutes {
+export class MediaRoutes {
+  public mediaController: MediaController;
   public router = Router();
 
   constructor() {
+    this.mediaController = new MediaController()
     this.initializeRoutes();
   }
 
   public initializeRoutes(): void {
     this.router
       .route(`/files/upload`)
-      .post(mediaController.uploadMedia);
+      .post(this.mediaController.uploadMedia);
   }
 }
-
-export const mediaRoutes = new MediaRoutes;
