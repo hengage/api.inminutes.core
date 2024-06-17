@@ -1,5 +1,6 @@
 import { Socket } from "socket.io";
 import { ridersService } from "../../features/riders";
+// const ridersService = new RidersService()
 
 function listenToRiderEvents(socket: Socket) {
   socket.on("update-rider-location", async (message) => {

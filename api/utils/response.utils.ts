@@ -7,6 +7,7 @@ function handleErrorResponse(
   message: string = "Failed"
 ) {
   console.log({ error: { status: error.status, message: error.message } });
+  console.log({ error});
 
   const errorMessage =
     (error.status && error.status >= 500) || error.status === undefined

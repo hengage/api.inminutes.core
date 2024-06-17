@@ -2,25 +2,30 @@ import mongoose from "mongoose";
 import { HandleException, ORDER_STATUS } from "../../../utils";
 import { handleInstantOrScheduledDelivery } from "../../../utils/delivery.utils";
 import { NotificationService } from "../../notifications";
-import {  ridersService } from "../../riders";
 import { Order } from "../models/orders.model";
 import { OrdersRepository } from "../repository/orders.repo";
 import { ValidateOrders } from "../validation/orders.validation";
 import { vendorsRepo } from "../../vendors";
 import { emitEvent } from "../../../services";
 
+import {  RidersService } from "../../riders/";
+// import { ridersService } from "../../riders";
+console.log({ RidersServiceInOrdersService: JSON.stringify(RidersService) });
+
 export class OrdersService {
   private notificationService: NotificationService;
-  private validateOrders: ValidateOrders
-  private ordersRepo: OrdersRepository
+  private validateOrders: ValidateOrders;
+  private ordersRepo: OrdersRepository;
+  private ridersService: RidersService
 
   constructor() {
     this.notificationService = new NotificationService();
     this.ordersRepo = new OrdersRepository();
     this.validateOrders = new ValidateOrders();
+    this.ridersService = new RidersService();
   }
-  
-  async create(params: { orderData: any; customer: string }) {
+
+  create = async (params: { orderData: any; customer: string }) => {
     const { orderData, customer } = params;
     await this.validateOrders.create(orderData);
 
@@ -41,7 +46,7 @@ export class OrdersService {
       .exec();
 
     return newOrder;
-  }
+  };
 
   async requestConfirmed(orderId: string) {
     const order = await this.ordersRepo.updateStatus({
@@ -201,11 +206,11 @@ export class OrdersService {
 
     const session = await mongoose.startSession();
     try {
-      await this.validateOrders.orderFeedback(feedbackData)
+      await this.validateOrders.orderFeedback(feedbackData);
       session.startTransaction();
 
       const riderRatingPromise = riderRating
-        ? ridersService.updateRating(
+        ? this.ridersService.updateRating(
             { riderId, rating: parseInt(riderRating) },
             session
           )

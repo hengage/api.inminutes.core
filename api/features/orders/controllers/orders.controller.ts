@@ -12,7 +12,7 @@ export class OrdersController {
     this.ordersRepo = new OrdersRepository();
     this.ordersService = new OrdersService();
   }
-  async create(req: Request, res: Response) {
+  create = async (req: Request, res: Response) => {
     const customer = (req as any).user._id;
 
     try {

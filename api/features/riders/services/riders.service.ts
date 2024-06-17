@@ -1,11 +1,11 @@
 import { ClientSession } from "mongoose";
 import { UsersService } from "../../../services";
-import { HandleException, STATUS_CODES } from "../../../utils";
 import { NotificationService } from "../../notifications";
-import { Rider } from "../models/riders.model";
 import { RidersRepository } from "../repository/riders.repo";
+// const  {RidersRepository}   = require( "../repository/riders.repo");
 
-class RidersService {
+console.log({ riderRepoInRiderService: JSON.stringify(RidersRepository) });
+export class RidersService {
   private notificationService: NotificationService;
   private usersService: UsersService;
   private ridersRepo: RidersRepository;
@@ -16,7 +16,7 @@ class RidersService {
     this.ridersRepo = new RidersRepository();
   }
 
-  async signup(riderData: any) {
+  signup = async (riderData: any) => {
     await Promise.all([
       this.usersService.isDisplayNameTaken(riderData.displayName),
       this.ridersRepo.checkEmailIstaken(riderData.email),
@@ -24,7 +24,7 @@ class RidersService {
     ]);
 
     return await this.ridersRepo.signup(riderData);
-  }
+  };
 
   async login(loginData: { email: string; password: string }) {
     return await this.ridersRepo.login(loginData);
@@ -32,7 +32,7 @@ class RidersService {
 
   async getMe(id: string) {
     return await this.ridersRepo.getMe(id);
-    }
+  }
 
   async findAndNotifyRIdersOfOrder(params: {
     coordinates: [number, number];
@@ -45,7 +45,7 @@ class RidersService {
       distanceInKM,
     });
 
-    riders.forEach((rider) => {
+    riders.forEach((rider: any) => {
       this.notificationService.createNotification({
         headings: { en: "New Order Available" },
         contents: {
@@ -70,9 +70,11 @@ class RidersService {
     return rider;
   }
 
-  async updateLocation(updateLocationData: {riderId: string;
-    coordinates: [number, number];}) {
-    const {riderId, coordinates} = updateLocationData
+  async updateLocation(updateLocationData: {
+    riderId: string;
+    coordinates: [number, number];
+  }) {
+    const { riderId, coordinates } = updateLocationData;
     await this.ridersRepo.updateLocation({ riderId, coordinates });
   }
 
@@ -83,6 +85,3 @@ class RidersService {
     return this.ridersRepo.updateRating(ratingData, session);
   }
 }
-
-
-export const ridersService = new RidersService();
