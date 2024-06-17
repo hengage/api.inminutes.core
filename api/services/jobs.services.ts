@@ -3,12 +3,14 @@ dotenv.config();
 
 import { Agenda } from "agenda";
 import { DB_URL } from "../config/secrets.config";
-// import { RidersService } from "../features/riders";
+import { RidersService } from "../features/riders";
 import { ridersService } from "../features/riders";
 
-// console.log({ RidersService });
 
 // const ridersService = new RidersService();
+// console.log({ RidersService });
+console.log({ ridersServiceInJObs: ridersService });
+
 
 var agenda: Agenda;
 if (process.env.NODE_ENV !== "test") {

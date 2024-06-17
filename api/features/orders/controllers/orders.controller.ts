@@ -3,20 +3,26 @@ import { Request, Response } from "express";
 import { STATUS_CODES, handleErrorResponse } from "../../../utils";
 import { OrdersRepository } from "../repository/orders.repo";
 import { OrdersService } from "../services/orders.service";
+import { ValidateOrders } from "../validation/orders.validation";
 
 export class OrdersController {
   private ordersRepo: OrdersRepository;
   private ordersService: OrdersService;
+  private validateOrders: ValidateOrders;
 
-  constructor(){
+  constructor() {
     this.ordersRepo = new OrdersRepository();
     this.ordersService = new OrdersService();
+    this.validateOrders = new ValidateOrders();
   }
   create = async (req: Request, res: Response) => {
     const customer = (req as any).user._id;
 
     try {
-      const order = await this.ordersService.create({ orderData: req.body, customer });
+      const order = await this.ordersService.create({
+        orderData: req.body,
+        customer,
+      });
       res.status(STATUS_CODES.CREATED).json({
         message: "success",
         data: { order },
@@ -24,9 +30,9 @@ export class OrdersController {
     } catch (error: any) {
       handleErrorResponse(res, error);
     }
-  }
+  };
 
-  async orderDetails(req: Request, res: Response) {
+  orderDetails = async (req: Request, res: Response) => {
     try {
       const order = await this.ordersRepo.orderDetails(req.params.orderId);
       res.status(STATUS_CODES.OK).json({
@@ -36,9 +42,9 @@ export class OrdersController {
     } catch (error: any) {
       handleErrorResponse(res, error);
     }
-  }
+  };
 
-  async submitOrderFeedback(req: Request, res: Response) {
+  submitOrderFeedback = async (req: Request, res: Response) => {
     const {
       vendorId,
       vendorRating,
@@ -49,6 +55,7 @@ export class OrdersController {
     } = req.body;
     const { orderId } = req.params;
     try {
+      await this.validateOrders.orderFeedback(req.body);
       await this.ordersService.submitOrderFeedback({
         orderId,
         vendorId,
@@ -64,5 +71,5 @@ export class OrdersController {
     } catch (error: any) {
       handleErrorResponse(res, error);
     }
-  }
+  };
 }

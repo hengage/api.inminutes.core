@@ -9,6 +9,8 @@ import { vendorsRepo } from "../../vendors";
 import { emitEvent } from "../../../services";
 
 import {  RidersService } from "../../riders/";
+import { RidersRepository } from "../../riders/repository/riders.repo";
+RidersRepository
 // import { ridersService } from "../../riders";
 console.log({ RidersServiceInOrdersService: JSON.stringify(RidersService) });
 
@@ -206,7 +208,6 @@ export class OrdersService {
 
     const session = await mongoose.startSession();
     try {
-      await this.validateOrders.orderFeedback(feedbackData);
       session.startTransaction();
 
       const riderRatingPromise = riderRating

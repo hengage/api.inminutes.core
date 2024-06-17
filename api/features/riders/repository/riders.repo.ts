@@ -174,10 +174,10 @@ export class RidersRepository {
     return rider;
   }
 
-  async updateRating(
+   updateRating = async(
     ratingData: { riderId: string; rating: number },
     session: ClientSession
-  ) {
+  ) => {
     const { riderId, rating } = ratingData;
     try {
       const rider = await Rider.findOne({
