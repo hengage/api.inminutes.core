@@ -11,13 +11,13 @@ export class CustomersService {
     this.customersRepo = new CustomersRepository();
   }
 
-  signup = async (customer: any) => {
+  signup = async (customerData: any) => {
     await Promise.all([
-      this.customersRepo.checkEmailIstaken,
-      this.customersRepo.checkPhoneNumberIstaken,
+      this.customersRepo.checkEmailIstaken(customerData.email),
+      this.customersRepo.checkPhoneNumberIstaken(customerData.phoneNumber),
     ]);
 
-    return await this.customersRepo.signup(customer);
+    return await this.customersRepo.signup(customerData);
   };
 
   updateProfilePhoto = async (params: {
