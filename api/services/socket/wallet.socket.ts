@@ -15,6 +15,29 @@ function listenToWalletEvents(socket: Socket) {
       socket.emit("get-cashout-accounts-error", error.message);
     }
   });
+
+  socket.on('get-vendor-wallet-balance', async (message) => {
+    try {
+      const balance = await walletService.getVendorBalance(message.vendorId)
+      socket.emit('vendor-wallet-balance', balance)
+    } catch (error: any) {
+      socket.emit('get-vendor-wallet-balance-error', error.message);
+      console.error(error);
+    }
+  })
+  
+  socket.on('get-rider-wallet-balance', async (message) => {
+    console.log({message})
+    try {
+      const balance = await walletService.getRiderBalance(message.riderId)
+      socket.emit('rider-wallet-balance', balance)
+    } catch (error: any) {
+      socket.emit('get-rider-wallet-balance-error', error.message);
+      console.error(error);
+    }
+  })
+
+
 }
 
 export { listenToWalletEvents };

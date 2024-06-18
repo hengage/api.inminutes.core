@@ -138,6 +138,14 @@ class WalletService {
     );
     return cashoutAccounts;
   }
+
+  async getVendorBalance(vendorId: string) {
+    return await walletRepo.getVendorBalance(vendorId);
+  }
+  
+  async getRiderBalance(riderId: string) {
+    return await walletRepo.getRiderBalance(riderId);
+  }
 }
 
 export const walletService = new WalletService();

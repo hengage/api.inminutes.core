@@ -12,11 +12,7 @@ class WalletRepository {
     return wallet;
   }
 
-  async addCashoutAccount(
-    cashoutAccount: ICashoutAccount,
-    walletId: string,
-  ) {
-
+  async addCashoutAccount(cashoutAccount: ICashoutAccount, walletId: string) {
     try {
       const wallet = await Wallet.findByIdAndUpdate(
         walletId,
@@ -46,12 +42,29 @@ class WalletRepository {
     }
 
     const cashoutAccounts = await Wallet.findOne(query)
-    .select('cashoutAccounts')
-    .lean()
-    .exec();
+      .select("cashoutAccounts")
+      .lean()
+      .exec();
 
-    return cashoutAccounts
+    return cashoutAccounts;
   }
+
+  async getVendorBalance(vendorId: string) {
+    return await Wallet.findOne({ vendor: vendorId })
+      .select("balance")
+      .lean()
+      .exec();
+  }
+
+  
+  async getRiderBalance(riderId: string) {
+    return await Wallet.findOne({ rider: riderId })
+      .select("balance")
+      .lean()
+      .exec();
+  }
+
+
 }
 
 export const walletRepo = new WalletRepository();
