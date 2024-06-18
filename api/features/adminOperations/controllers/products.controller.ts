@@ -1,11 +1,17 @@
 import { Request, Response } from "express";
 import { STATUS_CODES, handleErrorResponse } from "../../../utils";
-import { adminOpsForProductsService } from "../services/products.services";
+import { AdminOpsForProductsService } from "../services/products.services";
 
-class AdminOpsForProductsController {
+export class AdminOpsForProductsController {
+  private adminOpsForProductsService: AdminOpsForProductsService;
+
+  constructor() {
+    this.adminOpsForProductsService = new AdminOpsForProductsService();
+  }
+
   async createCategory(req: Request, res: Response) {
     try {
-      const category = await adminOpsForProductsService.createCategory(
+      const category = await this.adminOpsForProductsService.createCategory(
         req.body
       );
       res.status(STATUS_CODES.CREATED).json({
@@ -19,7 +25,9 @@ class AdminOpsForProductsController {
 
   async approveProduct(req: Request, res: Response) {
     try {
-      await adminOpsForProductsService.approveProduct(req.params.productId);
+      await this.adminOpsForProductsService.approveProduct(
+        req.params.productId
+      );
       res.status(STATUS_CODES.CREATED).json({
         message: "Success",
       });
@@ -30,7 +38,7 @@ class AdminOpsForProductsController {
 
   async rejectProduct(req: Request, res: Response) {
     try {
-      await adminOpsForProductsService.rejectProduct(req.params.productId);
+      await this.adminOpsForProductsService.rejectProduct(req.params.productId);
       res.status(STATUS_CODES.CREATED).json({
         message: "Success",
       });
@@ -39,6 +47,3 @@ class AdminOpsForProductsController {
     }
   }
 }
-
-export const adminOpsForProductsController =
-  new AdminOpsForProductsController();

@@ -1,9 +1,16 @@
 import { HandleException, PRODUCT_STATUS, STATUS_CODES } from "../../../utils";
 import { Product, ProductCategory } from "../../products";
 
-class AdminOpsForProductsService {
+export class AdminOpsForProductsService {
+  private productCategoryModel = ProductCategory;
+  private productModel = Product
+
+  constructor() {
+  }
+
   async createCategory(payload: any) {
-    const categoryExists = await ProductCategory.findOne({ name: payload.name })
+    const categoryExists = await this.productCategoryModel
+      .findOne({ name: payload.name })
       .select("name")
       .lean()
       .exec();
@@ -15,7 +22,7 @@ class AdminOpsForProductsService {
       );
     }
 
-    const category = await ProductCategory.create({
+    const category = await this.productCategoryModel.create({
       name: payload.name,
     });
 
@@ -26,7 +33,7 @@ class AdminOpsForProductsService {
   }
 
   async approveProduct(productId: string) {
-    await Product.findByIdAndUpdate(
+    await this.productModel.findByIdAndUpdate(
       productId,
       {
         $set: { status: PRODUCT_STATUS.APPROVED },
@@ -34,7 +41,7 @@ class AdminOpsForProductsService {
       { new: true }
     );
   }
- 
+
   async rejectProduct(productId: string) {
     await Product.findByIdAndUpdate(
       productId,
@@ -45,5 +52,3 @@ class AdminOpsForProductsService {
     );
   }
 }
-
-export const adminOpsForProductsService = new AdminOpsForProductsService();

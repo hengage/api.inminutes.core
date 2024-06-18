@@ -1,10 +1,9 @@
 import { Customer } from "../features/customers";
 import { Rider } from "../features/riders";
-import { ridersController } from "../features/riders/controllers/riders.controllers";
 import { Vendor } from "../features/vendors";
 import { HandleException, STATUS_CODES } from "../utils";
 
-class UsersService {
+export class UsersService {
   public async isEmailTaken(email: string) {
     const customer = await Customer.findOne({
       email: { $eq: email },
@@ -108,5 +107,3 @@ class UsersService {
     }
   }
 }
-
-export const usersService = new UsersService();

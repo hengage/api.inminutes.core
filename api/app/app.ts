@@ -4,17 +4,22 @@ import fileUpload from "express-fileupload";
 import passport from "passport";
 import session from "express-session"
 
-import { dbConfig, passportStrategySetup, serializeUser } from "../config";
+import { DBConfig, passportStrategySetup, serializeUser } from "../config";
 import { centralErrorHandler } from "../middleware";
-import { routes } from "../routes";
+import { Routes } from "../routes";
 
 class App {
   public app: Express;
   public router: express.Router;
+  public apiRoutes
+  private dbConfig: DBConfig
+
   constructor() {
     this.app = express();
     this.router = express.Router();
+    this.apiRoutes = new Routes
 
+    this.dbConfig = new DBConfig
     this.connectDb();
     this.initializeMiddleware();
     this.initializePassport();
@@ -24,7 +29,7 @@ class App {
 
   private async connectDb() {
     try {
-      await dbConfig.connect();
+      await this.dbConfig.connect();
       console.log("Connected to database");
     } catch (error: any) {
       console.error(error.message);
@@ -60,7 +65,7 @@ class App {
       res.send("Express typeScript app is set");
     });
 
-    this.app.use("/api", routes.router);
+    this.app.use("/api", this.apiRoutes.router);
   }
 
   private initializeCentralErrorMiddleware() {

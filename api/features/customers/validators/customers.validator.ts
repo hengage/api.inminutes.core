@@ -2,7 +2,7 @@ import joi from "joi";
 import { HandleException, STATUS_CODES } from "../../../utils";
 import { ICustomerDocument } from "../customers.interface";
 
-class ValidateCustomer {
+export class ValidateCustomer {
   signUp = async (payload: ICustomerDocument) => {
     const signUpSchema = joi.object({
       fullName: joi.string().required(),
@@ -63,5 +63,3 @@ class ValidateCustomer {
     return;
   };
 }
-
-export const validateCustomer = new ValidateCustomer();

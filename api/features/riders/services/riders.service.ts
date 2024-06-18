@@ -1,33 +1,35 @@
-import { HandleException, STATUS_CODES } from "../../../utils";
-import { notificationService } from "../../notifications";
-import { Rider } from "../models/riders.model";
-import { ridersRepo } from "../repository/riders.repo";
+import { ClientSession } from "mongoose";
+import { NotificationService } from "../../notifications";
+import { RidersRepository } from "../repository/riders.repo";
+import { UsersService } from "../../../services/users.services";
 
-class RidersService {
-  async checkEmailIstaken(email: string) {
-    const rider = await Rider.findOne({ email }).select("email").lean();
+export class RidersService {
+  private notificationService: NotificationService;
+  private usersService: UsersService;
+  private ridersRepo: RidersRepository;
 
-    if (rider) {
-      throw new HandleException(STATUS_CODES.CONFLICT, "Email already taken");
-    }
-
-    return;
+  constructor() {
+    this.usersService = new UsersService();
+    this.notificationService = new NotificationService();
+    this.ridersRepo = new RidersRepository();
   }
 
-  async checkPhoneNumberIstaken(phoneNumber: string) {
-    const rider = await Rider.findOne({ phoneNumber })
-      .select("phoneNumber")
-      .lean();
+  signup = async (riderData: any) => {
+    await Promise.all([
+      this.usersService.isDisplayNameTaken(riderData.displayName),
+      this.ridersRepo.checkEmailIstaken(riderData.email),
+      this.ridersRepo.checkPhoneNumberIstaken(riderData.phoneNumber),
+    ]);
 
-    if (rider) {
-      throw new HandleException(
-        STATUS_CODES.CONFLICT,
-        `Looks like you already have a rider account, ` +
-          `please try to login instead`
-      );
-    }
+    return await this.ridersRepo.signup(riderData);
+  };
 
-    return;
+  async login(loginData: { email: string; password: string }) {
+    return await this.ridersRepo.login(loginData);
+  }
+
+  async getMe(id: string) {
+    return await this.ridersRepo.getMe(id);
   }
 
   async findAndNotifyRIdersOfOrder(params: {
@@ -36,13 +38,13 @@ class RidersService {
     orderId: string;
   }) {
     const { coordinates, distanceInKM, orderId } = params;
-    const riders = await ridersRepo.findNearbyRiders({
+    const riders = await this.ridersRepo.findNearbyRiders({
       coordinates,
       distanceInKM,
     });
 
-    riders.forEach((rider) => {
-      notificationService.createNotification({
+    riders.forEach((rider: any) => {
+      this.notificationService.createNotification({
         headings: { en: "New Order Available" },
         contents: {
           en: "A new order is ready for pickup. Accept and deliver!",
@@ -58,13 +60,26 @@ class RidersService {
     currentlyWorking: boolean;
   }) {
     const { riderId, currentlyWorking } = params;
-    const rider = await ridersRepo.updateAvailability({
+    const rider = await this.ridersRepo.updateAvailability({
       riderId,
       currentlyWorking,
     });
-    console.log({rider})
+    console.log({ rider });
     return rider;
   }
-}
 
-export const ridersService = new RidersService();
+  async updateLocation(updateLocationData: {
+    riderId: string;
+    coordinates: [number, number];
+  }) {
+    const { riderId, coordinates } = updateLocationData;
+    await this.ridersRepo.updateLocation({ riderId, coordinates });
+  }
+
+  async updateRating(
+    ratingData: { riderId: string; rating: number },
+    session: ClientSession
+  ) {
+    return this.ridersRepo.updateRating(ratingData, session);
+  }
+}

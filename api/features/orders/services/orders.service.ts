@@ -1,27 +1,33 @@
 import mongoose from "mongoose";
 import { HandleException, ORDER_STATUS } from "../../../utils";
-import { handleInstantOrScheduledDelivery } from "../../../utils/delivery.utils";
-import { notificationService } from "../../notifications";
-import { ridersRepo, ridersService } from "../../riders";
+import { NotificationService } from "../../notifications";
 import { Order } from "../models/orders.model";
-import { orderRepo } from "../repository/orders.repo";
-import { validateOrders } from "../validation/orders.validation";
+import { OrdersRepository } from "../repository/orders.repo";
+import { ValidateOrders } from "../validation/orders.validation";
 import { vendorsRepo } from "../../vendors";
 import { emitEvent } from "../../../services";
+import {  RidersService } from "../../riders/";
+import { handleInstantOrScheduledDelivery } from "../../../utils/delivery.utils";
 
-class OrdersService {
-  //   async requestReceived(orderId: string) {
-  //     const order = await orderRepo.updateStatus({
-  //       orderId,
-  //       status: ORDER_STATUS.REQUEST_RECEIVED,
-  //     });
 
-  //     return order;
-  //   }
+export class OrdersService {
+  private notificationService: NotificationService;
+  private validateOrders: ValidateOrders;
+  private ordersRepo: OrdersRepository;
+  private ridersService: RidersService
 
-  async create(params: { payload: any; customer: string }) {
-    const { payload, customer } = params;
-    const order = await orderRepo.create({ payload, customer });
+  constructor() {
+    this.notificationService = new NotificationService();
+    this.ordersRepo = new OrdersRepository();
+    this.validateOrders = new ValidateOrders();
+    this.ridersService = new RidersService();
+  }
+
+  create = async (params: { orderData: any; customer: string }) => {
+    const { orderData, customer } = params;
+    await this.validateOrders.create(orderData);
+
+    const order = await this.ordersRepo.create({ orderData, customer });
     const newOrder = await Order.findById(order.id)
       .select({
         deliveryAddress: 1,
@@ -37,22 +43,21 @@ class OrdersService {
       .lean()
       .exec();
 
-      
     return newOrder;
-  }
+  };
 
   async requestConfirmed(orderId: string) {
-    const order = await orderRepo.updateStatus({
+    const order = await this.ordersRepo.updateStatus({
       orderId,
       status: ORDER_STATUS.REQUEST_CONFIRMED,
     });
 
-      notificationService.createNotification({
-        // headings: { en: "Custom Title" },
-        contents: { en: "Order confirmed" },
-        data: { orderId: order._id },
-        userId: order.customer,
-      })
+    this.notificationService.createNotification({
+      // headings: { en: "Custom Title" },
+      contents: { en: "Order confirmed" },
+      data: { orderId: order._id },
+      userId: order.customer,
+    });
 
     return { orderId: order._id };
   }
@@ -60,23 +65,23 @@ class OrdersService {
   async ready(params: { orderId: string; distanceInKM: number }) {
     const { orderId, distanceInKM } = params;
 
-    const order = await orderRepo.updateStatus({
+    const order = await this.ordersRepo.updateStatus({
       orderId,
       status: ORDER_STATUS.READY,
     });
 
-    await  handleInstantOrScheduledDelivery({ order, distanceInKM })
+    await handleInstantOrScheduledDelivery({ order, distanceInKM });
 
     return { orderId: order._id };
   }
 
   async assignRider(params: { orderId: string; riderId: string }) {
-    await validateOrders.assignRider({
+    await this.validateOrders.assignRider({
       orderId: params.orderId,
       riderId: params.riderId,
     });
 
-    const order = await orderRepo.assignRider({
+    const order = await this.ordersRepo.assignRider({
       orderId: params.orderId,
       riderId: params.riderId,
     });
@@ -86,12 +91,12 @@ class OrdersService {
 
   async pickedUp(orderId: string) {
     console.log({ orderfromservice: orderId });
-    const order = await orderRepo.updateStatus({
+    const order = await this.ordersRepo.updateStatus({
       orderId,
       status: ORDER_STATUS.PICKED_UP,
     });
 
-    await notificationService.createNotification({
+    await this.notificationService.createNotification({
       // headings: { en: "Custom Title" },
       contents: { en: "Your order has been picked up by the rider" },
       data: { orderId: order._id },
@@ -102,12 +107,12 @@ class OrdersService {
   }
 
   async inTransit(orderId: string) {
-    const order = await orderRepo.updateStatus({
+    const order = await this.ordersRepo.updateStatus({
       orderId,
       status: ORDER_STATUS.NEARBY,
     });
 
-    await notificationService.createNotification({
+    await this.notificationService.createNotification({
       headings: { en: "Order in transit" },
       contents: { en: "Your order is on the way to the destination" },
       data: { orderId: order._id },
@@ -118,12 +123,12 @@ class OrdersService {
   }
 
   async nearBy(orderId: string) {
-    const order = await orderRepo.updateStatus({
+    const order = await this.ordersRepo.updateStatus({
       orderId,
       status: ORDER_STATUS.NEARBY,
     });
 
-    await notificationService.createNotification({
+    await this.notificationService.createNotification({
       contents: {
         en:
           `Your order is close. ` +
@@ -137,12 +142,12 @@ class OrdersService {
   }
 
   async arrived(orderId: string) {
-    const order = await orderRepo.updateStatus({
+    const order = await this.ordersRepo.updateStatus({
       orderId,
       status: ORDER_STATUS.ARRIVED,
     });
 
-    await notificationService.createNotification({
+    await this.notificationService.createNotification({
       // headings: { en: "Custom Title" },
       contents: { en: "Your order has arrived the delivery location" },
       data: { orderId: order._id },
@@ -152,12 +157,12 @@ class OrdersService {
   }
 
   async delivered(orderId: string) {
-    const order = await orderRepo.updateStatus({
+    const order = await this.ordersRepo.updateStatus({
       orderId,
       status: ORDER_STATUS.DELIVERED,
     });
 
-    await notificationService.createNotification({
+    await this.notificationService.createNotification({
       headings: { en: "Order delivered" },
       contents: { en: "Thank you for choosing InMinutes" },
       data: { orderId: order._id },
@@ -168,17 +173,17 @@ class OrdersService {
       vendorId: order.vendor._id,
       amount: order.totalProductsCost,
     });
-    
+
     emitEvent("credit-rider", {
       riderId: order.rider,
       amount: order.deliveryFee,
     });
 
-    return { orderId: order._id };                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+    return { orderId: order._id };
   }
 
   async cancelled(orderId: string) {
-    const order = await orderRepo.updateStatus({
+    const order = await this.ordersRepo.updateStatus({
       orderId,
       status: ORDER_STATUS.CANCELLED,
     });
@@ -186,7 +191,7 @@ class OrdersService {
     return { orderId: order._id };
   }
 
-  async submitOrderFeedback(dto: any) {
+  async submitOrderFeedback(feedbackData: any) {
     const {
       orderId,
       vendorId,
@@ -195,14 +200,14 @@ class OrdersService {
       riderRating,
       remarkOnVendor,
       remarkOnRider,
-    } = dto;
+    } = feedbackData;
 
     const session = await mongoose.startSession();
     try {
       session.startTransaction();
 
       const riderRatingPromise = riderRating
-        ? ridersRepo.updateRating(
+        ? this.ridersService.updateRating(
             { riderId, rating: parseInt(riderRating) },
             session
           )
@@ -218,7 +223,7 @@ class OrdersService {
       await Promise.all([
         riderRatingPromise,
         vendorRatingPromise,
-        orderRepo.createRemarkAndRating(
+        this.ordersRepo.createRemarkAndRating(
           { orderId, vendorRating, riderRating, remarkOnVendor, remarkOnRider },
           session
         ),
@@ -235,5 +240,3 @@ class OrdersService {
     }
   }
 }
-
-export const ordersService = new OrdersService();

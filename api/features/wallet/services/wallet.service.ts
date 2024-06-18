@@ -1,11 +1,17 @@
 import { startSession } from "mongoose";
 import { Wallet } from "../models/wallet.model";
 import Big from "big.js";
-import { notificationService } from "../../notifications";
+import { NotificationService } from "../../notifications";
 import { HandleException, STATUS_CODES } from "../../../utils";
 import { walletRepo } from "../repository/wallet.repository";
 
 class WalletService {
+  private notificationService: NotificationService;
+
+  constructor() {
+    this.notificationService = new NotificationService();
+  }
+
   async creditWallet(dto: {
     amount: string;
     vendorId?: string;
@@ -69,7 +75,7 @@ class WalletService {
       const wallet = await Wallet.creditWallet({ amount, vendorId });
       console.log({ "Credited vendor": wallet });
 
-      await notificationService.createNotification({
+      await this.notificationService.createNotification({
         headings: { en: "Your Earnings Are In!" },
         contents: {
           en:
@@ -91,7 +97,7 @@ class WalletService {
       const wallet = await Wallet.creditWallet({ amount, riderId });
       console.log({ "Credited rider": wallet });
 
-      await notificationService.createNotification({
+      await this.notificationService.createNotification({
         headings: { en: "Your Earnings Are In!" },
         contents: {
           en:

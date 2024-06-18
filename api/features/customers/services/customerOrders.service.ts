@@ -1,17 +1,21 @@
 import { ORDER_STATUS } from "../../../utils";
 import { Order } from "../../orders";
 
-class CustomersOrdersService {
+export class CustomersOrdersService {
+  private orderModel = Order
+  
   async orderMetrics(customerId: string) {
-    const pendingOrdersCount = await Order.countDocuments({
+    const pendingOrdersCount = await this.orderModel.countDocuments({
       customer: customerId,
       status: ORDER_STATUS.PENDING,
     });
-    const successfulOrdersCount = await Order.countDocuments({
+
+    const successfulOrdersCount = await this.orderModel.countDocuments({
       customer: customerId,
       status: ORDER_STATUS.DELIVERED,
     });
-    const cancelledOrdersCount = await Order.countDocuments({
+
+    const cancelledOrdersCount = await this.orderModel.countDocuments({
       customer: customerId,
       status: ORDER_STATUS.CANCELLED,
     });
@@ -36,9 +40,7 @@ class CustomersOrdersService {
       leanWithId: false,
     };
 
-    const orders = Order.paginate(query, options);
+    const orders = this.orderModel.paginate(query, options);
     return orders;
   }
 }
-
-export const customersOrdersService = new CustomersOrdersService();

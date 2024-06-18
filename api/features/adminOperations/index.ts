@@ -1,1 +1,1 @@
-export { adminOpsRoutes } from "./routes";
+export { AdminOpsRoutes } from "./routes";

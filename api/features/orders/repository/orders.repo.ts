@@ -3,28 +3,28 @@ import { convertLatLngToCell } from "../../../services";
 import { HandleException, ORDER_STATUS, STATUS_CODES } from "../../../utils";
 import { Order, OrderFeedback } from "../models/orders.model";
 
-class OrderRepository {
-  create(params: { payload: any; customer: string }) {
-    const { payload, customer } = params;
-    console.log({ payload });
+export class OrdersRepository {
+  create(params: { orderData: any; customer: string }) {
+    const { orderData, customer } = params;
+    console.log({ orderData });
 
     const order = Order.create({
       customer: customer,
-      recipientPhoneNumber: payload.recipientPhoneNumber,
-      items: payload.items,
-      vendor: payload.vendor,
-      deliveryAddress: payload.deliveryAddress,
+      recipientPhoneNumber: orderData.recipientPhoneNumber,
+      items: orderData.items,
+      vendor: orderData.vendor,
+      deliveryAddress: orderData.deliveryAddress,
       deliveryLocation: {
-        coordinates: payload.deliveryLocation,
+        coordinates: orderData.deliveryLocation,
       },
-      h3Index: convertLatLngToCell(payload.deliveryLocation),
-      deliveryFee: payload.deliveryFee,
-      serviceFee: payload.serviceFee,
-      totalProductsCost: payload.totalProductsCost,
-      totalCost: payload.totalCost,
-      instruction: payload.instruction,
-      type: payload.type,
-      scheduledDeliveryTime: payload.scheduledDeliveryTime,
+      h3Index: convertLatLngToCell(orderData.deliveryLocation),
+      deliveryFee: orderData.deliveryFee,
+      serviceFee: orderData.serviceFee,
+      totalProductsCost: orderData.totalProductsCost,
+      totalCost: orderData.totalCost,
+      instruction: orderData.instruction,
+      type: orderData.type,
+      scheduledDeliveryTime: orderData.scheduledDeliveryTime,
     });
 
     return order;
@@ -134,5 +134,3 @@ class OrderRepository {
     return await remark.save({ session });
   }
 }
-
-export const orderRepo = new OrderRepository();

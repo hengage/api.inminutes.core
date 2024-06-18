@@ -1,7 +1,12 @@
-import { mediaUploadConfig } from "../../../config/cloudinary.config";
+import { MediaUploadConfig } from "../../../config/cloudinary.config";
 import { HandleException, STATUS_CODES } from "../../../utils";
 
-class MediaService {
+export class MediaService {
+  private mediaUploadConfig: MediaUploadConfig
+  
+  constructor() {
+    this.mediaUploadConfig = new MediaUploadConfig();
+  }
     public uploadToCloudinary = async (mediaFiles: any, mediaTags: string) => {
       try {
         const files = mediaFiles;
@@ -14,7 +19,7 @@ class MediaService {
   
   
           // Upload the file using the cloudinary upload instance
-          const uploadPromise = mediaUploadConfig.cloudinaryConfig(
+          const uploadPromise = this.mediaUploadConfig.cloudinaryConfig(
             file.tempFilePath,
             [tags]
           );
@@ -39,5 +44,3 @@ class MediaService {
       }
     };
   }
-  
-  export const mediaService = new MediaService;

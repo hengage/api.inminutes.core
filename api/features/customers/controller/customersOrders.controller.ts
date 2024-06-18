@@ -1,12 +1,18 @@
 import { Request, Response } from "express";
 import { STATUS_CODES, handleErrorResponse } from "../../../utils";
-import { customersOrdersService } from "../services/customerOrders.service";
+import { CustomersOrdersService } from "../services/customerOrders.service";
 
-class CustomersOrdersController {
+export class CustomersOrdersController {
+  private customersOrdersService: CustomersOrdersService;
+
+  constructor(){
+    this.customersOrdersService = new CustomersOrdersService()
+  }
+
   async orderMetrics(req: Request, res: Response) {
     const customerId = (req as any).user._id;
     try {
-      const orderMetrics = await customersOrdersService.orderMetrics(
+      const orderMetrics = await this.customersOrdersService.orderMetrics(
         customerId
       );
       res.status(STATUS_CODES.OK).json({
@@ -22,7 +28,7 @@ class CustomersOrdersController {
     const page = parseInt(req.query.page as string) || 1;
     const customerId = (req as any).user._id;
     try {
-      const orders = await customersOrdersService.orders({ customerId, page });
+      const orders = await this.customersOrdersService.orders({ customerId, page });
       console.log({orders})
       res.status(STATUS_CODES.OK).json({
         success: true,
@@ -33,5 +39,3 @@ class CustomersOrdersController {
     }
   }
 }
-
-export const customersOrdersController = new CustomersOrdersController();

@@ -1,9 +1,14 @@
 import { Request, Response } from "express";
 
 import { HandleException, STATUS_CODES, handleErrorResponse } from "../../../utils";
-import { mediaService } from "../services/media.service";
+import { MediaService } from "../services/media.service";
 
-class MediaController {
+export class MediaController {
+  private mediaService: MediaService;
+
+  constructor() {
+    this.mediaService = new MediaService();
+  }
   public uploadMedia = async (req: Request, res: Response) => {
     const files = req.files as Record<string, any>;
     const tags = req.query.tags as string;
@@ -17,7 +22,7 @@ class MediaController {
         throw new HandleException(400, "No file selected");
       }
 
-      const fileUrls = await mediaService.uploadToCloudinary(files, tags);
+      const fileUrls = await this.mediaService.uploadToCloudinary(files, tags);
       res.status(STATUS_CODES.OK).json({
         message: "File successfully uploaded",
         data: fileUrls,
@@ -27,5 +32,3 @@ class MediaController {
     }
   };
 }
-
-export const mediaController = new MediaController();

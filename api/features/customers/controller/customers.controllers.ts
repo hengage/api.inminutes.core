@@ -1,22 +1,36 @@
 import { Request, Response, response } from "express";
-import { customersRepo } from "../repo/customers.repo";
+import { CustomersRepository } from "../repository/customers.repo";
 import {
   STATUS_CODES,
   generateJWTToken,
   handleErrorResponse,
 } from "../../../utils";
-import { validateCustomer } from "../validators/customers.validator";
-import { customersService } from "../services/customers.services";
-import { usersService } from "../../../services";
-import { customersAuthentication } from "../auth/customers.auth";
-import { productsRepo } from "../../products";
+import { ValidateCustomer } from "../validators/customers.validator";
+import { CustomersService } from "../services/customers.services";
+import { CustomersAuthentication } from "../auth/customers.auth";
+import { ProductsRepository } from "../../products";
 
-class CustomersController {
+export class CustomersController {
+  private validateCustomer: ValidateCustomer
+  private customersAuthentication: CustomersAuthentication
+  private customersRepo: CustomersRepository
+  private customersService: CustomersService
+  private productsRepo: ProductsRepository
+
+  constructor() {
+    this.validateCustomer = new ValidateCustomer();
+    this.customersAuthentication = new CustomersAuthentication();
+    this.customersRepo = new CustomersRepository();
+    this.customersService = new CustomersService();
+    this.productsRepo = new ProductsRepository();
+  }
+
+
   async signupVerificationCode(req: Request, res: Response) {
     const { recipientPhoneNumber } = req.body;
 
     try {
-      await customersAuthentication.sendVerificationCode(recipientPhoneNumber);
+      await this.customersAuthentication.sendVerificationCode(recipientPhoneNumber);
       res.status(STATUS_CODES.OK).json({
         message: "OTP sent",
       });
@@ -27,8 +41,8 @@ class CustomersController {
 
   async signup(req: Request, res: Response) {
     try {
-      await validateCustomer.signUp(req.body);
-      const customer = await customersRepo.signup(req.body);
+      await this.validateCustomer.signUp(req.body);
+      const customer = await this.customersService.signup(req.body);
       const jwtPayload = {
         _id: customer._id,
         phoneNumber: customer.phoneNumber,
@@ -52,7 +66,7 @@ class CustomersController {
   async getProfile(req: Request, res: Response) {
     const _id = (req as any).user._id;
     try {
-      const customer = await customersRepo.getProfile(_id);
+      const customer = await this.customersRepo.getProfile(_id);
       res.status(STATUS_CODES.OK).json({
         message: "Fetched customer profile",
         data: { customer },
@@ -69,8 +83,8 @@ class CustomersController {
     const customer = (req as any).user._id;
 
     try {
-      await validateCustomer.updateProfile(req.body);
-      const profile = await customersRepo.updateProfile(customer, req.body);
+      await this.validateCustomer.updateProfile(req.body);
+      const profile = await this.customersRepo.updateProfile(customer, req.body);
       res.status(STATUS_CODES.OK).json({
         message: "Success",
         data: { profile },
@@ -85,7 +99,7 @@ class CustomersController {
     const image = req.files as Record<string, any>;
 
     try {
-      const customer = await customersService.updateProfilePhoto({
+      const customer = await this.customersService.updateProfilePhoto({
         customerId,
         image,
       });
@@ -103,7 +117,7 @@ class CustomersController {
     const { address, coordinates } = req.body;
 
     try {
-      const customer = await customersRepo.updateDeliveryAddress({
+      const customer = await this.customersRepo.updateDeliveryAddress({
         customerId,
         address,
         coordinates,
@@ -122,7 +136,7 @@ class CustomersController {
     const customer = (req as any).user._id;
 
     try {
-      await customersRepo.deleteAccount(customer);
+      await this.customersRepo.deleteAccount(customer);
       res.status(STATUS_CODES.OK).json({
         message: "Success",
       });
@@ -134,7 +148,7 @@ class CustomersController {
   async getWishList(req: Request, res: Response) {
     const customerId = (req as any).user._id;
     try {
-      const wishList = await productsRepo.getWishListForCustomer(customerId);
+      const wishList = await this.productsRepo.getWishListForCustomer(customerId);
       console.log({ wishList });
       res.status(STATUS_CODES.OK).json({
         message: "success",
@@ -145,5 +159,3 @@ class CustomersController {
     }
   }
 }
-
-export const customersController = new CustomersController();

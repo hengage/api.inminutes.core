@@ -1,9 +1,13 @@
 import { HandleException, STATUS_CODES } from "../../../utils";
 import { VendorCategory, VendorSubCategory } from "../../vendors";
 
-class AdminOpsVendorsCategoryService {
+export class AdminOpsVendorsCategoryService {
+  private vendorCategoryModel = VendorCategory;
+  private vendorSubCategoryModel = VendorSubCategory;
+
   async createCategory(payload: any) {
-    const categoryExists = await VendorCategory.findOne({ name: payload.name })
+    const categoryExists = await this.vendorCategoryModel
+      .findOne({ name: payload.name })
       .select("name")
       .lean()
       .exec();
@@ -15,7 +19,7 @@ class AdminOpsVendorsCategoryService {
       );
     }
 
-    const category = await VendorCategory.create({
+    const category = await this.vendorCategoryModel.create({
       name: payload.name,
       image: payload.image,
     });
@@ -28,19 +32,20 @@ class AdminOpsVendorsCategoryService {
   }
 
   async createSubCategory(payload: any) {
-    const categoryExists = await VendorSubCategory.findOne({ name: payload.name })
-    .select("name")
-    .lean()
-    .exec();
+    const subCategoryExists = await this.vendorSubCategoryModel
+      .findOne({ name: payload.name })
+      .select("name")
+      .lean()
+      .exec();
 
-  if (categoryExists) {
-    throw new HandleException(
-      STATUS_CODES.CONFLICT,
-      "The sub category name already exists"
-    );
-  }
+    if (subCategoryExists) {
+      throw new HandleException(
+        STATUS_CODES.CONFLICT,
+        "The sub category name already exists"
+      );
+    }
 
-    const subCategory = await VendorSubCategory.create({
+    const subCategory = await this.vendorSubCategoryModel.create({
       name: payload.name,
       category: payload.category,
     });
@@ -51,6 +56,3 @@ class AdminOpsVendorsCategoryService {
     };
   }
 }
-
-export const adminOpsVendorsCategoryService =
-  new AdminOpsVendorsCategoryService();

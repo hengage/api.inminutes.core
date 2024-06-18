@@ -1,18 +1,28 @@
 import { Request, Response } from "express";
 
 import { STATUS_CODES, handleErrorResponse } from "../../../utils";
-import { orderRepo } from "../repository/orders.repo";
-import { ordersService } from "../services/orders.service";
-import { validateOrders } from "../validation/orders.validation";
+import { OrdersRepository } from "../repository/orders.repo";
+import { OrdersService } from "../services/orders.service";
+import { ValidateOrders } from "../validation/orders.validation";
 
-class OrderController {
-  async create(req: Request, res: Response) {
+export class OrdersController {
+  private ordersRepo: OrdersRepository;
+  private ordersService: OrdersService;
+  private validateOrders: ValidateOrders;
+
+  constructor() {
+    this.ordersRepo = new OrdersRepository();
+    this.ordersService = new OrdersService();
+    this.validateOrders = new ValidateOrders();
+  }
+  create = async (req: Request, res: Response) => {
     const customer = (req as any).user._id;
 
     try {
-      await validateOrders.create(req.body);
-      const order = await ordersService.create({ payload: req.body, customer });
-
+      const order = await this.ordersService.create({
+        orderData: req.body,
+        customer,
+      });
       res.status(STATUS_CODES.CREATED).json({
         message: "success",
         data: { order },
@@ -20,11 +30,11 @@ class OrderController {
     } catch (error: any) {
       handleErrorResponse(res, error);
     }
-  }
+  };
 
-  async orderDetails(req: Request, res: Response) {
+  orderDetails = async (req: Request, res: Response) => {
     try {
-      const order = await orderRepo.orderDetails(req.params.orderId);
+      const order = await this.ordersRepo.orderDetails(req.params.orderId);
       res.status(STATUS_CODES.OK).json({
         message: "success",
         data: { order },
@@ -32,9 +42,9 @@ class OrderController {
     } catch (error: any) {
       handleErrorResponse(res, error);
     }
-  }
+  };
 
-  async submitOrderFeedback(req: Request, res: Response) {
+  submitOrderFeedback = async (req: Request, res: Response) => {
     const {
       vendorId,
       vendorRating,
@@ -45,8 +55,8 @@ class OrderController {
     } = req.body;
     const { orderId } = req.params;
     try {
-      await validateOrders.orderFeedback(req.body)
-      await ordersService.submitOrderFeedback({
+      await this.validateOrders.orderFeedback(req.body);
+      await this.ordersService.submitOrderFeedback({
         orderId,
         vendorId,
         vendorRating,
@@ -61,7 +71,5 @@ class OrderController {
     } catch (error: any) {
       handleErrorResponse(res, error);
     }
-  }
+  };
 }
-
-export const ordersController = new OrderController();

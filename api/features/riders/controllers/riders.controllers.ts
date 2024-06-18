@@ -4,24 +4,21 @@ import {
   generateJWTToken,
   handleErrorResponse,
 } from "../../../utils";
-import { usersService } from "../../../services";
-import { ridersRepo } from "../repository/riders.repo";
 import { validateRider } from "../validators/riders.validators";
-import { ridersService } from "../services/riders.service";
-
+import { RidersService } from "../services/riders.service";
 class RidersController {
-  async signup(req: Request, res: Response) {
+  public ridersService: RidersService;
+
+  constructor() {
+    this.ridersService = new RidersService();
+    console.log({ ridersServiceInController: this.ridersService });
+  }
+
+  signup = async (req: Request, res: Response) => {
+    // async  signup (req: Request, res: Response) {
     try {
       await validateRider.signUp(req.body);
-
-      
-    await Promise.all([
-      usersService.isDisplayNameTaken(req.body.displayName),
-      ridersService.checkEmailIstaken(req.body.email),
-      ridersService.checkPhoneNumberIstaken(req.body.phoneNumber),
-    ]);
-
-      const rider = await ridersRepo.signup(req.body);
+      const rider = await this.ridersService.signup(req.body);
 
       const jwtPayload = { _id: rider._id, email: rider.email };
       const accessToken = generateJWTToken(jwtPayload, "1h");
@@ -34,12 +31,12 @@ class RidersController {
     } catch (error: any) {
       handleErrorResponse(res, error);
     }
-  }
+  };
 
-  async login(req: Request, res: Response) {
+  login = async (req: Request, res: Response) => {
     try {
       await validateRider.login(req.body);
-      const rider = await ridersRepo.login(req.body.email, req.body.password);
+      const rider = await this.ridersService.login(req.body);
 
       const jwtPayload = { _id: rider._id, phoneNumber: rider.phoneNumber };
       const accessToken = generateJWTToken(jwtPayload, "1h");
@@ -52,12 +49,12 @@ class RidersController {
     } catch (error: any) {
       handleErrorResponse(res, error);
     }
-  }
+  };
 
-  async getMe(req: Request, res: Response) {
+  getMe = async (req: Request, res: Response) => {
     const id = (req as any).user._id;
     try {
-      const rider = await ridersRepo.getMe(id);
+      const rider = await this.ridersService.getMe(id);
       res.status(STATUS_CODES.OK).json({
         message: "Success",
         data: { rider },
@@ -65,7 +62,7 @@ class RidersController {
     } catch (error: any) {
       handleErrorResponse(res, error);
     }
-  }
+  };
 }
 
 export const ridersController = new RidersController();

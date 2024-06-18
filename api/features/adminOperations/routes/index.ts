@@ -1,19 +1,24 @@
 import { Router } from "express";
-import { adminOpsVendorsRoutes } from "./vendors.routes";
-import { adminOpsProductsRoutes } from "./products.routes";
+import { AdminOpsVendorsRoutes } from "./vendors.routes";
+import { AdminOpsProductsRoutes } from "./products.routes";
 
-class AdminOpsRoutes {
+export class AdminOpsRoutes {
   public router: Router;
+  public adminOpsVendorsRoutes: AdminOpsVendorsRoutes
+  public adminOpsProductsRoutes: AdminOpsProductsRoutes
 
   constructor() {
+    this.adminOpsVendorsRoutes = new AdminOpsVendorsRoutes()
+    this.adminOpsProductsRoutes = new AdminOpsProductsRoutes()
+
     this.router = Router();
     this.initializeRoutes();
+
   }
 
   private initializeRoutes() {
-    this.router.use("/vendors", adminOpsVendorsRoutes.router);
-    this.router.use("/products", adminOpsProductsRoutes.router);
+    this.router.use("/vendors", this.adminOpsVendorsRoutes.router);
+    this.router.use("/products", this.adminOpsProductsRoutes.router);
   }
 }
 
-export const adminOpsRoutes = new AdminOpsRoutes();

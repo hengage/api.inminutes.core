@@ -1,41 +1,32 @@
 import { HandleException, STATUS_CODES } from "../../../utils";
-import { mediaService } from "../../media";
-import { Customer } from "../models/customers.model";
-import { customersRepo } from "../repo/customers.repo";
+import { MediaService } from "../../media";
+import { CustomersRepository } from "../repository/customers.repo";
 
-class CustomersService {
-  async checkEmailIstaken(email: string) {
-    const customer = await Customer.findOne({ email }).select("email").lean();
+export class CustomersService {
+  private mediaService: MediaService;
+  private customersRepo: CustomersRepository;
 
-    if (customer) {
-      throw new HandleException(STATUS_CODES.CONFLICT, "Email already taken");
-    }
-
-    return;
+  constructor() {
+    this.mediaService = new MediaService()
+    this.customersRepo = new CustomersRepository();
   }
 
-  async checkPhoneNumberIstaken(phoneNumber: string) {
-    const customer = await Customer.findOne({ phoneNumber })
-      .select("phoneNumber")
-      .lean();
+  async signup(customer: any) {
+    await Promise.all([
+      this.customersRepo.checkEmailIstaken,
+      this.customersRepo.checkPhoneNumberIstaken
+    ])
 
-    if (customer) {
-      throw new HandleException(
-        STATUS_CODES.CONFLICT,
-        `Looks like you already have a customer account, ` +
-          `please try to login instead`
-      );
-    }
-
-    return;
+    return await this.customersRepo.signup(customer)
   }
+ 
 
   async updateProfilePhoto(params: {
     customerId: string;
     image: Record<string, any>;
   }) {
     const { customerId, image } = params;
-    const displayPhotoUrl = await mediaService.uploadToCloudinary(
+    const displayPhotoUrl = await this.mediaService.uploadToCloudinary(
       image,
       "display-photo"
     );
@@ -43,7 +34,10 @@ class CustomersService {
 
     const updatedCustomer = await Promise.all(
       Object.values(displayPhotoUrl).map(async (url) => {
-        const customer = await customersRepo.updateDIsplayPhoto(customerId, url);
+        const customer = await this.customersRepo.updateDIsplayPhoto(
+          customerId,
+          url
+        );
         return customer;
       })
     );
@@ -51,5 +45,3 @@ class CustomersService {
     return updatedCustomer;
   }
 }
-
-export const customersService = new CustomersService();

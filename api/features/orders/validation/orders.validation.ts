@@ -1,7 +1,7 @@
 import Joi from "joi";
 import { HandleException, STATUS_CODES } from "../../../utils";
 
-class ValidateOrders {
+export class ValidateOrders {
   create = async (payload: any) => {
     const schema = Joi.object({
       recipientPhoneNumber: Joi.string()
@@ -89,5 +89,3 @@ class ValidateOrders {
     }
   };
 }
-
-export const validateOrders = new ValidateOrders();

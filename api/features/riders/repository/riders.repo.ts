@@ -1,9 +1,5 @@
 import { ClientSession } from "mongoose";
-import {
-  convertLatLngToCell,
-  emitEvent,
-  usersService,
-} from "../../../services";
+import { convertLatLngToCell, emitEvent } from "../../../services";
 import {
   HandleException,
   STATUS_CODES,
@@ -12,10 +8,34 @@ import {
 } from "../../../utils";
 import { Rider } from "../models/riders.model";
 import { IRiderDocument } from "../riders.interface";
-import { ridersService } from "../services/riders.service";
 
-class RidersRepository {
-  async signup(payload: any): Promise<Partial<IRiderDocument>> {
+export class RidersRepository {
+  async checkEmailIstaken(email: string) {
+    const rider = await Rider.findOne({ email }).select("email").lean();
+
+    if (rider) {
+      throw new HandleException(STATUS_CODES.CONFLICT, "Email already taken");
+    }
+
+    return;
+  }
+
+  async checkPhoneNumberIstaken(phoneNumber: string) {
+    const rider = await Rider.findOne({ phoneNumber })
+      .select("phoneNumber")
+      .lean();
+
+    if (rider) {
+      throw new HandleException(
+        STATUS_CODES.CONFLICT,
+        `Looks like you already have a rider account, ` +
+          `please try to login instead`
+      );
+    }
+
+    return;
+  }
+  async signup(riderData: any): Promise<Partial<IRiderDocument>> {
     const {
       fullName,
       displayName,
@@ -24,8 +44,7 @@ class RidersRepository {
       password,
       dateOfBirth,
       residentialAddress,
-    } = payload;
-
+    } = riderData;
 
     const rider = await Rider.create({
       fullName,
@@ -50,7 +69,8 @@ class RidersRepository {
     };
   }
 
-  async login(email: string, password: string) {
+  async login(loginData: {email: string, password: string}) {
+    const {email, password} = loginData;
     const rider = await Rider.findOne({ email }).select(
       "email phoneNumber password"
     );
@@ -154,11 +174,11 @@ class RidersRepository {
     return rider;
   }
 
-  async updateRating(
-    updateRatingDto: { riderId: string; rating: number },
+   updateRating = async(
+    ratingData: { riderId: string; rating: number },
     session: ClientSession
-  ) {
-    const { riderId, rating, } = updateRatingDto;
+  ) => {
+    const { riderId, rating } = ratingData;
     try {
       const rider = await Rider.findOne({
         _id: riderId,
@@ -176,5 +196,3 @@ class RidersRepository {
     }
   }
 }
-
-export const ridersRepo = new RidersRepository();

@@ -1,37 +1,45 @@
 import { Router } from "express";
-import { customersController } from "../controller/customers.controllers";
-import { customersAuthentication } from "../auth/customers.auth";
+import { CustomersController } from "../controller/customers.controllers";
+import { CustomersAuthentication } from "../auth/customers.auth";
 import { verifyAuthTokenMiddleware } from "../../../middleware";
-import { customersOrdersController } from "../controller/customersOrders.controller";
+import { CustomersOrdersController } from "../controller/customersOrders.controller";
 
 class CustomersRoutes {
-  public router = Router();
+  private customersController: CustomersController;
+  private customersAuthentication: CustomersAuthentication
+  private customersOrdersController: CustomersOrdersController 
 
+  public router = Router();
+  
   constructor() {
+    this.customersController = new CustomersController()
+    this.customersAuthentication = new CustomersAuthentication();
+    this.customersOrdersController = new CustomersOrdersController()
+
     this.initializeRoutes();
   }
 
   public initializeRoutes() {
-    this.router.post("/send-otp", customersController.signupVerificationCode);
-    this.router.post(`/signup`, customersController.signup);
-    this.router.post("/login", customersAuthentication.login);
+    this.router.post("/send-otp", this.customersController.signupVerificationCode);
+    this.router.post(`/signup`, this.customersController.signup);
+    this.router.post("/login", this.customersAuthentication.login);
 
     this.router.use(verifyAuthTokenMiddleware);
-    this.router.route("/me").get(customersController.getProfile);
-    this.router.route("/").patch(customersController.updateProfile);
+    this.router.route("/me").get(this.customersController.getProfile);
+    this.router.route("/").patch(this.customersController.updateProfile);
     this.router
       .route("/update-photo")
-      .patch(customersController.updateDIsplayPhoto);
+      .patch(this.customersController.updateDIsplayPhoto);
     this.router
       .route("/delivery-address")
-      .patch(customersController.updateDeliveryAddress);
-    this.router.route("/").delete(customersController.deleteAccount);
+      .patch(this.customersController.updateDeliveryAddress);
+    this.router.route("/").delete(this.customersController.deleteAccount);
 
-    this.router.route("/orders").get(customersOrdersController.orders);
+    this.router.route("/orders").get(this.customersOrdersController.orders);
     this.router
       .route("/order-metrics")
-      .get(customersOrdersController.orderMetrics);
-    this.router.route("/wishlist").get(customersController.getWishList);
+      .get(this.customersOrdersController.orderMetrics);
+    this.router.route("/wishlist").get(this.customersController.getWishList);
   }
 }
 

@@ -1,15 +1,25 @@
 import { Request, Response } from "express";
 import { STATUS_CODES, handleErrorResponse } from "../../../utils";
-import { adminOpsVendorsCategoryService } from "../services/vendorsCategory.service";
-import { validateadminVendorsOps } from "../validators/adminVendorsOps.validate";
+import { AdminOpsVendorsCategoryService } from "../services/vendorsCategory.service";
+import { ValidateAdminVendorsOps } from "../validators/adminVendorsOps.validate";
 
-class AdminOpsVendorsCategoryController {
+export class AdminOpsVendorsCategoryController {
+  private validateAdminVendorsOps: ValidateAdminVendorsOps;
+  private adminOpsVendorsCategoryService: AdminOpsVendorsCategoryService;
+
+  constructor() {
+    this.validateAdminVendorsOps = new ValidateAdminVendorsOps();
+    this.adminOpsVendorsCategoryService = new AdminOpsVendorsCategoryService();
+  }
+
   async createCategory(req: Request, res: Response) {
     try {
-    await validateadminVendorsOps.createCategory(req.body);
-      const category = await adminOpsVendorsCategoryService.createCategory(
+      await this.validateAdminVendorsOps.createCategory(req.body);
+
+      const category = await this.adminOpsVendorsCategoryService.createCategory(
         req.body
       );
+      
       return res.status(STATUS_CODES.CREATED).json({
         message: "Successful",
         data: { category },
@@ -21,9 +31,11 @@ class AdminOpsVendorsCategoryController {
 
   async createSubCategory(req: Request, res: Response) {
     try {
-        await validateadminVendorsOps.createSubCategory(req.body)
+      await this.validateAdminVendorsOps.createSubCategory(req.body);
+
       const subCategory =
-        await adminOpsVendorsCategoryService.createSubCategory(req.body);
+        await this.adminOpsVendorsCategoryService.createSubCategory(req.body);
+
       return res.status(STATUS_CODES.CREATED).json({
         message: "Successful",
         data: { subCategory },
@@ -33,6 +45,3 @@ class AdminOpsVendorsCategoryController {
     }
   }
 }
-
-export const adminOpsVendorCategoryController =
-  new AdminOpsVendorsCategoryController();

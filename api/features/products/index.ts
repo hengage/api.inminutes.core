@@ -1,5 +1,5 @@
-export { productsRepo } from "./repository/products.repo";
+export { ProductsRepository } from "./repository/products.repo";
 export { productsService } from "./services/products.service";
 export { Product } from "./models/products.models";
-export { productsRoutes } from "./routes/products.routes";
+export { ProductsRoutes } from "./routes/products.routes";
 export { ProductCategory } from "./models/products.models";
