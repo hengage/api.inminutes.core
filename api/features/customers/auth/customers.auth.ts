@@ -29,11 +29,7 @@ export class CustomersAuthentication {
     this.customersRepo = new CustomersRepository();
   }
 
-  public async login(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
+  public  login = async (req: Request,res: Response,next: NextFunction): Promise<void> => {
     try {
       await this.validateCustomer.login(req.body);
 
