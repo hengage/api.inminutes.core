@@ -8,11 +8,10 @@ export class ProductsController {
   private productsRepo: ProductsRepository;
 
   constructor() {
-    this.productsRepo = new ProductsRepository()
+    this.productsRepo = new ProductsRepository();
   }
 
-
-  async getCategories(req: Request, res: Response) {
+   getCategories = async(req: Request, res: Response) => {
     try {
       const categories = await this.productsRepo.getCategories();
       res.status(STATUS_CODES.OK).json({
@@ -24,7 +23,7 @@ export class ProductsController {
     }
   }
 
-  async addProduct(req: Request, res: Response) {
+  addProduct = async (req: Request, res: Response) => {
     try {
       await validateProducts.addProduct(req.body);
       const vendor = (req as any).user._id;
@@ -36,11 +35,13 @@ export class ProductsController {
     } catch (error: any) {
       handleErrorResponse(res, error);
     }
-  }
+  };
 
-  async productDetails(req: Request, res: Response) {
+   productDetails = async(req: Request, res: Response) =>{
     try {
-      const product = await this.productsRepo.productDetails(req.params.productId);
+      const product = await this.productsRepo.productDetails(
+        req.params.productId
+      );
       res.status(STATUS_CODES.CREATED).json({
         message: "Success",
         data: { product },
@@ -63,7 +64,7 @@ export class ProductsController {
     }
   }
 
-  async searchProducts(req: Request, res: Response) {
+   searchProducts = async(req: Request, res: Response) =>{
     const page = parseInt(req.query.page as string);
 
     try {
@@ -81,21 +82,21 @@ export class ProductsController {
     }
   }
 
-  async getProductsByCategory(req: Request, res: Response) {
-    const page = parseInt(req.query.page as string) || 1
+  getProductsByCategory = async (req: Request, res: Response)=> {
+    const page = parseInt(req.query.page as string) || 1;
     try {
       const products = await this.productsRepo.getProductsByCategory({
         categoryId: req.params.categoryId,
-        page
-      })
+        page,
+      });
 
-      console.log({products})
+      console.log({ products });
       res.status(STATUS_CODES.OK).json({
         message: "success",
-        data: {products}
-      })
+        data: { products },
+      });
     } catch (error: any) {
-      handleErrorResponse(res, error)
+      handleErrorResponse(res, error);
     }
   }
 }
