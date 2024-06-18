@@ -6,9 +6,6 @@ import {
 } from "../../../utils";
 import { validateRider } from "../validators/riders.validators";
 import { RidersService } from "../services/riders.service";
-console.log({ RidersServiceInController: JSON.stringify(RidersService) });
-
-console.log({ridersServiceInController:  JSON.stringify(RidersService)});
 class RidersController {
   public ridersService: RidersService;
 

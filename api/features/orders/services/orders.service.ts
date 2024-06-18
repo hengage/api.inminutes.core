@@ -1,18 +1,14 @@
 import mongoose from "mongoose";
 import { HandleException, ORDER_STATUS } from "../../../utils";
-import { handleInstantOrScheduledDelivery } from "../../../utils/delivery.utils";
 import { NotificationService } from "../../notifications";
 import { Order } from "../models/orders.model";
 import { OrdersRepository } from "../repository/orders.repo";
 import { ValidateOrders } from "../validation/orders.validation";
 import { vendorsRepo } from "../../vendors";
 import { emitEvent } from "../../../services";
-
 import {  RidersService } from "../../riders/";
-import { RidersRepository } from "../../riders/repository/riders.repo";
-RidersRepository
-// import { ridersService } from "../../riders";
-console.log({ RidersServiceInOrdersService: JSON.stringify(RidersService) });
+import { handleInstantOrScheduledDelivery } from "../../../utils/delivery.utils";
+
 
 export class OrdersService {
   private notificationService: NotificationService;

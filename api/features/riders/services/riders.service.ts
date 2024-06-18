@@ -1,10 +1,8 @@
 import { ClientSession } from "mongoose";
-import { UsersService } from "../../../services";
 import { NotificationService } from "../../notifications";
 import { RidersRepository } from "../repository/riders.repo";
-// const  {RidersRepository}   = require( "../repository/riders.repo");
+import { UsersService } from "../../../services/users.services";
 
-console.log({ riderRepoInRiderService: JSON.stringify(RidersRepository) });
 export class RidersService {
   private notificationService: NotificationService;
   private usersService: UsersService;

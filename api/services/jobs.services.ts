@@ -4,12 +4,8 @@ dotenv.config();
 import { Agenda } from "agenda";
 import { DB_URL } from "../config/secrets.config";
 import { RidersService } from "../features/riders";
-import { ridersService } from "../features/riders";
 
-
-// const ridersService = new RidersService();
-// console.log({ RidersService });
-console.log({ ridersServiceInJObs: ridersService });
+const ridersService = new RidersService();
 
 
 var agenda: Agenda;

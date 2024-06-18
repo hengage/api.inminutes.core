@@ -1,9 +1,9 @@
-// import { RidersService } from "../features/riders";
-import { ridersService } from "../features/riders";
+import { RidersService } from "../features/riders";
+// import { ridersService } from "../features/riders";
 import { agenda } from "../services";
 
 // console.log({ridersServiceInDeliveryUtils: RidersService})
-// const ridersService = new RidersService();
+const ridersService = new RidersService();
 
 async function handleInstantOrScheduledDelivery(params: {
   order: any;
