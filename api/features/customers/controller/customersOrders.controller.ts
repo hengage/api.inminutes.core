@@ -5,11 +5,11 @@ import { CustomersOrdersService } from "../services/customerOrders.service";
 export class CustomersOrdersController {
   private customersOrdersService: CustomersOrdersService;
 
-  constructor(){
-    this.customersOrdersService = new CustomersOrdersService()
+  constructor() {
+    this.customersOrdersService = new CustomersOrdersService();
   }
 
-  async orderMetrics(req: Request, res: Response) {
+  orderMetrics = async (req: Request, res: Response) => {
     const customerId = (req as any).user._id;
     try {
       const orderMetrics = await this.customersOrdersService.orderMetrics(
@@ -22,14 +22,17 @@ export class CustomersOrdersController {
     } catch (error: any) {
       handleErrorResponse(res, error);
     }
-  }
+  };
 
-  async orders(req: Request, res: Response) {
+  orders = async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 1;
     const customerId = (req as any).user._id;
     try {
-      const orders = await this.customersOrdersService.orders({ customerId, page });
-      console.log({orders})
+      const orders = await this.customersOrdersService.orders({
+        customerId,
+        page,
+      });
+      console.log({ orders });
       res.status(STATUS_CODES.OK).json({
         success: true,
         data: { orders },
@@ -37,5 +40,5 @@ export class CustomersOrdersController {
     } catch (error: any) {
       handleErrorResponse(res, error);
     }
-  }
+  };
 }
