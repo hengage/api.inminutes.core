@@ -122,27 +122,6 @@ class VendorsRepository {
     const hasNextPage = page < totalPages;
     const hasPrevPage = page > 1;
 
-    // const options = {
-    //   page,
-    //   limit,
-    //   select: {
-    //     businessName: 1,
-    //     businessLogo: 1,
-    //     location: {
-    //       coordinates: 1,
-    //     },
-    //     category: 1,
-    //     address: 1,
-    //     rating: {
-    //       averageRating: 1,
-    //     },
-    //   },
-    //   leanWithId: false,
-    //   lean: true,
-    // };
-
-    // const vendors = await Vendor.paginate(query, options);
-
     const vendors = {
       docs,
       totalDocs,
@@ -184,25 +163,6 @@ class VendorsRepository {
       },
     };
 
-    // const options = {
-    //   page: params.page,
-    //   limit: 14,
-    //   select: {
-    //     businessName: 1,
-    //     businessLogo: 1,
-    //     location: {
-    //       coordinates: 1,
-    //     },
-    //     category: 1,
-    //     address: 1,
-    //     rating: {
-    //       averageRating: 1,
-    //     },
-    //   },
-    //   leanWithId: false,
-    //   lean: true,
-    // };
-
     const docs = await Vendor.find(query)
       .select({
         businessName: 1,
@@ -233,9 +193,6 @@ class VendorsRepository {
       hasNextPage,
       hasPrevPage,
     };
-
-    // const vendors = await Vendor.paginate(query, options);
-
     return vendors;
   }
 
@@ -276,26 +233,6 @@ class VendorsRepository {
     const hasNextPage = page < totalPages;
     const hasPrevPage = page > 1;
 
-    // const options = {
-    //   page: params.page,
-    //   limit: 14,
-    //   select: {
-    //     businessName: 1,
-    //     businessLogo: 1,
-    //     location: {
-    //       coordinates: 1,
-    //     },
-    //     // category: 1,
-    //     address: 1,
-    //     rating: {
-    //       averageRating: 1,
-    //     },
-    //   },
-    //   leanWithId: false,
-    //   lean: true,
-    // };
-
-    // const vendors = await Vendor.paginate(query, options);
     const vendors = {
       docs,
       totalDocs,
@@ -322,16 +259,6 @@ class VendorsRepository {
       if (!vendor) {
         throw new HandleException(STATUS_CODES.NOT_FOUND, "vendor not found");
       }
-
-      // // Increase the number of times the account has been rated
-      // vendor.rating.ratingCount += 1;
-
-      // // Add the new rating to the sum of the previous ratings
-      // vendor.rating.totalRatingSum += rating;
-
-      // // Calculate the average rating
-      // vendor.rating.averageRating =
-      //   vendor.rating.totalRatingSum / vendor.rating.ratingCount;
 
       vendor.rating.averageRating = calculateAverageRating(vendor, rating);
 
