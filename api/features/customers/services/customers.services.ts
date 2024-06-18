@@ -7,24 +7,23 @@ export class CustomersService {
   private customersRepo: CustomersRepository;
 
   constructor() {
-    this.mediaService = new MediaService()
+    this.mediaService = new MediaService();
     this.customersRepo = new CustomersRepository();
   }
 
-  async signup(customer: any) {
+  signup = async (customer: any) => {
     await Promise.all([
       this.customersRepo.checkEmailIstaken,
-      this.customersRepo.checkPhoneNumberIstaken
-    ])
+      this.customersRepo.checkPhoneNumberIstaken,
+    ]);
 
-    return await this.customersRepo.signup(customer)
-  }
- 
+    return await this.customersRepo.signup(customer);
+  };
 
-  async updateProfilePhoto(params: {
+  updateProfilePhoto = async (params: {
     customerId: string;
     image: Record<string, any>;
-  }) {
+  }) => {
     const { customerId, image } = params;
     const displayPhotoUrl = await this.mediaService.uploadToCloudinary(
       image,
@@ -43,5 +42,5 @@ export class CustomersService {
     );
 
     return updatedCustomer;
-  }
+  };
 }

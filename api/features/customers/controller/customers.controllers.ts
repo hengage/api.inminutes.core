@@ -11,11 +11,11 @@ import { CustomersAuthentication } from "../auth/customers.auth";
 import { ProductsRepository } from "../../products";
 
 export class CustomersController {
-  private validateCustomer: ValidateCustomer
-  private customersAuthentication: CustomersAuthentication
-  private customersRepo: CustomersRepository
-  private customersService: CustomersService
-  private productsRepo: ProductsRepository
+  private validateCustomer: ValidateCustomer;
+  private customersAuthentication: CustomersAuthentication;
+  private customersRepo: CustomersRepository;
+  private customersService: CustomersService;
+  private productsRepo: ProductsRepository;
 
   constructor() {
     this.validateCustomer = new ValidateCustomer();
@@ -25,21 +25,22 @@ export class CustomersController {
     this.productsRepo = new ProductsRepository();
   }
 
-
-  async signupVerificationCode(req: Request, res: Response) {
+  signupVerificationCode = async (req: Request, res: Response) => {
     const { recipientPhoneNumber } = req.body;
 
     try {
-      await this.customersAuthentication.sendVerificationCode(recipientPhoneNumber);
+      await this.customersAuthentication.sendVerificationCode(
+        recipientPhoneNumber
+      );
       res.status(STATUS_CODES.OK).json({
         message: "OTP sent",
       });
     } catch (error: any) {
       handleErrorResponse(res, error);
     }
-  }
+  };
 
-  async signup(req: Request, res: Response) {
+  signup = async (req: Request, res: Response) => {
     try {
       await this.validateCustomer.signUp(req.body);
       const customer = await this.customersService.signup(req.body);
@@ -61,9 +62,9 @@ export class CustomersController {
     } catch (error: any) {
       handleErrorResponse(res, error);
     }
-  }
+  };
 
-  async getProfile(req: Request, res: Response) {
+  getProfile = async (req: Request, res: Response) => {
     const _id = (req as any).user._id;
     try {
       const customer = await this.customersRepo.getProfile(_id);
@@ -77,14 +78,17 @@ export class CustomersController {
         error: error.message || "Server error",
       });
     }
-  }
+  };
 
-  async updateProfile(req: Request, res: Response) {
+  updateProfile = async (req: Request, res: Response) => {
     const customer = (req as any).user._id;
 
     try {
       await this.validateCustomer.updateProfile(req.body);
-      const profile = await this.customersRepo.updateProfile(customer, req.body);
+      const profile = await this.customersRepo.updateProfile(
+        customer,
+        req.body
+      );
       res.status(STATUS_CODES.OK).json({
         message: "Success",
         data: { profile },
@@ -92,9 +96,9 @@ export class CustomersController {
     } catch (error: any) {
       handleErrorResponse(res, error);
     }
-  }
+  };
 
-  async updateDIsplayPhoto(req: Request, res: Response) {
+  updateDIsplayPhoto = async (req: Request, res: Response) => {
     const customerId = (req as any).user._id;
     const image = req.files as Record<string, any>;
 
@@ -110,9 +114,9 @@ export class CustomersController {
     } catch (error: any) {
       handleErrorResponse(res, error);
     }
-  }
+  };
 
-  async updateDeliveryAddress(req: Request, res: Response) {
+  updateDeliveryAddress = async (req: Request, res: Response) => {
     const customerId = (req as any).user._id;
     const { address, coordinates } = req.body;
 
@@ -130,9 +134,9 @@ export class CustomersController {
     } catch (error: any) {
       handleErrorResponse(res, error);
     }
-  }
+  };
 
-  async deleteAccount(req: Request, res: Response) {
+  deleteAccount = async (req: Request, res: Response) => {
     const customer = (req as any).user._id;
 
     try {
@@ -143,12 +147,14 @@ export class CustomersController {
     } catch (error: any) {
       handleErrorResponse(res, error);
     }
-  }
+  };
 
-  async getWishList(req: Request, res: Response) {
+  getWishList = async (req: Request, res: Response) => {
     const customerId = (req as any).user._id;
     try {
-      const wishList = await this.productsRepo.getWishListForCustomer(customerId);
+      const wishList = await this.productsRepo.getWishListForCustomer(
+        customerId
+      );
       console.log({ wishList });
       res.status(STATUS_CODES.OK).json({
         message: "success",
@@ -157,5 +163,5 @@ export class CustomersController {
     } catch (error: any) {
       handleErrorResponse(res, error);
     }
-  }
+  };
 }
