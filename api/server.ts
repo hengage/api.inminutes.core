@@ -36,5 +36,5 @@ const server = app.listenToPort(PORT, NODE_ENV);
     await agenda.start();
   })();
 
-const InitializeWebSocket = new SocketIO(server);
-InitializeWebSocket.connectSocket();
+const socket = new SocketIO(server);
+socket.connectSocket();

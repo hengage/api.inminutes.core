@@ -8,6 +8,7 @@ import { listenToOrderevents } from "./orders.socket";
 import { listenToRiderEvents } from "./riders.socket";
 import { listenForProductEvents } from "./products.socket";
 import { listenToWalletEvents } from "./wallet.socket";
+import { socketGuard } from "../../middleware";
 
 class SocketIO {
   private io: Socket;
@@ -17,6 +18,7 @@ class SocketIO {
   }
 
   public connectSocket() {
+    this.io.use(socketGuard)
     this.io.on("connection", (socket: Socket) => {
       console.log("User connected");
       this.listenToEvents(socket)
@@ -26,6 +28,8 @@ class SocketIO {
       });
     });
   }
+
+  // private
 
   private listenToEvents(socket: Socket) {
     listenToCustomerEvents(socket)
