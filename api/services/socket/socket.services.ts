@@ -29,8 +29,6 @@ class SocketIO {
     });
   }
 
-  // private
-
   private listenToEvents(socket: Socket) {
     listenToCustomerEvents(socket)
     listenToOrderevents(socket)

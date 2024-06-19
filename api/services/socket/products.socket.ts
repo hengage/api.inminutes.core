@@ -4,15 +4,15 @@ import { productsService } from "../../features/products";
 function listenForProductEvents(socket: Socket) {
   socket.on("add-product-to-wishlist", async (message) => {
     console.log({ message });
-    const { customerId, productId } = message;
+    const { productId } = message;
 
     try {
       const wishList = await productsService.addToWishList({
-        customerId,
+        customerId: socket.data.user?._id,
         productId,
       });
 
-      socket.emit("added-product-to-wishlist", "Added to wish list");
+      socket.emit("added-product-to-wishlist", wishList);
     } catch (error: any) {
       socket.emit("add-product-to-wishlist-error", error.message);
     }
@@ -20,11 +20,11 @@ function listenForProductEvents(socket: Socket) {
 
   socket.on("remove-product-from-wishlist", async (message) => {
     console.log({ message });
-    const { customerId, productId } = message;
+    const { productId } = message;
 
     try {
       const wishList = await productsService.removeFromWishList({
-        customerId,
+        customerId: socket.data.user?._id,
         productId,
       });
       console.log({ wishList });
@@ -36,13 +36,14 @@ function listenForProductEvents(socket: Socket) {
   });
 
   socket.on("check-product-is-in-wishlist", async function (message) {
-    const { customerId, productId } = message;
+    const {  productId } = message;
     try {
-      const isInWishList = await productsService.checkProductIsInCustomerWishList({
-        customerId,
-        productId,
-      });
-      console.log({isInWishList})
+      const isInWishList =
+        await productsService.checkProductIsInCustomerWishList({
+          customerId: socket.data.user?._id,
+          productId,
+        });
+      console.log({ isInWishList });
       socket.emit("checked-if-product-in-wishlist", isInWishList);
     } catch (error: any) {
       socket.emit("check-product-is-in-wishlist-error", error.message);

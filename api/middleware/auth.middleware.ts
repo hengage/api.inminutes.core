@@ -41,7 +41,6 @@ const socketGuard = (event: any, next: (err?: Error | undefined) => void) => {
 
   try {
     const decoded = jwt.verify(token, `${JWT_SECRET_KEY}`);
-    console.log({ decoded });
     socket.data.user = decoded;
     next();
   } catch (error: any) {

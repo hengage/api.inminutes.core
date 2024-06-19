@@ -29,9 +29,12 @@ function listenToOrderevents(socket: Socket) {
   });
 
   socket.on("assign-rider-to-order", async (message) => {
-    const { orderId, riderId } = message;
+    const { orderId } = message;
     try {
-      const order = await ordersService.assignRider({ orderId, riderId });
+      const order = await ordersService.assignRider({
+        orderId,
+        riderId: socket.data.user?._id,
+      });
       console.log("assigned rider");
       socket.emit("rider-assigned-to-order", order);
     } catch (error: any) {
