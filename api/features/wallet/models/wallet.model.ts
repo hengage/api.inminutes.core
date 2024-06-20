@@ -1,4 +1,4 @@
-import { ClientSession, Schema, model } from "mongoose";
+import ValidationError, { ClientSession, Schema, model } from "mongoose";
 import { IWalletDocument, IWalletMethodsDocument } from "../wallet.interface";
 import {
   CASHOUT_CHANNEL,
@@ -15,8 +15,8 @@ const walletSchema = new Schema<IWalletDocument>(
       type: String,
       default: () => generateUniqueString(4),
     },
-    rider: { type: String, ref: "Rider" },
-    vendor: { type: String, ref: "Vendor" },
+    rider: { type: String, ref: "Rider", index: true },
+    vendor: { type: String, ref: "Vendor", index: true },
     balance: { type: String, default: "0" },
     transactionCount: { type: Number, default: 0 },
     totalEarnings: { type: String, default: "0" },
@@ -24,22 +24,30 @@ const walletSchema = new Schema<IWalletDocument>(
       type: String,
       default: "NGN",
     },
-    cashoutAccounts: [
-      {
-        channel: {
-          type: String,
-          enum: Object.values(CASHOUT_CHANNEL),
+    cashoutAccounts: {
+      type: [
+        {
+          channel: {
+            type: String,
+            enum: Object.values(CASHOUT_CHANNEL),
+          },
+          bankName: String,
+          bankCode: String,
+          accountName: String,
+          accountNumber: String,
+          currency: { type: String, default: "NGN" },
+          recipientType: { type: String, default: "nuban" },
+          recipientCode: String,
+          _id: false,
         },
-        bankName: String, 
-        bankCode: String,
-        accountName: String,
-        accountNumber: String,
-        currency:{ type: String, default:"NGN"},
-        recipientType:{type: String, default: "nuban"},
-        recipientCode: String,
-        _id: false,
-      },
-    ],
+      ],
+      // validate: {
+      //   validator: function (val: any) {
+      //     return val.length <= 2;
+      //   },
+      //   message: "You can only have a maximum of two accounts for cashout",
+      // },
+    },
     status: {
       type: String,
       enum: Object.values(WALLET_STATUS),
@@ -50,6 +58,19 @@ const walletSchema = new Schema<IWalletDocument>(
     timestamps: true,
   }
 );
+
+walletSchema.pre("validate", function (next) {
+  console.log({cashaccountAccounts: this.cashoutAccounts, _id: this._id})
+  if (this.cashoutAccounts.length >= 3) {
+    next(new Error("You can only have a maximum of two accounts for cashout"));
+  } else {
+    next();
+  }
+});
+
+// walletSchema.path("cashoutAccounts").validate(function (val: any) {
+//   return val.length <= 2;
+// }, "You can only have a maximum of two accounts for cashout");
 
 walletSchema.statics.creditWallet = async function (
   dto: { amount: string; riderId?: string; vendorId?: string },
@@ -73,7 +94,7 @@ walletSchema.statics.creditWallet = async function (
 
   wallet.balance = Big(wallet.balance).plus(dto.amount);
   wallet.totalEarnings = Big(wallet.totalEarnings).plus(dto.amount);
-  wallet.transactionCount ++
+  wallet.transactionCount++;
   await wallet.save({ session });
 
   return wallet;
@@ -100,7 +121,7 @@ walletSchema.statics.debitWallet = async function (
   }
 
   wallet.balance = Big(wallet.balance).minus(dto.amount);
-  await wallet.save({session});
+  await wallet.save({ session });
 
   return wallet;
 };

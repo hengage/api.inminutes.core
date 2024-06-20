@@ -14,19 +14,23 @@ class WalletRepository {
 
   async addCashoutAccount(cashoutAccount: ICashoutAccount, walletId: string) {
     try {
-      const wallet = await Wallet.findByIdAndUpdate(
-        walletId,
-        { $push: { cashoutAccounts: cashoutAccount } },
-        { new: true, select: "-__v -updatedAt -createdAt" }
-      ).lean();
+      // const wallet = await Wallet.findOneAndUpdate(
+      //   {_id: walletId},
+      //   { $push: { cashoutAccounts: cashoutAccount } },
+      //   { new: true, select: "-__v -updatedAt -createdAt", runValidators: true }
+      // ).lean();
+      const wallet = await Wallet.findById(walletId).select("cashoutAccounts");
 
       if (!wallet) {
         throw new HandleException(STATUS_CODES.NOT_FOUND, "Wallet not found");
       }
 
-      console.log("Added new cashout account: ", wallet);
+      wallet.cashoutAccounts.push(cashoutAccount);
+      const updatedWallet = await wallet.save();
 
-      return wallet;
+      console.log("Added new cashout account: ", updatedWallet);
+
+      return updatedWallet;
     } catch (error: any) {
       throw new HandleException(STATUS_CODES.NOT_FOUND, error.message);
     }
@@ -56,15 +60,12 @@ class WalletRepository {
       .exec();
   }
 
-  
   async getRiderBalance(riderId: string) {
     return await Wallet.findOne({ rider: riderId })
       .select("balance")
       .lean()
       .exec();
   }
-
-
 }
 
 export const walletRepo = new WalletRepository();
