@@ -14,11 +14,6 @@ class WalletRepository {
 
   async addCashoutAccount(cashoutAccount: ICashoutAccount, walletId: string) {
     try {
-      // const wallet = await Wallet.findOneAndUpdate(
-      //   {_id: walletId},
-      //   { $push: { cashoutAccounts: cashoutAccount } },
-      //   { new: true, select: "-__v -updatedAt -createdAt", runValidators: true }
-      // ).lean();
       const wallet = await Wallet.findById(walletId).select("cashoutAccounts");
 
       if (!wallet) {
@@ -27,8 +22,6 @@ class WalletRepository {
 
       wallet.cashoutAccounts.push(cashoutAccount);
       const updatedWallet = await wallet.save();
-
-      console.log("Added new cashout account: ", updatedWallet);
 
       return updatedWallet;
     } catch (error: any) {

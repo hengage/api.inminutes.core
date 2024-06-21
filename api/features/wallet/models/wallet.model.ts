@@ -1,4 +1,7 @@
-import ValidationError, { ClientSession, Schema, model } from "mongoose";
+import { ClientSession, Schema, model } from "mongoose";
+
+import Big from "big.js";
+
 import { IWalletDocument, IWalletMethodsDocument } from "../wallet.interface";
 import {
   CASHOUT_CHANNEL,
@@ -7,7 +10,6 @@ import {
   WALLET_STATUS,
   generateUniqueString,
 } from "../../../utils";
-import Big from "big.js";
 
 const walletSchema = new Schema<IWalletDocument>(
   {
@@ -41,12 +43,6 @@ const walletSchema = new Schema<IWalletDocument>(
           _id: false,
         },
       ],
-      // validate: {
-      //   validator: function (val: any) {
-      //     return val.length <= 2;
-      //   },
-      //   message: "You can only have a maximum of two accounts for cashout",
-      // },
     },
     status: {
       type: String,
@@ -60,17 +56,12 @@ const walletSchema = new Schema<IWalletDocument>(
 );
 
 walletSchema.pre("validate", function (next) {
-  console.log({cashaccountAccounts: this.cashoutAccounts, _id: this._id})
   if (this.cashoutAccounts.length >= 3) {
     next(new Error("You can only have a maximum of two accounts for cashout"));
   } else {
     next();
   }
 });
-
-// walletSchema.path("cashoutAccounts").validate(function (val: any) {
-//   return val.length <= 2;
-// }, "You can only have a maximum of two accounts for cashout");
 
 walletSchema.statics.creditWallet = async function (
   dto: { amount: string; riderId?: string; vendorId?: string },
