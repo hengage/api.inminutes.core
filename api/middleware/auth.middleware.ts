@@ -33,9 +33,9 @@ const socketGuard = (event: any, next: (err?: Error | undefined) => void) => {
   const token =
     socket.handshake.headers.authorization?.split(" ")[1] ||
     socket.handshake.auth.token;
-  console.log({ ipAddress: socket.handshake.address });
 
   if (!token) {
+    console.error('Authentication error: Token not provided')
     return next(new Error("Authentication error: Token not provided"));
   }
 

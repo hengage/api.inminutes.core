@@ -5,7 +5,6 @@ function listenToWalletEvents(socket: Socket) {
   socket.on("get-cashout-accounts", async (message) => {
     try {
       console.log({ message });
-      console.log({ socket });
       const { merchant } = message;
       const cashoutAccounts = await walletService.getCashoutAccounts(
         merchant,
