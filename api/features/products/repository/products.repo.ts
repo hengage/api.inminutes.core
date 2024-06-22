@@ -52,7 +52,7 @@ export class ProductsRepository {
     await product.save();
   }
 
-  async productDetails(productId: string) {
+  async details(productId: string) {
     const product = await this.productModel
       .findById(productId)
       .select("-__v -updatedAt -createdAt -status")
@@ -60,7 +60,8 @@ export class ProductsRepository {
       .populate({
         path: "vendor",
         select: "businessName location.coordinates",
-      });
+      })
+      .lean();
 
     return product;
   }

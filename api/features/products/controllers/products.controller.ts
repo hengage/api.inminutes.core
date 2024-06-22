@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { STATUS_CODES, handleErrorResponse } from "../../../utils";
 import { ProductsRepository } from "../repository/products.repo";
 import { validateProducts } from "../validators/products.validators";
+import { productsService } from "../services/products.service";
 
 export class ProductsController {
   private productsRepo: ProductsRepository;
@@ -11,7 +12,7 @@ export class ProductsController {
     this.productsRepo = new ProductsRepository();
   }
 
-   getCategories = async(req: Request, res: Response) => {
+  getCategories = async (req: Request, res: Response) => {
     try {
       const categories = await this.productsRepo.getCategories();
       res.status(STATUS_CODES.OK).json({
@@ -21,7 +22,7 @@ export class ProductsController {
     } catch (error: any) {
       handleErrorResponse(res, error);
     }
-  }
+  };
 
   addProduct = async (req: Request, res: Response) => {
     try {
@@ -37,11 +38,9 @@ export class ProductsController {
     }
   };
 
-   productDetails = async(req: Request, res: Response) =>{
+  details = async (req: Request, res: Response) => {
     try {
-      const product = await this.productsRepo.productDetails(
-        req.params.productId
-      );
+      const product = await productsService.details(req.params.productId);
       res.status(STATUS_CODES.CREATED).json({
         message: "Success",
         data: { product },
@@ -49,7 +48,7 @@ export class ProductsController {
     } catch (error: any) {
       handleErrorResponse(res, error);
     }
-  }
+  };
 
   async deleteProduct(req: Request, res: Response) {
     try {
@@ -64,7 +63,7 @@ export class ProductsController {
     }
   }
 
-   searchProducts = async(req: Request, res: Response) =>{
+  searchProducts = async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string);
 
     try {
@@ -80,9 +79,9 @@ export class ProductsController {
     } catch (error: any) {
       handleErrorResponse(res, error);
     }
-  }
+  };
 
-  getProductsByCategory = async (req: Request, res: Response)=> {
+  getProductsByCategory = async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 1;
     try {
       const products = await this.productsRepo.getProductsByCategory({
@@ -98,5 +97,5 @@ export class ProductsController {
     } catch (error: any) {
       handleErrorResponse(res, error);
     }
-  }
+  };
 }

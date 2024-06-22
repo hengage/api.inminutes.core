@@ -19,7 +19,7 @@ export class ProductsRoutes {
 
     this.router.route("/").post(this.productsController.addProduct);
     this.router.route("/search").get(this.productsController.searchProducts);
-    this.router.route("/:productId").get(this.productsController.productDetails);
+    this.router.route("/:productId").get(this.productsController.details);
     this.router.route("/:productId").delete(this.productsController.deleteProduct);
   }
 }
