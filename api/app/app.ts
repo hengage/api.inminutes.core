@@ -11,14 +11,14 @@ import { RedisClient } from "../services";
 
 class App {
   public app: Express;
-  public router: express.Router;
+  public router: Router;
   public apiRoutes
   private dbConfig: DBConfig
   private redisClient: RedisClient
 
   constructor() {
     this.app = express();
-    this.router = express.Router();
+    this.router = Router();
     this.apiRoutes = new Routes
     this.redisClient = new RedisClient()
 
