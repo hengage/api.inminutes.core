@@ -38,6 +38,7 @@ export class CustomersOrdersService {
       populate: [{ path: "vendor", select: "businessName" }],
       lean: true,
       leanWithId: false,
+      sort: {createdAt: -1}
     };
 
     const orders = this.orderModel.paginate(query, options);
