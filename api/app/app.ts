@@ -7,17 +7,20 @@ import session from "express-session"
 import { DBConfig, passportStrategySetup, serializeUser } from "../config";
 import { centralErrorHandler } from "../middleware";
 import { Routes } from "../routes";
+import { RedisClient } from "../services";
 
 class App {
   public app: Express;
   public router: express.Router;
   public apiRoutes
   private dbConfig: DBConfig
+  private redisClient: RedisClient
 
   constructor() {
     this.app = express();
     this.router = express.Router();
     this.apiRoutes = new Routes
+    this.redisClient = new RedisClient()
 
     this.dbConfig = new DBConfig
     this.connectDb();
@@ -25,6 +28,7 @@ class App {
     this.initializePassport();
     this.initializeRoutes();
     this.initializeCentralErrorMiddleware();
+    this.connectRedis()
   }
 
   private async connectDb() {
@@ -73,6 +77,10 @@ class App {
       centralErrorHandler.handle404Error,
       centralErrorHandler.handle404OrServerError
     );
+  }
+
+  private connectRedis() {
+    this.redisClient.connect();
   }
 
   listenToPort(port: string | number, node_env: string): Server {

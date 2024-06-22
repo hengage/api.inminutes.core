@@ -1,6 +1,8 @@
+export { REDIS_HOST, REDIS_PASSWORD, REDIS_PORT } from "./secrets.config";
+
 export { MediaUploadConfig } from "./cloudinary.config";
 
-export { DB_URL, PAYSTACK_SECRET_KEY  } from "./secrets.config";
+export { DB_URL, PAYSTACK_SECRET_KEY } from "./secrets.config";
 
 export { oneSignalClient } from "./oneSignal.config";
 export {

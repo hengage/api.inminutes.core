@@ -15,3 +15,7 @@ export const ONE_SIGNAL_APP_ID = process.env.ONE_SIGNAL_APP_ID;
 export const ONE_SIGNAL_API_KEY = process.env.ONE_SIGNAL_API_KEY;
 
 export const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY
+
+export const REDIS_PASSWORD = process.env.REDIS_PASSWORD
+export const REDIS_HOST = process.env.REDIS_HOST
+export const REDIS_PORT = parseInt(`${process.env.REDIS_PORT}`)
