@@ -1,11 +1,15 @@
 import { startSession } from "mongoose";
 
 import { string } from "joi";
-import { agenda } from "../../../services";
 import { HandleException, RIDER_WORK_SLOT_STATUS } from "../../../utils";
 import { timeSlotRepo } from "../repository/timeSlot.repo";
+import { SchedulerService } from "../../../services";
 
 class TimeSlotService {
+  private jobscheduleService: SchedulerService;
+  constructor() {
+    this.jobscheduleService = SchedulerService.getInstance();
+  }
   async bookSlot(params: {
     riderId: string;
     startTime: string;
@@ -14,14 +18,17 @@ class TimeSlotService {
     const { riderId, startTime, endTime } = params;
 
     const slot = await timeSlotRepo.bookSlot({ riderId, startTime, endTime });
-    await agenda.schedule(startTime, "start-working", {
-      riderId,
+
+    await this.jobscheduleService.riderStartWorking({
+      startTime,
       slotId: slot._id,
+      riderId,
     });
 
-    await agenda.schedule(endTime, "end-working", {
-      riderId,
+    await this.jobscheduleService.riderEndWorking({
+      endTime,
       slotId: slot._id,
+      riderId,
     });
 
     return slot;
@@ -32,16 +39,16 @@ class TimeSlotService {
     const session = await startSession();
     session.startTransaction();
     try {
-      const cancelledTimeSlot = await agenda.cancel({
-        "data.slotId": slotId,
-      });
+      const cancelledTimeSlot = await this.jobscheduleService.cancelRiderSlot(
+        slotId
+      );
 
       await timeSlotRepo.updateStatus({
         slotId,
         status: RIDER_WORK_SLOT_STATUS.CANCELLED,
         session,
       });
-      
+
       await session.commitTransaction();
       return cancelledTimeSlot;
     } catch (error: any) {

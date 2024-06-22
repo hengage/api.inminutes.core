@@ -6,6 +6,9 @@ import { IVendorDocument } from "../vendors.interface";
 import {
   ACCOUNT_STATUS,
   PAYMENT_OPTIONS,
+} from "../../../utils/constants.utils";
+
+import {
   encryptValue,
   generateUniqueString,
   toLowerCaseSetter,
@@ -21,7 +24,7 @@ const vendorSchema = new Schema<IVendorDocument>(
       type: String,
       required: true,
       unique: true,
-      set: function(value: string) {
+      set: function (value: string) {
         return toLowerCaseSetter(value);
       },
     },
@@ -30,7 +33,7 @@ const vendorSchema = new Schema<IVendorDocument>(
       type: String,
       required: true,
       unique: true,
-      set: function(value: string) {
+      set: function (value: string) {
         return toLowerCaseSetter(value);
       },
     },

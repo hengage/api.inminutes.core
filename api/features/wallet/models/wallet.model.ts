@@ -4,12 +4,15 @@ import Big from "big.js";
 
 import { IWalletDocument, IWalletMethodsDocument } from "../wallet.interface";
 import {
-  CASHOUT_CHANNEL,
+  // CASHOUT_CHANNEL,
+  // CASHOUT_CHANNEL,
   HandleException,
   STATUS_CODES,
-  WALLET_STATUS,
+  // WALLET_STATUS,
   generateUniqueString,
 } from "../../../utils";
+import { CASHOUT_CHANNEL, WALLET_STATUS } from "../../../utils/constants.utils";
+
 
 const walletSchema = new Schema<IWalletDocument>(
   {

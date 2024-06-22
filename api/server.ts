@@ -30,6 +30,7 @@ const app = new App();
 //   await vendorsRepo.changeH3IndexResolution();
 // })();
 
+
 const server = app.listenToPort(PORT, NODE_ENV);
 
 

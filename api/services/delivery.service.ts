@@ -7,23 +7,27 @@ export class DeliveryService {
 
   constructor() {
     this.ridersService = new RidersService();
-    this.jobscheduleService = new SchedulerService()
+    this.jobscheduleService = SchedulerService.getInstance();
   }
 
-   handleInstantOrScheduledDelivery = async(params: { order: any; distanceInKM: number })=> {
+  handleInstantOrScheduledDelivery = async (params: {
+    order: any;
+    distanceInKM: number;
+  }) => {
     const { order, distanceInKM } = params;
 
     if (order.type === "scheduled") {
       console.log("Scheduled order", { order });
-      const fiveMinutesBefore = new Date(order.scheduledDeliveryTime.getTime() - 5 * 60000);
+      const fiveMinutesBefore = new Date(
+        order.scheduledDeliveryTime.getTime() - 5 * 60000
+      );
 
       await this.jobscheduleService.scheduleOrderDelivery({
         scheduledTime: order.scheduledDeliveryTime,
         coordinates: order.vendor.location.coordinates,
         distanceInKM: distanceInKM,
-        orderId: order._id
-      })
-
+        orderId: order._id,
+      });
     } else {
       console.log("Instant order");
       await this.ridersService.findAndNotifyRidersOfOrder({
@@ -32,5 +36,5 @@ export class DeliveryService {
         orderId: order._id,
       });
     }
-  }
+  };
 }
