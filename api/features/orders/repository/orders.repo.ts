@@ -1,5 +1,5 @@
 import { ClientSession } from "mongoose";
-import { convertLatLngToCell } from "../../../services";
+import { convertLatLngToCell, redisClient } from "../../../services";
 import { HandleException, ORDER_STATUS, STATUS_CODES } from "../../../utils";
 import { Order, OrderFeedback } from "../models/orders.model";
 
@@ -93,6 +93,11 @@ export class OrdersRepository {
 
     order.status = params.status;
     await order.save();
+    
+    redisClient
+      .delete(`order:${params.orderId}`)
+      .catch((error) => console.error("Error deleting order: ", error));
+      
     return order;
   }
 

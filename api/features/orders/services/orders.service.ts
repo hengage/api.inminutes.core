@@ -94,15 +94,21 @@ export class OrdersService {
   }
 
   async assignRider(params: { orderId: string; riderId: string }) {
+    const { orderId, riderId } = params;
+    
     await this.validateOrders.assignRider({
-      orderId: params.orderId,
-      riderId: params.riderId,
+      orderId: orderId,
+      riderId: riderId,
     });
 
     const order = await this.ordersRepo.assignRider({
-      orderId: params.orderId,
-      riderId: params.riderId,
+      orderId: orderId,
+      riderId: riderId,
     });
+
+    redisClient
+      .delete(`order:${orderId}`)
+      .catch((error) => console.error("Error deleting order: ", error));
 
     return { orderId: order._id };
   }
