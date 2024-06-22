@@ -7,20 +7,18 @@ import session from "express-session"
 import { DBConfig, passportStrategySetup, serializeUser } from "../config";
 import { centralErrorHandler } from "../middleware";
 import { Routes } from "../routes";
-import { RedisClient } from "../services";
+import { redisClient } from "../services";
 
 class App {
   public app: Express;
   public router: Router;
   public apiRoutes
   private dbConfig: DBConfig
-  private redisClient: RedisClient
 
   constructor() {
     this.app = express();
     this.router = Router();
     this.apiRoutes = new Routes
-    this.redisClient = new RedisClient()
 
     this.dbConfig = new DBConfig
     this.connectDb();
@@ -79,8 +77,8 @@ class App {
     );
   }
 
-  private connectRedis() {
-    this.redisClient.connect();
+  private async connectRedis() {
+    await redisClient.connect();
   }
 
   listenToPort(port: string | number, node_env: string): Server {

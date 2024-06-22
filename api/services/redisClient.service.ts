@@ -1,7 +1,7 @@
 import { createClient, RedisClientType } from "redis";
 import { REDIS_PASSWORD, REDIS_PORT, REDIS_HOST } from "../config";
 
-export class RedisClient {
+class RedisClient {
   private redisClient: RedisClientType;
 
   constructor() {
@@ -76,3 +76,5 @@ export class RedisClient {
     }
   }
 }
+
+export const redisClient = new RedisClient()
