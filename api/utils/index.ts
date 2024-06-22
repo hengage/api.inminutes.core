@@ -1,3 +1,5 @@
+export { DeliveryService } from "../services/delivery.service";
+
 export { calculateAverageRating } from "./calculateRating";
 
 export { WALLET_STATUS, CASHOUT_CHANNEL } from "./constants.utils";

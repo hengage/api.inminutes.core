@@ -1,26 +1,26 @@
 import mongoose from "mongoose";
-import { HandleException, ORDER_STATUS } from "../../../utils";
+import { DeliveryService, HandleException, ORDER_STATUS } from "../../../utils";
 import { NotificationService } from "../../notifications";
 import { Order } from "../models/orders.model";
 import { OrdersRepository } from "../repository/orders.repo";
 import { ValidateOrders } from "../validation/orders.validation";
 import { vendorsRepo } from "../../vendors";
 import { emitEvent } from "../../../services";
-import {  RidersService } from "../../riders/";
-import { handleInstantOrScheduledDelivery } from "../../../utils/delivery.utils";
-
+import { RidersService } from "../../riders/";
 
 export class OrdersService {
   private notificationService: NotificationService;
   private validateOrders: ValidateOrders;
   private ordersRepo: OrdersRepository;
-  private ridersService: RidersService
+  private ridersService: RidersService;
+  private deliveryService: DeliveryService;
 
   constructor() {
     this.notificationService = new NotificationService();
     this.ordersRepo = new OrdersRepository();
     this.validateOrders = new ValidateOrders();
     this.ridersService = new RidersService();
+    this.deliveryService = new DeliveryService();
   }
 
   create = async (params: { orderData: any; customer: string }) => {
@@ -70,7 +70,10 @@ export class OrdersService {
       status: ORDER_STATUS.READY,
     });
 
-    await handleInstantOrScheduledDelivery({ order, distanceInKM });
+    await this.deliveryService.handleInstantOrScheduledDelivery({
+      order,
+      distanceInKM,
+    });
 
     return { orderId: order._id };
   }

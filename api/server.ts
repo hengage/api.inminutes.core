@@ -5,7 +5,7 @@ import { App } from "./app/app";
 import { NODE_ENV, PORT } from "./config";
 import { vendorsRepo } from "./features/vendors/repository/vendors.repo";
 import { SocketIO } from "./services/socket/socket.services";
-import { agenda } from "./services";
+import { SchedulerService } from "./services";
 
 const app = new App();
 
@@ -32,9 +32,6 @@ const app = new App();
 
 const server = app.listenToPort(PORT, NODE_ENV);
 
-(async () => {
-    await agenda.start();
-  })();
 
 const socket = new SocketIO(server);
 socket.connectSocket();

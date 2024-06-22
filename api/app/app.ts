@@ -7,7 +7,7 @@ import session from "express-session"
 import { DBConfig, passportStrategySetup, serializeUser } from "../config";
 import { centralErrorHandler } from "../middleware";
 import { Routes } from "../routes";
-import { RedisClient } from "../services";
+import { RedisClient, SchedulerService } from "../services";
 
 class App {
   public app: Express;
@@ -15,12 +15,14 @@ class App {
   public apiRoutes
   private dbConfig: DBConfig
   private redisClient: RedisClient
+  private jobScheduler: SchedulerService
 
   constructor() {
     this.app = express();
     this.router = express.Router();
     this.apiRoutes = new Routes
     this.redisClient = new RedisClient()
+    this.jobScheduler = new SchedulerService()
 
     this.dbConfig = new DBConfig
     this.connectDb();
@@ -29,6 +31,7 @@ class App {
     this.initializeRoutes();
     this.initializeCentralErrorMiddleware();
     this.connectRedis()
+    this.startJobService()
   }
 
   private async connectDb() {
@@ -81,6 +84,11 @@ class App {
 
   private connectRedis() {
     this.redisClient.connect();
+  }
+
+  private async startJobService() {
+    await this.jobScheduler.start()
+
   }
 
   listenToPort(port: string | number, node_env: string): Server {

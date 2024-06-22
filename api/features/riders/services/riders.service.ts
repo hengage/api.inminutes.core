@@ -32,7 +32,7 @@ export class RidersService {
     return await this.ridersRepo.getMe(id);
   }
 
-  async findAndNotifyRIdersOfOrder(params: {
+  async findAndNotifyRidersOfOrder(params: {
     coordinates: [number, number];
     distanceInKM: number;
     orderId: string;
