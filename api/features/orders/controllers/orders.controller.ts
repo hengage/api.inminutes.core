@@ -34,7 +34,7 @@ export class OrdersController {
 
   orderDetails = async (req: Request, res: Response) => {
     try {
-      const order = await this.ordersRepo.orderDetails(req.params.orderId);
+      const order = await this.ordersService.details(req.params.orderId);
       res.status(STATUS_CODES.OK).json({
         message: "success",
         data: { order },

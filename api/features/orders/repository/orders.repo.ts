@@ -30,7 +30,7 @@ export class OrdersRepository {
     return order;
   }
 
-  async orderDetails(orderId: string) {
+  async details(orderId: string) {
     const order = await Order.findById(orderId)
       .select({
         deliveryAddress: 1,

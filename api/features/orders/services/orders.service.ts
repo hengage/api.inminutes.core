@@ -5,7 +5,7 @@ import { Order } from "../models/orders.model";
 import { OrdersRepository } from "../repository/orders.repo";
 import { ValidateOrders } from "../validation/orders.validation";
 import { vendorsRepo } from "../../vendors";
-import { emitEvent } from "../../../services";
+import { emitEvent, redisClient } from "../../../services";
 import { RidersService } from "../../riders/";
 
 export class OrdersService {
@@ -45,6 +45,21 @@ export class OrdersService {
 
     return newOrder;
   };
+
+  async details(orderId: string) {
+    const cacheKey = `order:${orderId}`;
+    const cachedOrder = await redisClient.get(cacheKey);
+    if (cachedOrder) {
+      return JSON.parse(cachedOrder);
+    }
+    const order = await this.ordersRepo.details(orderId);
+
+    redisClient
+      .setWithExpiry(cacheKey, JSON.stringify(order), 3600)
+      .catch((error) => console.error("Error caching order: ", error));
+
+    return order;
+  }
 
   async requestConfirmed(orderId: string) {
     const order = await this.ordersRepo.updateStatus({
