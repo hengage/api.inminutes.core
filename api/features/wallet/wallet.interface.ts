@@ -37,32 +37,3 @@ export interface ICashoutAccount {
   recipientType: string;
   recipientCode: string;
 }
-
-export interface ICashoutHistoryDocument extends Document {
-  vendor: IVendorDocument;
-  rider: IRiderDocument;
-  wallet: IWalletDocument;
-  amount: string;
-  recipientCode: string;
-  transferCode: string;
-  reference: string;
-  reason: string;
-  transactionFee: string;
-  bank?: string;
-  bankCode?: string;
-  accountNumber?: string;
-  status: string;
-  currency: string;
-}
-
-export interface createCashoutHistoryDTO {
-  vendor?: string;
-  rider?: string;
-  amount: string
-  wallet: string;
-  reference: string;
-  recipientCode: string;
-  transferCode: string;
-  status: string;
-  reason: string;
-}

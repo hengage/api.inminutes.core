@@ -9,16 +9,23 @@ import { createHmac } from "crypto";
 import { Request } from "express";
 import { PAYSTACK_SECRET_KEY } from "../../../config";
 import { emitEvent } from "../../../services";
-import { IInitializeTransaction } from "../transactions.interface";
+import {
+  IInitializeTransaction,
+  createTransactionHistoryData,
+} from "../transactions.interface";
+import { TransactionRepository } from "../repository/transaction.repo";
 
 class TransactionService {
   private paystackAPIKey: string;
   private headers: Record<string, string>;
+  private transactionRepo: TransactionRepository;
+
   constructor() {
     this.paystackAPIKey = `${PAYSTACK_SECRET_KEY}`;
     this.headers = {
       Authorization: `Bearer ${this.paystackAPIKey}`,
     };
+    this.transactionRepo = new TransactionRepository();
   }
 
   async initialize(params: IInitializeTransaction) {
@@ -67,6 +74,10 @@ class TransactionService {
     } else {
       throw new HandleException(STATUS_CODES.BAD_REQUEST, "Invalid signature");
     }
+  }
+
+  async createHistory(transactionHistoryData: createTransactionHistoryData) {
+    return await this.transactionRepo.createHistory(transactionHistoryData);
   }
 }
 
