@@ -1,3 +1,7 @@
+import { IRiderDocument } from "../riders";
+import { IVendorDocument } from "../vendors";
+import { IWalletDocument } from "../wallet/wallet.interface";
+
 export interface IInitializeTransaction {
   email: string;
   amount: string;
@@ -18,4 +22,32 @@ export interface ICreateTransferRecipient {
   metadata: {
     channel: string;
   },
+}
+
+export interface ITransactionHistoryDocument extends Document {
+  _id: string;
+  wallet: IWalletDocument;
+  amount: string;
+  recipientCode?: string;
+  transferCode?: string;
+  reference: string;
+  reason: string;
+  transactionFee: string;
+  bank?: string;
+  bankCode?: string;
+  accountNumber?: string;
+  status: string;
+  currency: string;
+}
+
+
+export interface createTransactionHistoryData {
+  amount: string
+  wallet: string;
+  reference: string;
+  recipientCode?: string;
+  transferCode?: string;
+  status: string;
+  type: "credit" | "debit"
+  reason: string;
 }
