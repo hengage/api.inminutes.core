@@ -79,7 +79,7 @@ class TransferService {
   }
 
   async initialize(payload: InitializeTransferData) {
-    const { amount, recipientCode, reason } = payload;
+    const { amount, recipientCode, reason, walletId } = payload;
     const data = {
       amount,
       reason,
@@ -89,6 +89,8 @@ class TransferService {
     };
 
     try {
+      await walletService.debitWallet({ amount, walletId });
+
       const response = await axios.post(
         "https://api.paystack.co/transfer",
         data,

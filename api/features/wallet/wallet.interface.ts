@@ -22,7 +22,7 @@ export interface IWalletMethodsDocument extends Model<IWalletDocument> {
     session?: ClientSession
   ): Promise<IWalletDocument>;
   debitWallet(
-    dto: { amount: string; riderId?: string; vendorId?: string },
+    dto: { amount: string; walletId?: string },
     session?: ClientSession
   ): Promise<IWalletDocument>;
 }
