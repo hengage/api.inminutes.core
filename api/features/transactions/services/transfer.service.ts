@@ -1,8 +1,11 @@
 import axios from "axios";
 
 import { PAYSTACK_SECRET_KEY } from "../../../config";
-import { HandleException } from "../../../utils";
-import { ICreateTransferRecipient } from "../transactions.interface";
+import { HandleException, generateReference } from "../../../utils";
+import {
+  ICreateTransferRecipient,
+  InitializeTransferData,
+} from "../transactions.interface";
 import { walletRepo, walletService } from "../../wallet";
 
 class TransferService {
@@ -30,9 +33,9 @@ class TransferService {
         currency: payload.currency,
         type: payload.recipientType,
         metadata: {
-            channel: payload.metadata.channel
-        }
-      }
+          channel: payload.metadata.channel,
+        },
+      };
 
       const response = await axios.post(
         "https://api.paystack.co/transferrecipient/",
@@ -69,8 +72,35 @@ class TransferService {
     } catch (error: any) {
       console.error({ error: error });
       throw new HandleException(
-         error.status || error.response.status,
-          error.message || error.response.data
+        error.status || error.response.status,
+        error.message || error.response.data
+      );
+    }
+  }
+
+  async initialize(payload: InitializeTransferData) {
+    const { amount, recipientCode, reason } = payload;
+    const data = {
+      amount,
+      reason,
+      source: "balance",
+      reference: generateReference,
+      recipient: recipientCode,
+    };
+
+    try {
+      const response = await axios.post(
+        "https://api.paystack.co/transfer",
+        data,
+        { headers: this.headers }
+      );
+
+      console.log({ response });
+    } catch (error: any) {
+      console.error({ error: error.response });
+      throw new HandleException(
+        error.status || error.response.status,
+        error.message || error.response.data
       );
     }
   }

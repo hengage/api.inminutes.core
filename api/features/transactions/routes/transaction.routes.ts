@@ -20,6 +20,10 @@ class TransactionRoutes {
     this.router
       .route("/create-transfer-recipient")
       .post(transferController.createTransferReipient);
+
+    this.router
+      .route("/initialize-transfer")
+      .post(transferController.initialize);
   }
 }
 
