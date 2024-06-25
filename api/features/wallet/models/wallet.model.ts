@@ -13,7 +13,6 @@ import {
 } from "../../../utils";
 import { CASHOUT_CHANNEL, WALLET_STATUS } from "../../../utils/constants.utils";
 
-
 const walletSchema = new Schema<IWalletDocument>(
   {
     _id: {
@@ -59,7 +58,7 @@ const walletSchema = new Schema<IWalletDocument>(
 );
 
 walletSchema.pre("validate", function (next) {
-  if (this.cashoutAccounts.length >= 3) {
+  if (Array.isArray(this.cashoutAccounts) && this.cashoutAccounts.length >= 3) {
     next(new Error("You can only have a maximum of two accounts for cashout"));
   } else {
     next();
@@ -94,29 +93,29 @@ walletSchema.statics.creditWallet = async function (
   return wallet;
 };
 
-walletSchema.statics.debitWallet = async function (
-  dto: { amount: string; riderId?: string; vendorId?: string },
-  session?: ClientSession
-) {
-  const query: { rider?: string; vendor?: string } = {};
+walletSchema.statics.debitWallet = async function (data: {
+  amount: string;
+  walletId: string;
+}) {
+  const { amount, walletId } = data;
 
-  if (dto.riderId) {
-    query.rider = dto.riderId;
-  } else {
-    query.vendor = dto.vendorId;
-  }
-
-  const wallet = await this.findOne(query)
-    .select("balance totalEarnings")
-    .session(session);
+  const wallet = await this.findById(walletId).select(
+    "balance transactionCount"
+  );
 
   if (!wallet) {
     throw new HandleException(STATUS_CODES.NOT_FOUND, "wallet not found");
   }
 
-  wallet.balance = Big(wallet.balance).minus(dto.amount);
-  await wallet.save({ session });
-
+  if (Big(wallet.balance).lt(Big(amount))) {
+    throw new HandleException(
+      STATUS_CODES.UNPROCESSABLE_ENTITY,
+      "Insufficient balance"
+    );
+  }
+  wallet.balance = Big(wallet.balance).minus(amount);
+  wallet.transactionCount++;
+  await wallet.save();
   return wallet;
 };
 

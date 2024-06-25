@@ -42,31 +42,15 @@ class WalletService {
     }
   }
 
-  async debitWallet(dto: {
+  async debitWallet(data: {
     amount: string;
-    vendorId?: string;
-    riderId?: string;
+    walletId?: string;
   }) {
-    const session = await startSession();
 
-    try {
-      session.startTransaction();
-
-      await Wallet.debitWallet({
-        amount: dto.amount,
-        vendorId: dto.vendorId,
-        riderId: dto.riderId,
-      });
-
-      await session.commitTransaction();
-      await session.endSession();
-      console.log("Debited wallet");
-    } catch (error: any) {
-      console.error({
-        error: { status: error.status, message: error.message },
-      });
-      await session.endSession();
-    }
+    return await Wallet.debitWallet({
+      amount: data.amount,
+      walletId: data.walletId,
+    });
   }
 
   async creditVendor(params: { vendorId: string; amount: string }) {
