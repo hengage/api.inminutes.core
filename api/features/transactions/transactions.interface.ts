@@ -16,12 +16,12 @@ export interface IInitializeTransaction {
 export interface ICreateTransferRecipient {
   accountName: string;
   accountNumber: string;
-  bankCode: string,
+  bankCode: string;
   currency: string;
   recipientType: string;
   metadata: {
     channel: string;
-  },
+  };
 }
 
 export interface ITransactionHistoryDocument extends Document {
@@ -40,14 +40,20 @@ export interface ITransactionHistoryDocument extends Document {
   currency: string;
 }
 
-
 export interface createTransactionHistoryData {
-  amount: string
+  amount: string;
   wallet: string;
   reference: string;
   recipientCode?: string;
   transferCode?: string;
   status: string;
-  type: "credit" | "debit"
+  type: "credit" | "debit";
   reason: string;
+}
+
+export interface InitializeTransferData {
+  amount: string;
+  recipientCode: string;
+  reason: string;
+  walletId: string;
 }
