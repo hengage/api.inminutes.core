@@ -11,7 +11,6 @@ class RidersController {
 
   constructor() {
     this.ridersService = new RidersService();
-    console.log({ ridersServiceInController: this.ridersService });
   }
 
   signup = async (req: Request, res: Response) => {
