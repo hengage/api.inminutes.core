@@ -11,7 +11,7 @@ import { PAYSTACK_SECRET_KEY } from "../../../config";
 import { emitEvent } from "../../../services";
 import {
   IInitializeTransaction,
-  createTransactionHistoryData,
+  ICreateTransactionHistoryData,
 } from "../transactions.interface";
 import { TransactionRepository } from "../repository/transaction.repo";
 
@@ -76,7 +76,7 @@ class TransactionService {
     }
   }
 
-  async createHistory(transactionHistoryData: createTransactionHistoryData) {
+  async createHistory(transactionHistoryData: ICreateTransactionHistoryData) {
     return await this.transactionRepo.createHistory(transactionHistoryData);
   }
 }

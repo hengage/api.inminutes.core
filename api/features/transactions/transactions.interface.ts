@@ -40,7 +40,7 @@ export interface ITransactionHistoryDocument extends Document {
   currency: string;
 }
 
-export interface createTransactionHistoryData {
+export interface ICreateTransactionHistoryData {
   amount: string;
   wallet: string;
   reference: string;
