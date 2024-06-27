@@ -30,7 +30,7 @@ class TransactionService {
 
   async initialize(params: IInitializeTransaction) {
     const payload = {
-      amount: parseInt(params.amount) * 100,
+      amount: parseFloat(params.amount) * 100,
       email: params.email,
       metadata: params.metadata,
       reference: generateReference,
