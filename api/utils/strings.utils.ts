@@ -46,10 +46,7 @@ function generateReference() {
 
   // Add current timestamp to the reference
   const timestamp = new Date().getTime().toString();
-  console.log({timestamp})
   reference += timestamp.substring(8);
-  console.log({ reference });
-
   return reference;
 }
 
