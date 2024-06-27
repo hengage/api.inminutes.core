@@ -39,14 +39,15 @@ function generateReference() {
   let reference = "";
 
   // Generate reference with a combination of numbers and letters
-  for (let i = 0; i < characters.length; i++) {
+  for (let i = 0; i < 7; i++) {
     const randomIndex = Math.floor(Math.random() * characters.length);
     reference += characters.charAt(randomIndex);
   }
 
   // Add current timestamp to the reference
   const timestamp = new Date().getTime().toString();
-  reference += timestamp;
+  console.log({timestamp})
+  reference += timestamp.substring(8);
   console.log({ reference });
 
   return reference;
