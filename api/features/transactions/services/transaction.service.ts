@@ -63,13 +63,31 @@ class TransactionService {
       console.log(req.body);
       const event = req.body;
 
-      if (event.event === "charge.success") {
-        console.log({ metadata: event.data.metadata });
-        const { purpose, orderId, vendorId } = event.data.metadata;
+      switch (event.event) {
+        case "charge.success":
+          console.log({ metadata: event.data.metadata });
+          const { purpose, orderId, vendorId } = event.data.metadata;
+          if (purpose === "product purchase") {
+            emitEvent("notify-vendor-of-new-order", { orderId, vendorId });
+          }
+          break;
+        case "transfer.success":
+        case "transfer.failed":
+          const { reference, status } = event.data;
+          console.log({ reference, status });
+          this.transactionRepo.updateStatus({ reference, status });
 
-        if (purpose === "product purchase") {
-          emitEvent("notify-vendor-of-new-order", { orderId, vendorId });
-        }
+          // Credit wallet on failed transfer
+          if (event.event === "transfer.failed") {
+            const { amount } = event.data.amount;
+            console.log(
+              "Reverse the money with amount: ",
+              parseFloat(amount) * 100
+            );
+          }
+          break;
+        default:
+          console.warn(`Unknown event type: ${event.event}`);
       }
     } else {
       throw new HandleException(STATUS_CODES.BAD_REQUEST, "Invalid signature");
