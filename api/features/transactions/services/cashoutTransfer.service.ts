@@ -8,7 +8,7 @@ import {
 } from "../transactions.interface";
 import { walletRepo, walletService } from "../../wallet";
 
-class TransferService {
+class CashoutTransferService {
   private paystackAPIKey: string;
   private headers: Record<string, string>;
 
@@ -108,4 +108,4 @@ class TransferService {
   }
 }
 
-export const transferService = new TransferService();
+export const cashoutTransferService = new CashoutTransferService();

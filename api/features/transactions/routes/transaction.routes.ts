@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { transactionController } from "../controllers/transactions.controller";
 import { verifyAuthTokenMiddleware } from "../../../middleware";
-import { transferController } from "../controllers/transfer.controller";
+import { cashoutTransferController } from "../controllers/cashoutTransfer.controller";
 
 class TransactionRoutes {
   router = Router();
@@ -19,11 +19,11 @@ class TransactionRoutes {
 
     this.router
       .route("/create-transfer-recipient")
-      .post(transferController.createTransferReipient);
+      .post(cashoutTransferController.createTransferReipient);
 
     this.router
       .route("/initialize-transfer")
-      .post(transferController.initialize);
+      .post(cashoutTransferController.initialize);
   }
 }
 

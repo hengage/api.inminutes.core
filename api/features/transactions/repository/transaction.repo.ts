@@ -1,11 +1,11 @@
 import { TransactionHistory } from "../models/transaction.model";
-import { ITransactionHistoryDocument, createTransactionHistoryData } from "../transactions.interface";
+import { ITransactionHistoryDocument, ICreateTransactionHistoryData } from "../transactions.interface";
 
 export class TransactionRepository {
   private TransactionHistoryModel = TransactionHistory;
 
   async createHistory(
-    createTransactionHistoryData: createTransactionHistoryData
+    createTransactionHistoryData: ICreateTransactionHistoryData
   ): Promise<ITransactionHistoryDocument> {
     const transactionHistory = new this.TransactionHistoryModel(
       createTransactionHistoryData

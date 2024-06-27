@@ -12,36 +12,6 @@ class WalletService {
     this.notificationService = new NotificationService();
   }
 
-  async creditWallet(dto: {
-    amount: string;
-    vendorId?: string;
-    riderId?: string;
-  }) {
-    const session = await startSession();
-
-    try {
-      session.startTransaction();
-
-      await Wallet.creditWallet(
-        {
-          amount: dto.amount,
-          vendorId: dto.vendorId,
-          riderId: dto.riderId,
-        },
-        session
-      );
-
-      await session.commitTransaction();
-      await session.endSession();
-      console.log("Credited wallet");
-    } catch (error: any) {
-      console.error({
-        error: { status: error.status, message: error.message },
-      });
-      await session.endSession();
-    }
-  }
-
   async debitWallet(data: {
     amount: string;
     walletId?: string;

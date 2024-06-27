@@ -4,12 +4,12 @@ import {
   STATUS_CODES,
   handleErrorResponse,
 } from "../../../utils";
-import { transferService } from "../services/transfer.service";
+import { cashoutTransferService } from "../services/cashoutTransfer.service";
 
-class TransferController {
+class CashoutTransferController {
   async createTransferReipient(req: Request, res: Response) {
     try {
-      await transferService.createRecipient(
+      await cashoutTransferService.createRecipient(
         req.body.accountDetails,
         req.body.walletId
       );
@@ -21,7 +21,7 @@ class TransferController {
 
   async initialize(req: Request, res: Response) {
     try {
-      await transferService.initialize(req.body);
+      await cashoutTransferService.initialize(req.body);
       res
         .status(STATUS_CODES.OK)
         .json({ message: "success", data: "Cashout initiated successfully" });
@@ -31,4 +31,4 @@ class TransferController {
   }
 }
 
-export const transferController = new TransferController();
+export const cashoutTransferController = new CashoutTransferController();
