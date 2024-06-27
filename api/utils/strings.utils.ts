@@ -39,7 +39,7 @@ function generateReference() {
   let reference = "";
 
   // Generate reference with a combination of numbers and letters
-  for (let i = 0; i < length; i++) {
+  for (let i = 0; i < characters.length; i++) {
     const randomIndex = Math.floor(Math.random() * characters.length);
     reference += characters.charAt(randomIndex);
   }

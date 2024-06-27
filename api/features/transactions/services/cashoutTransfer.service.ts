@@ -7,6 +7,7 @@ import {
   InitializeTransferData,
 } from "../transactions.interface";
 import { walletRepo, walletService } from "../../wallet";
+import { transactionService } from "./transaction.service";
 
 class CashoutTransferService {
   private paystackAPIKey: string;
@@ -80,11 +81,13 @@ class CashoutTransferService {
 
   async initialize(payload: InitializeTransferData) {
     const { amount, recipientCode, reason, walletId } = payload;
+    const reference = generateReference();
+
     const data = {
-      amount,
+      amount: parseFloat(amount) * 100,
       reason,
       source: "balance",
-      reference: generateReference,
+      reference,
       recipient: recipientCode,
     };
 
@@ -96,8 +99,24 @@ class CashoutTransferService {
         data,
         { headers: this.headers }
       );
+      const { status, transfer_code: transferCode } = response.data.data;
 
-      console.log({ response });
+      transactionService
+        .createHistory({
+          amount,
+          reason,
+          reference,
+          wallet: walletId,
+          type: "debit",
+          recipientCode,
+          transferCode,
+          status,
+        })
+        .catch((error) => {
+          console.log({ error: error });
+        });
+
+      console.log({ responseData: response.data.data });
     } catch (error: any) {
       console.error({ error: error.response });
       throw new HandleException(

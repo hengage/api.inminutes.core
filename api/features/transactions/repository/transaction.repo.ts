@@ -10,7 +10,7 @@ export class TransactionRepository {
     const transactionHistory = new this.TransactionHistoryModel(
       createTransactionHistoryData
     );
-    transactionHistory.save();
+    await transactionHistory.save();
     return transactionHistory.toObject();
   }
 }

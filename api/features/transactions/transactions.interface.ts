@@ -44,8 +44,8 @@ export interface ICreateTransactionHistoryData {
   amount: string;
   wallet: string;
   reference: string;
-  recipientCode?: string;
-  transferCode?: string;
+  recipientCode: string;
+  transferCode: string;
   status: string;
   type: "credit" | "debit";
   reason: string;

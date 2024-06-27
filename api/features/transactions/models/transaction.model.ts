@@ -31,4 +31,4 @@ transactionHistorySchema.plugin(paginate);
 export const TransactionHistory = model<
   ITransactionHistoryDocument,
   PaginateModel<ITransactionHistoryDocument>
->("CashoutHistory", transactionHistorySchema);
+>("TransactionHistory", transactionHistorySchema);
