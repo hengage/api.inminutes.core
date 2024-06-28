@@ -65,7 +65,7 @@ walletSchema.pre("validate", function (next) {
   }
 });
 
-walletSchema.statics.creditWallet = async function (
+walletSchema.statics.creditWalletByMerchantType = async function (
   dto: { amount: string; riderId?: string; vendorId?: string },
   session?: ClientSession
 ) {
@@ -90,6 +90,26 @@ walletSchema.statics.creditWallet = async function (
   wallet.transactionCount++;
   await wallet.save({ session });
 
+  return wallet;
+};
+
+walletSchema.statics.creditWallet = async function (data: {
+  amount: string;
+  walletId: string;
+}) {
+  const { amount, walletId } = data;
+
+  const wallet = await this.findById(walletId).select(
+    "balance transactionCount"
+  );
+
+  if (!wallet) {
+    throw new HandleException(STATUS_CODES.NOT_FOUND, "wallet not found");
+  }
+
+  wallet.balance = Big(wallet.balance).plus(amount);
+  wallet.transactionCount++;
+  await wallet.save();
   return wallet;
 };
 

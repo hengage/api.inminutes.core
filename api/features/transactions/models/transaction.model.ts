@@ -17,6 +17,7 @@ const transactionHistorySchema = new Schema<ITransactionHistoryDocument>(
     recipientCode: { type: String, required: true },
     reason: { type: String, required: true },
     transferCode: { type: String, required: true },
+    type: { type: String, required: true, enum: ["credit", "debit"] },
     bank: { type: String },
     bankCode: { type: String },
     accountNumber: { type: String },

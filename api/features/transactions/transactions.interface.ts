@@ -32,6 +32,7 @@ export interface ITransactionHistoryDocument extends Document {
   transferCode?: string;
   reference: string;
   reason: string;
+  type: string;
   transactionFee: string;
   bank?: string;
   bankCode?: string;
