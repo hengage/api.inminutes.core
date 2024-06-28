@@ -17,8 +17,12 @@ export interface IWalletDocument extends Document {
 }
 
 export interface IWalletMethodsDocument extends Model<IWalletDocument> {
-  creditWallet(
+  creditWalletByMerchantType(
     dto: { amount: string; riderId?: string; vendorId?: string },
+    session?: ClientSession
+  ): Promise<IWalletDocument>;
+  creditWallet(
+    dto: { amount: string; walletId?: string },
     session?: ClientSession
   ): Promise<IWalletDocument>;
   debitWallet(

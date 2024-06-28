@@ -26,7 +26,7 @@ class WalletService {
   async creditVendor(params: { vendorId: string; amount: string }) {
     const { amount, vendorId } = params;
     try {
-      const wallet = await Wallet.creditWallet({ amount, vendorId });
+      const wallet = await Wallet.creditWalletByMerchantType({ amount, vendorId });
       console.log({ "Credited vendor": wallet });
 
       await this.notificationService.createNotification({
@@ -48,7 +48,7 @@ class WalletService {
     amount = Big(80).div(100).mul(amount).toString();
 
     try {
-      const wallet = await Wallet.creditWallet({ amount, riderId });
+      const wallet = await Wallet.creditWalletByMerchantType({ amount, riderId });
       console.log({ "Credited rider": wallet });
 
       await this.notificationService.createNotification({
