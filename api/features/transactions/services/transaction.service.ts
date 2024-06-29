@@ -60,7 +60,7 @@ class TransactionService {
     );
     const digest = hash.digest("hex");
 
-    // if (digest === req.headers["x-paystack-signature"]) {
+    if (digest === req.headers["x-paystack-signature"]) {
     console.log(req.body);
     const event = req.body;
 
@@ -92,9 +92,9 @@ class TransactionService {
       default:
         console.warn(`Unknown event type: ${event.event}`);
     }
-    // } else {
-    //   throw new HandleException(STATUS_CODES.BAD_REQUEST, "Invalid signature");
-    // }
+    } else {
+      throw new HandleException(STATUS_CODES.BAD_REQUEST, "Invalid signature");
+    }
   }
 
   async createHistory(transactionHistoryData: ICreateTransactionHistoryData) {

@@ -79,7 +79,7 @@ walletSchema.statics.creditWallet = async function (data: {
   const { amount, walletId } = data;
 
   const wallet = await this.findById(walletId).select(
-    "balance transactionCount merchantId"
+    "balance merchantId transactionCount totalEarnings"
   );
 
   if (!wallet) {
