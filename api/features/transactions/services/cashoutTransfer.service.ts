@@ -20,7 +20,7 @@ class CashoutTransferService {
     };
   }
 
-  async createRecipient(payload: ICreateTransferRecipient, walletId: string) {
+  async addCashoutAccount(payload: ICreateTransferRecipient, walletId: string) {
     try {
       await walletService.checkDuplicateAccountNumber(
         walletId,

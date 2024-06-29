@@ -18,11 +18,11 @@ class TransactionRoutes {
     this.router.route("/initialize").post(transactionController.initialize);
 
     this.router
-      .route("/create-transfer-recipient")
-      .post(cashoutTransferController.createTransferReipient);
+      .route("/add-cashout-account")
+      .post(cashoutTransferController.addCashoutAccount);
 
     this.router
-      .route("/initialize-transfer")
+      .route("/merchant-cashout")
       .post(cashoutTransferController.initialize);
   }
 }

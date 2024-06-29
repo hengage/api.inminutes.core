@@ -7,9 +7,9 @@ import {
 import { cashoutTransferService } from "../services/cashoutTransfer.service";
 
 class CashoutTransferController {
-  async createTransferReipient(req: Request, res: Response) {
+  async addCashoutAccount(req: Request, res: Response) {
     try {
-      await cashoutTransferService.createRecipient(
+      await cashoutTransferService.addCashoutAccount(
         req.body.accountDetails,
         req.body.walletId
       );
