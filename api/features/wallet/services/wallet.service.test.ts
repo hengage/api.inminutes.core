@@ -11,13 +11,13 @@ describe("test wallet service", () => {
   })
 
   test.only("it calls creditvendor method correctly", async () => {
-    jest.spyOn(walletService, "creditVendor").mockResolvedValue();
+    jest.spyOn(walletService, "creditWallet").mockResolvedValue();
 
     // walletService.creditVendor = jest.fn();
-    await walletService.creditVendor({ vendorId: "123", amount: "4000" });
+    await walletService.creditWallet({ walletId: "123", amount: "4000" });
 
-    expect(walletService.creditVendor).toHaveBeenCalledTimes(1);
-    expect(walletService.creditVendor).toHaveBeenCalledWith({
+    expect(walletService.creditWallet).toHaveBeenCalledTimes(1);
+    expect(walletService.creditWallet).toHaveBeenCalledWith({
       vendorId: "123",
       amount: "4000",
     });
