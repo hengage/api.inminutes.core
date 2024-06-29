@@ -100,7 +100,7 @@ walletSchema.statics.creditWallet = async function (data: {
   const { amount, walletId } = data;
 
   const wallet = await this.findById(walletId).select(
-    "balance transactionCount"
+    "balance transactionCount rider vendor"
   );
 
   if (!wallet) {

@@ -26,7 +26,7 @@ export interface ICreateTransferRecipient {
 
 export interface ITransactionHistoryDocument extends Document {
   _id: string;
-  wallet: IWalletDocument;
+  wallet: IWalletDocument["_id"];
   amount: string;
   recipientCode?: string;
   transferCode?: string;

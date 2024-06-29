@@ -4,6 +4,7 @@ import Big from "big.js";
 import { NotificationService } from "../../notifications";
 import { HandleException, STATUS_CODES } from "../../../utils";
 import { walletRepo } from "../repository/wallet.repository";
+import { TransactionHistory } from "../../transactions/models/transaction.model";
 
 class WalletService {
   private notificationService: NotificationService;
@@ -12,11 +13,7 @@ class WalletService {
     this.notificationService = new NotificationService();
   }
 
-  async debitWallet(data: {
-    amount: string;
-    walletId?: string;
-  }) {
-
+  async debitWallet(data: { amount: string; walletId?: string }) {
     return await Wallet.debitWallet({
       amount: data.amount,
       walletId: data.walletId,
@@ -26,7 +23,10 @@ class WalletService {
   async creditVendor(params: { vendorId: string; amount: string }) {
     const { amount, vendorId } = params;
     try {
-      const wallet = await Wallet.creditWalletByMerchantType({ amount, vendorId });
+      const wallet = await Wallet.creditWalletByMerchantType({
+        amount,
+        vendorId,
+      });
       console.log({ "Credited vendor": wallet });
 
       await this.notificationService.createNotification({
@@ -48,7 +48,10 @@ class WalletService {
     amount = Big(80).div(100).mul(amount).toString();
 
     try {
-      const wallet = await Wallet.creditWalletByMerchantType({ amount, riderId });
+      const wallet = await Wallet.creditWalletByMerchantType({
+        amount,
+        riderId,
+      });
       console.log({ "Credited rider": wallet });
 
       await this.notificationService.createNotification({
@@ -96,9 +99,43 @@ class WalletService {
   async getVendorBalance(vendorId: string) {
     return await walletRepo.getVendorBalance(vendorId);
   }
-  
+
   async getRiderBalance(riderId: string) {
     return await walletRepo.getRiderBalance(riderId);
+  }
+
+  async reverseDebit(data: { amount: string; trxReference: string }) {
+    const { amount, trxReference } = data;
+
+    const transaction = await TransactionHistory.findOne({
+      reference: trxReference,
+    })
+      .select("wallet ")
+      .lean()
+      .exec();
+
+    const walletId = transaction?.wallet;
+    console.log({transaction, walletId})
+    const wallet = await Wallet.creditWallet({ amount, walletId });
+    console.log({wallet})
+    let userId;
+    
+    if (wallet.rider) {
+      userId = wallet.rider;
+    } else if (wallet.vendor) {
+      userId = wallet.vendor;
+    }
+
+    this.notificationService.createNotification({
+      headings: { en: "Funds reversed!" },
+      contents: {
+        en:
+          `Hi, ${amount} has been refunded to your wallet. ` +
+          `You can try to cashout again, or wait for some minutes`,
+      },
+      userId,
+    });
+    console.log(`Reversed ${amount} for wallet: ${walletId}`);
   }
 }
 
