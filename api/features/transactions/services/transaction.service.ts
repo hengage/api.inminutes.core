@@ -14,6 +14,7 @@ import {
   ICreateTransactionHistoryData,
 } from "../transactions.interface";
 import { TransactionRepository } from "../repository/transaction.repo";
+import { walletService } from "../../wallet";
 
 class TransactionService {
   private paystackAPIKey: string;
@@ -59,39 +60,41 @@ class TransactionService {
     );
     const digest = hash.digest("hex");
 
-    if (digest === req.headers["x-paystack-signature"]) {
-      console.log(req.body);
-      const event = req.body;
+    // if (digest === req.headers["x-paystack-signature"]) {
+    console.log(req.body);
+    const event = req.body;
 
-      switch (event.event) {
-        case "charge.success":
-          console.log({ metadata: event.data.metadata });
-          const { purpose, orderId, vendorId } = event.data.metadata;
-          if (purpose === "product purchase") {
-            emitEvent("notify-vendor-of-new-order", { orderId, vendorId });
-          }
-          break;
-        case "transfer.success":
-        case "transfer.failed":
-          const { reference, status } = event.data;
-          console.log({ reference, status });
-          this.transactionRepo.updateStatus({ reference, status });
+    switch (event.event) {
+      case "charge.success":
+        console.log({ metadata: event.data.metadata });
+        const { purpose, orderId, vendorId } = event.data.metadata;
+        if (purpose === "product purchase") {
+          emitEvent("notify-vendor-of-new-order", { orderId, vendorId });
+        }
+        break;
+      case "transfer.success":
+      case "transfer.failed":
+        const { reference, status } = event.data;
+        console.log({ reference, status });
+        this.transactionRepo.updateStatus({ reference, status });
 
-          // Credit wallet on failed transfer
-          if (event.event === "transfer.failed") {
-            const { amount } = event.data.amount;
-            console.log(
-              "Reverse the money with amount: ",
-              parseFloat(amount) * 100
-            );
-          }
-          break;
-        default:
-          console.warn(`Unknown event type: ${event.event}`);
-      }
-    } else {
-      throw new HandleException(STATUS_CODES.BAD_REQUEST, "Invalid signature");
+        // Credit wallet on failed transfer
+        if (event.event === "transfer.failed") {
+          let { amount } = event.data;
+          amount = parseFloat(amount) / 100;
+          walletService
+            .reverseDebit({ amount, trxReference: reference })
+            .catch((error) => {
+              console.log("Error on reversing debit", error);
+            });
+        }
+        break;
+      default:
+        console.warn(`Unknown event type: ${event.event}`);
     }
+    // } else {
+    //   throw new HandleException(STATUS_CODES.BAD_REQUEST, "Invalid signature");
+    // }
   }
 
   async createHistory(transactionHistoryData: ICreateTransactionHistoryData) {

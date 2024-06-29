@@ -6,8 +6,8 @@ import { Model } from "mongoose";
 
 export interface IWalletDocument extends Document {
   _id: string;
-  rider: IRiderDocument;
-  vendor: IVendorDocument;
+  rider: IRiderDocument["_id"];
+  vendor: IVendorDocument["_id"];
   balance: string;
   transactionCount: number;
   totalEarnings: string;

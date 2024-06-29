@@ -22,10 +22,12 @@ export class TransactionRepository {
     status: string;
   }): Promise<void> {
     const { reference, status } = updateTransactionData;
-    this.TransactionHistoryModel.findOneAndUpdate(
+    await this.TransactionHistoryModel.findOneAndUpdate(
       { reference },
       { $set: { status } }
     ).select("reference status");
-    console.log("Updated transaction with reference: ", reference);
+    console.log(
+      `Updated transaction with reference:  ${reference}. Status: ${status}`
+    );
   }
 }
