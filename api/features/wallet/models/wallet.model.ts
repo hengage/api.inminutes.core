@@ -19,8 +19,15 @@ const walletSchema = new Schema<IWalletDocument>(
       type: String,
       default: () => generateUniqueString(4),
     },
-    rider: { type: String, ref: "Rider", index: true },
-    vendor: { type: String, ref: "Vendor", index: true },
+    merchantId: {
+      type: String,
+      required: true,
+    },
+    merchantType: {
+      type: String,
+      required: true,
+      enum: ['rider', 'vendor'],
+    },
     balance: { type: String, default: "0" },
     transactionCount: { type: Number, default: 0 },
     totalEarnings: { type: String, default: "0" },
@@ -65,34 +72,6 @@ walletSchema.pre("validate", function (next) {
   }
 });
 
-walletSchema.statics.creditWalletByMerchantType = async function (
-  dto: { amount: string; riderId?: string; vendorId?: string },
-  session?: ClientSession
-) {
-  const query: { rider?: string; vendor?: string } = {};
-
-  if (dto.riderId) {
-    query.rider = dto.riderId;
-  } else {
-    query.vendor = dto.vendorId;
-  }
-
-  const wallet = await this.findOne(query)
-    .select("balance totalEarnings transactionCount")
-    .session(session);
-
-  if (!wallet) {
-    throw new HandleException(STATUS_CODES.NOT_FOUND, "wallet not found");
-  }
-
-  wallet.balance = Big(wallet.balance).plus(dto.amount);
-  wallet.totalEarnings = Big(wallet.totalEarnings).plus(dto.amount);
-  wallet.transactionCount++;
-  await wallet.save({ session });
-
-  return wallet;
-};
-
 walletSchema.statics.creditWallet = async function (data: {
   amount: string;
   walletId: string;
@@ -100,7 +79,7 @@ walletSchema.statics.creditWallet = async function (data: {
   const { amount, walletId } = data;
 
   const wallet = await this.findById(walletId).select(
-    "balance transactionCount rider vendor"
+    "balance transactionCount merchantId"
   );
 
   if (!wallet) {
@@ -108,6 +87,7 @@ walletSchema.statics.creditWallet = async function (data: {
   }
 
   wallet.balance = Big(wallet.balance).plus(amount);
+  wallet.totalEarnings = Big(wallet.totalEarnings).plus(amount);
   wallet.transactionCount++;
   await wallet.save();
   return wallet;

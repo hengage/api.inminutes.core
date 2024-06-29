@@ -20,14 +20,14 @@ class WalletService {
     });
   }
 
-  async creditVendor(params: { vendorId: string; amount: string }) {
-    const { amount, vendorId } = params;
+  async creditWallet(params: { walletId: string; amount: string }) {
+    const { amount, walletId } = params;
     try {
-      const wallet = await Wallet.creditWalletByMerchantType({
-        amount,
-        vendorId,
+      const wallet = await Wallet.creditWallet({
+        amount: amount,
+        walletId,
       });
-      console.log({ "Credited vendor": wallet });
+      console.log({ "Credited merchant": wallet });
 
       await this.notificationService.createNotification({
         headings: { en: "Your Earnings Are In!" },
@@ -36,32 +36,7 @@ class WalletService {
             `${amount} has been successfully credited to your wallet. ` +
             `Head to your dashboard to see your new balance`,
         },
-        userId: vendorId,
-      });
-    } catch (error: any) {
-      console.error({ error });
-    }
-  }
-
-  async creditRider(params: { riderId: string; amount: string }) {
-    let { riderId, amount } = params;
-    amount = Big(80).div(100).mul(amount).toString();
-
-    try {
-      const wallet = await Wallet.creditWalletByMerchantType({
-        amount,
-        riderId,
-      });
-      console.log({ "Credited rider": wallet });
-
-      await this.notificationService.createNotification({
-        headings: { en: "Your Earnings Are In!" },
-        contents: {
-          en:
-            `${amount} has been successfully credited to your wallet. ` +
-            `Head to your dashboard to see your new balance`,
-        },
-        userId: riderId,
+        userId: wallet.merchantId,
       });
     } catch (error: any) {
       console.error({ error });
@@ -88,20 +63,31 @@ class WalletService {
     return;
   }
 
-  async getCashoutAccounts(merchant: string, merchantId: string) {
-    const cashoutAccounts = await walletRepo.getCashoutAccounts(
-      merchant as "vendor" | "rider",
-      merchantId
-    );
+  async getCashoutAccounts(merchantId: string) {
+    const cashoutAccounts = await walletRepo.getCashoutAccounts(merchantId);
     return cashoutAccounts;
   }
 
-  async getVendorBalance(vendorId: string) {
-    return await walletRepo.getVendorBalance(vendorId);
+  async getBalance(merchantId: string) {
+    return await walletRepo.getBalance(merchantId);
   }
 
-  async getRiderBalance(riderId: string) {
-    return await walletRepo.getRiderBalance(riderId);
+  async getWalletByMerchantId(data: {
+    merchantId: string;
+    selectFields: string;
+  }) {
+    const { merchantId, selectFields } = data;
+    const wallet = await walletRepo.getWalletByMerchantId({
+      merchantId,
+      selectFields,
+    });
+    if (!wallet) {
+      throw new HandleException(
+        STATUS_CODES.NOT_FOUND,
+        `Wallet for merchant: ${merchantId} not found`
+      );
+    }
+    return wallet;
   }
 
   async reverseDebit(data: { amount: string; trxReference: string }) {
@@ -115,16 +101,7 @@ class WalletService {
       .exec();
 
     const walletId = transaction?.wallet;
-    console.log({transaction, walletId})
     const wallet = await Wallet.creditWallet({ amount, walletId });
-    console.log({wallet})
-    let userId;
-    
-    if (wallet.rider) {
-      userId = wallet.rider;
-    } else if (wallet.vendor) {
-      userId = wallet.vendor;
-    }
 
     this.notificationService.createNotification({
       headings: { en: "Funds reversed!" },
@@ -133,7 +110,7 @@ class WalletService {
           `Hi, ${amount} has been refunded to your wallet. ` +
           `You can try to cashout again, or wait for some minutes`,
       },
-      userId,
+      userId: wallet.merchantId,
     });
     console.log(`Reversed ${amount} for wallet: ${walletId}`);
   }

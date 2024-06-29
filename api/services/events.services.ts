@@ -3,7 +3,7 @@ import { walletRepo, walletService } from "../features/wallet";
 import { NotificationService } from "../features/notifications";
 
 const eventEmitter = new EventEmitter();
-const notificationService = new NotificationService()
+const notificationService = new NotificationService();
 
 export const emitEvent = (eventName: string, message: any) => {
   console.log({ eventMessage: message });
@@ -43,11 +43,20 @@ eventEmitter.on("notify-vendor-of-new-order", async (data) => {
 
 eventEmitter.on("credit-vendor", async (data) => {
   console.log({ data });
-  const { vendorId, amount } = data;
-  await walletService.creditVendor({ vendorId, amount });
+  const { vendorId: merchantId, amount } = data;
+  const wallet = await walletService.getWalletByMerchantId({
+    merchantId,
+    selectFields: "_id",
+  });
+
+  await walletService.creditWallet({ walletId: wallet?._id, amount });
 });
 
 eventEmitter.on("credit-rider", async (data) => {
-  const { riderId, amount } = data;
-  await walletService.creditRider({ riderId, amount });
+  const { riderId: merchantId, amount } = data;
+  const wallet = await walletService.getWalletByMerchantId({
+    merchantId,
+    selectFields: "_id",
+  });
+  await walletService.creditWallet({ walletId: wallet?._id, amount });
 });
