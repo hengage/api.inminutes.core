@@ -3,10 +3,10 @@ import { Wallet } from "../models/wallet.model";
 import { ICashoutAccount } from "../wallet.interface";
 
 class WalletRepository {
-  async create(payload: { riderId?: string; vendorId?: string }) {
+  async create(payload: { merchantId?: string; merchantType?: string }) {
     const wallet = await Wallet.create({
-      rider: payload.riderId,
-      vendor: payload.vendorId,
+      merchantId: payload.merchantId,
+      merchantType: payload.merchantType,
     });
 
     return wallet;
@@ -29,16 +29,8 @@ class WalletRepository {
     }
   }
 
-  async getCashoutAccounts(merchant: "vendor" | "rider", merchantId: string) {
-    const query: { vendor?: string; rider?: string } = {};
-
-    if (merchant === "vendor") {
-      query.vendor = merchantId;
-    } else if (merchant === "rider") {
-      query.rider = merchantId;
-    }
-
-    const cashoutAccounts = await Wallet.findOne(query)
+  async getCashoutAccounts(merchantId: string) {
+    const cashoutAccounts = await Wallet.findOne({ merchantId })
       .select("cashoutAccounts")
       .lean()
       .exec();
@@ -46,16 +38,20 @@ class WalletRepository {
     return cashoutAccounts;
   }
 
-  async getVendorBalance(vendorId: string) {
-    return await Wallet.findOne({ vendor: vendorId })
+  async getBalance(merchantId: string) {
+    return await Wallet.findOne({ merchantId })
       .select("balance")
       .lean()
       .exec();
   }
 
-  async getRiderBalance(riderId: string) {
-    return await Wallet.findOne({ rider: riderId })
-      .select("balance")
+  async getWalletByMerchantId(data: {
+    merchantId: string;
+    selectFields: string;
+  }) {
+    const { merchantId, selectFields } = data;
+    return await Wallet.findOne({ merchantId })
+      .select(selectFields)
       .lean()
       .exec();
   }
