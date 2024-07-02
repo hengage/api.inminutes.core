@@ -1,3 +1,4 @@
+import { HandleException, STATUS_CODES } from "../../../utils";
 import { TransactionHistory } from "../models/transaction.model";
 import {
   ITransactionHistoryDocument,
@@ -45,5 +46,21 @@ export class TransactionRepository {
     console.log(
       `Updated transaction with reference:  ${reference}. Status: ${status}`
     );
+  }
+
+  async getTransactionByReference(reference: string, selectFields: string) {
+    const transaction = await TransactionHistory.findOne({ reference })
+      .select(selectFields)
+      .lean()
+      .exec();
+
+    if (!transaction) {
+      throw new HandleException(
+        STATUS_CODES.NOT_FOUND,
+        "Transaction now found"
+      );
+    }
+
+    return transaction
   }
 }

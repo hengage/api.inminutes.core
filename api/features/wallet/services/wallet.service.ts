@@ -5,7 +5,12 @@ import { NotificationService } from "../../notifications";
 import { HandleException, STATUS_CODES } from "../../../utils";
 import { walletRepo } from "../repository/wallet.repository";
 import { TransactionHistory } from "../../transactions/models/transaction.model";
+import { transactionService } from "../../transactions/services/transaction.service";
 
+/**
+Provides methods for managing wallet operations.
+@class
+*/
 class WalletService {
   private notificationService: NotificationService;
 
@@ -13,13 +18,24 @@ class WalletService {
     this.notificationService = new NotificationService();
   }
 
-  async debitWallet(data: { amount: string; walletId?: string }) {
+  /*
+  Debits a wallet.
+  @param {string} data.amount - Amount to debit.
+  @param {string} data.walletId - ID of the wallet to debit.
+  */
+  async debitWallet(data: { amount: string; walletId: string }) {
     return await Wallet.debitWallet({
       amount: data.amount,
       walletId: data.walletId,
     });
   }
 
+  /**
+  @async
+  Credit a wallet.
+  @param {string} params.walletId - ID of the wallet to credit.
+  @param {string} params.amount - Amount to credit.
+  */
   async creditWallet(params: { walletId: string; amount: string }) {
     const { amount, walletId } = params;
     try {
@@ -63,6 +79,11 @@ class WalletService {
     return;
   }
 
+  /**
+   @async
+  Get cashout accounts for a merchant.
+  @param {string} merchantId - ID of the merchant.
+  */
   async getCashoutAccounts(merchantId: string) {
     const cashoutAccounts = await walletRepo.getCashoutAccounts(merchantId);
     return cashoutAccounts;
@@ -90,17 +111,17 @@ class WalletService {
     return wallet;
   }
 
+  /**
+    @async
+    Reverse a debit transaction.
+    @param {string} data.amount - Amount to reverse.
+    @param {string} data.trxReference - Transaction reference.
+  */
   async reverseDebit(data: { amount: string; trxReference: string }) {
     const { amount, trxReference } = data;
 
-    const transaction = await TransactionHistory.findOne({
-      reference: trxReference,
-    })
-      .select("wallet ")
-      .lean()
-      .exec();
-
-    const walletId = transaction?.wallet;
+    const transaction = await transactionService.getTransactionByReference(trxReference, 'wallet')
+    const walletId = transaction.wallet;
     const wallet = await Wallet.creditWallet({ amount, walletId });
 
     this.notificationService.createNotification({
