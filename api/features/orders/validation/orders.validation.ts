@@ -1,7 +1,16 @@
 import Joi from "joi";
 import { HandleException, STATUS_CODES } from "../../../utils";
 
+/**
+Validates orders using Joi schemas.
+@class
+*/
 export class ValidateOrders {
+  /** 
+  Validates the create order payload.
+  @param {object} payload - The create order payload.
+  @throws {HandleException error} If the payload is invalid.
+  */
   create = async (payload: any) => {
     const schema = Joi.object({
       recipientPhoneNumber: Joi.string()
@@ -35,6 +44,11 @@ export class ValidateOrders {
     return;
   };
 
+  /**
+  Validates the assign rider payload.
+  @param {object} payload - The assign rider payload.
+  @throws {HandleException error} If the payload is invalid.
+  */
   assignRider = async (payload: { orderId: string; riderId: string }) => {
     const schema = Joi.object({
       orderId: Joi.string().label("Order id").required(),
@@ -53,18 +67,15 @@ export class ValidateOrders {
     return;
   };
 
+  /**
+  Validates the order feedback payload.
+  @param {object} payload - The order feedback payload.
+  @throws {HandleException} If the payload is invalid.
+  */
   orderFeedback = async (payload: { rating: number }) => {
     const schema = Joi.object({
-      vendorRating: Joi.number()
-        .integer()
-        .min(1)
-        .max(5)
-        .label("rating"),
-      riderRating: Joi.number()
-        .integer()
-        .min(1)
-        .max(5)
-        .label("rating"),
+      vendorRating: Joi.number().integer().min(1).max(5).label("rating"),
+      riderRating: Joi.number().integer().min(1).max(5).label("rating"),
       remarkOnVendor: Joi.string().label("remark on vendor"),
       remarkOnRider: Joi.string().label("remark on rider"),
       vendorId: Joi.string()

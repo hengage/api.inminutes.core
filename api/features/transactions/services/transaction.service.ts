@@ -16,6 +16,10 @@ import {
 import { TransactionRepository } from "../repository/transaction.repo";
 import { walletService } from "../../wallet";
 
+/**
+Service for managing transactions and interacting with Paystack API.
+@class
+*/
 class TransactionService {
   private paystackAPIKey: string;
   private headers: Record<string, string>;
@@ -29,11 +33,17 @@ class TransactionService {
     this.transactionRepo = new TransactionRepository();
   }
 
-  async initialize(params: IInitializeTransaction) {
+  /**
+   * @async
+   * Initializes a transaction on Paystack for a customer's payment,
+   * @param {object} initializeTransactionData - The transaction initialization parameters.
+   * @returns 
+   */
+  async initialize(initializeTransactionData: IInitializeTransaction) {
     const payload = {
-      amount: parseFloat(params.amount) * 100,
-      email: params.email,
-      metadata: params.metadata,
+      amount: parseFloat(initializeTransactionData.amount) * 100,
+      email: initializeTransactionData.email,
+      metadata: initializeTransactionData.metadata,
       reference: generateReference,
       channels: ["card", "ussd", "bank_transfer"],
     };
@@ -54,6 +64,11 @@ class TransactionService {
     }
   }
 
+  /**
+   * Processes incoming webhook events from Paystack and
+   *  takes appropriate actions based on the event type,
+   * @param req 
+   */
   webhook(req: Request) {
     const hash = createHmac("sha512", `${PAYSTACK_SECRET_KEY}`).update(
       JSON.stringify(req.body)
@@ -97,6 +112,11 @@ class TransactionService {
     }
   }
 
+  /**
+  @async
+  Creates a new transaction history entry.
+  @param {object} transactionHistoryData - The data to create the transaction history entry.
+  */
   async createHistory(transactionHistoryData: ICreateTransactionHistoryData) {
     return await this.transactionRepo.createHistory(transactionHistoryData);
   }

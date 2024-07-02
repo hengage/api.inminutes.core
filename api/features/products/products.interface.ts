@@ -21,8 +21,18 @@ export interface IProductDocument extends Document {
   status: PRODUCT_STATUS;
 }
 
+export interface IAddProductData extends Document {
+  name: string;
+  image: string;
+  description: string;
+  quantity: number;
+  cost: string;
+  category: string;
+  tags: Array<string>;
+  addOns: Array<string>;
+}
 export interface IWishListDocument extends Document {
   _id: string;
   customer: string;
-  products: Array<IProductDocument["_id"]>
+  products: Array<IProductDocument["_id"]>;
 }

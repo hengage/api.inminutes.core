@@ -9,6 +9,11 @@ import { emitEvent, redisClient } from "../../../services";
 import { RidersService } from "../../riders/";
 import { ICreateOrderData, IOrderAndMerchantsRatingData } from "../orders.interface";
 
+/**
+CustomersOrdersService
+A service class that handles orders-related operations.
+@class
+*/
 export class OrdersService {
   private notificationService: NotificationService;
   private validateOrders: ValidateOrders;

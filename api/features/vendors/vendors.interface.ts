@@ -27,7 +27,7 @@ export interface IVendorDocument extends Document {
   };
 }
 
-export interface IVendorSignup {
+export interface IVendorSignupData {
   businessName: string;
   businessLogo: string;
   email: string;

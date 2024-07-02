@@ -2,6 +2,10 @@ import joi from "joi";
 import { HandleException, STATUS_CODES } from "../../../utils";
 import { IRiderDocument } from "../riders.interface";
 
+/**
+Class for validating rider data.
+@class
+*/
 class ValidateRider {
   signUp = async (payload: Partial<IRiderDocument>) => {
     const signUpSchema = joi.object({

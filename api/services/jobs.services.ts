@@ -5,6 +5,11 @@ import { Agenda } from "agenda";
 import { DB_URL } from "../config/secrets.config";
 import { RidersService } from "../features/riders";
 
+
+/**
+Service for scheduling tasks and jobs.
+@class
+*/
 export class SchedulerService {
   private static instance: SchedulerService;
   private agenda: Agenda | undefined;
@@ -41,6 +46,10 @@ export class SchedulerService {
     }
   }
 
+  /**
+  Defines the jobs.
+  @private
+  */
   private defineJobs() {
     this.agenda?.define("schedule-order-delivery", async (job: any) => {
       console.log("Running schedule");

@@ -5,11 +5,23 @@ import { HandleException, RIDER_WORK_SLOT_STATUS } from "../../../utils";
 import { timeSlotRepo } from "../repository/timeSlot.repo";
 import { SchedulerService } from "../../../services";
 
+/**
+Service for managing time slots for riders.
+@class
+*/
 class TimeSlotService {
   private jobscheduleService: SchedulerService;
   constructor() {
     this.jobscheduleService = SchedulerService.getInstance();
   }
+
+  /**
+   * @async
+  Books a work time slot for a rider.
+  @param {string} params.riderId - The ID of the rider booking the slot.
+  @param {string} params.startTime - The start time of the slot.
+  @param {string} params.endTime - The end time of the slot.
+  */
   async bookSlot(params: {
     riderId: string;
     startTime: string;
@@ -34,6 +46,11 @@ class TimeSlotService {
     return slot;
   }
 
+  /**
+  Cancels a booked time slot.
+  @param {string} slotId - The ID of the time slot to cancel.
+  @returns {object} The cancelled time slot document.
+  */
   async cancelSlot(slotId: string) {
     console.log({ slotId });
     const session = await startSession();

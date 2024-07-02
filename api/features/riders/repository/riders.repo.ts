@@ -7,9 +7,18 @@ import {
   compareValues,
 } from "../../../utils";
 import { Rider } from "../models/riders.model";
-import { IRiderDocument } from "../riders.interface";
+import { ICreateRiderData, IRiderDocument } from "../riders.interface";
 
+/**
+Repository for rider-related database operations.
+@class
+*/
 export class RidersRepository {
+  /**
+  @async
+  Checks if a rider with the given email already exists on signup.
+  @param {string} email - The email to check for.
+  */
   async checkEmailIstaken(email: string) {
     const rider = await Rider.findOne({ email }).select("email").lean();
 
@@ -20,6 +29,11 @@ export class RidersRepository {
     return;
   }
 
+  /**
+   * @async
+  Checks if a rider with the given phone number already exists.
+  @param {string} phoneNumber - The phone number to check for.
+  */
   async checkPhoneNumberIstaken(phoneNumber: string) {
     const rider = await Rider.findOne({ phoneNumber })
       .select("phoneNumber")
@@ -35,26 +49,14 @@ export class RidersRepository {
 
     return;
   }
-  async signup(riderData: any): Promise<Partial<IRiderDocument>> {
-    const {
-      fullName,
-      displayName,
-      email,
-      phoneNumber,
-      password,
-      dateOfBirth,
-      residentialAddress,
-    } = riderData;
 
-    const rider = await Rider.create({
-      fullName,
-      displayName,
-      email,
-      phoneNumber,
-      password,
-      dateOfBirth,
-      residentialAddress,
-    });
+  /**
+  @async
+  Creates a new rider account.
+  @param {object} riderData - The rider data.
+  */
+  async signup(riderData: ICreateRiderData): Promise<Partial<IRiderDocument>> {
+    const rider = await Rider.create(riderData);
 
     emitEvent("create-wallet", {
       riderId: rider._id,
@@ -69,8 +71,13 @@ export class RidersRepository {
     };
   }
 
-  async login(loginData: {email: string, password: string}) {
-    const {email, password} = loginData;
+  /**
+  @async
+  Logs in a rider.
+  @param {object} loginData - The login data.
+  */
+  async login(loginData: { email: string; password: string }) {
+    const { email, password } = loginData;
     const rider = await Rider.findOne({ email }).select(
       "email phoneNumber password"
     );
@@ -90,6 +97,11 @@ export class RidersRepository {
     };
   }
 
+  /**
+  @async
+  Retrieves a rider's document by ID.
+  @param {string} id - The rider ID.
+  */
   async getMe(id: string): Promise<IRiderDocument> {
     const rider = await Rider.findById(id)
       .select("-updatedAt -password -accountStatus -location -__v")
@@ -102,6 +114,12 @@ export class RidersRepository {
     return rider;
   }
 
+  /**
+  @async
+  Updates a rider's location.
+  @param {string} params.riderId - The ID of the rider to update.
+  @param {number[]} params.coordinates - The new latitude and longitude coordinates for the rider.
+  */
   async updateLocation(params: {
     riderId: string;
     coordinates: [number, number];
@@ -117,6 +135,12 @@ export class RidersRepository {
     await rider.save();
   }
 
+  /**
+  @async
+  Finds nearby riders based on the given coordinates and distance.
+  @param {number[]} params.coordinates - The latitude and longitude coordinates to search from.
+  @param {number} params.distanceInKM - The maximum distance in kilometers to search within.
+  */
   async findNearbyRiders(params: {
     coordinates: [number, number];
     distanceInKM: number | 20;
@@ -155,6 +179,13 @@ export class RidersRepository {
     return riders;
   }
 
+  /**
+  @async
+  Updates a rider's availability to work and receive orders.
+  @param {string} params.riderId - The ID of the rider to update.
+  @param {boolean} params.currentlyWorking - Whether the rider is currently 
+  available to work and receive orders.
+  */
   async updateAvailability(params: {
     riderId: string;
     currentlyWorking: true | false;
@@ -174,7 +205,13 @@ export class RidersRepository {
     return rider;
   }
 
-   updateRating = async(
+  /**
+  @async
+  Updates a rider's rating.
+  @param {object} ratingData - The rating data.
+  @param {ClientSession} session - The database session.
+  */
+  updateRating = async (
     ratingData: { riderId: string; rating: number },
     session: ClientSession
   ) => {
@@ -194,5 +231,5 @@ export class RidersRepository {
     } catch (error: any) {
       throw new HandleException(error.status, error.message);
     }
-  }
+  };
 }

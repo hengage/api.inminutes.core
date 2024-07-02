@@ -23,6 +23,16 @@ export interface IRiderDocument extends Document {
   };
 }
 
+export interface ICreateRiderData {
+  fullName: string,
+  displayName: string,
+  email: string,
+  phoneNumber: string,
+  password: string,
+  dateOfBirth: string,
+  residentialAddress: string,
+}
+
 export interface IRiderTimeSlotDocument extends Document {
   startTime: Date;
   endTime: Date;

@@ -9,6 +9,10 @@ import {
 import { walletRepo, walletService } from "../../wallet";
 import { transactionService } from "./transaction.service";
 
+/**
+Service for managing cashout transfers for merchanrs.
+@class
+*/
 class CashoutTransferService {
   private paystackAPIKey: string;
   private headers: Record<string, string>;
@@ -20,6 +24,11 @@ class CashoutTransferService {
     };
   }
 
+  /**
+  Adds a cashout account for a wallet.
+  @param {object} payload - The cashout account data.
+  @param {string} walletId - The wallet ID.
+  */
   async addCashoutAccount(payload: ICreateTransferRecipient, walletId: string) {
     try {
       await walletService.checkDuplicateAccountNumber(
@@ -79,8 +88,12 @@ class CashoutTransferService {
     }
   }
 
-  async initialize(payload: InitializeTransferData) {
-    const { amount, recipientCode, reason, walletId } = payload;
+  /**
+  Initializes a cashout transfer.
+  @param {object} transferData - The transfer data.
+  */
+  async initialize(transferData: InitializeTransferData) {
+    const { amount, recipientCode, reason, walletId } = transferData;
     const reference = generateReference();
 
     const data = {
