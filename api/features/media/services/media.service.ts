@@ -7,6 +7,11 @@ export class MediaService {
   constructor() {
     this.mediaUploadConfig = new MediaUploadConfig();
   }
+  /**
+   * @param  {object} mediaFiles - The media files to upload.
+   * @param  {string} mediaTags - The tags to associate with the uploaded media.
+   * @returns {Promise<Record<string, string>>} An object with the uploaded file URLs.
+   */
     public uploadToCloudinary = async (mediaFiles: any, mediaTags: string) => {
       try {
         const files = mediaFiles;

@@ -1,5 +1,6 @@
 import { HandleException, STATUS_CODES } from "../../../utils";
 import { MediaService } from "../../media";
+import { ICreateCustomerData } from "../customers.interface";
 import { CustomersRepository } from "../repository/customers.repo";
 
 export class CustomersService {
@@ -11,7 +12,7 @@ export class CustomersService {
     this.customersRepo = new CustomersRepository();
   }
 
-  signup = async (customerData: any) => {
+  signup = async (customerData: ICreateCustomerData) => {
     await Promise.all([
       this.customersRepo.checkEmailIstaken(customerData.email),
       this.customersRepo.checkPhoneNumberIstaken(customerData.phoneNumber),

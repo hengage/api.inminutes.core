@@ -9,7 +9,7 @@ export interface IAddOn {
   cost: string;
 }
 
-export interface IOrderItem {
+export interface IOrderItems {
   product: string;
   quantity: number;
   cost: string;
@@ -22,7 +22,7 @@ export interface IOrdersDocument extends Document {
   customer: string;
   recipientPhoneNumber: string;
   rider?: IRiderDocument;
-  items: IOrderItem[];
+  items: IOrderItems[];
   vendor: IVendorDocument;
   deliveryAddress: string;
   deliveryLocation: {
@@ -38,4 +38,39 @@ export interface IOrdersDocument extends Document {
   scheduledDeliveryTime: Date;
   instruction: string;
   status: ORDER_STATUS;
+}
+
+export interface ICreateOrderData {
+  items: IOrderItems[];
+  recipientPhoneNumber: string;
+  vendor: string;
+  deliveryAddress: string;
+  deliveryLocation: {
+    coordinates: [lng: number, lat: number];
+  };
+  deliveryFee: string;
+  serviceFee: string;
+  totalProductsCost: string;
+  totalCost: string;
+  instruction: string;
+  type: "instant" | "scheduled";
+  scheduledDeliveryTime: Date;
+}
+
+export interface IOrderRatingAndRemarkData {
+  orderId: string;
+  remarkOnRider: string;
+  riderRating: number;
+  remarkOnVendor: string;
+  vendorRating: number;
+}
+
+export interface IOrderAndMerchantsRatingData {
+  orderId: string;
+  vendorId: string;
+  riderId: string;
+  vendorRating: number;
+  riderRating: number;
+  remarkOnVendor: string;
+  remarkOnRider: string;
 }

@@ -1,16 +1,18 @@
 import { HandleException, STATUS_CODES } from "../../../utils";
 import {
+  ICreateCustomerData,
   ICustomerDocument,
   IUpdateCustomerProfile,
 } from "../customers.interface";
 import { Customer } from "../models/customers.model";
 
+/**
+ * A repository class that handles customer-related database operations.
+ * @class
+ */
 export class CustomersRepository {
   async checkEmailIstaken(email: string) {
-    const customer = await Customer
-      .findOne({ email })
-      .select("email")
-      .lean();
+    const customer = await Customer.findOne({ email }).select("email").lean();
 
     if (customer) {
       throw new HandleException(STATUS_CODES.CONFLICT, "Email already taken");
@@ -20,8 +22,7 @@ export class CustomersRepository {
   }
 
   async checkPhoneNumberIstaken(phoneNumber: string) {
-    const customer = await Customer
-      .findOne({ phoneNumber })
+    const customer = await Customer.findOne({ phoneNumber })
       .select("phoneNumber")
       .lean();
 
@@ -36,27 +37,16 @@ export class CustomersRepository {
     return;
   }
 
-  async signup(payload: any): Promise<Partial<ICustomerDocument>> {
-    const {
-      fullName,
-      displayName,
-      phoneNumber,
-      email,
-      password,
-      dateOfBirth,
-      deliveryAddress,
-    } = payload;
+  /**
+    @async
+    Creates a new customer account.
+    @param {ICreateCustomerData} createCustomerData - The data to create a new customer.
+  **/
+  async signup(
+    createCustomerData: ICreateCustomerData
+  ): Promise<Partial<ICustomerDocument>> {
+    const customer = new Customer(createCustomerData);
 
-    const customer = new Customer({
-      fullName,
-      displayName,
-      phoneNumber,
-      email,
-      password,
-      dateOfBirth,
-      deliveryAddress,
-    })
-    
     await customer.save();
 
     return {
@@ -65,6 +55,11 @@ export class CustomersRepository {
     };
   }
 
+  /**
+    @async
+    Retrieves a customer's profile information.
+    @param {string} _id - The ID of the customer to retrieve.
+  **/
   async getProfile(_id: string) {
     const customer = await Customer.findById(_id)
       .select("-password -createdAt -__v -updatedAt")
@@ -78,13 +73,25 @@ export class CustomersRepository {
     return customer;
   }
 
-  async updateProfile(customerId: string, payload: IUpdateCustomerProfile) {
-    const select = Object.keys(payload);
+  /**
+   *  @async
+   *  Updates the profile information for a customer.
+   * @param customerId - The ID of the customer.
+   * @param customerData -  The new profile data for the customer.
+   */
+  async updateProfile(
+    customerId: string,
+    customerData: IUpdateCustomerProfile
+  ): Promise<Partial<ICustomerDocument>> {
+    // Create an array of fields to select from the customer document
+    // Populate the array with the keys from the customerData object
+    const select = Object.keys(customerData);
+    // Add "-_id" to the array to exclude the _id field from the selection
     select.push("-_id");
 
     const customer = await Customer.findByIdAndUpdate(
       customerId,
-      { $set: payload },
+      { $set: customerData },
       { new: true }
     ).select(select);
 
@@ -94,6 +101,12 @@ export class CustomersRepository {
     return customer;
   }
 
+  /**
+   *@async
+   *Updates a customer's display photo.
+   * @param customerId - The ID of the customer to update.
+   * @param displayPhoto - The new display photo URL.
+   */
   async updateDIsplayPhoto(customerId: string, displayPhoto: string) {
     const customer = Customer.findByIdAndUpdate(
       customerId,
@@ -104,6 +117,13 @@ export class CustomersRepository {
     return customer;
   }
 
+  /**
+    @async
+    Updates a customer's delivery address and coordinates.
+    @param {string} params.customerId - The ID of the customer to update.
+    @param {string} params.address - The new delivery address.
+    @param {number[]} params.coordinates - The new delivery address coordinates (latitude and longitude).
+  */
   async updateDeliveryAddress(params: {
     customerId: string;
     address: string;
@@ -131,6 +151,10 @@ export class CustomersRepository {
     return customer;
   }
 
+  /**
+    @async
+    Deletes a customer document from the database.
+  */
   async deleteAccount(customerId: string) {
     const result = await Customer.deleteOne({ _id: customerId });
 

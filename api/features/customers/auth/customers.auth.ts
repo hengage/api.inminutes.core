@@ -29,6 +29,14 @@ export class CustomersAuthentication {
     this.customersRepo = new CustomersRepository();
   }
 
+  /**
+   * @async
+   * Handles customer login requests.
+   * Uses Passport.js to authenticate the customer using the local strategy.
+   * @param req - The request object.
+   * @param res res - The response object.
+   * @param next  - The next function in the middleware chain.
+   */
   public  login = async (req: Request,res: Response,next: NextFunction): Promise<void> => {
     try {
       await this.validateCustomer.login(req.body);
@@ -48,7 +56,6 @@ export class CustomersAuthentication {
             });
           }
 
-          console.log({ user });
           const jwtPayload = {
             _id: user._id,
             phoneNumber: user.phoneNumber,
@@ -68,6 +75,11 @@ export class CustomersAuthentication {
     }
   }
 
+  /**
+   * @async
+   * Sends a verification code to a recipient's phone number. 
+   * @param recipientPhoneNumber - The phone number to send the verification code to.
+   */
   sendVerificationCode = async (recipientPhoneNumber: string) => {
     const phoneNumber = recipientPhoneNumber.substring(1);
     try {

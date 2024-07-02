@@ -22,3 +22,13 @@ export interface IUpdateCustomerProfile {
   dateOfBirth: Date;
   address: string;
 }
+
+export interface ICreateCustomerData {
+  fullName: string;
+  displayName: string;
+  phoneNumber: string;
+  email: string;
+  password: string;
+  dateOfBirth: string;
+  deliveryAddress: string;
+}

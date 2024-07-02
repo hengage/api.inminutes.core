@@ -35,7 +35,7 @@ const orderSchema = new Schema<IOrdersDocument>(
       type: { type: String, default: "Point" },
       coordinates: { type: [Number, Number], required: true },
     },
-    h3Index: { type: String, required: true, index: true },
+    // h3Index: { type: String, required: true, index: true },
     deliveryFee: { type: String, required: true },
     serviceFee: {type: String, default: "0"},
     totalProductsCost: { type: String, required: true },
@@ -61,8 +61,8 @@ const orderFeedbackSchema = new Schema(
     order: { type: String, ref: "Order" },
     remarkOnRider: { type: String },
     remarkOnVendor: { type: String },
-    vendorRating: { type: String },
-    riderRating: { type: String },
+    vendorRating: { type: Number },
+    riderRating: { type: Number },
   },
   { timestamps: { createdAt: true, updatedAt: false } }
 );
