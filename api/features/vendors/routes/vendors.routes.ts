@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { vendorsController } from "../controllers/vendors.controller";
 import { verifyAuthTokenMiddleware } from "../../../middleware";
-import { vendorsCategoryController } from "../controllers/category.controller";
+import { vendorsCategoryController } from "../controllers/vendorsCategory.controller";
 import { vendorsOrdersController } from "../controllers/vendorsOrders.controller";
 
 class VendorsRoutes {
