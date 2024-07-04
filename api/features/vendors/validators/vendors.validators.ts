@@ -1,9 +1,9 @@
 import joi from "joi";
 import { HandleException, STATUS_CODES } from "../../../utils";
-import { IVendorSignup } from "../vendors.interface";
+import { IVendorSignupData } from "../vendors.interface";
 
 class ValidateVendor {
-  signUp = async (payload: IVendorSignup) => {
+  signUp = async (payload: IVendorSignupData) => {
     const signUpSchema = joi
       .object({
         businessName: joi.string().required().label("Business name"),

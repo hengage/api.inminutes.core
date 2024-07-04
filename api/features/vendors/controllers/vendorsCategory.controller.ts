@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import { STATUS_CODES, handleErrorResponse } from "../../../utils";
-import { vendorsCategoryService } from "../services/category.services";
+import { vendorsCategoryRepo } from "../repository/vendorsCategory.repo";
 
 class VendorsCategoryController {
   async getCategories(req: Request, res: Response) {
     try {
-      const catgories = await vendorsCategoryService.getCategories();
+      const catgories = await vendorsCategoryRepo.getCategories();
       res.status(STATUS_CODES.OK).json({
         message: "Successful",
         data: { catgories },
@@ -18,7 +18,7 @@ class VendorsCategoryController {
   async getSubCategoriesByCategory(req: Request, res: Response) {
     try {
       const subCatgories =
-        await vendorsCategoryService.getSubCategoriesByCategory(
+        await vendorsCategoryRepo.getSubCategoriesByCategory(
           req.params.categoryId
         );
       res.status(STATUS_CODES.OK).json({
@@ -33,7 +33,7 @@ class VendorsCategoryController {
   async getLocalMarketSubcategories(req: Request, res: Response) {
     try {
       const subCatgories =
-        await vendorsCategoryService.getLocalMarketSubcategories();
+        await vendorsCategoryRepo.getLocalMarketSubcategories();
       res.status(STATUS_CODES.OK).json({
         success: true,
         message: subCatgories,

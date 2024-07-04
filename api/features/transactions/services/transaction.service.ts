@@ -16,6 +16,10 @@ import {
 import { TransactionRepository } from "../repository/transaction.repo";
 import { walletService } from "../../wallet";
 
+/**
+Service for managing transactions and interacting with Paystack API.
+@class
+*/
 class TransactionService {
   private paystackAPIKey: string;
   private headers: Record<string, string>;
@@ -29,11 +33,17 @@ class TransactionService {
     this.transactionRepo = new TransactionRepository();
   }
 
-  async initialize(params: IInitializeTransaction) {
+  /**
+   * @async
+   * Initializes a transaction on Paystack for a customer's payment,
+   * @param {object} initializeTransactionData - The transaction initialization parameters.
+   * @returns
+   */
+  async initialize(initializeTransactionData: IInitializeTransaction) {
     const payload = {
-      amount: parseFloat(params.amount) * 100,
-      email: params.email,
-      metadata: params.metadata,
+      amount: parseFloat(initializeTransactionData.amount) * 100,
+      email: initializeTransactionData.email,
+      metadata: initializeTransactionData.metadata,
       reference: generateReference,
       channels: ["card", "ussd", "bank_transfer"],
     };
@@ -54,6 +64,11 @@ class TransactionService {
     }
   }
 
+  /**
+   * Processes incoming webhook events from Paystack and
+   *  takes appropriate actions based on the event type,
+   * @param req
+   */
   webhook(req: Request) {
     const hash = createHmac("sha512", `${PAYSTACK_SECRET_KEY}`).update(
       JSON.stringify(req.body)
@@ -61,44 +76,56 @@ class TransactionService {
     const digest = hash.digest("hex");
 
     if (digest === req.headers["x-paystack-signature"]) {
-    console.log(req.body);
-    const event = req.body;
+      console.log(req.body);
+      const event = req.body;
 
-    switch (event.event) {
-      case "charge.success":
-        console.log({ metadata: event.data.metadata });
-        const { purpose, orderId, vendorId } = event.data.metadata;
-        if (purpose === "product purchase") {
-          emitEvent("notify-vendor-of-new-order", { orderId, vendorId });
-        }
-        break;
-      case "transfer.success":
-      case "transfer.failed":
-        const { reference, status } = event.data;
-        console.log({ reference, status });
-        this.transactionRepo.updateStatus({ reference, status });
+      switch (event.event) {
+        case "charge.success":
+          console.log({ metadata: event.data.metadata });
+          const { purpose, orderId, vendorId } = event.data.metadata;
+          if (purpose === "product purchase") {
+            emitEvent("notify-vendor-of-new-order", { orderId, vendorId });
+          }
+          break;
+        case "transfer.success":
+        case "transfer.failed":
+          const { reference, status } = event.data;
+          console.log({ reference, status });
+          this.transactionRepo.updateStatus({ reference, status });
 
-        // Credit wallet on failed transfer
-        if (event.event === "transfer.failed") {
-          let { amount } = event.data;
-          amount = parseFloat(amount) / 100;
-          walletService
-            .reverseDebit({ amount, trxReference: reference })
-            .catch((error) => {
-              console.log("Error on reversing debit", error);
-            });
-        }
-        break;
-      default:
-        console.warn(`Unknown event type: ${event.event}`);
-    }
+          // Credit wallet on failed transfer
+          if (event.event === "transfer.failed") {
+            let { amount } = event.data;
+            amount = parseFloat(amount) / 100;
+            walletService
+              .reverseDebit({ amount, trxReference: reference })
+              .catch((error) => {
+                console.log("Error on reversing debit", error);
+              });
+          }
+          break;
+        default:
+          console.warn(`Unknown event type: ${event.event}`);
+      }
     } else {
       throw new HandleException(STATUS_CODES.BAD_REQUEST, "Invalid signature");
     }
   }
 
+  /**
+  @async
+  Creates a new transaction history entry.
+  @param {object} transactionHistoryData - The data to create the transaction history entry.
+  */
   async createHistory(transactionHistoryData: ICreateTransactionHistoryData) {
     return await this.transactionRepo.createHistory(transactionHistoryData);
+  }
+
+  async getTransactionByReference(reference: string, selectFields: string) {
+    return this.transactionRepo.getTransactionByReference(
+      reference,
+      selectFields
+    );
   }
 }
 

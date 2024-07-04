@@ -7,7 +7,13 @@ import { ValidateOrders } from "../validation/orders.validation";
 import { vendorsRepo } from "../../vendors";
 import { emitEvent, redisClient } from "../../../services";
 import { RidersService } from "../../riders/";
+import { ICreateOrderData, IOrderAndMerchantsRatingData } from "../orders.interface";
 
+/**
+CustomersOrdersService
+A service class that handles orders-related operations.
+@class
+*/
 export class OrdersService {
   private notificationService: NotificationService;
   private validateOrders: ValidateOrders;
@@ -23,7 +29,10 @@ export class OrdersService {
     this.deliveryService = new DeliveryService();
   }
 
-  create = async (params: { orderData: any; customer: string }) => {
+  create = async (params: {
+    orderData: ICreateOrderData;
+    customer: string;
+  }) => {
     const { orderData, customer } = params;
     await this.validateOrders.create(orderData);
 
@@ -61,6 +70,11 @@ export class OrdersService {
     return order;
   }
 
+  /**
+   * @async
+   * Confirms order and sends notification, confirmed by vendor.
+   * @param orderId
+   */
   async requestConfirmed(orderId: string) {
     const order = await this.ordersRepo.updateStatus({
       orderId,
@@ -77,6 +91,13 @@ export class OrdersService {
     return { orderId: order._id };
   }
 
+  /**
+  @async
+  Updates an order status to READY, indicating it's ready for rider pickup.
+  @param {object} params - The order and distance parameters.
+  @param {string} params.orderId - The ID of the order to update.
+  @param {number} params.distanceInKM - The distance in kilometers for delivery.
+  */
   async ready(params: { orderId: string; distanceInKM: number }) {
     const { orderId, distanceInKM } = params;
 
@@ -93,9 +114,16 @@ export class OrdersService {
     return { orderId: order._id };
   }
 
+  /**
+    * @async
+    * Assigns a rider to an order.
+    * @param {object} params - The update parameters.
+    @param {string} params.orderId - The ID of the order.
+    @param {string} params.riderId - The ID of the rider.
+  */
   async assignRider(params: { orderId: string; riderId: string }) {
     const { orderId, riderId } = params;
-    
+
     await this.validateOrders.assignRider({
       orderId: orderId,
       riderId: riderId,
@@ -113,6 +141,12 @@ export class OrdersService {
     return { orderId: order._id };
   }
 
+  /**
+   * @async
+   * Updates an order status to PICKED_UP,
+   * indicating the rider has picked up the order.
+   * @param orderId - The ID of the order to update.
+   */
   async pickedUp(orderId: string) {
     console.log({ orderfromservice: orderId });
     const order = await this.ordersRepo.updateStatus({
@@ -130,6 +164,11 @@ export class OrdersService {
     return { orderId: order._id };
   }
 
+  /**
+   *@async
+   *Updates an order status to IN_TRANSIT, indicating the order is en route to the customer.
+   *@param {string} orderId - The ID of the order to update.
+   */
   async inTransit(orderId: string) {
     const order = await this.ordersRepo.updateStatus({
       orderId,
@@ -146,6 +185,11 @@ export class OrdersService {
     return { orderId: order._id };
   }
 
+  /**
+   * @async
+   * Updates an order status to NEARBY, indicating the order is near the customer's location.
+   * @param orderId - The ID of the order to update.
+   */
   async nearBy(orderId: string) {
     const order = await this.ordersRepo.updateStatus({
       orderId,
@@ -165,6 +209,12 @@ export class OrdersService {
     return { orderId: order._id };
   }
 
+  /**
+   * @async
+   * Updates an order status to ARRIVED,
+   * indicating the order has reached the delivery location.
+   * @param orderId - The ID of the order to update.
+   */
   async arrived(orderId: string) {
     const order = await this.ordersRepo.updateStatus({
       orderId,
@@ -180,6 +230,11 @@ export class OrdersService {
     return { orderId: order._id };
   }
 
+  /**
+   * @async
+   * Updates an order status to DELIVERED, indicating the order has been successfully delivered.
+   * @param orderId  - The ID of the order to update.
+   */
   async delivered(orderId: string) {
     const order = await this.ordersRepo.updateStatus({
       orderId,
@@ -206,6 +261,12 @@ export class OrdersService {
     return { orderId: order._id };
   }
 
+  /**
+   * @async
+   * Updates an order status to CANCELLED,
+   * indicating the order has been cancelled.
+   * @param orderId - The ID of the order to update.
+   */
   async cancelled(orderId: string) {
     const order = await this.ordersRepo.updateStatus({
       orderId,
@@ -215,7 +276,13 @@ export class OrdersService {
     return { orderId: order._id };
   }
 
-  async submitOrderFeedback(feedbackData: any) {
+  /**
+   * @async
+   * Submits feedback for an order.
+   * Updating ratings and remarks for the vendor and rider.
+    @param {object} feedbackData - The feedback data to submit.
+   */
+  async submitOrderFeedback(feedbackData: IOrderAndMerchantsRatingData) {
     const {
       orderId,
       vendorId,
@@ -232,14 +299,14 @@ export class OrdersService {
 
       const riderRatingPromise = riderRating
         ? this.ridersService.updateRating(
-            { riderId, rating: parseInt(riderRating) },
+            { riderId, rating: riderRating },
             session
           )
         : Promise.resolve(); // Resolve to empty if no rider rating
 
       const vendorRatingPromise = vendorRating
         ? vendorsRepo.updateRating(
-            { vendorId, rating: parseInt(vendorRating) },
+            { vendorId, rating: vendorRating },
             session
           )
         : Promise.resolve(); // Resolve to empty if no vendor rating

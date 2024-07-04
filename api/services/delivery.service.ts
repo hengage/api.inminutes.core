@@ -1,6 +1,11 @@
+import { IOrdersDocument } from "../features/orders/orders.interface";
 import { RidersService } from "../features/riders";
 import { SchedulerService } from "./jobs.services";
 
+/**
+ Handles the logistics of delivery for orders
+ @class
+ */
 export class DeliveryService {
   private ridersService: RidersService;
   private jobscheduleService: SchedulerService;
@@ -10,8 +15,16 @@ export class DeliveryService {
     this.jobscheduleService = SchedulerService.getInstance();
   }
 
+  /**
+  @async
+  Handles instant or scheduled delivery based on the order type.
+  If the order is scheduled, schedules the delivery with the SchedulerService.
+  If the order is instant, notifies riders of the order through the RidersService.
+  @param {any} params.order - Order object.
+  @param {number} params.distanceInKM - Distance in kilometers.
+  */
   handleInstantOrScheduledDelivery = async (params: {
-    order: any;
+    order: IOrdersDocument;
     distanceInKM: number;
   }) => {
     const { order, distanceInKM } = params;
@@ -19,7 +32,7 @@ export class DeliveryService {
     if (order.type === "scheduled") {
       console.log("Scheduled order", { order });
       const fiveMinutesBefore = new Date(
-        order.scheduledDeliveryTime.getTime() - 5 * 60000
+        order.scheduledDeliveryTime?.getTime() - 5 * 60000
       );
 
       await this.jobscheduleService.scheduleOrderDelivery({

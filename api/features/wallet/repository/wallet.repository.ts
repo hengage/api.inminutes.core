@@ -2,6 +2,11 @@ import { HandleException, STATUS_CODES } from "../../../utils";
 import { Wallet } from "../models/wallet.model";
 import { ICashoutAccount } from "../wallet.interface";
 
+/**
+Repository for managing wallets.
+class WalletRepository {
+@class
+*/
 class WalletRepository {
   async create(payload: { merchantId?: string; merchantType?: string }) {
     const wallet = await Wallet.create({
@@ -12,6 +17,12 @@ class WalletRepository {
     return wallet;
   }
 
+  /**
+  @async
+  Adds a cashout account to a wallet.
+  @param {object} cashoutAccount - The cashout account data.
+  @param {string} walletId - The ID of the wallet.
+  */
   async addCashoutAccount(cashoutAccount: ICashoutAccount, walletId: string) {
     try {
       const wallet = await Wallet.findById(walletId).select("cashoutAccounts");
@@ -29,6 +40,11 @@ class WalletRepository {
     }
   }
 
+  /**
+    @async
+    Retrieves a list of cashout accounts for a merchant.
+    @param {string} merchantId - The ID of the merchant.
+  */
   async getCashoutAccounts(merchantId: string) {
     const cashoutAccounts = await Wallet.findOne({ merchantId })
       .select("cashoutAccounts")
@@ -38,6 +54,12 @@ class WalletRepository {
     return cashoutAccounts;
   }
 
+ 
+  /**
+   @async
+    Retrieves the balance of a wallet.
+    @param {string} merchantId - The ID of the merchant.
+  */
   async getBalance(merchantId: string) {
     return await Wallet.findOne({ merchantId })
       .select("balance")
@@ -45,6 +67,11 @@ class WalletRepository {
       .exec();
   }
 
+   /**
+    Retrieves a wallet by merchant ID with specified fields.
+    @param {string} data.merchantId - The ID of the merchant.
+    @param {string} data.selectFields - The fields to select.
+  */
   async getWalletByMerchantId(data: {
     merchantId: string;
     selectFields: string;

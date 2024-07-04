@@ -6,6 +6,12 @@ import jwt from "jsonwebtoken";
 import { STATUS_CODES } from "../utils";
 import { JWT_SECRET_KEY } from "../config";
 
+/**
+  Verifies the authentication token for a request.
+  @param {Request} req - Request object.
+  @param {Response} res - Response object.
+  @param {NextFunction} next - Next function in the middleware chain.
+*/
 const verifyAuthTokenMiddleware = async (
   req: Request,
   res: Response,
@@ -28,6 +34,11 @@ const verifyAuthTokenMiddleware = async (
   }
 };
 
+/**
+  Verifies the authentication token for a socket connection.
+  @param {object} event - Socket event.
+  @param {function} next - Next function in the middleware chain.
+*/
 const socketGuard = (event: any, next: (err?: Error | undefined) => void) => {
   const socket: Socket = event;
   const token =

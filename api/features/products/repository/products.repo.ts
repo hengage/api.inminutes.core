@@ -1,6 +1,11 @@
 import { HandleException, STATUS_CODES } from "../../../utils";
 import { Product, ProductCategory, WishList } from "../models/products.models";
+import { IAddProductData } from "../products.interface";
 
+/**
+ * Repository for product-related operations.
+ * @class
+ */
 export class ProductsRepository {
   private productModel = Product;
   private productCategoryModel = ProductCategory;
@@ -8,19 +13,16 @@ export class ProductsRepository {
 
   constructor() {}
 
-  async addProduct(payload: any, vendor: string) {
-    const { name, image, description, quantity, cost, tags, addOns, category } =
-      payload;
+  /**
+  @async
+  Creates a new product.
+  @param {object} addProductData - The product data.
+  @param {string} vendor - The ID of the vendor creating the product.
+  */
+  async addProduct(addProductData: IAddProductData, vendor: string) {
     const product = await this.productModel.create({
-      name,
-      image,
-      description,
-      quantity,
-      cost,
-      category,
       vendor,
-      tags,
-      addOns,
+      ...addProductData,
     });
 
     return {
@@ -34,6 +36,11 @@ export class ProductsRepository {
     };
   }
 
+  /**
+   * @async
+  Retrieves all product categories.
+  @returns {object[]} The product categories.
+  */
   async getCategories() {
     const categories = await this.productCategoryModel
       .find()
@@ -43,6 +50,12 @@ export class ProductsRepository {
     return categories;
   }
 
+  /**
+   @async
+  Decreases the quantity of a product.
+  @param {string} productId - The product ID.
+  @param {number} quantity - The quantity to decrease.
+  */
   async decreaseproductQuantity(productId: string, quantity: number) {
     const product = await Product.findById(productId);
     if (!product) {
@@ -52,6 +65,11 @@ export class ProductsRepository {
     await product.save();
   }
 
+  /**
+   @async
+  Retrieves product details.
+  @param {string} productId - The product ID.
+  */
   async details(productId: string) {
     const product = await this.productModel
       .findById(productId)
@@ -66,6 +84,12 @@ export class ProductsRepository {
     return product;
   }
 
+  /**
+   * @async
+  Deletes a product from database.
+  @param {string} productId - The product ID.
+  @param {string} vendorId - The  ID of the vendor who owns the product.
+  */
   async deleteProduct(productId: string, vendorId: string) {
     const result = await this.productModel.deleteOne({
       _id: productId,
@@ -79,6 +103,13 @@ export class ProductsRepository {
     console.log(" Deleted product", productId);
   }
 
+  /**
+  * @async
+  * Searches for products based on a search term.
+  @param {string} params.term - The search term to match in product names.
+  @param {number} params.page - The page number for pagination.
+   * @returns 
+   */
   async searchProducts(params: { term: string; page: number }) {
     const query = { name: { $regex: params.term, $options: "i" } };
 
@@ -95,6 +126,11 @@ export class ProductsRepository {
     return products;
   }
 
+  /**
+  Retrieves products belonging to a specific category.
+  @param {string} params.categoryId - The ID of the category to fetch products from.
+@param {number} params.page - The page number for pagination.
+  */
   async getProductsByCategory(params: { categoryId: string; page: number }) {
     const query = { category: params.categoryId };
 
@@ -113,6 +149,11 @@ export class ProductsRepository {
     return products;
   }
 
+  /**
+   * @async
+  Adds a product to a customer's wish list.
+  @param {object} params - The customer and product IDs.
+  */
   async addToWishList(params: { customerId: string; productId: string }) {
     const { customerId, productId } = params;
     const wishList = await WishList.findOneAndUpdate(
@@ -124,6 +165,11 @@ export class ProductsRepository {
     return wishList;
   }
 
+  /**
+  @async
+  Removes a product from a customer's wish list.
+  @param {object} params - The customer and product IDs.
+  */
   async removeFromWishList(params: { customerId: string; productId: string }) {
     const { customerId, productId } = params;
     const wishList = await WishList.findOneAndUpdate(
@@ -135,6 +181,11 @@ export class ProductsRepository {
     return wishList;
   }
 
+  /**
+   *@async
+  Retrieves the products in a customer's wish list.
+  @param {string} customerId - The customer ID.
+  */
   async getWishListForCustomer(customerId: string) {
     const wishList = await this.wishListModel
       .findOne({ customer: customerId })
@@ -145,6 +196,11 @@ export class ProductsRepository {
     return wishList;
   }
 
+  /**
+  Checks if a product is in a customer's wish list.
+  @param {object} params - The customer and product IDs.
+  @returns {boolean} Whether the product is in the wish list.
+  */
   async checkProductIsInCustomerWishList(params: {
     customerId: string;
     productId: string;

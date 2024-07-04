@@ -49,7 +49,7 @@ const vendorSchema = new Schema<IVendorDocument>(
         type: [Number, Number],
       },
     },
-    h3Index: { type: String, index: true },
+    // h3Index: { type: String, index: true },
     residentialAddress: { type: String, required: true },
     category: { type: String, required: true, ref: "VendorCategory" },
     subCategory: { type: String, ref: "VendorSubCategory" },

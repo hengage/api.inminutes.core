@@ -7,37 +7,26 @@ import {
   compareValues,
 } from "../../../utils";
 import { Vendor } from "../models/vendors.model";
-import { vendorsService } from "../services/vendor.services";
-import { IVendorDocument, IVendorSignup } from "../vendors.interface";
-class VendorsRepository {
-  async signup(payload: IVendorSignup): Promise<Partial<IVendorDocument>> {
-    const {
-      businessName,
-      businessLogo,
-      email,
-      phoneNumber,
-      password,
-      address,
-      location,
-      residentialAddress,
-      category,
-      subCategory,
-    } = payload;
+import { IVendorDocument, IVendorSignupData } from "../vendors.interface";
 
+/**
+Repository for managing vendors.
+@class
+*/
+class VendorsRepository {
+  /**
+   @async
+  Creates new vendor account.
+  @param {object} vendorData - The vendor signup data.
+  */
+  async signup(
+    vendorData: IVendorSignupData
+  ): Promise<Partial<IVendorDocument>> {
     const vendor = await Vendor.create({
-      businessName,
-      businessLogo,
-      email,
-      phoneNumber,
-      password,
-      address,
+      ...vendorData,
       location: {
-        coordinates: location,
+        coordinates: vendorData.location,
       },
-      h3Index: convertLatLngToCell(location),
-      residentialAddress,
-      category,
-      subCategory,
     });
 
     emitEvent("create-wallet", {
@@ -85,6 +74,13 @@ class VendorsRepository {
     return vendor;
   }
 
+  /**
+    @async
+    Retrieves vendors by location coordinates.
+    @param {number[]} params.coordinates - The location coordinates (longitude and latitude) to search around.
+    @param {number} params.page - The page number to retrieve.
+    @param {number} params.limit - The number of vendors to retrieve per page.
+  */
   async findVendorsByLocation(params: {
     coordinates: [lng: number, lat: number];
     page: number;
@@ -134,15 +130,13 @@ class VendorsRepository {
     return vendors;
   }
 
-  async changeH3IndexResolution() {
-    const vendors = await Vendor.find();
-    vendors.forEach(async (vendor) => {
-      vendor.h3Index = convertLatLngToCell(vendor.location.coordinates);
-      await vendor.save();
-      console.log("changed vendor location");
-    });
-  }
-
+  /**
+    @async
+    Retrieves a list of vendors by category and location coordinates.
+    @param {string} params.categoryId - The ID of the category to filter by.
+    @param {number} params.page - The page number to retrieve.
+    @param {number[]} params.coordinates - The location coordinates (longitude and latitude) to search around.
+  */
   async getVendorsByCategory(params: {
     categoryId: string;
     page: number;
@@ -150,8 +144,6 @@ class VendorsRepository {
   }) {
     const { categoryId, coordinates, page } = params;
     const limit = 20;
-    // const origin = convertLatLngToCell(params.coordinates);
-    // const query = { category: params.categoryId, h3Index: origin };
 
     const query = {
       category: categoryId,
@@ -196,10 +188,17 @@ class VendorsRepository {
     return vendors;
   }
 
+  /**
+   @async
+  Retrieves a list of vendors by sub-category and location coordinates.
+  @param {string} params.subCategoryId - The ID of the sub-category to filter by.
+  @param {number[]} params.coordinates - The location coordinates (longitude and latitude) to search around.
+  @param {number} params.page - The page number to retrieve.
+  */
   async getVendorsBySubCategory(params: {
     subCategoryId: string;
-    page: number;
     coordinates: [lng: number, lat: number];
+    page: number;
   }) {
     const { page, coordinates } = params;
     const limit = 20;
@@ -217,16 +216,18 @@ class VendorsRepository {
       },
     };
 
-    const docs = await Vendor.find(query).select({
-      businessName: 1,
-      businessLogo: 1,
-      location: { coordinates: 1 },
-      // category: 1,
-      address: 1,
-      rating: {
-        averageRating: 1,
-      },
-    });
+    const docs = await Vendor.find(query)
+      .select({
+        businessName: 1,
+        businessLogo: 1,
+        location: { coordinates: 1 },
+        address: 1,
+        rating: {
+          averageRating: 1,
+        },
+      })
+      .lean()
+      .exec();
 
     const totalDocs = docs.length;
     const totalPages = Math.ceil(totalDocs / limit);
@@ -246,6 +247,12 @@ class VendorsRepository {
     return vendors;
   }
 
+  /**
+  Updates a vendor's rating.
+  @param {string} updateRatingDto.vendorId - The ID of the vendor to update.
+  @param {number} updateRatingDto.rating - The new rating value.
+  @param {ClientSession} session - The database session.
+*/
   async updateRating(
     updateRatingDto: { vendorId: string; rating: number },
     session: ClientSession
