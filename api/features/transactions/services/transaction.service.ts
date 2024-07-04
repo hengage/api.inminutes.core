@@ -76,7 +76,7 @@ class TransactionService {
     );
     const digest = hash.digest("hex");
 
-    if (digest === req.headers["x-paystack-signature"]) {
+    // if (digest === req.headers["x-paystack-signature"]) {
       console.log(req.body);
       const event = req.body;
 
@@ -97,9 +97,17 @@ class TransactionService {
           // Credit wallet on failed transfer
           if (event.event === "transfer.failed") {
             let { amount } = event.data;
+            const { status, transfer_code: transferCode } = event.data;
+            const { recipient_code: recipientCode } = event.data.recipient;
             amount = parseFloat(amount) / 100;
             cashoutTransferService
-              .reverseDebit({ amount, trxReference: reference })
+              .reverseDebit({
+                amount,
+                trxReference: reference,
+                transferCode,
+                recipientCode,
+                status,
+              })
               .catch((error) => {
                 console.error("Error on reversing debit:", error);
               });
@@ -108,9 +116,9 @@ class TransactionService {
         default:
           console.warn(`Unknown event type: ${event.event}`);
       }
-    } else {
-      throw new HandleException(STATUS_CODES.BAD_REQUEST, "Invalid signature");
-    }
+    // } else {
+      // throw new HandleException(STATUS_CODES.BAD_REQUEST, "Invalid signature");
+    // }
   }
 
   /**

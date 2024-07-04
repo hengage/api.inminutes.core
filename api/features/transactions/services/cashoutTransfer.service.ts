@@ -148,8 +148,8 @@ class CashoutTransferService {
     @param {string} data.amount - Amount to reverse.
     @param {string} data.trxReference - Transaction reference.
   */
-  async reverseDebit(data: { amount: string; trxReference: string }) {
-    const { amount, trxReference } = data;
+  async reverseDebit(data: { amount: string; trxReference: string, recipientCode: string, transferCode: string, status: string }) {
+    const { amount, trxReference, recipientCode, transferCode, status } = data;
 
     const transaction = await transactionService.getTransactionByReference(
       trxReference,
@@ -166,6 +166,21 @@ class CashoutTransferService {
           `You can try to cashout again, or wait for some minutes`,
       },
       userId: wallet?.merchantId,
+    });
+    
+    transactionService
+    .createHistory({
+      amount,
+      reason: "fund reversal",
+      reference: trxReference,
+      wallet: walletId,
+      type: "credit",
+      recipientCode,
+      transferCode,
+      status,
+    })
+    .catch((error) => {
+      console.log({ error: error });
     });
     console.log(`Reversed ${amount} for wallet: ${walletId}`);
   }
