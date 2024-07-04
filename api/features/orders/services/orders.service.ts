@@ -92,11 +92,11 @@ export class OrdersService {
   }
 
   /**
+  @async
   Updates an order status to READY, indicating it's ready for rider pickup.
   @param {object} params - The order and distance parameters.
   @param {string} params.orderId - The ID of the order to update.
   @param {number} params.distanceInKM - The distance in kilometers for delivery.
-  @returns {Promise
   */
   async ready(params: { orderId: string; distanceInKM: number }) {
     const { orderId, distanceInKM } = params;
