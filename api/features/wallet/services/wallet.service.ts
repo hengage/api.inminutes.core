@@ -38,25 +38,12 @@ class WalletService {
   */
   async creditWallet(params: { walletId: string; amount: string }) {
     const { amount, walletId } = params;
-    try {
-      const wallet = await Wallet.creditWallet({
-        amount: amount,
-        walletId,
-      });
-      console.log({ "Credited merchant": wallet });
-
-      await this.notificationService.createNotification({
-        headings: { en: "Your Earnings Are In!" },
-        contents: {
-          en:
-            `${amount} has been successfully credited to your wallet. ` +
-            `Head to your dashboard to see your new balance`,
-        },
-        userId: wallet.merchantId,
-      });
-    } catch (error: any) {
-      console.error({ error });
-    }
+    const wallet = await Wallet.creditWallet({
+      amount: amount,
+      walletId,
+    });
+    console.log({ "Credited merchant": wallet });
+    return wallet
   }
 
   async checkDuplicateAccountNumber(walletId: string, accountNumber: string) {
@@ -109,31 +96,6 @@ class WalletService {
       );
     }
     return wallet;
-  }
-
-  /**
-    @async
-    Reverse a debit transaction.
-    @param {string} data.amount - Amount to reverse.
-    @param {string} data.trxReference - Transaction reference.
-  */
-  async reverseDebit(data: { amount: string; trxReference: string }) {
-    const { amount, trxReference } = data;
-
-    const transaction = await transactionService.getTransactionByReference(trxReference, 'wallet')
-    const walletId = transaction.wallet;
-    const wallet = await Wallet.creditWallet({ amount, walletId });
-
-    this.notificationService.createNotification({
-      headings: { en: "Funds reversed!" },
-      contents: {
-        en:
-          `Hi, ${amount} has been refunded to your wallet. ` +
-          `You can try to cashout again, or wait for some minutes`,
-      },
-      userId: wallet.merchantId,
-    });
-    console.log(`Reversed ${amount} for wallet: ${walletId}`);
   }
 }
 

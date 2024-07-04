@@ -15,6 +15,7 @@ import {
 } from "../transactions.interface";
 import { TransactionRepository } from "../repository/transaction.repo";
 import { walletService } from "../../wallet";
+import { cashoutTransferService } from "./cashoutTransfer.service";
 
 /**
 Service for managing transactions and interacting with Paystack API.
@@ -97,10 +98,10 @@ class TransactionService {
           if (event.event === "transfer.failed") {
             let { amount } = event.data;
             amount = parseFloat(amount) / 100;
-            walletService
+            cashoutTransferService
               .reverseDebit({ amount, trxReference: reference })
               .catch((error) => {
-                console.log("Error on reversing debit", error);
+                console.error("Error on reversing debit:", error);
               });
           }
           break;

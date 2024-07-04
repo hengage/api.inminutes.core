@@ -172,7 +172,7 @@ export class OrdersService {
   async inTransit(orderId: string) {
     const order = await this.ordersRepo.updateStatus({
       orderId,
-      status: ORDER_STATUS.NEARBY,
+      status: ORDER_STATUS.IN_TRANSIT,
     });
 
     await this.notificationService.createNotification({

@@ -44,19 +44,48 @@ eventEmitter.on("notify-vendor-of-new-order", async (data) => {
 eventEmitter.on("credit-vendor", async (data) => {
   console.log({ data });
   const { vendorId: merchantId, amount } = data;
-  const wallet = await walletService.getWalletByMerchantId({
-    merchantId,
-    selectFields: "_id",
-  });
+  try {
+    const wallet = await walletService.getWalletByMerchantId({
+      merchantId,
+      selectFields: "_id merchantId",
+    });
+  
+    await walletService.creditWallet({ walletId: wallet?._id, amount });
+    await notificationService.createNotification({
+      headings: { en: "Your Earnings Are In!" },
+      contents: {
+        en:
+          `${amount} has been successfully credited to your wallet. ` +
+          `Head to your dashboard to see your new balance`,
+      },
+      userId: wallet.merchantId,
+    });
+  } catch (error: any) {
+    console.error({error})
+  }
 
-  await walletService.creditWallet({ walletId: wallet?._id, amount });
 });
 
 eventEmitter.on("credit-rider", async (data) => {
   const { riderId: merchantId, amount } = data;
-  const wallet = await walletService.getWalletByMerchantId({
-    merchantId,
-    selectFields: "_id",
-  });
-  await walletService.creditWallet({ walletId: wallet?._id, amount });
+
+  try {
+    const wallet = await walletService.getWalletByMerchantId({
+      merchantId,
+      selectFields: "_id merchantId",
+    });
+    await walletService.creditWallet({ walletId: wallet?._id, amount });
+    await notificationService.createNotification({
+      headings: { en: "Your Earnings Are In!" },
+      contents: {
+        en:
+          `${amount} has been successfully credited to your wallet. ` +
+          `Head to your dashboard to see your new balance`,
+      },
+      userId: wallet.merchantId,
+    });
+  } catch (error: any) {
+    console.error({error})
+  }
+
 });

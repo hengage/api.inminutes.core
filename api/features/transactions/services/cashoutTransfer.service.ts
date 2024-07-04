@@ -8,6 +8,7 @@ import {
 } from "../transactions.interface";
 import { walletRepo, walletService } from "../../wallet";
 import { transactionService } from "./transaction.service";
+import { NotificationService } from "../../notifications";
 
 /**
 Service for managing cashout transfers for merchanrs.
@@ -16,12 +17,14 @@ Service for managing cashout transfers for merchanrs.
 class CashoutTransferService {
   private paystackAPIKey: string;
   private headers: Record<string, string>;
+  private notificationService: NotificationService;
 
   constructor() {
     this.paystackAPIKey = `${PAYSTACK_SECRET_KEY}`;
     this.headers = {
       Authorization: `Bearer ${this.paystackAPIKey}`,
     };
+    this.notificationService = new NotificationService();
   }
 
   /**
@@ -137,6 +140,34 @@ class CashoutTransferService {
         error.message || error.response.data
       );
     }
+  }
+
+  /**
+    @async
+    Reverse a debit transaction.
+    @param {string} data.amount - Amount to reverse.
+    @param {string} data.trxReference - Transaction reference.
+  */
+  async reverseDebit(data: { amount: string; trxReference: string }) {
+    const { amount, trxReference } = data;
+
+    const transaction = await transactionService.getTransactionByReference(
+      trxReference,
+      "wallet"
+    );
+    const walletId = transaction.wallet;
+    const wallet = await walletService.creditWallet({ amount, walletId });
+
+    this.notificationService.createNotification({
+      headings: { en: "Funds reversed!" },
+      contents: {
+        en:
+          `Hi, ${amount} has been refunded to your wallet. ` +
+          `You can try to cashout again, or wait for some minutes`,
+      },
+      userId: wallet?.merchantId,
+    });
+    console.log(`Reversed ${amount} for wallet: ${walletId}`);
   }
 }
 
