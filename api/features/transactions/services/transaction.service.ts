@@ -86,7 +86,7 @@ class TransactionService {
         console.log({ metadata: event.data.metadata });
         const { purpose, orderId, vendorId } = event.data.metadata;
         if (purpose === "product purchase") {
-          emitEvent("notify-vendor-of-new-order", { orderId, vendorId });
+          emitEvent.emit("notify-vendor-of-new-order", { orderId, vendorId });
         }
         break;
       case "transfer.success":

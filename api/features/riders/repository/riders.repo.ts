@@ -58,7 +58,7 @@ export class RidersRepository {
   async signup(riderData: ICreateRiderData): Promise<Partial<IRiderDocument>> {
     const rider = await Rider.create(riderData);
 
-    emitEvent("create-wallet", {
+    emitEvent.emit("create-wallet", {
       riderId: rider._id,
     });
 

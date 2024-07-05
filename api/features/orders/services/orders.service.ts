@@ -248,12 +248,12 @@ export class OrdersService {
       userId: order.customer,
     });
 
-    emitEvent("credit-vendor", {
+    emitEvent.emit("credit-vendor", {
       vendorId: order.vendor._id,
       amount: order.totalProductsCost,
     });
 
-    emitEvent("credit-rider", {
+    emitEvent.emit("credit-rider", {
       riderId: order.rider,
       amount: order.deliveryFee,
     });

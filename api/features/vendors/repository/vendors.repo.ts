@@ -1,5 +1,5 @@
 import { ClientSession } from "mongoose";
-import { convertLatLngToCell, emitEvent } from "../../../services";
+import {  emitEvent } from "../../../services";
 import {
   HandleException,
   STATUS_CODES,
@@ -29,7 +29,7 @@ class VendorsRepository {
       },
     });
 
-    emitEvent("create-wallet", {
+    emitEvent.emit("create-wallet", {
       vendorId: vendor._id,
     });
 
