@@ -1,17 +1,15 @@
 import { IOrdersDocument } from "../features/orders/orders.interface";
-import { RidersService } from "../features/riders";
+import { ridersService } from "../features/riders";
 import { SchedulerService } from "./jobs.services";
 
 /**
  Handles the logistics of delivery for orders
  @class
  */
-export class DeliveryService {
-  private ridersService: RidersService;
+class DeliveryService {
   private jobscheduleService: SchedulerService;
 
   constructor() {
-    this.ridersService = new RidersService();
     this.jobscheduleService = SchedulerService.getInstance();
   }
 
@@ -43,7 +41,7 @@ export class DeliveryService {
       });
     } else {
       console.log("Instant order");
-      await this.ridersService.findAndNotifyRidersOfOrder({
+      await ridersService.findAndNotifyRidersOfOrder({
         coordinates: order.vendor.location.coordinates,
         distanceInKM,
         orderId: order._id,
@@ -51,3 +49,5 @@ export class DeliveryService {
     }
   };
 }
+
+export const deliveryService = new DeliveryService()

@@ -3,7 +3,7 @@ dotenv.config();
 
 import { Agenda } from "agenda";
 import { DB_URL } from "../config/secrets.config";
-import { RidersService } from "../features/riders";
+import { ridersService } from "../features/riders";
 
 
 /**
@@ -13,10 +13,8 @@ Service for scheduling tasks and jobs.
 export class SchedulerService {
   private static instance: SchedulerService;
   private agenda: Agenda | undefined;
-  private ridersService: RidersService;
 
   public constructor() {
-    this.ridersService = new RidersService();
   }
 
   public static getInstance(): SchedulerService {
@@ -54,7 +52,7 @@ export class SchedulerService {
     this.agenda?.define("schedule-order-delivery", async (job: any) => {
       console.log("Running schedule");
       const { coordinates, distanceInKM, orderId } = job.attrs.data;
-      await this.ridersService.findAndNotifyRidersOfOrder({
+      await ridersService.findAndNotifyRidersOfOrder({
         coordinates,
         distanceInKM,
         orderId,
@@ -64,7 +62,7 @@ export class SchedulerService {
     this.agenda?.define("start-working", async (job: any) => {
       const { riderId, slotId } = job.attrs.data;
       console.log("Running availability to true", job.attrs.data);
-      await this.ridersService.updateAvailability({
+      await ridersService.updateAvailability({
         riderId,
         currentlyWorking: true,
       });
@@ -73,7 +71,7 @@ export class SchedulerService {
     this.agenda?.define("end-working", async (job: any) => {
       const { riderId, slotId } = job.attrs.data;
       console.log("Running availability to false", job.attrs.data);
-      await this.ridersService.updateAvailability({
+      await ridersService.updateAvailability({
         riderId,
         currentlyWorking: false,
       });

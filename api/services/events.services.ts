@@ -6,6 +6,7 @@ import { SocketServer } from "./socket/socket.services";
 class EventEmit {
   private eventEmitter: EventEmitter;
   private notificationService: NotificationService;
+  private socketServer = SocketServer.getInstance();
 
   constructor() {
     this.eventEmitter = new EventEmitter();
@@ -54,11 +55,10 @@ class EventEmit {
           walletId: wallet?._id,
           amount,
         });
-        // const socketServer = SocketServer.getInstance();
-        // socketServer.emitEvent("wallet-balance", {
-        //   _id: updatedWallet._id,
-        //   balance: updatedWallet.balance,
-        // });
+        this.socketServer.emitEvent("wallet-balance", {
+          _id: updatedWallet._id,
+          balance: updatedWallet.balance,
+        });
         await this.notificationService.createNotification({
           headings: { en: "Your Earnings Are In!" },
           contents: {
@@ -81,7 +81,11 @@ class EventEmit {
           merchantId,
           selectFields: "_id merchantId",
         });
-        await walletService.creditWallet({ walletId: wallet?._id, amount });
+        const updatedWallet = await walletService.creditWallet({ walletId: wallet?._id, amount });
+        this.socketServer.emitEvent("wallet-balance", {
+          _id: updatedWallet._id,
+          balance: updatedWallet.balance,
+        });
         await this.notificationService.createNotification({
           headings: { en: "Your Earnings Are In!" },
           contents: {
@@ -103,4 +107,4 @@ class EventEmit {
   }
 }
 
-export const emitEvent = new  EventEmit();
+export const emitEvent = new EventEmit();

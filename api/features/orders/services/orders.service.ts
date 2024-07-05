@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
-import { DeliveryService, HandleException, ORDER_STATUS } from "../../../utils";
+import { deliveryService, HandleException, ORDER_STATUS } from "../../../utils";
 import { NotificationService } from "../../notifications";
 import { Order } from "../models/orders.model";
 import { OrdersRepository } from "../repository/orders.repo";
 import { ValidateOrders } from "../validation/orders.validation";
 import { vendorsRepo } from "../../vendors";
 import { emitEvent, redisClient } from "../../../services";
-import { RidersService } from "../../riders/";
+import { ridersService } from "../../riders/";
 import { ICreateOrderData, IOrderAndMerchantsRatingData } from "../orders.interface";
 
 /**
@@ -18,15 +18,11 @@ export class OrdersService {
   private notificationService: NotificationService;
   private validateOrders: ValidateOrders;
   private ordersRepo: OrdersRepository;
-  private ridersService: RidersService;
-  private deliveryService: DeliveryService;
 
   constructor() {
     this.notificationService = new NotificationService();
     this.ordersRepo = new OrdersRepository();
     this.validateOrders = new ValidateOrders();
-    this.ridersService = new RidersService();
-    this.deliveryService = new DeliveryService();
   }
 
   create = async (params: {
@@ -106,7 +102,7 @@ export class OrdersService {
       status: ORDER_STATUS.READY,
     });
 
-    await this.deliveryService.handleInstantOrScheduledDelivery({
+    await deliveryService.handleInstantOrScheduledDelivery({
       order,
       distanceInKM,
     });
@@ -298,7 +294,7 @@ export class OrdersService {
       session.startTransaction();
 
       const riderRatingPromise = riderRating
-        ? this.ridersService.updateRating(
+        ? ridersService.updateRating(
             { riderId, rating: riderRating },
             session
           )

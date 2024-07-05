@@ -1,4 +1,4 @@
-export { DeliveryService } from "../services/delivery.service";
+export { deliveryService } from "../services/delivery.service";
 
 export { calculateAverageRating } from "./calculateRating";
 

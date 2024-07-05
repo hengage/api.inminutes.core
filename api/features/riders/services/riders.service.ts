@@ -3,7 +3,7 @@ import { NotificationService } from "../../notifications";
 import { RidersRepository } from "../repository/riders.repo";
 import { UsersService } from "../../../services/users.services";
 
-export class RidersService {
+class RidersService {
   private notificationService: NotificationService;
   private usersService: UsersService;
   private ridersRepo: RidersRepository;
@@ -83,3 +83,5 @@ export class RidersService {
     return this.ridersRepo.updateRating(ratingData, session);
   }
 }
+
+export const ridersService = new RidersService()
