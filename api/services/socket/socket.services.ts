@@ -10,11 +10,19 @@ import { listenForProductEvents } from "./products.socket";
 import { listenToWalletEvents } from "./wallet.socket";
 import { socketGuard } from "../../middleware";
 
-class SocketIO {
+export class SocketServer {
   private io: Socket;
+  private static instance: SocketServer;
 
   constructor(server: Server) {
     this.io = socketIO(server);
+  }
+
+  public static getInstance(server?: Server): SocketServer {
+    if (!SocketServer.instance && server) {
+      SocketServer.instance = new SocketServer(server);
+    }
+    return SocketServer.instance;
   }
 
   public connectSocket() {
@@ -29,14 +37,16 @@ class SocketIO {
     });
   }
 
+  public emitEvent(eventName: string, data: any) {
+    this.io.emit(eventName, data);
+    console.log(`Emitted event '${eventName}' from server`)
+  }
+
   private listenToEvents(socket: Socket) {
     listenToCustomerEvents(socket)
     listenToOrderevents(socket)
     listenToRiderEvents(socket)
     listenForProductEvents(socket)
     listenToWalletEvents(socket)
-
   }
 }
-
-export { SocketIO };

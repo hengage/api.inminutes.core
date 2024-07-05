@@ -16,6 +16,7 @@ import {
 import { TransactionRepository } from "../repository/transaction.repo";
 import { walletService } from "../../wallet";
 import { cashoutTransferService } from "./cashoutTransfer.service";
+import { SocketServer } from "../../../services/socket/socket.services";
 
 /**
 Service for managing transactions and interacting with Paystack API.
@@ -77,47 +78,49 @@ class TransactionService {
     const digest = hash.digest("hex");
 
     // if (digest === req.headers["x-paystack-signature"]) {
-      console.log(req.body);
-      const event = req.body;
+    console.log(req.body);
+    const event = req.body;
 
-      switch (event.event) {
-        case "charge.success":
-          console.log({ metadata: event.data.metadata });
-          const { purpose, orderId, vendorId } = event.data.metadata;
-          if (purpose === "product purchase") {
-            emitEvent("notify-vendor-of-new-order", { orderId, vendorId });
-          }
-          break;
-        case "transfer.success":
-        case "transfer.failed":
-          const { reference, status } = event.data;
-          console.log({ reference, status });
-          this.transactionRepo.updateStatus({ reference, status });
+    switch (event.event) {
+      case "charge.success":
+        console.log({ metadata: event.data.metadata });
+        const { purpose, orderId, vendorId } = event.data.metadata;
+        if (purpose === "product purchase") {
+          emitEvent("notify-vendor-of-new-order", { orderId, vendorId });
+        }
+        break;
+      case "transfer.success":
+      case "transfer.failed":
+        const { reference, status } = event.data;
+        console.log({ reference, status });
+        this.transactionRepo.updateStatus({ reference, status });
 
-          // Credit wallet on failed transfer
-          if (event.event === "transfer.failed") {
-            let { amount } = event.data;
-            const { status, transfer_code: transferCode } = event.data;
-            const { recipient_code: recipientCode } = event.data.recipient;
-            amount = parseFloat(amount) / 100;
-            cashoutTransferService
-              .reverseDebit({
-                amount,
-                trxReference: reference,
-                transferCode,
-                recipientCode,
-                status,
-              })
-              .catch((error) => {
-                console.error("Error on reversing debit:", error);
-              });
-          }
-          break;
-        default:
-          console.warn(`Unknown event type: ${event.event}`);
-      }
+        // Credit wallet on failed transfer
+        if (event.event === "transfer.failed") {
+          let { amount } = event.data;
+          const { status, transfer_code: transferCode } = event.data;
+          const { recipient_code: recipientCode } = event.data.recipient;
+          amount = parseFloat(amount) / 100;
+          cashoutTransferService
+            .reverseDebit({
+              amount,
+              trxReference: reference,
+              transferCode,
+              recipientCode,
+              status,
+            })
+            .catch((error) => {
+              console.error("Error on reversing debit:", error);
+            });
+          const socketServer = SocketServer.getInstance();
+          socketServer.emitEvent("get-wallet-balance", { key: "value" });
+        }
+        break;
+      default:
+        console.warn(`Unknown event type: ${event.event}`);
+    }
     // } else {
-      // throw new HandleException(STATUS_CODES.BAD_REQUEST, "Invalid signature");
+    // throw new HandleException(STATUS_CODES.BAD_REQUEST, "Invalid signature");
     // }
   }
 
