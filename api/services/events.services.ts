@@ -1,9 +1,12 @@
 import { EventEmitter } from "events";
 import { walletRepo, walletService } from "../features/wallet";
 import { NotificationService } from "../features/notifications";
+import { SocketServer } from "./socket/socket.services";
 
 const eventEmitter = new EventEmitter();
 const notificationService = new NotificationService();
+
+
 
 export const emitEvent = (eventName: string, message: any) => {
   console.log({ eventMessage: message });
@@ -50,7 +53,12 @@ eventEmitter.on("credit-vendor", async (data) => {
       selectFields: "_id merchantId",
     });
   
-    await walletService.creditWallet({ walletId: wallet?._id, amount });
+    const updatedWallet = await walletService.creditWallet({ walletId: wallet?._id, amount });
+    // const socketServer = SocketServer.getInstance();
+    // socketServer.emitEvent("wallet-balance", {
+    //   _id: updatedWallet._id,
+    //   balance: updatedWallet.balance,
+    // });
     await notificationService.createNotification({
       headings: { en: "Your Earnings Are In!" },
       contents: {

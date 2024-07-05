@@ -179,10 +179,10 @@ class CashoutTransferService {
       transferCode,
       status,
     })
-    .catch((error) => {
-      console.log({ error: error });
-    });
+    
     console.log(`Reversed ${amount} for wallet: ${walletId}`);
+
+    return wallet
   }
 }
 

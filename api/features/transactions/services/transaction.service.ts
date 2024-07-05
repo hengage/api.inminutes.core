@@ -97,23 +97,7 @@ class TransactionService {
 
         // Credit wallet on failed transfer
         if (event.event === "transfer.failed") {
-          let { amount } = event.data;
-          const { status, transfer_code: transferCode } = event.data;
-          const { recipient_code: recipientCode } = event.data.recipient;
-          amount = parseFloat(amount) / 100;
-          cashoutTransferService
-            .reverseDebit({
-              amount,
-              trxReference: reference,
-              transferCode,
-              recipientCode,
-              status,
-            })
-            .catch((error) => {
-              console.error("Error on reversing debit:", error);
-            });
-          const socketServer = SocketServer.getInstance();
-          socketServer.emitEvent("get-wallet-balance", { key: "value" });
+          this.handleFailedCashoutTransaction(event);
         }
         break;
       default:
@@ -138,6 +122,31 @@ class TransactionService {
       reference,
       selectFields
     );
+  }
+
+  async handleFailedCashoutTransaction(event: any) {
+    let { amount } = event.data;
+    const { reference, status, transfer_code: transferCode } = event.data;
+    const { recipient_code: recipientCode } = event.data.recipient;
+    amount = parseFloat(amount) / 100;
+
+    try {
+      const wallet = await cashoutTransferService.reverseDebit({
+        amount,
+        trxReference: reference,
+        transferCode,
+        recipientCode,
+        status,
+      });
+
+      const socketServer = SocketServer.getInstance();
+      socketServer.emitEvent("wallet-balance", {
+        _id: wallet._id,
+        balance: wallet.balance,
+      });
+    } catch (error) {
+      console.error({ error });
+    }
   }
 }
 
