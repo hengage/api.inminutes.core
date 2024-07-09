@@ -31,7 +31,7 @@ export class SocketServer {
     this.io.use(socketGuard);
     this.io.on("connection", (socket: Socket) => {
       console.log(`User connected with socket ID: ${socket.id}`);
-      console.log({socketUser: socket.data.user})
+      console.log({ socketUser: socket.data.user });
       this.listenToEvents(socket);
       this.socket = socket;
 
@@ -54,5 +54,16 @@ export class SocketServer {
     listenToRiderEvents(socket);
     listenForProductEvents(socket);
     listenToWalletEvents(socket);
+    this.disconnectOnLogOut(socket)
+  }
+
+  private disconnectOnLogOut(socket: Socket) {
+    socket.on("logout", () => {
+      // Remove user data from socket
+      delete socket.data.user;
+      // Disconnect the socket
+      socket.disconnect();
+      console.log("User disconnected on logout");
+    });
   }
 }
