@@ -31,6 +31,7 @@ export class SocketServer {
     this.io.use(socketGuard);
     this.io.on("connection", (socket: Socket) => {
       console.log(`User connected with socket ID: ${socket.id}`);
+      console.log({socketUser: socket.data.user})
       this.listenToEvents(socket);
       this.socket = socket;
 

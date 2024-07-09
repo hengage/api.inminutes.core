@@ -16,8 +16,9 @@ function listenToWalletEvents(socket: Socket) {
 
   socket.on("get-wallet-balance", async () => {
     try {
-      console.log({ merchantIdInSocket: socket.data.user?._id });
+      console.log({ merchantInSocket: socket.data.user });
       const balance = await walletService.getBalance(socket.data.user?._id);
+      console.log({balance})
       socket.emit("wallet-balance", balance);
     } catch (error: any) {
       socket.emit("get-wallet-balance-error", error.message);
