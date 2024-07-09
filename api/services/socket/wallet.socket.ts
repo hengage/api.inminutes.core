@@ -8,6 +8,12 @@ function listenToWalletEvents(socket: Socket) {
       const cashoutAccounts = await walletService.getCashoutAccounts(
         socket.data.user?._id
       );
+      if (cashoutAccounts) {
+        console.log({ walletId: cashoutAccounts._id });
+        cashoutAccounts?.cashoutAccounts.forEach((account) => {
+          console.log({ account });
+        });
+      }
       socket.emit("fetched-cashout-accounts", cashoutAccounts);
     } catch (error: any) {
       socket.emit("get-cashout-accounts-error", error.message);
@@ -18,7 +24,7 @@ function listenToWalletEvents(socket: Socket) {
     try {
       console.log({ merchantInSocket: socket.data.user });
       const balance = await walletService.getBalance(socket.data.user?._id);
-      console.log({balance})
+      console.log({ balance });
       socket.emit("wallet-balance", balance);
     } catch (error: any) {
       socket.emit("get-wallet-balance-error", error.message);
