@@ -64,6 +64,16 @@ export class OrdersRepository {
     return order;
   }
 
+  async getNewOrdersForVendors(vendorId: string) {
+    return await Order.find({
+      vendor: vendorId,
+      status: { $in: [ORDER_STATUS.PENDING, ORDER_STATUS.REQUEST_CONFIRMED] },
+    })
+      .select("items totalProductsCost status deliveryLocation.coordinates")
+      .lean()
+      .exec();
+  }
+
   /**
     * @async
     * Assigns a rider to an order.

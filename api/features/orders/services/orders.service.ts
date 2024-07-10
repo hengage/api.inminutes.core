@@ -7,14 +7,17 @@ import { ValidateOrders } from "../validation/orders.validation";
 import { vendorsRepo } from "../../vendors";
 import { emitEvent, redisClient } from "../../../services";
 import { ridersService } from "../../riders/";
-import { ICreateOrderData, IOrderAndMerchantsRatingData } from "../orders.interface";
+import {
+  ICreateOrderData,
+  IOrderAndMerchantsRatingData,
+} from "../orders.interface";
 
 /**
 CustomersOrdersService
 A service class that handles orders-related operations.
 @class
 */
-export class OrdersService {
+class OrdersService {
   private notificationService: NotificationService;
   private validateOrders: ValidateOrders;
   private ordersRepo: OrdersRepository;
@@ -272,6 +275,10 @@ export class OrdersService {
     return { orderId: order._id };
   }
 
+  async getNewOrdersForVendors(vendorId: string) {
+    return await this.ordersRepo.getNewOrdersForVendors(vendorId);
+  }
+
   /**
    * @async
    * Submits feedback for an order.
@@ -294,17 +301,11 @@ export class OrdersService {
       session.startTransaction();
 
       const riderRatingPromise = riderRating
-        ? ridersService.updateRating(
-            { riderId, rating: riderRating },
-            session
-          )
+        ? ridersService.updateRating({ riderId, rating: riderRating }, session)
         : Promise.resolve(); // Resolve to empty if no rider rating
 
       const vendorRatingPromise = vendorRating
-        ? vendorsRepo.updateRating(
-            { vendorId, rating: vendorRating },
-            session
-          )
+        ? vendorsRepo.updateRating({ vendorId, rating: vendorRating }, session)
         : Promise.resolve(); // Resolve to empty if no vendor rating
 
       await Promise.all([
@@ -327,3 +328,5 @@ export class OrdersService {
     }
   }
 }
+
+export const ordersService = new OrdersService

@@ -1,3 +1,4 @@
+export { SocketServer } from "./socket/socket.services";
 export { SchedulerService } from "./jobs.services";
 export { redisClient } from "./redisClient.service";
 export { convertLatLngToCell } from "./geospatial.service";

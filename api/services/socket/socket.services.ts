@@ -9,6 +9,7 @@ import { listenToRiderEvents } from "./riders.socket";
 import { listenForProductEvents } from "./products.socket";
 import { listenToWalletEvents } from "./wallet.socket";
 import { socketGuard } from "../../middleware";
+import { listenToVendorEvents } from "./vendors.socket";
 
 export class SocketServer {
   private io: Socket;
@@ -54,14 +55,17 @@ export class SocketServer {
     listenToRiderEvents(socket);
     listenForProductEvents(socket);
     listenToWalletEvents(socket);
+    listenToVendorEvents(socket);
     this.disconnectOnLogOut(socket)
   }
 
   private disconnectOnLogOut(socket: Socket) {
     socket.on("logout", () => {
+      console.log({socketUser:  socket.data.user})
       // Remove user data from socket
       delete socket.data.user;
       // Disconnect the socket
+      console.log({socketUser:  socket.data.user})
       socket.disconnect();
       console.log("User disconnected on logout");
     });

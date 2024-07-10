@@ -2,24 +2,22 @@ import { Request, Response } from "express";
 
 import { STATUS_CODES, handleErrorResponse } from "../../../utils";
 import { OrdersRepository } from "../repository/orders.repo";
-import { OrdersService } from "../services/orders.service";
+import { ordersService } from "../services/orders.service";
 import { ValidateOrders } from "../validation/orders.validation";
 
 export class OrdersController {
   private ordersRepo: OrdersRepository;
-  private ordersService: OrdersService;
   private validateOrders: ValidateOrders;
 
   constructor() {
     this.ordersRepo = new OrdersRepository();
-    this.ordersService = new OrdersService();
     this.validateOrders = new ValidateOrders();
   }
   create = async (req: Request, res: Response) => {
     const customer = (req as any).user._id;
 
     try {
-      const order = await this.ordersService.create({
+      const order = await ordersService.create({
         orderData: req.body,
         customer,
       });
@@ -34,7 +32,7 @@ export class OrdersController {
 
   orderDetails = async (req: Request, res: Response) => {
     try {
-      const order = await this.ordersService.details(req.params.orderId);
+      const order = await ordersService.details(req.params.orderId);
       res.status(STATUS_CODES.OK).json({
         message: "success",
         data: { order },
@@ -56,7 +54,7 @@ export class OrdersController {
     const { orderId } = req.params;
     try {
       await this.validateOrders.orderFeedback(req.body);
-      await this.ordersService.submitOrderFeedback({
+      await ordersService.submitOrderFeedback({
         orderId,
         vendorId,
         vendorRating,

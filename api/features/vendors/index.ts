@@ -1,3 +1,5 @@
+export { vendorsOrdersService } from "./services/vendorsOrders.service";
+
 export { vendorsRepo } from "./repository/vendors.repo";
 
 export {

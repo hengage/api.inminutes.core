@@ -1,7 +1,6 @@
 import { Socket } from "socket.io";
-import { OrdersService } from "../../features/orders";
+import { ordersService } from "../../features/orders";
 
-const ordersService = new OrdersService();
 function listenToOrderevents(socket: Socket) {
   socket.on("confirm-order-request", async (message) => {
     console.log({ message });
