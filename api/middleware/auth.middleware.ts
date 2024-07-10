@@ -50,6 +50,7 @@ const socketGuard = (event: any, next: (err?: Error | undefined) => void) => {
     console.error('Authentication error: Token not provided')
     return next(new Error("Authentication error: Token not provided"));
   }
+  console.log({tokenFromSocket: token})
 
   try {
     const decoded = jwt.verify(token, `${JWT_SECRET_KEY}`);

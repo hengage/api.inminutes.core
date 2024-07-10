@@ -40,6 +40,7 @@ class VendorsController {
 
       const jwtPayload = { _id: vendor._id, PhoneNumber: vendor.phoneNumber };
       const accessToken = generateJWTToken(jwtPayload, "1h");
+      console.log({tokenFromLogin:accessToken})
       const refreshToken = generateJWTToken(jwtPayload, "14d");
 
       res.status(STATUS_CODES.OK).json({
