@@ -25,7 +25,7 @@ class TransactionService {
   private paystackAPIKey: string;
   private headers: Record<string, string>;
   private transactionRepo: TransactionRepository;
-  private socketServer = SocketServer.getInstance();
+  // private socketServer = SocketServer.getInstance();
 
   constructor() {
     this.paystackAPIKey = `${PAYSTACK_SECRET_KEY}`;
@@ -139,7 +139,8 @@ class TransactionService {
         status,
       });
 
-      this.socketServer.emitEvent("wallet-balance", {
+      const socketServer = SocketServer.getInstance()
+      socketServer.emitEvent("wallet-balance", {
         _id: wallet._id,
         balance: wallet.balance,
       });

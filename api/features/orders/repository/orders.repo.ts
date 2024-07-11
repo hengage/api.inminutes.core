@@ -19,7 +19,7 @@ export class OrdersRepository {
    * @param  {string} params.customer - The id of the customer making the order
    * @param  {CreateOrderParams} params.orderData - The other  creation data for the order.
    **/
-  create(params: { orderData: ICreateOrderData; customer: string }) {
+  async create(params: { orderData: ICreateOrderData; customer: string }) {
     const { orderData, customer } = params;
     console.log({ orderData });
 
@@ -30,7 +30,7 @@ export class OrdersRepository {
         coordinates: orderData.deliveryLocation,
       },
     };
-    const order = Order.create(payload);
+    const order = await Order.create(payload);
 
     return order;
   }

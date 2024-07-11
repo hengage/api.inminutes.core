@@ -51,6 +51,9 @@ class OrdersService {
       .lean()
       .exec();
 
+    emitEvent.emit("vendor-new-orders", {
+      vendorId: newOrder?.vendor._id,
+    });
     return newOrder;
   };
 
@@ -78,6 +81,11 @@ class OrdersService {
     const order = await this.ordersRepo.updateStatus({
       orderId,
       status: ORDER_STATUS.REQUEST_CONFIRMED,
+    });
+
+    console.log({vendorId: order?.vendor._id})
+    emitEvent.emit("vendor-new-orders", {
+      vendorId: order?.vendor._id,
     });
 
     this.notificationService.createNotification({
@@ -329,4 +337,4 @@ class OrdersService {
   }
 }
 
-export const ordersService = new OrdersService
+export const ordersService = new OrdersService();

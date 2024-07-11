@@ -2,15 +2,20 @@ import { EventEmitter } from "events";
 import { walletRepo, walletService } from "../features/wallet";
 import { NotificationService } from "../features/notifications";
 import { SocketServer } from "./socket/socket.services";
+import { ordersService } from "../features/orders";
+
+console.log({ SocketServer });
+// const socketServer = SocketServer.getInstance()
 
 class EventEmit {
   private eventEmitter: EventEmitter;
   private notificationService: NotificationService;
-  private socketServer = SocketServer.getInstance();
 
   constructor() {
-    this.eventEmitter = new EventEmitter();
     this.notificationService = new NotificationService();
+    this.eventEmitter = new EventEmitter();
+
+    this.listenToEvents();
 
     this.eventEmitter.on("create-wallet", async (data) => {
       console.log({ eventData: data });
@@ -55,7 +60,9 @@ class EventEmit {
           walletId: wallet?._id,
           amount,
         });
-        this.socketServer.emitEvent("wallet-balance", {
+
+        const socketServer = SocketServer.getInstance()
+        socketServer.emitEvent("wallet-balance", {
           _id: updatedWallet._id,
           balance: updatedWallet.balance,
         });
@@ -81,8 +88,13 @@ class EventEmit {
           merchantId,
           selectFields: "_id merchantId",
         });
-        const updatedWallet = await walletService.creditWallet({ walletId: wallet?._id, amount });
-        this.socketServer.emitEvent("wallet-balance", {
+        const updatedWallet = await walletService.creditWallet({
+          walletId: wallet?._id,
+          amount,
+        });
+
+        const socketServer = SocketServer.getInstance()
+        socketServer.emitEvent("wallet-balance", {
           _id: updatedWallet._id,
           balance: updatedWallet.balance,
         });
@@ -100,6 +112,18 @@ class EventEmit {
       }
     });
   }
+
+  private listenToEvents = () => {
+    this.eventEmitter.on("vendor-new-orders", async (data) => {
+      console.log({ eventData: data });
+      const vendorNewOrders = await ordersService.getNewOrdersForVendors(
+        data.vendorId
+      );
+      const socketServer = SocketServer.getInstance()
+
+      socketServer.emitEvent("vendor-new-orders", vendorNewOrders);
+    });
+  };
 
   emit(eventName: string, message: any) {
     console.log({ eventMessage: message });
