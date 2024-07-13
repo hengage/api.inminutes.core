@@ -6,7 +6,7 @@ function listenToWalletEvents(socket: Socket) {
     try {
       console.log({ message });
       const cashoutAccounts = await walletService.getCashoutAccounts(
-        socket.data.user?._id
+        message.merchantId
       );
       if (cashoutAccounts) {
         console.log({ walletId: cashoutAccounts._id });
@@ -20,10 +20,9 @@ function listenToWalletEvents(socket: Socket) {
     }
   });
 
-  socket.on("get-wallet-balance", async () => {
+  socket.on("get-wallet-balance", async (message) => {
     try {
-      console.log({ merchantInSocket: socket.data.user });
-      const balance = await walletService.getBalance(socket.data.user?._id);
+      const balance = await walletService.getBalance(message.merchantId);
       console.log({ balance });
       socket.emit("wallet-balance", balance);
     } catch (error: any) {
