@@ -27,7 +27,6 @@ const verifyAuthTokenMiddleware = async (
 
   try {
     const decoded = jwt.verify(token, `${JWT_SECRET_KEY}`);
-    console.log({decodedLoginUser: decoded});
     (req as any).user = decoded;
     next();
   } catch (error: any) {
@@ -54,7 +53,6 @@ const socketGuard = (event: any, next: (err?: Error | undefined) => void) => {
 
   try {
     const decoded = jwt.verify(token, `${JWT_SECRET_KEY}`);
-    console.log({decodedSocketUser: decoded})
     socket.data.user = decoded;
     next();
   } catch (error: any) {

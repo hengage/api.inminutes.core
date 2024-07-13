@@ -61,11 +61,9 @@ export class SocketServer {
 
   private disconnectOnLogOut(socket: Socket) {
     socket.on("logout", () => {
-      console.log({ socketUser: socket.data.user });
       // Remove user data from socket
       delete socket.data.user;
       // Disconnect the socket
-      console.log({ socketUser: socket.data.user });
       socket.disconnect();
       console.log("User disconnected on logout");
     });
