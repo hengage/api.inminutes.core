@@ -24,7 +24,7 @@ class CashoutTransferController {
       await cashoutTransferService.initialize(req.body);
       res
         .status(STATUS_CODES.OK)
-        .json({ message: "success", data: "Cashout initiated successfully" });
+        .json({ message: "success", data: "Cashout approved" });
     } catch (error: any) {
       handleErrorResponse(res, error);
     }
