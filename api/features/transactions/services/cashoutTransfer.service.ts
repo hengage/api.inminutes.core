@@ -96,7 +96,15 @@ class CashoutTransferService {
   @param {object} transferData - The transfer data.
   */
   async initialize(transferData: InitializeTransferData) {
-    const { amount, recipientCode, reason, walletId } = transferData;
+    const {
+      amount,
+      recipientCode,
+      reason,
+      walletId,
+      bankName,
+      accountName,
+      accountNumber,
+    } = transferData;
     const reference = generateReference();
 
     const data = {
@@ -125,6 +133,9 @@ class CashoutTransferService {
           wallet: walletId,
           type: "debit",
           recipientCode,
+          bankName,
+          accountName,
+          accountNumber,
           transferCode,
           status,
         })
@@ -148,7 +159,13 @@ class CashoutTransferService {
     @param {string} data.amount - Amount to reverse.
     @param {string} data.trxReference - Transaction reference.
   */
-  async reverseDebit(data: { amount: string; trxReference: string, recipientCode: string, transferCode: string, status: string }) {
+  async reverseDebit(data: {
+    amount: string;
+    trxReference: string;
+    recipientCode: string;
+    transferCode: string;
+    status: string;
+  }) {
     const { amount, trxReference, recipientCode, transferCode, status } = data;
 
     const transaction = await transactionService.getTransactionByReference(
@@ -167,9 +184,8 @@ class CashoutTransferService {
       },
       userId: wallet?.merchantId,
     });
-    
-    transactionService
-    .createHistory({
+
+    transactionService.createHistory({
       amount,
       reason: "fund reversal",
       reference: trxReference,
@@ -178,11 +194,11 @@ class CashoutTransferService {
       recipientCode,
       transferCode,
       status,
-    })
-    
+    });
+
     console.log(`Reversed ${amount} for wallet: ${walletId}`);
 
-    return wallet
+    return wallet;
   }
 }
 

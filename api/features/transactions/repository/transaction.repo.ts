@@ -63,4 +63,9 @@ export class TransactionRepository {
 
     return transaction
   }
+
+  async getHistory(walletId: string){
+    return await TransactionHistory.find({wallet: walletId})
+    .select('createdAt amount status')
+  }
 }

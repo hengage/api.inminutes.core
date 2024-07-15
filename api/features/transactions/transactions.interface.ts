@@ -29,14 +29,14 @@ export interface ITransactionHistoryDocument extends Document {
   wallet: IWalletDocument["_id"];
   amount: string;
   recipientCode?: string;
+  accountName?: string;
+  accountNumber?: string;
   transferCode?: string;
   reference: string;
   reason: string;
   type: string;
   transactionFee: string;
-  bank?: string;
-  bankCode?: string;
-  accountNumber?: string;
+  bankName?: string;
   status: string;
   currency: string;
 }
@@ -46,6 +46,9 @@ export interface ICreateTransactionHistoryData {
   wallet: string;
   reference: string;
   recipientCode: string;
+  bankName?: string;
+  accountNumber?: string;
+  accountName?: string;
   transferCode: string;
   status: string;
   type: "credit" | "debit";
@@ -54,7 +57,10 @@ export interface ICreateTransactionHistoryData {
 
 export interface InitializeTransferData {
   amount: string;
-  recipientCode: string;
-  reason: string;
   walletId: string;
+  recipientCode: string;
+  bankName: string;
+  accountName: string;
+  accountNumber: string;
+  reason: string;
 }
