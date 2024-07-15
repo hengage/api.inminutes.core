@@ -62,7 +62,7 @@ class WalletRepository {
   */
   async getBalance(merchantId: string) {
     return await Wallet.findOne({ merchantId })
-      .select("balance")
+      .select("balance totalEarnings")
       .lean()
       .exec();
   }
