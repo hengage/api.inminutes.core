@@ -31,16 +31,16 @@ class TimeSlotService {
 
     const slot = await timeSlotRepo.bookSlot({ riderId, startTime, endTime });
 
-    await this.jobscheduleService.riderStartWorking({
-      startTime,
-      slotId: slot._id,
-      riderId,
+    await this.jobscheduleService.scheduleJob({
+      jobName: "start-work-schedule",
+      scheduledTime: startTime,
+      jobData: { riderId, slotId: slot._id },
     });
 
-    await this.jobscheduleService.riderEndWorking({
-      endTime,
-      slotId: slot._id,
-      riderId,
+    await this.jobscheduleService.scheduleJob({
+      jobName: "end-work-schedule",
+      scheduledTime: endTime,
+      jobData: { riderId, slotId: slot._id },
     });
 
     return slot;

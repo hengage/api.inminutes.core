@@ -7,10 +7,10 @@ import { SchedulerService } from "./jobs.services";
  @class
  */
 class DeliveryService {
-  private jobscheduleService: SchedulerService;
+  private jobScheduleService: SchedulerService;
 
   constructor() {
-    this.jobscheduleService = SchedulerService.getInstance();
+    this.jobScheduleService = SchedulerService.getInstance();
   }
 
   /**
@@ -33,11 +33,14 @@ class DeliveryService {
         order.scheduledDeliveryTime?.getTime() - 5 * 60000
       );
 
-      await this.jobscheduleService.scheduleOrderDelivery({
+      await this.jobScheduleService.scheduleJob({
+        jobName: "schedule-order-delivery",
         scheduledTime: order.scheduledDeliveryTime,
-        coordinates: order.vendor.location.coordinates,
-        distanceInKM: distanceInKM,
-        orderId: order._id,
+        jobData: {
+          coordinates: order.vendor.location.coordinates,
+          distanceInKM: distanceInKM,
+          orderId: order._id,
+        },
       });
     } else {
       console.log("Instant order");
@@ -50,4 +53,4 @@ class DeliveryService {
   };
 }
 
-export const deliveryService = new DeliveryService()
+export const deliveryService = new DeliveryService();
