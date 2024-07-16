@@ -86,8 +86,8 @@ walletSchema.statics.creditWallet = async function (data: {
     throw new HandleException(STATUS_CODES.NOT_FOUND, "wallet not found");
   }
 
-  wallet.balance = Big(wallet.balance).plus(amount);
-  wallet.totalEarnings = Big(wallet.totalEarnings).plus(amount);
+  wallet.balance = Big(wallet.balance).plus(amount).toFixed(2);
+  wallet.totalEarnings = Big(wallet.totalEarnings).plus(amount).toFixed(2);
   wallet.transactionCount++;
   await wallet.save();
   return wallet;
@@ -113,7 +113,7 @@ walletSchema.statics.debitWallet = async function (data: {
       "Insufficient balance"
     );
   }
-  wallet.balance = Big(wallet.balance).minus(amount);
+  wallet.balance = Big(wallet.balance).minus(amount).toFixed(2);
   wallet.transactionCount++;
   await wallet.save();
   return wallet;
