@@ -5,7 +5,6 @@ import { Agenda } from "agenda";
 import { DB_URL } from "../config/secrets.config";
 import { ridersService } from "../features/riders";
 
-
 /**
 Service for scheduling tasks and jobs.
 @class
@@ -14,8 +13,7 @@ export class SchedulerService {
   private static instance: SchedulerService;
   private agenda: Agenda | undefined;
 
-  public constructor() {
-  }
+  public constructor() {}
 
   public static getInstance(): SchedulerService {
     if (!SchedulerService.instance) {
@@ -30,14 +28,14 @@ export class SchedulerService {
       this.agenda = new Agenda({
         db: {
           address: `${DB_URL}`,
-          collection: 'agenda',
+          collection: "agenda",
         },
-        processEvery: '30 seconds',
+        processEvery: "30 seconds",
       });
 
       this.agenda
-        .on('ready', () => console.log('Agenda started!'))
-        .on('error', () => console.log('Agenda connection error!'));
+        .on("ready", () => console.log("Agenda started!"))
+        .on("error", () => console.log("Agenda connection error!"));
 
       this.defineJobs();
       this.agenda.start();
@@ -59,7 +57,7 @@ export class SchedulerService {
       });
     });
 
-    this.agenda?.define("start-working", async (job: any) => {
+    this.agenda?.define("start-work-schedule", async (job: any) => {
       const { riderId, slotId } = job.attrs.data;
       console.log("Running availability to true", job.attrs.data);
       await ridersService.updateAvailability({
@@ -68,7 +66,7 @@ export class SchedulerService {
       });
     });
 
-    this.agenda?.define("end-working", async (job: any) => {
+    this.agenda?.define("end-work-schedule", async (job: any) => {
       const { riderId, slotId } = job.attrs.data;
       console.log("Running availability to false", job.attrs.data);
       await ridersService.updateAvailability({
@@ -78,34 +76,19 @@ export class SchedulerService {
     });
   }
 
-  public async scheduleOrderDelivery(params: {
-    scheduledTime: Date;
-    coordinates: [number, number];
-    distanceInKM: number;
-    orderId: string;
+  /**
+   * Schedules a job with the given name, time, and data.
+   * @param {string} jobName - The name of the job to schedule.
+   * @param {Date} scheduledTime - The time to schedule the job.
+   * @param {object} jobData - The data to pass to the job.
+   */
+  async scheduleJob(params: {
+    jobName: string;
+    scheduledTime: Date | string;
+    jobData: object;
   }) {
-    const { scheduledTime, coordinates, distanceInKM, orderId } = params;
-    await this.agenda?.schedule(scheduledTime, "schedule-order-delivery", {
-      coordinates,
-      distanceInKM,
-      orderId,
-    });
-  }
-
-  async riderStartWorking(params: { startTime: string, riderId: string, slotId: string }) {
-    const { startTime, riderId, slotId } = params;
-    await this.agenda?.schedule(startTime, "start-working", {
-      riderId,
-      slotId,
-    });
-  }
-
-  async riderEndWorking(params: { endTime: string, riderId: string, slotId: string }) {
-    const { endTime, riderId, slotId } = params;
-    await this.agenda?.schedule(endTime, "end-working", {
-      riderId,
-      slotId,
-    });
+    const { jobName, scheduledTime, jobData } = params;
+    await this.agenda?.schedule(scheduledTime, jobName, jobData);
   }
 
   async cancelRiderSlot(slotId: string) {
