@@ -28,8 +28,8 @@ export class ValidateCustomer {
 
   login = async (payload: Partial<ICustomerDocument>) => {
     const loginSchema = joi.object({
-      phoneNumber: joi.string().required(),
-      password: joi.string().required(),
+      phoneNumber: joi.string().label("Phone number").required(),
+      password: joi.string().label("Password").required(),
     });
 
     const { error } = loginSchema.validate(payload, {
