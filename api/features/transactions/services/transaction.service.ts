@@ -124,6 +124,12 @@ class TransactionService {
     );
   }
 
+  /**
+Handles a failed cashout transaction.  This method reverses the failed cashout transaction by 
+calling the cashoutTransferService.reverseDebit method
+
+@param {object} event - The event object containing the transaction data.
+*/
   async handleFailedCashoutTransaction(event: any) {
     let { amount } = event.data;
     const { reference, status, transfer_code: transferCode } = event.data;
@@ -139,7 +145,7 @@ class TransactionService {
         status,
       });
 
-      const socketServer = SocketServer.getInstance()
+      const socketServer = SocketServer.getInstance();
       socketServer.emitEvent("wallet-balance", {
         _id: wallet._id,
         balance: wallet.balance,
