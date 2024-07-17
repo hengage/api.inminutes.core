@@ -13,11 +13,12 @@ class PasswordController {
     }
 
     try {
-      await passwordService.resetPassword(
-        req.body.phoneNumber,
-        req.body.newPassword,
-        accountType.toLowerCase()
-      );
+      await passwordService.resetPassword({
+        phoneNumber: req.body.phoneNumber,
+        newPassword: req.body.newPassword,
+        token: req.body.token,
+        accountType: accountType.toLowerCase(),
+      });
       res
         .status(STATUS_CODES.OK)
         .json({ message: "Password reset successful" });
@@ -46,7 +47,7 @@ class PasswordController {
         message: "Password changed",
       });
     } catch (error: any) {
-     handleErrorResponse(res, error, "Password change failed");
+      handleErrorResponse(res, error, "Password change failed");
     }
   }
 }

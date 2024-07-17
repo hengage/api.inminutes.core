@@ -5,6 +5,8 @@ import {
   TWILIO_VERIFY_SID,
 } from "../../../config";
 import { HandleException, STATUS_CODES } from "../../../utils";
+import { redisClient } from "../../../services";
+const { v4: uuidv4 } = require("uuid");
 
 class VerifyService {
   private twilioClient: Twilio;
@@ -43,6 +45,13 @@ class VerifyService {
 
       console.log(verificationCheck);
       if (verificationCheck.status === "approved") {
+        // Save a uuid token for reset password endpoint
+        const uuid = uuidv4();
+        const cacheKey = `password-reset:${recipientPhoneNumber}`;
+        redisClient.setWithExpiry(cacheKey, uuid, 1800).catch((error) => {
+          console.error("Error setting password reset key:", error);
+        });
+
         return true;
       } else {
         throw new HandleException(STATUS_CODES.BAD_REQUEST, "Invalid otp");
