@@ -28,7 +28,10 @@ const errandSchema = new Schema<IErrandDocument>(
       coordinates: { type: [Number, Number], required: true },
     },
     dropoffAddress: { type: String, required: true },
-    dropoffCoordinates: { type: [Number, Number], required: true },
+    dropoffCoordinates: {
+      type: { type: String, default: "Point" },
+      coordinates: { type: [Number, Number], required: true },
+    },
     dispatchFee: { type: String, required: true },
     status: {
       type: String,
