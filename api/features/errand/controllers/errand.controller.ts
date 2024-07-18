@@ -26,4 +26,17 @@ export class ErrandController {
       handleErrorResponse(res, error);
     }
   };
+
+  getErrand = async (req: Request, res: Response) => {
+    try {
+      const errand = await this.errandService.getErrand(req.params.errandId);
+      console.log({errand})
+      res.status(STATUS_CODES.OK).json({
+        message: "success",
+        data: { errand },
+      });
+    } catch (error: any) {
+      handleErrorResponse(res, error);
+    }
+  };
 }

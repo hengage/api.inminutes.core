@@ -16,5 +16,6 @@ export class ErrandRoutes {
   initializeRoutes() {
     this.router.use(verifyAuthTokenMiddleware);
     this.router.route("/").post(this.errandController.create);
+    this.router.route("/:errandId").get(this.errandController.getErrand);
   }
 }
