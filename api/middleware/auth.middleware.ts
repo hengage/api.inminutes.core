@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 
 import { STATUS_CODES } from "../utils";
 import { JWT_SECRET_KEY } from "../config";
+import { JWT_ALGORITHMS } from "../config/secrets.config";
 
 /**
   Verifies the authentication token for a request.
@@ -26,7 +27,9 @@ const verifyAuthTokenMiddleware = async (
   }
 
   try {
-    const decoded = jwt.verify(token, `${JWT_SECRET_KEY}`);
+    const decoded = jwt.verify(token, `${JWT_SECRET_KEY}`, {
+      algorithms: [JWT_ALGORITHMS.HS256],
+    });
     (req as any).user = decoded;
     next();
   } catch (error: any) {
@@ -46,10 +49,10 @@ const socketGuard = (event: any, next: (err?: Error | undefined) => void) => {
     socket.handshake.auth.token;
 
   if (!token) {
-    console.error('Authentication error: Token not provided')
+    console.error("Authentication error: Token not provided");
     return next(new Error("Authentication error: Token not provided"));
   }
-  console.log({tokenFromSocket: token})
+  console.log({ tokenFromSocket: token });
 
   try {
     const decoded = jwt.verify(token, `${JWT_SECRET_KEY}`);
