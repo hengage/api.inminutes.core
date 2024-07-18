@@ -7,6 +7,10 @@ export interface IErrandDocument extends Document {
   _id: string;
   packageType: [IErrandPackageTypeDocument];
   customer: ICustomerDocument["_id"];
+  receiver: {
+    name: string;
+    phoneNumber: string;
+  };
   rider: IRiderDocument["_id"];
   description?: string;
   pickupAddress: string;
@@ -38,6 +42,10 @@ export interface IErrandPackageTypeDocument extends Document {
 export interface ICreateErrandData {
   packageType: [IErrandPackageTypeDocument];
   customer: ICustomerDocument["_id"];
+  receiver: {
+    name: string;
+    phoneNumber: string;
+  };
   description?: string;
   pickupAddress: string;
   pickupCoordinates: {

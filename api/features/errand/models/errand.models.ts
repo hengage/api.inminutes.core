@@ -21,6 +21,10 @@ const errandSchema = new Schema<IErrandDocument>(
     ],
     description: { type: String, maxlength: 50 },
     customer: { type: String, ref: "Customer" },
+    receiver: {
+      name: { type: String, required: true, maxlength: 50 },
+      phoneNumber: { type: String, required: true, maxlength: 50 },
+    },
     rider: { type: String, ref: "Rider" },
     pickupAddress: { type: String, required: true },
     pickupCoordinates: {
