@@ -6,9 +6,13 @@ import { ErrandStatus } from "../../utils/constants.utils";
 export interface IErrandDocument extends Document {
   _id: string;
   packageType: [IErrandPackageTypeDocument];
-  customer: ICustomerDocument;
+  customer: ICustomerDocument["_id"];
+  receiver: {
+    name: string;
+    phoneNumber: string;
+  };
   rider: IRiderDocument["_id"];
-  description: string;
+  description?: string;
   pickupAddress: string;
   pickupCoordinates: {
     type: string;
@@ -33,4 +37,27 @@ export interface IErrandPackageTypeDocument extends Document {
   image: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ICreateErrandData {
+  packageType: [IErrandPackageTypeDocument];
+  customer: ICustomerDocument["_id"];
+  receiver: {
+    name: string;
+    phoneNumber: string;
+  };
+  description?: string;
+  pickupAddress: string;
+  pickupCoordinates: {
+    type: string;
+    coordinates: [number, number];
+  };
+  dropoffAddress: string;
+  dropoffCoordinates: {
+    type: string;
+    coordinates: [number, number];
+  };
+  dispatchFee: string;
+  type: "instant" | "scheduled";
+  scheduledPickUpTime?: Date;
 }

@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import { DateTime } from "luxon";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET_KEY } from "../config";
+import { JWT_ALGORITHMS } from "../config/secrets.config";
 
 function generateUniqueString(length: number) {
   const randomBytes = crypto.randomBytes(Math.ceil(length / 2));
@@ -30,7 +31,10 @@ async function compareValues(plainValue: string, hashValue: string) {
 }
 
 function generateJWTToken(payload: any, expiresIn: string): string {
-  return jwt.sign(payload, `${JWT_SECRET_KEY}`, { expiresIn });
+  return jwt.sign(payload, `${JWT_SECRET_KEY}`, {
+    algorithm: JWT_ALGORITHMS.HS256,
+    expiresIn,
+  });
 }
 
 function generateReference() {
