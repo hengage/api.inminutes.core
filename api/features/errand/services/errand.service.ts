@@ -1,4 +1,4 @@
-import { HandleException, STATUS_CODES } from "../../../utils";
+import { deliveryService, HandleException, STATUS_CODES } from "../../../utils";
 import { ICreateErrandData } from "../errand.interface";
 import { ErrandRepository } from "../repository/errand.repo";
 
@@ -9,7 +9,12 @@ export class ErrandService {
   }
 
   create = async (createErranddata: ICreateErrandData) => {
-    return await this.errandRepo.create(createErranddata);
+    const errand = await this.errandRepo.create(createErranddata);
+
+    await deliveryService.handleInstantOrScheduledErrand(errand)
+    console.log({errand})
+
+    return errand;
   };
 
   getErrand = async (errandId: string) => {
@@ -18,6 +23,6 @@ export class ErrandService {
       throw new HandleException(STATUS_CODES.NOT_FOUND, "Errand not found");
     }
 
-    return errand
+    return errand;
   };
 }

@@ -113,7 +113,7 @@ class OrdersService {
       status: ORDER_STATUS.READY,
     });
 
-    await deliveryService.handleInstantOrScheduledDelivery({
+    await deliveryService.handleInstantOrScheduledItemsOrder({
       order,
       distanceInKM,
     });

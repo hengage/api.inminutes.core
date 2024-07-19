@@ -47,13 +47,14 @@ export class SchedulerService {
   @private
   */
   private defineJobs() {
-    this.agenda?.define("schedule-order-delivery", async (job: any) => {
+    this.agenda?.define("schedule-dispatch-pickup", async (job: any) => {
       console.log("Running schedule");
-      const { coordinates, distanceInKM, orderId } = job.attrs.data;
-      await ridersService.findAndNotifyRidersOfOrder({
+      const { coordinates, distanceInKM, dispatchType, dispatchId } = job.attrs.data;
+      await ridersService.notifyRidersForDispatchJob({
         coordinates,
         distanceInKM,
-        orderId,
+        dispatchType,
+        dispatchId,
       });
     });
 

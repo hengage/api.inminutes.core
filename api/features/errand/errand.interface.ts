@@ -26,7 +26,7 @@ export interface IErrandDocument extends Document {
   dispatchFee: string;
   status: ErrandStatus;
   type: "instant" | "scheduled";
-  scheduledPickUpTime?: Date;
+  scheduledPickUpTime: Date;
   createdAt: Date;
   updatedAt: Date;
 }
