@@ -57,10 +57,10 @@ class DeliveryService {
 
   handleInstantOrScheduledErrand = async (errand: IErrandDocument) => {
     if (errand.type === "scheduled") {
-      console.log("Scheduled errand", { errand });
+      console.log("Scheduled errand");
       await this.jobScheduleService.scheduleJob({
         jobName: "schedule-dispatch-pickup",
-        scheduledTime: errand.scheduledPickUpTime,
+        scheduledTime: errand.scheduledPickupTime,
         jobData: {
           coordinates: errand.pickupCoordinates.coordinates,
           distanceInKM: 20,

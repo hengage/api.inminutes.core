@@ -13,8 +13,6 @@ export class ErrandService {
     const errand = await this.errandRepo.create(createErrandData);
 
     await deliveryService.handleInstantOrScheduledErrand(errand)
-    console.log({errand})
-
     return errand;
   };
 

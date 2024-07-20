@@ -35,7 +35,7 @@ export class ValidateErrand {
         .valid("instant", "scheduled")
         .label("Errand type")
         .required(),
-      scheduledPickUpTime: Joi.date()
+      scheduledPickupTime: Joi.date()
         .label("Scheduled pickup time")
         .optional()
         .when("type", {
