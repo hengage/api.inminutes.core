@@ -5,11 +5,12 @@ import { ErrandRepository } from "../repository/errand.repo";
 export class ErrandService {
   private errandRepo: ErrandRepository;
   constructor() {
-    this.errandRepo = new ErrandRepository();
+    this.errandRepo  = new ErrandRepository();
   }
 
-  create = async (createErranddata: ICreateErrandData) => {
-    const errand = await this.errandRepo.create(createErranddata);
+
+  create = async (createErrandData: ICreateErrandData) => {
+    const errand = await this.errandRepo.create(createErrandData);
 
     await deliveryService.handleInstantOrScheduledErrand(errand)
     console.log({errand})
