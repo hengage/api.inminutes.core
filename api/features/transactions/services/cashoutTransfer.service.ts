@@ -4,7 +4,7 @@ import { PAYSTACK_SECRET_KEY } from "../../../config";
 import { HandleException, generateReference } from "../../../utils";
 import {
   ICreateTransferRecipient,
-  InitializeTransferData,
+  InitializeCashoutTransferData,
 } from "../transactions.interface";
 import { walletRepo, walletService } from "../../wallet";
 import { transactionService } from "./transaction.service";
@@ -95,7 +95,7 @@ class CashoutTransferService {
   Initializes a cashout transfer.
   @param {object} transferData - The transfer data.
   */
-  async initialize(transferData: InitializeTransferData) {
+  async initialize(transferData: InitializeCashoutTransferData) {
     const {
       amount,
       recipientCode,

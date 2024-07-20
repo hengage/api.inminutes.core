@@ -5,6 +5,7 @@ import {
   handleErrorResponse,
 } from "../../../utils";
 import { cashoutTransferService } from "../services/cashoutTransfer.service";
+import { validateTransactions } from "../validation/transactions.validate";
 
 class CashoutTransferController {
   async addCashoutAccount(req: Request, res: Response) {
@@ -21,6 +22,7 @@ class CashoutTransferController {
 
   async initialize(req: Request, res: Response) {
     try {
+      await validateTransactions.cashoutTransfer(req.body)
       await cashoutTransferService.initialize(req.body);
       res
         .status(STATUS_CODES.OK)

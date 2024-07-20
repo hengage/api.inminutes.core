@@ -55,7 +55,7 @@ export interface ICreateTransactionHistoryData {
   reason: string;
 }
 
-export interface InitializeTransferData {
+export interface InitializeCashoutTransferData {
   amount: string;
   walletId: string;
   recipientCode: string;
