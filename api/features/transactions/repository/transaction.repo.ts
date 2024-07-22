@@ -93,4 +93,20 @@ export class TransactionRepository {
 
     return await this.TransactionHistoryModel.paginate(query, options);
   }
+
+  async getDetails(transactionId: string) {
+    return this.TransactionHistoryModel.findById(transactionId)
+      .select({
+        amount: 1,
+        status: 1,
+        reason: 1,
+        reference: 1,
+        transactionFee: 1,
+        bankName: 1,
+        accountName: 1,
+        accountNumber: 1,
+      })
+      .lean()
+      .exec();
+  }
 }

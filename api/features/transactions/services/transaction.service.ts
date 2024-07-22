@@ -169,6 +169,10 @@ calling the cashoutTransferService.reverseDebit method
       endDate,
     });
   }
+
+  async getDetails(transactionId: string) {
+    return await this.transactionRepo.getDetails(transactionId);
+  }
 }
 
 export const transactionService = new TransactionService();

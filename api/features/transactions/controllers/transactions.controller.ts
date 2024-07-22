@@ -33,12 +33,26 @@ class TransactionController {
       const transactionHistory = await transactionService.getHistory({
         walletId: req.params.walletId,
         page: parseInt(req.query.page as string) || 1,
-        startDate: (req.query.start as string),
-        endDate: (req.query.end as string)
-      })
+        startDate: req.query.start as string,
+        endDate: req.query.end as string,
+      });
       res.status(STATUS_CODES.OK).json({
-        message: 'success',
-        data: transactionHistory
+        message: "success",
+        data: transactionHistory,
+      });
+    } catch (error: any) {
+      handleErrorResponse(res, error);
+    }
+  }
+
+  async getDetails(req: Request, res: Response) {
+    try {
+      const transactionDetails = await transactionService.getDetails(
+        req.params.transactionId
+      );
+      res.status(STATUS_CODES.OK).json({
+        message: "success",
+        data: { transactionDetails },
       });
     } catch (error: any) {
       handleErrorResponse(res, error);
