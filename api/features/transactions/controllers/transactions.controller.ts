@@ -27,6 +27,23 @@ class TransactionController {
       res.sendStatus(error.status);
     }
   }
+
+  async getHistory(req: Request, res: Response) {
+    try {
+      const transactionHistory = await transactionService.getHistory({
+        walletId: req.params.walletId,
+        page: parseInt(req.query.page as string) || 1,
+        startDate: (req.query.start as string),
+        endDate: (req.query.end as string)
+      })
+      res.status(STATUS_CODES.OK).json({
+        message: 'success',
+        data: transactionHistory
+      });
+    } catch (error: any) {
+      handleErrorResponse(res, error);
+    }
+  }
 }
 
 export const transactionController = new TransactionController();

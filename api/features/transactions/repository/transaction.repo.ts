@@ -61,11 +61,28 @@ export class TransactionRepository {
       );
     }
 
-    return transaction
+    return transaction;
   }
 
-  async getHistory(walletId: string){
-    return await TransactionHistory.find({wallet: walletId})
-    .select('createdAt amount status')
+  async getHistory(params: {
+    walletId: string;
+    page: number;
+    startDate?: Date | string;
+    endDate?: Date | string;
+  }) {
+    const { walletId, page, startDate, endDate } = params;
+    const query: { wallet: string; createdAt?: {} } = {
+      wallet: walletId,
+    };
+
+    if (startDate && endDate) {
+      query.createdAt = { $gte: new Date(startDate), $lte: new Date(endDate) };
+    }
+    return await TransactionHistory.find(query)
+      .limit(10)
+      .select("createdAt amount status reason")
+      .sort({ createdAt: -1 })
+      .lean()
+      .exec();
   }
 }

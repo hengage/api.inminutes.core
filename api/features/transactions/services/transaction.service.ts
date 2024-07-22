@@ -154,6 +154,21 @@ calling the cashoutTransferService.reverseDebit method
       console.error({ error });
     }
   }
+
+  async getHistory(params: {
+    walletId: string;
+    page: number;
+    startDate?: Date | string;
+    endDate?: Date | string;
+  }) {
+    const { walletId, page, startDate, endDate } = params;
+    return await this.transactionRepo.getHistory({
+      walletId,
+      page,
+      startDate,
+      endDate,
+    });
+  }
 }
 
 export const transactionService = new TransactionService();

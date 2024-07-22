@@ -16,6 +16,7 @@ class TransactionRoutes {
     this.router.use(verifyAuthTokenMiddleware);
 
     this.router.route("/initialize").post(transactionController.initialize);
+    this.router.route("/:walletId/history").get(transactionController.getHistory);
 
     this.router
       .route("/add-cashout-account")
