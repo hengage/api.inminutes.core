@@ -66,7 +66,7 @@ export class TransactionRepository {
 
   async getHistory(params: {
     walletId: string;
-    page: number;
+    page?: number;
     startDate?: Date | string;
     endDate?: Date | string;
   }) {
@@ -76,13 +76,21 @@ export class TransactionRepository {
     };
 
     if (startDate && endDate) {
-      query.createdAt = { $gte: new Date(startDate), $lte: new Date(endDate) };
+      query.createdAt = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate),
+      };
     }
-    return await TransactionHistory.find(query)
-      .limit(10)
-      .select("createdAt amount status reason")
-      .sort({ createdAt: -1 })
-      .lean()
-      .exec();
+
+    const options = {
+      page,
+      limit: 10,
+      select: "createdAt amount status reason",
+      lean: true,
+      sort: { createdAt: -1 },
+      leanWithId: false,
+    };
+
+    return await this.TransactionHistoryModel.paginate(query, options);
   }
 }
