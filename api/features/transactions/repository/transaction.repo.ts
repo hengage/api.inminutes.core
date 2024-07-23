@@ -1,3 +1,4 @@
+import { ClientSession } from "mongoose";
 import { HandleException, STATUS_CODES } from "../../../utils";
 import { TransactionHistory } from "../models/transaction.model";
 import {
@@ -18,12 +19,13 @@ export class TransactionRepository {
   @param {object} createTransactionHistoryData - The data to create the transaction history entry.
   */
   async createHistory(
-    createTransactionHistoryData: ICreateTransactionHistoryData
+    createTransactionHistoryData: ICreateTransactionHistoryData,
+    session: ClientSession
   ): Promise<ITransactionHistoryDocument> {
     const transactionHistory = new this.TransactionHistoryModel(
       createTransactionHistoryData
     );
-    await transactionHistory.save();
+    await transactionHistory.save({session});
     return transactionHistory.toObject();
   }
 
