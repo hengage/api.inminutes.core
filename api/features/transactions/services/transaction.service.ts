@@ -16,6 +16,7 @@ import {
 import { TransactionRepository } from "../repository/transaction.repo";
 import { cashoutTransferService } from "./cashoutTransfer.service";
 import { SocketServer } from "../../../services/socket/socket.services";
+import { ClientSession } from "mongoose";
 
 /**
 Service for managing transactions and interacting with Paystack API.
@@ -113,8 +114,14 @@ class TransactionService {
   Creates a new transaction history entry.
   @param {object} transactionHistoryData - The data to create the transaction history entry.
   */
-  async createHistory(transactionHistoryData: ICreateTransactionHistoryData) {
-    return await this.transactionRepo.createHistory(transactionHistoryData);
+  async createHistory(
+    transactionHistoryData: ICreateTransactionHistoryData,
+    session: ClientSession
+  ) {
+    return await this.transactionRepo.createHistory(
+      transactionHistoryData,
+      session
+    );
   }
 
   async getTransactionByReference(reference: string, selectFields: string) {
@@ -147,8 +154,8 @@ calling the cashoutTransferService.reverseDebit method
 
       const socketServer = SocketServer.getInstance();
       socketServer.emitEvent("wallet-balance", {
-        _id: wallet._id,
-        balance: wallet.balance,
+        _id: wallet?._id,
+        balance: wallet?.balance,
       });
     } catch (error) {
       console.error({ error });

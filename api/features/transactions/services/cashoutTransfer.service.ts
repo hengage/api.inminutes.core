@@ -1,4 +1,5 @@
 import axios from "axios";
+import { startSession } from "mongoose";
 
 import { PAYSTACK_SECRET_KEY } from "../../../config";
 import { HandleException, generateReference } from "../../../utils";
@@ -115,8 +116,11 @@ class CashoutTransferService {
       recipient: recipientCode,
     };
 
+    const session = await startSession();
+    session.startTransaction();
+
     try {
-      await walletService.debitWallet({ amount, walletId });
+      await walletService.debitWallet({ amount, walletId }, session);
 
       const response = await axios.post(
         "https://api.paystack.co/transfer",
@@ -125,31 +129,36 @@ class CashoutTransferService {
       );
       const { status, transfer_code: transferCode } = response.data.data;
 
-      transactionService
-        .createHistory({
-          amount,
-          reason,
-          reference,
-          wallet: walletId,
-          type: "debit",
-          recipientCode,
-          bankName,
-          accountName,
-          accountNumber,
-          transferCode,
-          status,
-        })
-        .catch((error) => {
-          console.log({ error: error });
-        });
+      await transactionService
+        .createHistory(
+          {
+            amount,
+            reason,
+            reference,
+            wallet: walletId,
+            type: "debit",
+            recipientCode,
+            bankName,
+            accountName,
+            accountNumber,
+            transferCode,
+            status,
+          },
+          session
+        )
+
+      await session.commitTransaction();
 
       console.log({ responseData: response.data.data });
     } catch (error: any) {
       console.error({ error: error.response });
+      await session.abortTransaction();
       throw new HandleException(
         error.status || error.response.status,
         error.message || error.response.data
       );
+    } finally {
+      session.endSession();
     }
   }
 
@@ -168,37 +177,55 @@ class CashoutTransferService {
   }) {
     const { amount, trxReference, recipientCode, transferCode, status } = data;
 
-    const transaction = await transactionService.getTransactionByReference(
-      trxReference,
-      "wallet"
-    );
-    const walletId = transaction.wallet;
-    const wallet = await walletService.creditWallet({ amount, walletId });
+    const session = await startSession();
+    session.startTransaction();
 
-    this.notificationService.createNotification({
-      headings: { en: "Funds reversed!" },
-      contents: {
-        en:
-          `Hi, ${amount} has been refunded to your wallet. ` +
-          `You can try to cashout again, or wait for some minutes`,
-      },
-      userId: wallet?.merchantId,
-    });
+    try {
+      const transaction = await transactionService.getTransactionByReference(
+        trxReference,
+        "wallet"
+      );
+      const walletId = transaction.wallet;
+      const wallet = await walletService.creditWallet(
+        { amount, walletId },
+        session
+      );
 
-    transactionService.createHistory({
-      amount,
-      reason: "fund reversal",
-      reference: trxReference,
-      wallet: walletId,
-      type: "credit",
-      recipientCode,
-      transferCode,
-      status,
-    });
+      await transactionService.createHistory(
+        {
+          amount,
+          reason: "fund reversal",
+          reference: trxReference,
+          wallet: walletId,
+          type: "credit",
+          recipientCode,
+          transferCode,
+          status,
+        },
+        session
+      );
 
-    console.log(`Reversed ${amount} for wallet: ${walletId}`);
+      await session.commitTransaction();
 
-    return wallet;
+      this.notificationService.createNotification({
+        headings: { en: "Funds reversed!" },
+        contents: {
+          en:
+            `Hi, ${amount} has been refunded to your wallet. ` +
+            `You can try to cashout again, or wait for some minutes`,
+        },
+        userId: wallet?.merchantId,
+      });
+
+      console.log(`Reversed ${amount} for wallet: ${walletId}`);
+
+      return wallet;
+    } catch (error: any) {
+      await session.abortTransaction();
+      console.error("Error reversing debit transaction", error);
+    } finally {
+      await session.endSession();
+    }
   }
 }
 
