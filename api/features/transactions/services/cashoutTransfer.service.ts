@@ -194,7 +194,7 @@ class CashoutTransferService {
       await transactionService.createHistory(
         {
           amount,
-          reason: "fund reversal",
+          reason: "reversal",
           reference: trxReference,
           wallet: walletId,
           type: "credit",
