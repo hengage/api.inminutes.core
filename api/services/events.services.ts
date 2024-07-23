@@ -72,10 +72,14 @@ class EventEmit {
         await session.commitTransaction();
 
         const socketServer = SocketServer.getInstance();
-        socketServer.emitEvent("wallet-balance", {
-          _id: updatedWallet._id,
-          balance: updatedWallet.balance,
-        });
+        socketServer.emitEvent(
+          "wallet-balance",
+          {
+            _id: updatedWallet._id,
+            balance: updatedWallet.balance,
+          },
+          merchantId
+        );
         await this.notificationService.createNotification({
           headings: { en: "Your Earnings Are In!" },
           contents: {
@@ -115,10 +119,14 @@ class EventEmit {
         await session.commitTransaction();
 
         const socketServer = SocketServer.getInstance();
-        socketServer.emitEvent("wallet-balance", {
-          _id: updatedWallet._id,
-          balance: updatedWallet.balance,
-        });
+        socketServer.emitEvent(
+          "wallet-balance",
+          {
+            _id: updatedWallet._id,
+            balance: updatedWallet.balance,
+          },
+          merchantId
+        );
         await this.notificationService.createNotification({
           headings: { en: "Your Earnings Are In!" },
           contents: {

@@ -153,10 +153,14 @@ calling the cashoutTransferService.reverseDebit method
       });
 
       const socketServer = SocketServer.getInstance();
-      socketServer.emitEvent("wallet-balance", {
-        _id: wallet?._id,
-        balance: wallet?.balance,
-      });
+      socketServer.emitEvent(
+        "wallet-balance",
+        {
+          _id: wallet?._id,
+          balance: wallet?.balance,
+        },
+        wallet?.merchantId
+      );
     } catch (error) {
       console.error({ error });
     }
