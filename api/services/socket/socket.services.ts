@@ -40,15 +40,26 @@ export class SocketServer {
         socket.handshake.auth.userid || socket.handshake.headers.userid;
 
       console.log({ userIdFromSocketConnection: userId });
+      // Store user ID and socket in the Map
       this.sockets.set(userId, socket);
+      console.log({ "socket map on connection": this.sockets });
 
       socket.on("disconnect", async (reason, details) => {
         console.log(`User disconnected. Reason: ${reason}`);
+
+         // Remove user ID and socket from the Map when disconnected.
         this.sockets.delete(userId);
+        console.log({ "socket map on disconnection": this.sockets });
       });
     });
   }
 
+  /**
+   * Emits an event to a specific user or all users.
+   * @param {string} eventName - The name of the event to emit.
+   * @param {any} data - The data to send with the event.
+   * @param {string} [userId] - The user ID to emit the event to.
+   */
   public emitEvent = (eventName: string, data: any, userId?: string) => {
     if (userId) {
       console.log({ "user id from emitting event": userId });
@@ -64,6 +75,9 @@ export class SocketServer {
       } else {
         console.log(`Socket not found`);
       }
+    } else {
+      this.io.emit(eventName, data);
+      console.log(`Broadcasted event '${eventName}' to all sockets`);
     }
   };
 
