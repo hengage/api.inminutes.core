@@ -4,8 +4,6 @@ import Big from "big.js";
 import { NotificationService } from "../../notifications";
 import { HandleException, STATUS_CODES } from "../../../utils";
 import { walletRepo } from "../repository/wallet.repository";
-import { TransactionHistory } from "../../transactions/models/transaction.model";
-import { transactionService } from "../../transactions/services/transaction.service";
 
 /**
 Provides methods for managing wallet operations.

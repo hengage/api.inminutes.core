@@ -8,7 +8,7 @@ import {
   InitializeCashoutTransferData,
 } from "../transactions.interface";
 import { walletRepo, walletService } from "../../wallet";
-import { transactionService } from "./transaction.service";
+import { paymentTransactionService } from "./paymentTransaction.service";
 import { NotificationService } from "../../notifications";
 
 /**
@@ -129,7 +129,7 @@ class CashoutTransferService {
       );
       const { status, transfer_code: transferCode } = response.data.data;
 
-      await transactionService
+      await paymentTransactionService
         .createHistory(
           {
             amount,
@@ -181,7 +181,7 @@ class CashoutTransferService {
     session.startTransaction();
 
     try {
-      const transaction = await transactionService.getTransactionByReference(
+      const transaction = await paymentTransactionService.getTransactionByReference(
         trxReference,
         "wallet"
       );
@@ -191,7 +191,7 @@ class CashoutTransferService {
         session
       );
 
-      await transactionService.createHistory(
+      await paymentTransactionService.createHistory(
         {
           amount,
           reason: "reversal",
