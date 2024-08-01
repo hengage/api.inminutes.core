@@ -4,6 +4,7 @@ import { TransactionHistory } from "../models/transaction.model";
 import {
   ITransactionHistoryDocument,
   ICreateTransactionHistoryData,
+  IUpdateTransactionHistoryData,
 } from "../transactions.interface";
 
 /**
@@ -20,12 +21,12 @@ export class TransactionRepository {
   */
   async createHistory(
     createTransactionHistoryData: ICreateTransactionHistoryData,
-    session: ClientSession
+    session?: ClientSession
   ): Promise<ITransactionHistoryDocument> {
     const transactionHistory = new this.TransactionHistoryModel(
       createTransactionHistoryData
     );
-    await transactionHistory.save({session});
+    await transactionHistory.save({ session });
     return transactionHistory.toObject();
   }
 
@@ -36,17 +37,16 @@ export class TransactionRepository {
   @param {string} updateTransactionData.reference - The reference number of the transaction.
   @param {string} updateTransactionData.status - The new status of the transaction.
   */
-  async updateStatus(updateTransactionData: {
-    reference: string;
-    status: string;
-  }): Promise<void> {
-    const { reference, status } = updateTransactionData;
+  async updateStatus(
+    updateTransactionData: IUpdateTransactionHistoryData
+  ): Promise<void> {
+    const { reference, ...updateFields } = updateTransactionData;
     await this.TransactionHistoryModel.findOneAndUpdate(
       { reference },
-      { $set: { status } }
-    ).select("reference status");
+      { $set: updateFields }
+    );
     console.log(
-      `Updated transaction with reference:  ${reference}. Status: ${status}`
+      `Updated transaction with reference:  ${reference}`
     );
   }
 
