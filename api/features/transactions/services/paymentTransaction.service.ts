@@ -22,7 +22,7 @@ import { ClientSession } from "mongoose";
 Service for managing transactions and interacting with Paystack API.
 @class
 */
-class TransactionService {
+class PaymentTransactionService {
   private paystackAPIKey: string;
   private headers: Record<string, string>;
   private transactionRepo: TransactionRepository;
@@ -186,4 +186,4 @@ calling the cashoutTransferService.reverseDebit method
   }
 }
 
-export const transactionService = new TransactionService();
+export const paymentTransactionService = new PaymentTransactionService();
