@@ -13,17 +13,20 @@ class ValidateTransactions {
       metadata: Joi.object()
         .keys({
           customerId: Joi.string().required(),
-          purpose: Joi.string()
+          reason: Joi.string()
             .required()
             .valid(
               PAYMENT_PURPOSE.PRODUCT_PURCHASE,
               PAYMENT_PURPOSE.PACKAGE_DELIVERY
             ),
           orderId: Joi.string().required(),
-          vendorId: Joi.string().when("purpose", {
+          vendorId: Joi.string().when("reason", {
             is: PAYMENT_PURPOSE.PRODUCT_PURCHASE,
             then: Joi.string().required(),
-            otherwise: Joi.forbidden(),
+            otherwise: Joi.forbidden().messages({
+              "any.unknown":
+              "vendorId is forbidden when reason for payment is not for product purchase",
+            }),
           }),
         })
         .required(),

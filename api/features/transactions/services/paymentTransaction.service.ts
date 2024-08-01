@@ -1,9 +1,5 @@
 import axios from "axios";
-import {
-  HandleException,
-  STATUS_CODES,
-  generateReference,
-} from "../../../utils";
+import { HandleException, generateReference } from "../../../utils";
 // import *as crypto from "crypto";
 import { createHmac } from "crypto";
 import { Request } from "express";
@@ -60,6 +56,22 @@ class PaymentTransactionService {
         }
       );
 
+      console.log({ reponseData: response.data });
+
+      const createdHistory = this.createHistory({
+        amount: initializeTransactionData.amount,
+        reason: initializeTransactionData.metadata.reason,
+        customer: initializeTransactionData.metadata.customerId,
+        reference: response.data.data.reference,
+        status: "pending",
+      })
+        .then((createdHistory) => console.log(createdHistory))
+        .catch((error: any) => {
+          console.error("Error creating transaction history: ", error);
+        });
+
+      console.log({});
+
       return response.data.data;
     } catch (error: any) {
       console.error({ error: error.response.data });
@@ -81,10 +93,12 @@ class PaymentTransactionService {
     // if (digest === req.headers["x-paystack-signature"]) {
     console.log(req.body);
     const event = req.body;
+    const { reference, status, paid_at: paidAt } = event.data;
 
     switch (event.event) {
       case "charge.success":
         console.log({ metadata: event.data.metadata });
+        this.transactionRepo.updateStatus({ reference, status, paidAt });
         const { purpose, orderId, vendorId } = event.data.metadata;
         if (purpose === "product purchase") {
           emitEvent.emit("notify-vendor-of-new-order", { orderId, vendorId });
@@ -92,7 +106,6 @@ class PaymentTransactionService {
         break;
       case "transfer.success":
       case "transfer.failed":
-        const { reference, status } = event.data;
         console.log({ reference, status });
         this.transactionRepo.updateStatus({ reference, status });
 
@@ -116,7 +129,7 @@ class PaymentTransactionService {
   */
   async createHistory(
     transactionHistoryData: ICreateTransactionHistoryData,
-    session: ClientSession
+    session?: ClientSession
   ) {
     return await this.transactionRepo.createHistory(
       transactionHistoryData,
