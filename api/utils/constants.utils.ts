@@ -66,7 +66,7 @@ export enum ErrandStatus {
   PENDING = "pending",
   RIDER_ASSIGNED = "rider assigned",
   PICKED_UP = "picked up",
-  ARRIVED_DELIVERY_LOCATION = "arrived deliver location",
+  ARRIVED_DELIVERY_LOCATION = "arrived delivery location",
   DELIVERED = "delivered",
   CANCELLED = "cancelled",
 }

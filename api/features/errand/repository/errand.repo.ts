@@ -1,4 +1,5 @@
 import { HandleException, STATUS_CODES } from "../../../utils";
+import { ErrandStatus } from "../../../utils/constants.utils";
 import { ICreateErrandData, IErrandDocument } from "../errand.interface";
 import { Errand } from "../models/errand.models";
 
@@ -20,7 +21,7 @@ export class ErrandRepository {
     return await errand.save();
   };
 
-  getErrand = async (errandId: string):Promise<IErrandDocument | null> => {
+  getErrand = async (errandId: string): Promise<IErrandDocument | null> => {
     const errand = await Errand.findById(errandId)
       .select("-__v -_updatedAt")
       .populate({ path: "customer", select: "fullName phoneNumber" })
@@ -31,15 +32,29 @@ export class ErrandRepository {
     return errand;
   };
 
+  checkRiderIsAlreadyAssigned = async (errandId: string) => {
+    const errand = await Errand.findById(errandId)
+      .select("rider")
+      .lean()
+      .exec();
+
+    if (errand?.rider) {
+      throw new HandleException(
+        STATUS_CODES.CONFLICT,
+        "A rider is already asssigned to this errand"
+      );
+    }
+    return;
+  };
+
   assignRider = async (data: {
     errandId: string;
     riderId: string;
-    status: string;
   }): Promise<IErrandDocument | null> => {
-    const { errandId, riderId, status } = data;
+    const { errandId, riderId} = data;
     const errand = await Errand.findByIdAndUpdate(
       errandId,
-      { $set: { rider: riderId, status } },
+      { $set: { rider: riderId, status: ErrandStatus.RIDER_ASSIGNED } },
       { new: true }
     )
       .select("status rider")
@@ -62,20 +77,5 @@ export class ErrandRepository {
       .exec();
 
     return errand;
-  };
-
-  checkRiderIsAlreadyAssigned = async (errandId: string) => {
-    const errand = await Errand.findById(errandId)
-      .select("rider")
-      .lean()
-      .exec();
-
-    if (errand?.rider) {
-      throw new HandleException(
-        STATUS_CODES.CONFLICT,
-        "A rider is already asssigned to this errand"
-      );
-    }
-    return;
   };
 }

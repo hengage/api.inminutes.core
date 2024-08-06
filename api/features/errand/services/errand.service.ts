@@ -4,7 +4,7 @@ import { NotificationService } from "../../notifications";
 import { ICreateErrandData } from "../errand.interface";
 import { ErrandRepository } from "../repository/errand.repo";
 
-export class ErrandService {
+class ErrandService {
   private errandRepo: ErrandRepository;
   private notification: NotificationService;
 
@@ -26,11 +26,7 @@ export class ErrandService {
     return errand;
   };
 
-  assignRider = async (data: {
-    errandId: string;
-    riderId: string;
-    status: string;
-  }) => {
+  assignRider = async (data: {errandId: string; riderId: string;  }) => {
     await this.errandRepo.checkRiderIsAlreadyAssigned(data.errandId)
     return await this.errandRepo.assignRider(data);
   };
@@ -42,7 +38,7 @@ export class ErrandService {
     });
   };
 
-  arrivedDeliveryeryLocation = async (errandId: string) => {
+  arrivedDeliveryLocation = async (errandId: string) => {
     const errand = await this.errandRepo.updateStatus({
       errandId,
       status: ErrandStatus.ARRIVED_DELIVERY_LOCATION,
@@ -51,7 +47,7 @@ export class ErrandService {
     this.notification.createNotification({
       headings: { en: "Rider at delivery location" },
       contents: {
-        en: "The rider has arrived the delivery location with your package",
+        en: "The rider has arrived the delivery location with the package",
       },
       data: { errandId: errand?._id },
       userId: errand?.customer,
@@ -67,7 +63,7 @@ export class ErrandService {
     this.notification.createNotification({
       headings: { en: "Package delivered" },
       contents: {
-        en: "Your package has been delivered",
+        en: "Thank you for trusting InMinutes",
       },
       data: { errandId: errand?._id },
       userId: errand?.customer,
@@ -83,3 +79,5 @@ export class ErrandService {
     });
   };
 }
+
+export const errandService = new ErrandService();

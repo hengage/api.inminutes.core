@@ -10,6 +10,7 @@ import { listenForProductEvents } from "./products.socket";
 import { listenToWalletEvents } from "./wallet.socket";
 import { socketGuard } from "../../middleware";
 import { listenToVendorEvents } from "./vendors.socket";
+import { listenToErrandEvents } from "./errand.socket";
 
 export class SocketServer {
   private io: Socket;
@@ -56,6 +57,7 @@ export class SocketServer {
     listenForProductEvents(socket);
     listenToWalletEvents(socket);
     listenToVendorEvents(socket);
+    listenToErrandEvents(socket)
     this.disconnectOnLogOut(socket);
   }
 

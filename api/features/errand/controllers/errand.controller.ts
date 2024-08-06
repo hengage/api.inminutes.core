@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { ErrandService } from "../services/errand.service";
+import { errandService } from "../services/errand.service";
 import { handleErrorResponse, STATUS_CODES } from "../../../utils";
 
 export class ErrandController {
-  private errandService: ErrandService;
+  // private errandService: ErrandService;
   constructor() {
-    this.errandService = new ErrandService();
+    // this.errandService = new ErrandService();
   }
 
   create = async (req: Request, res: Response) => {
@@ -16,7 +16,7 @@ export class ErrandController {
     };
 
     try {
-      const errand = await this.errandService.create(data);
+      const errand = await errandService.create(data);
 
       res.status(STATUS_CODES.CREATED).json({
         message: "success",
@@ -29,7 +29,7 @@ export class ErrandController {
 
   getErrand = async (req: Request, res: Response) => {
     try {
-      const errand = await this.errandService.getErrand(req.params.errandId);
+      const errand = await errandService.getErrand(req.params.errandId);
       console.log({errand})
       res.status(STATUS_CODES.OK).json({
         message: "success",
