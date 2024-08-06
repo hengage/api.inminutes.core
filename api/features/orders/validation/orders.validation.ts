@@ -16,20 +16,30 @@ export class ValidateOrders {
       recipientPhoneNumber: Joi.string()
         .label("Recipient's phone number")
         .required(),
-      items: Joi.array().required(),
+      items: Joi.array().min(1).required(),
       vendor: Joi.string().label("Vendor").required(),
       deliveryAddress: Joi.string().label("Delivery address").required(),
-      deliveryLocation: Joi.array().label("Delivery location").required(),
+      deliveryLocation: Joi.array()
+        .items(Joi.number())
+        .length(2)
+        .label("Delivery location")
+        .required(),
       deliveryFee: Joi.string().label("Delivery fee").required(),
       serviceFee: Joi.string().label("Service fee"),
       totalProductsCost: Joi.string().label("Total products cost").required(),
       totalCost: Joi.string().label("Total cost").required(),
       instruction: Joi.string().label("Instruction"),
-      type: Joi.string().label("Order type").required(),
+      type: Joi.string()
+        .valid("instant", "scheduled")
+        .label("Order type")
+        .required(),
       scheduledDeliveryTime: Joi.string().when("type", {
         is: "scheduled",
         then: Joi.string().label("Scheduled delivery time").required(),
-        otherwise: Joi.forbidden(),
+        otherwise: Joi.forbidden().messages({
+          "any.unknown":
+            "Scheduled pickup time is forbidden when errand type is not sheduled",
+        }),
       }),
     });
 

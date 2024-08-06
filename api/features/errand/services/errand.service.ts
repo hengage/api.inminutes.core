@@ -1,6 +1,6 @@
-import { HandleException, STATUS_CODES } from "../../../utils";
 import { ErrandStatus } from "../../../utils/constants.utils";
 import { NotificationService } from "../../notifications";
+import { deliveryService, HandleException, STATUS_CODES } from "../../../utils";
 import { ICreateErrandData } from "../errand.interface";
 import { ErrandRepository } from "../repository/errand.repo";
 
@@ -13,8 +13,12 @@ class ErrandService {
     this.notification = new NotificationService();
   }
 
-  create = async (createErranddata: ICreateErrandData) => {
-    return await this.errandRepo.create(createErranddata);
+
+  create = async (createErrandData: ICreateErrandData) => {
+    const errand = await this.errandRepo.create(createErrandData);
+
+    await deliveryService.handleInstantOrScheduledErrand(errand)
+    return errand;
   };
 
   getErrand = async (errandId: string) => {

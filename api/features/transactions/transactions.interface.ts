@@ -1,5 +1,3 @@
-import { IRiderDocument } from "../riders";
-import { IVendorDocument } from "../vendors";
 import { IWalletDocument } from "../wallet/wallet.interface";
 
 export interface IInitializeTransaction {
@@ -7,7 +5,7 @@ export interface IInitializeTransaction {
   amount: string;
   metadata: {
     customerId: string;
-    purpose: string;
+    reason: string;
     orderId: string; //orderId represents orders for item purchase and delivery pickup
     vendorId?: string;
   };
@@ -36,26 +34,36 @@ export interface ITransactionHistoryDocument extends Document {
   reason: string;
   type: string;
   transactionFee: string;
+  customer?: string;
   bankName?: string;
   status: string;
+  paidAt: Date;
   currency: string;
 }
 
 export interface ICreateTransactionHistoryData {
   amount: string;
-  wallet: string;
+  wallet?: string;
   reference: string;
-  recipientCode: string;
+  recipientCode?: string;
+  customer?: string;
   bankName?: string;
   accountNumber?: string;
   accountName?: string;
-  transferCode: string;
+  transferCode?: string;
   status: string;
-  type: "credit" | "debit";
+  type?: "credit" | "debit";
   reason: string;
 }
 
-export interface InitializeTransferData {
+export interface IUpdateTransactionHistoryData {
+  reference: string;
+  status: string;
+  paidAt?: Date;
+  channel?: string;
+  currency?: string;
+}
+export interface InitializeCashoutTransferData {
   amount: string;
   walletId: string;
   recipientCode: string;

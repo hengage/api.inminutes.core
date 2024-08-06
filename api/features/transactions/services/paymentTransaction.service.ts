@@ -1,9 +1,5 @@
 import axios from "axios";
-import {
-  HandleException,
-  STATUS_CODES,
-  generateReference,
-} from "../../../utils";
+import { HandleException, generateReference } from "../../../utils";
 // import *as crypto from "crypto";
 import { createHmac } from "crypto";
 import { Request } from "express";
@@ -16,12 +12,13 @@ import {
 import { TransactionRepository } from "../repository/transaction.repo";
 import { cashoutTransferService } from "./cashoutTransfer.service";
 import { SocketServer } from "../../../services/socket/socket.services";
+import { ClientSession } from "mongoose";
 
 /**
 Service for managing transactions and interacting with Paystack API.
 @class
 */
-class TransactionService {
+class PaymentTransactionService {
   private paystackAPIKey: string;
   private headers: Record<string, string>;
   private transactionRepo: TransactionRepository;
@@ -59,6 +56,22 @@ class TransactionService {
         }
       );
 
+      console.log({ reponseData: response.data });
+
+      const createdHistory = this.createHistory({
+        amount: initializeTransactionData.amount,
+        reason: initializeTransactionData.metadata.reason,
+        customer: initializeTransactionData.metadata.customerId,
+        reference: response.data.data.reference,
+        status: "pending",
+      })
+        .then((createdHistory) => console.log(createdHistory))
+        .catch((error: any) => {
+          console.error("Error creating transaction history: ", error);
+        });
+
+      console.log({});
+
       return response.data.data;
     } catch (error: any) {
       console.error({ error: error.response.data });
@@ -80,10 +93,12 @@ class TransactionService {
     // if (digest === req.headers["x-paystack-signature"]) {
     console.log(req.body);
     const event = req.body;
+    const { reference, status, paid_at: paidAt } = event.data;
 
     switch (event.event) {
       case "charge.success":
         console.log({ metadata: event.data.metadata });
+        this.transactionRepo.updateStatus({ reference, status, paidAt });
         const { purpose, orderId, vendorId } = event.data.metadata;
         if (purpose === "product purchase") {
           emitEvent.emit("notify-vendor-of-new-order", { orderId, vendorId });
@@ -91,7 +106,6 @@ class TransactionService {
         break;
       case "transfer.success":
       case "transfer.failed":
-        const { reference, status } = event.data;
         console.log({ reference, status });
         this.transactionRepo.updateStatus({ reference, status });
 
@@ -113,8 +127,14 @@ class TransactionService {
   Creates a new transaction history entry.
   @param {object} transactionHistoryData - The data to create the transaction history entry.
   */
-  async createHistory(transactionHistoryData: ICreateTransactionHistoryData) {
-    return await this.transactionRepo.createHistory(transactionHistoryData);
+  async createHistory(
+    transactionHistoryData: ICreateTransactionHistoryData,
+    session?: ClientSession
+  ) {
+    return await this.transactionRepo.createHistory(
+      transactionHistoryData,
+      session
+    );
   }
 
   async getTransactionByReference(reference: string, selectFields: string) {
@@ -146,14 +166,37 @@ calling the cashoutTransferService.reverseDebit method
       });
 
       const socketServer = SocketServer.getInstance();
-      socketServer.emitEvent("wallet-balance", {
-        _id: wallet._id,
-        balance: wallet.balance,
-      });
+      socketServer.emitEvent(
+        "wallet-balance",
+        {
+          _id: wallet?._id,
+          balance: wallet?.balance,
+        },
+        wallet?.merchantId
+      );
     } catch (error) {
       console.error({ error });
     }
   }
+
+  async getHistory(params: {
+    walletId: string;
+    page: number;
+    startDate?: Date | string;
+    endDate?: Date | string;
+  }) {
+    const { walletId, page, startDate, endDate } = params;
+    return await this.transactionRepo.getHistory({
+      walletId,
+      page,
+      startDate,
+      endDate,
+    });
+  }
+
+  async getDetails(transactionId: string) {
+    return await this.transactionRepo.getDetails(transactionId);
+  }
 }
 
-export const transactionService = new TransactionService();
+export const paymentTransactionService = new PaymentTransactionService();

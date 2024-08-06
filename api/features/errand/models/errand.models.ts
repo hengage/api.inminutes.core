@@ -37,6 +37,8 @@ const errandSchema = new Schema<IErrandDocument>(
       coordinates: { type: [Number, Number], required: true },
     },
     dispatchFee: { type: String, required: true },
+    type: { type: String, required: true },
+    scheduledPickupTime: { type: Date },
     status: {
       type: String,
       enum: Object.values(ErrandStatus),

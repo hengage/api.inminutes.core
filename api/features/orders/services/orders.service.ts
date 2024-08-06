@@ -1,4 +1,5 @@
-import mongoose from "mongoose";
+import { startSession } from "mongoose";
+
 import { deliveryService, HandleException, ORDER_STATUS } from "../../../utils";
 import { NotificationService } from "../../notifications";
 import { Order } from "../models/orders.model";
@@ -83,7 +84,7 @@ class OrdersService {
       status: ORDER_STATUS.REQUEST_CONFIRMED,
     });
 
-    console.log({vendorId: order?.vendor._id})
+    console.log({ vendorId: order?.vendor._id });
     emitEvent.emit("vendor-new-orders", {
       vendorId: order?.vendor._id,
     });
@@ -113,7 +114,7 @@ class OrdersService {
       status: ORDER_STATUS.READY,
     });
 
-    await deliveryService.handleInstantOrScheduledDelivery({
+    await deliveryService.handleInstantOrScheduledItemsOrder({
       order,
       distanceInKM,
     });
@@ -304,9 +305,10 @@ class OrdersService {
       remarkOnRider,
     } = feedbackData;
 
-    const session = await mongoose.startSession();
+    const session = await startSession();
+    session.startTransaction();
+
     try {
-      session.startTransaction();
 
       const riderRatingPromise = riderRating
         ? ridersService.updateRating({ riderId, rating: riderRating }, session)
@@ -326,10 +328,8 @@ class OrdersService {
       ]);
 
       await session.commitTransaction();
-      await session.endSession();
     } catch (error: any) {
       await session.abortTransaction();
-      await session.endSession();
       throw new HandleException(error.status, error.message);
     } finally {
       await session.endSession();
