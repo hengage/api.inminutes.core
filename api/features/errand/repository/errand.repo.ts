@@ -2,6 +2,7 @@ import { HandleException, STATUS_CODES } from "../../../utils";
 import { ErrandStatus } from "../../../utils/constants.utils";
 import { ICreateErrandData, IErrandDocument } from "../errand.interface";
 import { Errand } from "../models/errand.models";
+import { PaginatedQueryResult, PaginateQueryOptions } from "../../../types";
 
 export class ErrandRepository {
   create = async (
@@ -51,7 +52,7 @@ export class ErrandRepository {
     errandId: string;
     riderId: string;
   }): Promise<IErrandDocument | null> => {
-    const { errandId, riderId} = data;
+    const { errandId, riderId } = data;
     const errand = await Errand.findByIdAndUpdate(
       errandId,
       { $set: { rider: riderId, status: ErrandStatus.RIDER_ASSIGNED } },
@@ -77,5 +78,47 @@ export class ErrandRepository {
       .exec();
 
     return errand;
+  };
+
+  /**
+   * Retrieves a paginated list of errands based on the provided parameters.
+   *
+   * @param params - An object containing the following properties:
+   *   - customerId: (optional) The ID of the customer to filter errands by.
+   *   - riderId: (optional) The ID of the rider to filter errands by.
+   *   - page: The page number to retrieve.
+   */
+  getForUser = async ({
+    customerId,
+    riderId,
+    page = 1,
+    limit = 20,
+  }: {
+    customerId?: string;
+    riderId?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<PaginatedQueryResult<IErrandDocument>> => {
+    const query = riderId ? { rider: riderId } : { customer: customerId };
+
+    const options: PaginateQueryOptions = {
+      page,
+      limit,
+      select: "-__v -updatedAt",
+      populate: [
+        { path: "customer", select: "fullName phoneNumber" },
+        { path: "rider", select: "fullName phoneNumber" },
+      ],
+      sort: { createdAt: -1 },
+      lean: true,
+      leanWithId: false,
+    };
+
+    const errands = (await Errand.paginate(
+      query,
+      options
+    )) as PaginatedQueryResult<IErrandDocument>;
+
+    return errands;
   };
 }

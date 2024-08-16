@@ -1,4 +1,6 @@
-import { model, Schema } from "mongoose";
+import { PaginateModel, model, Schema } from "mongoose";
+import paginate from "mongoose-paginate-v2";
+
 import { generateUniqueString } from "../../../utils";
 import {
   IErrandDocument,
@@ -68,7 +70,12 @@ const errandPackageTypeSchema = new Schema<IErrandPackageTypeDocument>(
   }
 );
 
-export const Errand = model<IErrandDocument>("Errand", errandSchema);
+errandSchema.plugin(paginate);
+
+export const Errand = model<IErrandDocument, PaginateModel<IErrandDocument>>(
+  "Errand",
+  errandSchema
+);
 
 export const ErrandPackageType = model<IErrandPackageTypeDocument>(
   "ErrandPackageType",
