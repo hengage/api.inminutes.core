@@ -1,6 +1,7 @@
 import joi from "joi";
 import { HandleException, STATUS_CODES } from "../../../utils";
 import { ICustomerDocument } from "../customers.interface";
+import { Response } from "express";
 
 export class ValidateCustomer {
   signUp = async (payload: ICustomerDocument) => {
@@ -61,5 +62,24 @@ export class ValidateCustomer {
       throw new HandleException(STATUS_CODES.BAD_REQUEST, error.message);
     }
     return;
+  };
+
+  errandHistory = async (userType: string, res: Response) => {
+    if (!userType) {
+      throw new HandleException(STATUS_CODES.BAD_REQUEST, "User type is required");
+    }
+
+    if (userType != "customer" && userType != "rider") {
+      return res.status(STATUS_CODES.BAD_REQUEST).json({
+        message: "Invalid user type",
+      });
+      throw new HandleException(STATUS_CODES.BAD_REQUEST, "User type is required");
+    }
+
+    if(typeof userType !== "string"){
+      return res.status(STATUS_CODES.BAD_REQUEST).json({
+        message: "Invalid user type",
+      });
+    }
   };
 }

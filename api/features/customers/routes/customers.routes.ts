@@ -3,11 +3,13 @@ import { CustomersController } from "../controller/customers.controllers";
 import { CustomersAuthentication } from "../auth/customers.auth";
 import { verifyAuthTokenMiddleware } from "../../../middleware";
 import { CustomersOrdersController } from "../controller/customersOrders.controller";
+import { CustomerErrandController } from "../controller/customersErrand.controller";
 
 class CustomersRoutes {
   private customersController: CustomersController;
   private customersAuthentication: CustomersAuthentication
   private customersOrdersController: CustomersOrdersController 
+  private customerErrandController: CustomerErrandController
 
   public router = Router();
   
@@ -15,6 +17,7 @@ class CustomersRoutes {
     this.customersController = new CustomersController()
     this.customersAuthentication = new CustomersAuthentication();
     this.customersOrdersController = new CustomersOrdersController()
+    this.customerErrandController = new CustomerErrandController()
 
     this.initializeRoutes();
   }
@@ -40,6 +43,8 @@ class CustomersRoutes {
       .route("/order-metrics")
       .get(this.customersOrdersController.orderMetrics);
     this.router.route("/wishlist").get(this.customersController.getWishList);
+
+    this.router.route('/errands').get(this.customerErrandController.getHistory)
   }
 }
 

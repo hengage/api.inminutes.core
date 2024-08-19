@@ -81,25 +81,27 @@ export class ErrandRepository {
   };
 
   /**
-   * Retrieves a paginated list of errands based on the provided parameters.
+   * Retrieves a paginated list of errand history based on the provided parameters.
    *
    * @param params - An object containing the following properties:
    *   - customerId: (optional) The ID of the customer to filter errands by.
    *   - riderId: (optional) The ID of the rider to filter errands by.
    *   - page: The page number to retrieve.
    */
-  getForUser = async ({
-    customerId,
-    riderId,
+  getHistoryForUser = async ({
+    userType,
+    userId,
     page = 1,
     limit = 20,
   }: {
-    customerId?: string;
-    riderId?: string;
+    userType: "customer" | "rider";
+    userId: string;
     page?: number;
     limit?: number;
   }): Promise<PaginatedQueryResult<IErrandDocument>> => {
-    const query = riderId ? { rider: riderId } : { customer: customerId };
+    const query = {
+      [userType === "rider" ? "rider" : "customer"]: userId,
+    };
 
     const options: PaginateQueryOptions = {
       page,

@@ -13,11 +13,10 @@ class ErrandService {
     this.notification = new NotificationService();
   }
 
-
   create = async (createErrandData: ICreateErrandData) => {
     const errand = await this.errandRepo.create(createErrandData);
 
-    await deliveryService.handleInstantOrScheduledErrand(errand)
+    await deliveryService.handleInstantOrScheduledErrand(errand);
     return errand;
   };
 
@@ -30,8 +29,8 @@ class ErrandService {
     return errand;
   };
 
-  assignRider = async (data: {errandId: string; riderId: string;  }) => {
-    await this.errandRepo.checkRiderIsAlreadyAssigned(data.errandId)
+  assignRider = async (data: { errandId: string; riderId: string }) => {
+    await this.errandRepo.checkRiderIsAlreadyAssigned(data.errandId);
     return await this.errandRepo.assignRider(data);
   };
 
@@ -81,6 +80,26 @@ class ErrandService {
       errandId,
       status: ErrandStatus.CANCELLED,
     });
+  };
+
+  getHistoryForUser = async ({
+    userType,
+    userId,
+    page = 1,
+    limit = 20,
+  }: {
+    userType: "customer" | "rider";
+    userId: string;
+    page?: number;
+    limit?: number;
+  }) => {
+    const errands = await this.errandRepo.getHistoryForUser({
+      userType,
+      userId,
+      limit,
+      page,
+    });
+    return errands;
   };
 }
 

@@ -33,7 +33,7 @@ const verifyAuthTokenMiddleware = async (
     (req as any).user = decoded;
     next();
   } catch (error: any) {
-    return res.status(401).json({ message: error.message });
+    return res.status(401).json({ message: "Invalid or expired token" });
   }
 };
 
