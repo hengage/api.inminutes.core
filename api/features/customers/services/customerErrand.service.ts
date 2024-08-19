@@ -9,8 +9,8 @@ export class CustomerErrandService {
   getHistory = async ({
     userType,
     customerId,
-    page = 1,
-    limit = 20,
+    page,
+    limit,
   }: {
     userType: "customer" | "rider";
     customerId: string;

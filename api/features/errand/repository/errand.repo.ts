@@ -91,8 +91,8 @@ export class ErrandRepository {
   getHistoryForUser = async ({
     userType,
     userId,
-    page = 1,
-    limit = 20,
+    limit,
+    page
   }: {
     userType: "customer" | "rider";
     userId: string;
@@ -103,9 +103,11 @@ export class ErrandRepository {
       [userType === "rider" ? "rider" : "customer"]: userId,
     };
 
+    console.log({ limit, page });
+
     const options: PaginateQueryOptions = {
-      page,
-      limit,
+      page: page || 1,
+      limit: limit || 20,
       select: "-__v -updatedAt",
       populate: [
         { path: "customer", select: "fullName phoneNumber" },
@@ -115,7 +117,6 @@ export class ErrandRepository {
       lean: true,
       leanWithId: false,
     };
-
     const errands = (await Errand.paginate(
       query,
       options

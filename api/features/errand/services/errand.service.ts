@@ -85,8 +85,8 @@ class ErrandService {
   getHistoryForUser = async ({
     userType,
     userId,
-    page = 1,
-    limit = 20,
+    page,
+    limit,
   }: {
     userType: "customer" | "rider";
     userId: string;
