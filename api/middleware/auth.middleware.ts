@@ -64,4 +64,30 @@ const socketGuard = (event: any, next: (err?: Error | undefined) => void) => {
   }
 };
 
-export { verifyAuthTokenMiddleware, socketGuard };
+const errandHistoryMiddleware = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userType = req.query.usertype as "customer" | "rider";
+  console.log({ userType });
+  if (!userType) {
+    return res.status(STATUS_CODES.BAD_REQUEST).json("User type is required");
+  }
+
+  if (userType !== "customer" && userType != "rider") {
+    return res.status(STATUS_CODES.BAD_REQUEST).json({
+      message: "Invalid user type",
+    });
+  }
+
+  if (typeof userType !== "string") {
+    return res.status(STATUS_CODES.BAD_REQUEST).json({
+      message: "Invalid user type",
+    });
+  }
+
+  return next();
+};
+
+export { verifyAuthTokenMiddleware, socketGuard, errandHistoryMiddleware };

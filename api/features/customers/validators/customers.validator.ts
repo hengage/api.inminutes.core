@@ -63,23 +63,4 @@ export class ValidateCustomer {
     }
     return;
   };
-
-  errandHistory = async (userType: string, res: Response) => {
-    if (!userType) {
-      throw new HandleException(STATUS_CODES.BAD_REQUEST, "User type is required");
-    }
-
-    if (userType != "customer" && userType != "rider") {
-      return res.status(STATUS_CODES.BAD_REQUEST).json({
-        message: "Invalid user type",
-      });
-      throw new HandleException(STATUS_CODES.BAD_REQUEST, "User type is required");
-    }
-
-    if(typeof userType !== "string"){
-      return res.status(STATUS_CODES.BAD_REQUEST).json({
-        message: "Invalid user type",
-      });
-    }
-  };
 }
