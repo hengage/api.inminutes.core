@@ -24,7 +24,7 @@ export class RiderErrandController {
         limit,
       });
       res.status(STATUS_CODES.OK).json({
-        message: "History retrieved",
+        message: "success",
         history,
       });
     } catch (error: any) {

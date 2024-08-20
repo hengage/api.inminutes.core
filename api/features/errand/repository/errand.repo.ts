@@ -92,7 +92,7 @@ export class ErrandRepository {
     userType,
     userId,
     limit,
-    page
+    page,
   }: {
     userType: "customer" | "rider";
     userId: string;
@@ -108,7 +108,8 @@ export class ErrandRepository {
     const options: PaginateQueryOptions = {
       page: page || 1,
       limit: limit || 20,
-      select: "-__v -updatedAt",
+      select:
+        "-__v -updatedAt -dropoffCoordinates -scheduledPickupTime -pickupCoordinates",
       populate: [
         { path: "customer", select: "fullName phoneNumber" },
         { path: "rider", select: "fullName phoneNumber" },
