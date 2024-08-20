@@ -1,26 +1,35 @@
 import { Router } from "express";
 import { CustomersController } from "../controller/customers.controllers";
 import { CustomersAuthentication } from "../auth/customers.auth";
-import { verifyAuthTokenMiddleware } from "../../../middleware";
+import {
+  errandHistoryMiddleware,
+  verifyAuthTokenMiddleware,
+} from "../../../middleware";
 import { CustomersOrdersController } from "../controller/customersOrders.controller";
+import { CustomerErrandController } from "../controller/customersErrand.controller";
 
 class CustomersRoutes {
   private customersController: CustomersController;
-  private customersAuthentication: CustomersAuthentication
-  private customersOrdersController: CustomersOrdersController 
+  private customersAuthentication: CustomersAuthentication;
+  private customersOrdersController: CustomersOrdersController;
+  private customerErrandController: CustomerErrandController;
 
   public router = Router();
-  
+
   constructor() {
-    this.customersController = new CustomersController()
+    this.customersController = new CustomersController();
     this.customersAuthentication = new CustomersAuthentication();
-    this.customersOrdersController = new CustomersOrdersController()
+    this.customersOrdersController = new CustomersOrdersController();
+    this.customerErrandController = new CustomerErrandController();
 
     this.initializeRoutes();
   }
 
   public initializeRoutes() {
-    this.router.post("/send-otp", this.customersController.signupVerificationCode);
+    this.router.post(
+      "/send-otp",
+      this.customersController.signupVerificationCode
+    );
     this.router.post(`/signup`, this.customersController.signup);
     this.router.post("/login", this.customersAuthentication.login);
 
@@ -40,6 +49,10 @@ class CustomersRoutes {
       .route("/order-metrics")
       .get(this.customersOrdersController.orderMetrics);
     this.router.route("/wishlist").get(this.customersController.getWishList);
+
+    this.router
+      .route("/errands")
+      .get(errandHistoryMiddleware, this.customerErrandController.getHistory);
   }
 }
 

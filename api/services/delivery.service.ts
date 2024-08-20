@@ -1,3 +1,4 @@
+import { IErrandDocument } from "../features/errand";
 import { IOrdersDocument } from "../features/orders/orders.interface";
 import { ridersService } from "../features/riders";
 import { SchedulerService } from "./jobs.services";
@@ -21,7 +22,7 @@ class DeliveryService {
   @param {any} params.order - Order object.
   @param {number} params.distanceInKM - Distance in kilometers.
   */
-  handleInstantOrScheduledDelivery = async (params: {
+  handleInstantOrScheduledItemsOrder = async (params: {
     order: IOrdersDocument;
     distanceInKM: number;
   }) => {
@@ -34,20 +35,46 @@ class DeliveryService {
       );
 
       await this.jobScheduleService.scheduleJob({
-        jobName: "schedule-order-delivery",
+        jobName: "schedule-dispatch-pickup",
         scheduledTime: order.scheduledDeliveryTime,
         jobData: {
           coordinates: order.vendor.location.coordinates,
           distanceInKM: distanceInKM,
-          orderId: order._id,
+          dispatchType: "order",
+          dispatchId: order._id,
         },
       });
     } else {
       console.log("Instant order");
-      await ridersService.findAndNotifyRidersOfOrder({
+      await ridersService.notifyRidersForDispatchJob({
         coordinates: order.vendor.location.coordinates,
         distanceInKM,
-        orderId: order._id,
+        dispatchType: "errand",
+        dispatchId: order._id,
+      });
+    }
+  };
+
+  handleInstantOrScheduledErrand = async (errand: IErrandDocument) => {
+    if (errand.type === "scheduled") {
+      console.log("Scheduled errand");
+      await this.jobScheduleService.scheduleJob({
+        jobName: "schedule-dispatch-pickup",
+        scheduledTime: errand.scheduledPickupTime,
+        jobData: {
+          coordinates: errand.pickupCoordinates.coordinates,
+          distanceInKM: 20,
+          dispatchType: "errand",
+          dispatchId: errand._id,
+        },
+      });
+    } else if (errand.type === "instant") {
+      console.log("Instant errand", { errand });
+      await ridersService.notifyRidersForDispatchJob({
+        coordinates: errand.pickupCoordinates.coordinates,
+        distanceInKM: 20,
+        dispatchType: "errand",
+        dispatchId: errand._id,
       });
     }
   };

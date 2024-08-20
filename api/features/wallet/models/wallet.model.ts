@@ -26,7 +26,7 @@ const walletSchema = new Schema<IWalletDocument>(
     merchantType: {
       type: String,
       required: true,
-      enum: ['rider', 'vendor'],
+      enum: ["rider", "vendor"],
     },
     balance: { type: String, default: "0" },
     transactionCount: { type: Number, default: 0 },
@@ -72,15 +72,18 @@ walletSchema.pre("validate", function (next) {
   }
 });
 
-walletSchema.statics.creditWallet = async function (data: {
-  amount: string;
-  walletId: string;
-}) {
-  const { amount, walletId } = data;
+walletSchema.statics.creditWallet = async function (
+  creditData: {
+    amount: string;
+    walletId: string;
+  },
+  session: ClientSession
+) {
+  const { amount, walletId } = creditData;
 
   const wallet = await this.findById(walletId).select(
     "balance merchantId transactionCount totalEarnings"
-  );
+  ).session(session);
 
   if (!wallet) {
     throw new HandleException(STATUS_CODES.NOT_FOUND, "wallet not found");
@@ -89,19 +92,19 @@ walletSchema.statics.creditWallet = async function (data: {
   wallet.balance = Big(wallet.balance).plus(amount).toFixed(2);
   wallet.totalEarnings = Big(wallet.totalEarnings).plus(amount).toFixed(2);
   wallet.transactionCount++;
-  await wallet.save();
+  await wallet.save({session});
   return wallet;
 };
 
-walletSchema.statics.debitWallet = async function (data: {
-  amount: string;
-  walletId: string;
-}) {
-  const { amount, walletId } = data;
+walletSchema.statics.debitWallet = async function (
+  debitData: { amount: string; walletId: string },
+  session: ClientSession
+) {
+  const { amount, walletId } = debitData;
 
-  const wallet = await this.findById(walletId).select(
-    "balance transactionCount"
-  );
+  const wallet = await this.findById(walletId)
+    .select("balance transactionCount")
+    .session(session);
 
   if (!wallet) {
     throw new HandleException(STATUS_CODES.NOT_FOUND, "wallet not found");
@@ -115,7 +118,7 @@ walletSchema.statics.debitWallet = async function (data: {
   }
   wallet.balance = Big(wallet.balance).minus(amount).toFixed(2);
   wallet.transactionCount++;
-  await wallet.save();
+  await wallet.save({ session });
   return wallet;
 };
 

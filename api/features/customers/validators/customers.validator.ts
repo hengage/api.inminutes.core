@@ -1,6 +1,7 @@
 import joi from "joi";
 import { HandleException, STATUS_CODES } from "../../../utils";
 import { ICustomerDocument } from "../customers.interface";
+import { Response } from "express";
 
 export class ValidateCustomer {
   signUp = async (payload: ICustomerDocument) => {

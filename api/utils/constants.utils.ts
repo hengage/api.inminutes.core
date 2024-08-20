@@ -61,3 +61,12 @@ export enum PAYMENT_PURPOSE {
   PRODUCT_PURCHASE = "product purchase",
   PACKAGE_DELIVERY = "package delivery",
 }
+
+export enum ErrandStatus {
+  PENDING = "pending",
+  RIDER_ASSIGNED = "rider assigned",
+  PICKED_UP = "picked up",
+  ARRIVED_DELIVERY_LOCATION = "arrived delivery location",
+  DELIVERED = "delivered",
+  CANCELLED = "cancelled",
+}

@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 
 import { STATUS_CODES } from "../utils";
 import { JWT_SECRET_KEY } from "../config";
+import { JWT_ALGORITHMS } from "../config/secrets.config";
 
 /**
   Verifies the authentication token for a request.
@@ -26,11 +27,13 @@ const verifyAuthTokenMiddleware = async (
   }
 
   try {
-    const decoded = jwt.verify(token, `${JWT_SECRET_KEY}`);
+    const decoded = jwt.verify(token, `${JWT_SECRET_KEY}`, {
+      algorithms: [JWT_ALGORITHMS.HS256],
+    });
     (req as any).user = decoded;
     next();
   } catch (error: any) {
-    return res.status(401).json({ message: error.message });
+    return res.status(401).json({ message: "Invalid or expired token" });
   }
 };
 
@@ -46,10 +49,10 @@ const socketGuard = (event: any, next: (err?: Error | undefined) => void) => {
     socket.handshake.auth.token;
 
   if (!token) {
-    console.error('Authentication error: Token not provided')
+    console.error("Authentication error: Token not provided");
     return next(new Error("Authentication error: Token not provided"));
   }
-  console.log({tokenFromSocket: token})
+  console.log({ tokenFromSocket: token });
 
   try {
     const decoded = jwt.verify(token, `${JWT_SECRET_KEY}`);
@@ -61,4 +64,30 @@ const socketGuard = (event: any, next: (err?: Error | undefined) => void) => {
   }
 };
 
-export { verifyAuthTokenMiddleware, socketGuard };
+const errandHistoryMiddleware = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userType = req.query.usertype as "customer" | "rider";
+  console.log({ userType });
+  if (!userType) {
+    return res.status(STATUS_CODES.BAD_REQUEST).json("User type is required");
+  }
+
+  if (userType !== "customer" && userType != "rider") {
+    return res.status(STATUS_CODES.BAD_REQUEST).json({
+      message: "Invalid user type",
+    });
+  }
+
+  if (typeof userType !== "string") {
+    return res.status(STATUS_CODES.BAD_REQUEST).json({
+      message: "Invalid user type",
+    });
+  }
+
+  return next();
+};
+
+export { verifyAuthTokenMiddleware, socketGuard, errandHistoryMiddleware };

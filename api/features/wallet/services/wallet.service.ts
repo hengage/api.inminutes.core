@@ -1,11 +1,9 @@
-import { startSession } from "mongoose";
+import { startSession, ClientSession } from "mongoose";
 import { Wallet } from "../models/wallet.model";
 import Big from "big.js";
 import { NotificationService } from "../../notifications";
 import { HandleException, STATUS_CODES } from "../../../utils";
 import { walletRepo } from "../repository/wallet.repository";
-import { TransactionHistory } from "../../transactions/models/transaction.model";
-import { transactionService } from "../../transactions/services/transaction.service";
 
 /**
 Provides methods for managing wallet operations.
@@ -23,11 +21,17 @@ class WalletService {
   @param {string} data.amount - Amount to debit.
   @param {string} data.walletId - ID of the wallet to debit.
   */
-  async debitWallet(data: { amount: string; walletId: string }) {
-    return await Wallet.debitWallet({
-      amount: data.amount,
-      walletId: data.walletId,
-    });
+  async debitWallet(
+    data: { amount: string; walletId: string },
+    session: ClientSession
+  ) {
+    return await Wallet.debitWallet(
+      {
+        amount: data.amount,
+        walletId: data.walletId,
+      },
+      session
+    );
   }
 
   /**
@@ -36,14 +40,20 @@ class WalletService {
   @param {string} params.walletId - ID of the wallet to credit.
   @param {string} params.amount - Amount to credit.
   */
-  async creditWallet(params: { walletId: string; amount: string }) {
-    const { amount, walletId } = params;
-    const wallet = await Wallet.creditWallet({
-      amount: amount,
-      walletId,
-    });
+  async creditWallet(
+    creditData: { walletId: string; amount: string },
+    session: ClientSession
+  ) {
+    const { amount, walletId } = creditData;
+    const wallet = await Wallet.creditWallet(
+      {
+        amount: amount,
+        walletId,
+      },
+      session
+    );
     console.log({ "Credited merchant": wallet });
-    return wallet
+    return wallet;
   }
 
   async checkDuplicateAccountNumber(walletId: string, accountNumber: string) {

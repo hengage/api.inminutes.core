@@ -1,2 +1,6 @@
-export { verifyAuthTokenMiddleware, socketGuard } from "./auth.middleware";
+export {
+  verifyAuthTokenMiddleware,
+  socketGuard,
+  errandHistoryMiddleware,
+} from "./auth.middleware";
 export { centralErrorHandler } from "./centralErrors.middleware";

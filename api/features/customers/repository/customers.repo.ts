@@ -65,7 +65,6 @@ export class CustomersRepository {
       .select("-password -createdAt -__v -updatedAt")
       .lean()
       .exec();
-    console.log({ customer });
     if (!customer) {
       throw new HandleException(STATUS_CODES.NOT_FOUND, "Customer not found");
     }

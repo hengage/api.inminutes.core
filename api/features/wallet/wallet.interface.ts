@@ -18,11 +18,11 @@ export interface IWalletDocument extends Document {
 
 export interface IWalletMethodsDocument extends Model<IWalletDocument> {
   creditWallet(
-    data: { amount: string; walletId?: string },
-    session?: ClientSession
+    creditData: { amount: string; walletId?: string },
+    session: ClientSession
   ): Promise<IWalletDocument>;
   debitWallet(
-    data: { amount: string; walletId?: string },
+    debitData: { amount: string; walletId?: string },
     session?: ClientSession
   ): Promise<IWalletDocument>;
 }
