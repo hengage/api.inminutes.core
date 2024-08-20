@@ -26,6 +26,23 @@ function listenToErrandEvents(socket: Socket) {
     }
   });
 
+  socket.on("errand-package-in-transit", async (message) => {
+    try {
+      const errand = await errandService.inTransit(message.errandId);
+      socket.emit("in-transit-errand", errand);
+    } catch (error: any) {
+      socket.emit("errand-package-in-transit-error", error.message);
+    }
+  });
+
+  socket.on("errand-package-nearby", async (message) => {
+    try {
+      await errandService.nearby(message.errandId);
+    } catch (error: any) {
+      socket.emit("errand-package-nearby-error", error.message);
+    }
+  });
+
   socket.on("errand-arrived-delivery-location", async (message) => {
     try {
       await errandService.arrivedDeliveryLocation(message.errandId);

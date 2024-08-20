@@ -41,6 +41,39 @@ class ErrandService {
     });
   };
 
+  inTransit = async (errandId: string) => {
+    const errand = await this.errandRepo.updateStatus({
+      errandId,
+      status: ErrandStatus.IN_TRANSIT,
+    });
+
+    this.notification.createNotification({
+      headings: { en: "Package in transit" },
+      contents: {
+        en: "The package is in transit, on the way to your delivery location",
+      },
+      data: { errandId: errand?._id },
+      userId: errand?.customer,
+    });
+  };
+
+  nearby = async (errandId: string) => {
+    const errand = await this.errandRepo.updateStatus({
+      errandId,
+      status: ErrandStatus.NEARBY,
+    });
+
+    this.notification.createNotification({
+      headings: { en: "Package nearby" },
+      contents: {
+        en: "The package is nearby, please be ready to pick it up",
+      },
+      data: { errandId: errand?._id },
+      userId: errand?.customer,
+    });
+  };
+
+
   arrivedDeliveryLocation = async (errandId: string) => {
     const errand = await this.errandRepo.updateStatus({
       errandId,
