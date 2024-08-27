@@ -8,7 +8,14 @@ export class ValidateCustomer {
     const signUpSchema = joi.object({
       fullName: joi.string().required(),
       displayName: joi.string().label("Display name").required(),
-      phoneNumber: joi.string().label("Phone number").required(),
+      phoneNumber: joi
+        .string()
+        .label("Phone number")
+        .required()
+        .pattern(
+          /^([0]{1}|\+?[2][3][4])([7-9]{1})([0|1]{1})([\d]{1})([\d]{7})$/
+        )
+        .message("Invalid phone number format"),
       email: joi.string().label("Email").required(),
       dateOfBirth: joi.string().label("Date of birth").required(),
       address: joi.string().label("Address").required(),

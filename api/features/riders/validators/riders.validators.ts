@@ -11,7 +11,14 @@ class ValidateRider {
     const signUpSchema = joi.object({
       fullName: joi.string().required().label("Full name"),
       displayName: joi.string().required().label("Display name"),
-      phoneNumber: joi.string().required().label("Phone number"),
+      phoneNumber: joi
+        .string()
+        .required()
+        .label("Phone number")
+        .pattern(
+          /^([0]{1}|\+?[2][3][4])([7-9]{1})([0|1]{1})([\d]{1})([\d]{7})$/
+        )
+        .message("Invalid phone number format"),
       email: joi.string().required().label("Email"),
       password: joi.string().required().label("Password"),
       dateOfBirth: joi.string().required().label("Date of birth"),

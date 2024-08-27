@@ -9,7 +9,14 @@ class ValidateVendor {
         businessName: joi.string().required().label("Business name"),
         businessLogo: joi.string().required().label("Business logo"),
         phoneNumber: joi.string().required().label("Phone number"),
-        password: joi.string().required().label("Password"),
+        password: joi
+          .string()
+          .required()
+          .label("Password")
+          .pattern(
+            /^([0]{1}|\+?[2][3][4])([7-9]{1})([0|1]{1})([\d]{1})([\d]{7})$/
+          )
+          .message("Invalid phone number format"),
         email: joi.string().required().label("Email"),
         address: joi.string().required().label("Address"),
         residentialAddress: joi
@@ -52,7 +59,10 @@ class ValidateVendor {
     return;
   };
 
-  getVendorsByCategory = async (payload: { email: string; password: string }) => {
+  getVendorsByCategory = async (payload: {
+    email: string;
+    password: string;
+  }) => {
     const schema = joi.object({
       coordinates: joi.array().required(),
     });
@@ -69,7 +79,7 @@ class ValidateVendor {
     return;
   };
 
-  rate = async (payload: {rating: number}) => {
+  rate = async (payload: { rating: number }) => {
     const schema = joi.object({
       rating: joi.number().integer().min(1).max(5).required(),
     });

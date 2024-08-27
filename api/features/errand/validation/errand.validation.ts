@@ -13,8 +13,13 @@ export class ValidateErrand {
       description: Joi.string().label("Description").required(),
       receiver: Joi.object({
         name: Joi.string().label("Receiver's name").required(),
-        phoneNumber: Joi.string().label("Receiver's phone number").required(),
-        //   .pattern(/^[0-9]{10}$/), // Validating 10-digit phone number
+        phoneNumber: Joi.string()
+          .label("Receiver's phone number")
+          .required()
+          .pattern(
+            /^([0]{1}|\+?[2][3][4])([7-9]{1})([0|1]{1})([\d]{1})([\d]{7})$/
+          )
+          .message("Invalid phone number format"),
       })
         .label("Receiver")
         .required(),
