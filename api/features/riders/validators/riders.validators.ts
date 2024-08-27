@@ -19,7 +19,14 @@ class ValidateRider {
           /^([0]{1}|\+?[2][3][4])([7-9]{1})([0|1]{1})([\d]{1})([\d]{7})$/
         )
         .message("Invalid phone number format"),
-      email: joi.string().required().label("Email"),
+      email: joi
+        .string()
+        .required()
+        .label("Email")
+        .pattern(
+          /^[a-zA-Z0-9.!#$%&’*+/=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+        )
+        .message("Invalid email format"),
       password: joi.string().required().label("Password"),
       dateOfBirth: joi.string().required().label("Date of birth"),
       residentialAddress: joi.string().required().label("Residential address"),

@@ -8,7 +8,13 @@ import { HandleException, PAYMENT_PURPOSE, STATUS_CODES } from "../../../utils";
 class ValidateTransactions {
   initializeTransaction = async (payload: IInitializeTransaction) => {
     const schema = Joi.object().keys({
-      email: Joi.string().email().required(),
+      email: Joi.string()
+        .email()
+        .required()
+        .pattern(
+          /^[a-zA-Z0-9.!#$%&’*+/=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+        )
+        .message("Invalid email format"),
       amount: Joi.string().required(),
       metadata: Joi.object()
         .keys({
@@ -25,7 +31,7 @@ class ValidateTransactions {
             then: Joi.string().required(),
             otherwise: Joi.forbidden().messages({
               "any.unknown":
-              "vendorId is forbidden when reason for payment is not for product purchase",
+                "vendorId is forbidden when reason for payment is not for product purchase",
             }),
           }),
         })

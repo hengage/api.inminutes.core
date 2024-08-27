@@ -16,7 +16,10 @@ export class ValidateCustomer {
           /^([0]{1}|\+?[2][3][4])([7-9]{1})([0|1]{1})([\d]{1})([\d]{7})$/
         )
         .message("Invalid phone number format"),
-      email: joi.string().label("Email").required(),
+      email: joi.string().label("Email").required() .pattern(
+        /^[a-zA-Z0-9.!#$%&’*+/=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+      )
+      .message("Invalid email format"),
       dateOfBirth: joi.string().label("Date of birth").required(),
       address: joi.string().label("Address").required(),
       password: joi.string().label("Password").required(),
