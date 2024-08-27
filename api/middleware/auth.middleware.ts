@@ -2,8 +2,9 @@ import { NextFunction, Request, Response } from "express";
 import { Socket } from "socket.io";
 
 import jwt from "jsonwebtoken";
+import { rateLimit } from "express-rate-limit";
 
-import { STATUS_CODES } from "../utils";
+import { handleErrorResponse, STATUS_CODES } from "../utils";
 import { JWT_SECRET_KEY } from "../config";
 import { JWT_ALGORITHMS } from "../config/secrets.config";
 
@@ -90,4 +91,19 @@ const errandHistoryMiddleware = async (
   return next();
 };
 
-export { verifyAuthTokenMiddleware, socketGuard, errandHistoryMiddleware };
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 5,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+  message:{ error: "Too many requests, try again later" },
+  // store: ... , // Redis
+});
+// Todo: use 'rate-limit-redis' for persistent storage https://www.npmjs.com/package/rate-limit-redis
+
+export {
+  verifyAuthTokenMiddleware,
+  socketGuard,
+  errandHistoryMiddleware,
+  limiter,
+};
