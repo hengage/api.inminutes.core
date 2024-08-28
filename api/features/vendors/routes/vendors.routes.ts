@@ -3,7 +3,7 @@ import { vendorsController } from "../controllers/vendors.controller";
 import { verifyAuthTokenMiddleware } from "../../../middleware";
 import { vendorsCategoryController } from "../controllers/vendorsCategory.controller";
 import { vendorsOrdersController } from "../controllers/vendorsOrders.controller";
-import { limiter } from "../../../middleware/auth.middleware";
+import { authLimiter } from "../../../middleware/auth.middleware";
 
 class VendorsRoutes {
   router = Router();
@@ -13,8 +13,8 @@ class VendorsRoutes {
   }
 
   initializeRoutes() {
-    this.router.route("/register").post(limiter,vendorsController.signup);
-    this.router.route("/login").post(limiter,vendorsController.login);
+    this.router.route("/register").post(authLimiter,vendorsController.signup);
+    this.router.route("/login").post(authLimiter,vendorsController.login);
 
     this.router.route("/category").get(vendorsCategoryController.getCategories);
     this.router

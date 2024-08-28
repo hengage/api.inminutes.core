@@ -91,7 +91,7 @@ const errandHistoryMiddleware = async (
   return next();
 };
 
-const limiter = rateLimit({
+const otpLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   limit: 5,
   standardHeaders: "draft-7",
@@ -101,9 +101,31 @@ const limiter = rateLimit({
 });
 // Todo: use 'rate-limit-redis' for persistent storage https://www.npmjs.com/package/rate-limit-redis
 
+const authLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 15 minutes
+  limit: 8,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+  message:{ error: "Too many attempts, try again later" },
+  // store: ... , // Redis
+});
+
+const cashoutLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 6,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+  message:{ error: "Too many attempts, try again later" },
+  // store: ... , // Redis
+});
+
+
+
 export {
   verifyAuthTokenMiddleware,
   socketGuard,
   errandHistoryMiddleware,
-  limiter,
+  otpLimiter,
+  authLimiter,
+  cashoutLimiter
 };

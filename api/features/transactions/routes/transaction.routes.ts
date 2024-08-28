@@ -2,7 +2,7 @@ import { Router } from "express";
 import { transactionController } from "../controllers/transactions.controller";
 import { verifyAuthTokenMiddleware } from "../../../middleware";
 import { cashoutTransferController } from "../controllers/cashoutTransfer.controller";
-import { limiter } from "../../../middleware/auth.middleware";
+import { cashoutLimiter } from "../../../middleware/auth.middleware";
 
 class TransactionRoutes {
   router = Router();
@@ -28,7 +28,7 @@ class TransactionRoutes {
 
     this.router
       .route("/merchant-cashout")
-      .post(limiter, cashoutTransferController.initialize);
+      .post(cashoutLimiter, cashoutTransferController.initialize);
   }
 }
 

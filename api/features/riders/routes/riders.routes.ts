@@ -6,7 +6,7 @@ import {
 import { ridersController } from "../controllers/riders.controllers";
 import { timeSlotController } from "../controllers/timeSlot.controller";
 import { RiderErrandController } from "../controllers/ridersErrand.controller";
-import { limiter } from "../../../middleware/auth.middleware";
+import { authLimiter } from "../../../middleware/auth.middleware";
 
 class RidersRoutes {
   private riderErrandController: RiderErrandController;
@@ -18,8 +18,8 @@ class RidersRoutes {
   }
 
   initializeRoutes() {
-    this.router.route("/signup").post(limiter, ridersController.signup);
-    this.router.route("/login").post(limiter, ridersController.login);
+    this.router.route("/signup").post(authLimiter, ridersController.signup);
+    this.router.route("/login").post(authLimiter, ridersController.login);
 
     this.router.use(verifyAuthTokenMiddleware);
 
