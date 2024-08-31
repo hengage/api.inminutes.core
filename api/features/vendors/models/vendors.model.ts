@@ -6,7 +6,7 @@ import { IVendorDocument } from "../vendors.interface";
 import {
   ACCOUNT_STATUS,
   PAYMENT_OPTIONS,
-} from "../../../utils/constants.utils";
+} from "../../../config/constants.config";
 
 import {
   encryptValue,

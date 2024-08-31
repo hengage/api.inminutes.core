@@ -11,7 +11,7 @@ import {
   // WALLET_STATUS,
   generateUniqueString,
 } from "../../../utils";
-import { CASHOUT_CHANNEL, WALLET_STATUS } from "../../../utils/constants.utils";
+import { CASHOUT_CHANNEL, WALLET_STATUS } from "../../../config/constants.config";
 
 const walletSchema = new Schema<IWalletDocument>(
   {

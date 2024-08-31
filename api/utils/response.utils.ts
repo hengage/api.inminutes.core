@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { STATUS_CODES } from "./constants.utils";
+import { STATUS_CODES } from "../config/constants.config";
 
 function handleErrorResponse(
   res: Response,

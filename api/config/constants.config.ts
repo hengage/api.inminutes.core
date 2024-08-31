@@ -72,3 +72,8 @@ export enum ErrandStatus {
   DELIVERED = "delivered",
   CANCELLED = "cancelled",
 }
+
+export enum RATE_LIMIT_WINDOW_MS {
+  DEFAULT = 15 * 60 * 1000, // 15 minutes
+  CASHOUT_LIMIT = 60 * 60 * 1000, // 1 hour
+}

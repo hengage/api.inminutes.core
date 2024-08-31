@@ -1,7 +1,7 @@
 import { Document } from "mongoose";
 import { ICustomerDocument } from "../customers";
 import { IRiderDocument } from "../riders";
-import { ErrandStatus } from "../../utils/constants.utils";
+import { ErrandStatus } from "../../config/constants.config";
 
 export interface IErrandDocument extends Document {
   _id: string;

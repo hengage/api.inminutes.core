@@ -6,7 +6,7 @@ import {
   IErrandDocument,
   IErrandPackageTypeDocument,
 } from "../errand.interface";
-import { ErrandStatus } from "../../../utils/constants.utils";
+import { ErrandStatus } from "../../../config/constants.config";
 
 const errandSchema = new Schema<IErrandDocument>(
   {

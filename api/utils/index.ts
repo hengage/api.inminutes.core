@@ -2,7 +2,7 @@ export { deliveryService } from "../services/delivery.service";
 
 export { calculateAverageRating } from "./calculateRating";
 
-export { WALLET_STATUS, CASHOUT_CHANNEL } from "./constants.utils";
+export { WALLET_STATUS, CASHOUT_CHANNEL } from "../config/constants.config";
 export { handleErrorResponse } from "./response.utils";
 
 export { HandleException } from "./handleException.utils";
@@ -14,7 +14,7 @@ export {
   ORDER_STATUS,
   RIDER_WORK_SLOT_STATUS,
   PAYMENT_PURPOSE,
-} from "./constants.utils";
+} from "../config/constants.config";
 export {
   generateUniqueString,
   toLowerCaseSetter,

@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import { IRiderTimeSlotDocument } from "../riders.interface";
 import {  generateUniqueString } from "../../../utils";
-import { RIDER_WORK_SLOT_STATUS, } from "../../../utils/constants.utils";
+import { RIDER_WORK_SLOT_STATUS, } from "../../../config/constants.config";
 
 const TimeSlotSchema = new Schema<IRiderTimeSlotDocument>(
   {

@@ -1,5 +1,5 @@
 import { HandleException, STATUS_CODES } from "../../../utils";
-import { ErrandStatus } from "../../../utils/constants.utils";
+import { ErrandStatus } from "../../../config/constants.config";
 import { ICreateErrandData, IErrandDocument } from "../errand.interface";
 import { Errand } from "../models/errand.models";
 import { PaginatedQueryResult, PaginateQueryOptions } from "../../../types";

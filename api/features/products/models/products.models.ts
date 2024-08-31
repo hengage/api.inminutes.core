@@ -2,7 +2,7 @@ import { PaginateModel, Schema, model } from "mongoose";
 
 import paginate from "mongoose-paginate-v2";
 
-import { PRODUCT_STATUS,  } from "../../../utils/constants.utils";
+import { PRODUCT_STATUS,  } from "../../../config/constants.config";
 import { generateUniqueString } from "../../../utils";
 import {
   IProductCategoryDocument,

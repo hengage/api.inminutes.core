@@ -1,6 +1,6 @@
 import { PaginateModel, Schema, model } from "mongoose";
 import { generateUniqueString } from "../../../utils";
-import { ORDER_STATUS,} from "../../../utils/constants.utils";
+import { ORDER_STATUS,} from "../../../config/constants.config";
 import { IOrdersDocument } from "../orders.interface";
 import paginate from "mongoose-paginate-v2";
 

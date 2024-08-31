@@ -1,13 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import { Socket } from "socket.io";
 
-import jwt,  { JwtPayload }  from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { rateLimit } from "express-rate-limit";
 
 import { handleErrorResponse, STATUS_CODES } from "../utils";
 import { JWT_SECRET_KEY } from "../config";
 import { JWT_ALGORITHMS } from "../config/secrets.config";
 import { CustomJwtPayload } from "../types";
+import { RATE_LIMIT_WINDOW_MS } from "../config/constants.config";
 
 /**
   Verifies the authentication token for a request.
@@ -72,7 +73,11 @@ const errandHistoryMiddleware = async (
   const userType = req.query.usertype as "customer" | "rider";
   console.log({ userType });
   if (!userType) {
-    return handleErrorResponse(res, STATUS_CODES.BAD_REQUEST, "Invalid user type");
+    return handleErrorResponse(
+      res,
+      STATUS_CODES.BAD_REQUEST,
+      "Invalid user type"
+    );
   }
 
   if (userType !== "customer" && userType != "rider") {
@@ -84,34 +89,34 @@ const errandHistoryMiddleware = async (
   return next();
 };
 
-const otpLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: 5,
-  standardHeaders: "draft-7",
-  legacyHeaders: false,
-  message: { error: "Too many requests, try again later" },
-  // store: ... , // Redis
-});
 // Todo: use 'rate-limit-redis' for persistent storage https://www.npmjs.com/package/rate-limit-redis
 
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: 8,
-  standardHeaders: "draft-7",
-  legacyHeaders: false,
-  message: { error: "Too many attempts, try again later" },
-  // store: ... , // Redis
-});
+const createRateLimiter = (limit: number, windowMs: number, message: string) =>
+  rateLimit({
+    windowMs,
+    limit,
+    standardHeaders: "draft-7",
+    legacyHeaders: false,
+    message: { error: message },
+  });
 
-const cashoutLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 minutes
-  limit: 6,
-  standardHeaders: "draft-7",
-  legacyHeaders: false,
-  message: { error: "Too many attempts, try again later" },
-  // store: ... , // Redis
-});
+const otpLimiter = createRateLimiter(
+  5,
+  RATE_LIMIT_WINDOW_MS.DEFAULT,
+  "Too many requests, try again later"
+);
 
+const authLimiter = createRateLimiter(
+  6,
+  RATE_LIMIT_WINDOW_MS.DEFAULT,
+  "Too many attempts, try again later"
+);
+
+const cashoutLimiter = createRateLimiter(
+  5,
+  RATE_LIMIT_WINDOW_MS.CASHOUT_LIMIT,
+  "Too many attempts, try again later"
+);
 
 const decodeToken = (token: string): CustomJwtPayload | string => {
   return jwt.verify(token, `${JWT_SECRET_KEY}`, {
