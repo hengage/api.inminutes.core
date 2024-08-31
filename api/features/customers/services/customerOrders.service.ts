@@ -16,20 +16,21 @@ export class CustomersOrdersService {
    * @returns
    */
   async orderMetrics(customerId: string) {
-    const pendingOrdersCount = await this.orderModel.countDocuments({
-      customer: customerId,
-      status: ORDER_STATUS.PENDING,
-    });
-
-    const successfulOrdersCount = await this.orderModel.countDocuments({
-      customer: customerId,
-      status: ORDER_STATUS.DELIVERED,
-    });
-
-    const cancelledOrdersCount = await this.orderModel.countDocuments({
-      customer: customerId,
-      status: ORDER_STATUS.CANCELLED,
-    });
+    const [pendingOrdersCount, successfulOrdersCount, cancelledOrdersCount] =
+      await Promise.all([
+        this.orderModel.countDocuments({
+          customer: customerId,
+          status: ORDER_STATUS.PENDING,
+        }),
+        this.orderModel.countDocuments({
+          customer: customerId,
+          status: ORDER_STATUS.DELIVERED,
+        }),
+        this.orderModel.countDocuments({
+          customer: customerId,
+          status: ORDER_STATUS.CANCELLED,
+        }),
+      ]);
 
     return {
       pendingOrdersCount,
@@ -58,7 +59,7 @@ export class CustomersOrdersService {
       sort: { createdAt: -1 },
     };
 
-    const orders = this.orderModel.paginate(query, options);
+    const orders = await this.orderModel.paginate(query, options);
     return orders;
   }
 }

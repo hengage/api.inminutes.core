@@ -37,3 +37,9 @@ type PaginateQueryOptions = {
   lean?: boolean;
   leanWithId?: boolean;
 };
+import jwt,  { JwtPayload }  from "jsonwebtoken";
+
+type CustomJwtPayload = JwtPayload & {
+  _id: string;
+  phoneNumber: string;
+};
