@@ -3,7 +3,7 @@ import { compareValues } from "../utils";
 
 import { Strategy } from "passport-local";
 import passport from "passport";
-import { INCORRECT_CREDENTIALS_MESSAGE } from "./constants.config";
+import { msg } from "../lib";
 
 
 const localStrategy = new Strategy(
@@ -17,13 +17,13 @@ const localStrategy = new Strategy(
 
       if (!customer) {
         return done(null, false, {
-          message: INCORRECT_CREDENTIALS_MESSAGE,
+          message: msg.INCORRECT_CREDENTIALS,
         });
       }
       const passwordsMatch = await compareValues(password, customer.password);
       return passwordsMatch
         ? done(null, customer)
-        : done(null, false, { message: INCORRECT_CREDENTIALS_MESSAGE });
+        : done(null, false, { message: msg.INCORRECT_CREDENTIALS });
     } catch (error) {
       console.error("Authentication error:", error);
       done(null, false, { message: "An error occurred during authentication." });
