@@ -1,4 +1,8 @@
-import { HandleException, STATUS_CODES } from "../../../utils";
+import {
+  formatPhoneNumberforDB,
+  HandleException,
+  STATUS_CODES,
+} from "../../../utils";
 import { ErrandStatus } from "../../../config/constants.config";
 import { ICreateErrandData, IErrandDocument } from "../errand.interface";
 import { Errand } from "../models/errand.models";
@@ -6,15 +10,21 @@ import { PaginatedQueryResult, PaginateQueryOptions } from "../../../types";
 
 export class ErrandRepository {
   create = async (
-    createErranddata: ICreateErrandData
+    createErrandData: ICreateErrandData
   ): Promise<IErrandDocument> => {
     const data = {
-      ...createErranddata,
+      ...createErrandData,
       pickupCoordinates: {
-        coordinates: createErranddata.pickupCoordinates,
+        coordinates: createErrandData.pickupCoordinates,
       },
       dropoffCoordinates: {
-        coordinates: createErranddata.dropoffCoordinates,
+        coordinates: createErrandData.dropoffCoordinates,
+      },
+      receiver: {
+        name: createErrandData.receiver.name,
+        phoneNumber: formatPhoneNumberforDB(
+          createErrandData.receiver.phoneNumber
+        ),
       },
     };
 

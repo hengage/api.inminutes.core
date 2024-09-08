@@ -1,10 +1,11 @@
 import { ClientSession } from "mongoose";
-import {  emitEvent } from "../../../services";
+import { emitEvent } from "../../../services";
 import {
   HandleException,
   STATUS_CODES,
   calculateAverageRating,
   compareValues,
+  formatPhoneNumberforDB,
 } from "../../../utils";
 import { Vendor } from "../models/vendors.model";
 import { IVendorDocument, IVendorSignupData } from "../vendors.interface";
@@ -22,8 +23,10 @@ class VendorsRepository {
   async signup(
     vendorData: IVendorSignupData
   ): Promise<Partial<IVendorDocument>> {
+    const formattedPhoneNumber = formatPhoneNumberforDB(vendorData.phoneNumber);
     const vendor = await Vendor.create({
       ...vendorData,
+      phoneNumber: formattedPhoneNumber,
       location: {
         coordinates: vendorData.location,
       },

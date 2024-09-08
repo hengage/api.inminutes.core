@@ -54,7 +54,32 @@ function generateReference() {
   return reference;
 }
 
+/**
+ * Formats a phone number for storage in the database.
+ *
+ * This function takes a phone number string as input and returns a formatted version
+ * that is suitable for storage in the database. It removes all non-digit characters
+ * from the input, and ensures that the phone number is prefixed with "234" if it
+ * does not already start with "0" or "234".
+ *
+ * @param phoneNumber - The phone number to be formatted.
+ * @returns The formatted phone number.
+ */
+function formatPhoneNumberforDB(phoneNumber: string): string {
+  // Remove all non-digit characters
+  const digitsOnly = phoneNumber.replace(/\D/g, '');
+
+  if (digitsOnly.startsWith("0")) {
+    return "234" + digitsOnly.slice(1);
+  } else if (digitsOnly.startsWith("234")) {
+    return digitsOnly;
+  } else {
+    return digitsOnly;
+  }
+}
+
 export {
+  formatPhoneNumberforDB,
   generateUniqueString,
   toLowerCaseSetter,
   encryptValue,

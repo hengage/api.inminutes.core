@@ -5,6 +5,7 @@ import {
   STATUS_CODES,
   calculateAverageRating,
   compareValues,
+  formatPhoneNumberforDB,
 } from "../../../utils";
 import { Rider } from "../models/riders.model";
 import { ICreateRiderData, IRiderDocument } from "../riders.interface";
@@ -35,7 +36,9 @@ export class RidersRepository {
   @param {string} phoneNumber - The phone number to check for.
   */
   async checkPhoneNumberIstaken(phoneNumber: string) {
-    const rider = await Rider.findOne({ phoneNumber })
+    const rider = await Rider.findOne({
+      phoneNumber: formatPhoneNumberforDB(phoneNumber),
+    })
       .select("phoneNumber")
       .lean();
 
@@ -56,7 +59,13 @@ export class RidersRepository {
   @param {object} riderData - The rider data.
   */
   async signup(riderData: ICreateRiderData): Promise<Partial<IRiderDocument>> {
-    const rider = await Rider.create(riderData);
+    const formattedPhoneNumber = formatPhoneNumberforDB(
+      riderData.phoneNumber
+    );
+    const rider = await Rider.create({
+      ...riderData,
+      phoneNumber: formattedPhoneNumber,
+    });
 
     emitEvent.emit("create-wallet", {
       riderId: rider._id,

@@ -30,7 +30,7 @@ class VerifyService {
       const verification = await this.twilioClient.verify.v2
         .services(this.verifyServiceSID)
         .verifications.create({
-          to: recipientPhoneNumber,
+          to: this.formatPhoneNumber(recipientPhoneNumber),
           channel: VERIFICATION_CHANNELS[channel],
         });
       return verification;
@@ -51,7 +51,7 @@ class VerifyService {
       const verificationCheck = await this.twilioClient.verify.v2
         .services(this.verifyServiceSID)
         .verificationChecks.create({
-          to: recipientPhoneNumber,
+          to: this.formatPhoneNumber(recipientPhoneNumber),
           code: otpCode,
         });
 
@@ -67,6 +67,24 @@ class VerifyService {
       }
       throw error;
     }
+  };
+
+  private formatPhoneNumber = (phoneNumber: string): string => {
+    // Remove any non-digit characters
+    const digitsOnly = phoneNumber.replace(/\D/g, '');
+    
+    // Check if the number starts with '234' (Nigeria's country code)
+    if (digitsOnly.startsWith('234')) {
+      return `+${digitsOnly}`;
+    }
+    
+    // If it starts with '0', replace it with '+234'
+    if (digitsOnly.startsWith('0')) {
+      return `+234${digitsOnly.slice(1)}`;
+    }
+    
+    // If it doesn't start with '0' or '234', assume it's a local number and add '+234'
+    return `+234${digitsOnly}`;
   };
 }
 

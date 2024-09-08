@@ -22,4 +22,5 @@ export {
   compareValues,
   generateJWTToken,
   generateReference,
+  formatPhoneNumberforDB,
 } from "./strings.utils";

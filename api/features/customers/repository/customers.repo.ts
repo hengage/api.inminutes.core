@@ -1,4 +1,4 @@
-import { HandleException, STATUS_CODES } from "../../../utils";
+import { formatPhoneNumberforDB, HandleException, STATUS_CODES } from "../../../utils";
 import {
   ICreateCustomerData,
   ICustomerDocument,
@@ -45,7 +45,13 @@ export class CustomersRepository {
   async signup(
     createCustomerData: ICreateCustomerData
   ): Promise<Partial<ICustomerDocument>> {
-    const customer = new Customer(createCustomerData);
+    const formattedPhoneNumber = formatPhoneNumberforDB(
+      createCustomerData.phoneNumber
+    );
+    const customer = new Customer({
+      ...createCustomerData,
+      phoneNumber: formattedPhoneNumber,
+    });
 
     await customer.save();
 
