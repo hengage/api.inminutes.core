@@ -11,7 +11,7 @@ class VerifyController {
         message: "OTP sent",
       });
     } catch (error: any) {
-      handleErrorResponse(res, error, "Failed to send otp");
+      handleErrorResponse(res, error, "Failed");
     }
   };
 

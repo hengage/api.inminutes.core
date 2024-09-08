@@ -6,6 +6,13 @@ import {
 } from "../../../config";
 import { HandleException, STATUS_CODES } from "../../../utils";
 
+const VERIFICATION_CHANNELS = {
+  SMS: "sms",
+  WHATSAPP: "whatsapp",
+} as const;
+
+type VerificationChannel = keyof typeof VERIFICATION_CHANNELS;
+
 class VerifyService {
   private twilioClient: Twilio;
   private verifyServiceSID: string;
@@ -15,17 +22,24 @@ class VerifyService {
     this.verifyServiceSID = `${TWILIO_VERIFY_SID}`;
   }
 
-  sendVerificationCode = async (recipientPhoneNumber: string) => {
+  sendVerificationCode = async (
+    recipientPhoneNumber: string,
+    channel: VerificationChannel = "SMS"
+  ) => {
     try {
       const verification = await this.twilioClient.verify.v2
         .services(this.verifyServiceSID)
         .verifications.create({
           to: recipientPhoneNumber,
-          channel: "sms",
+          channel: VERIFICATION_CHANNELS[channel],
         });
       return verification;
     } catch (error) {
-      throw error;
+      console.error("Error sending verification code:", error);
+      throw new HandleException(
+        STATUS_CODES.SERVER_ERROR,
+        "Failed to send otp"
+      );
     }
   };
 
