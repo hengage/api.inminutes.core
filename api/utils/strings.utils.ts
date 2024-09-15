@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 import { JWT_SECRET_KEY } from "../config";
 import { JWT_ALGORITHMS } from "../config/secrets.config";
 
-function generateUniqueString(length: number) {
+function generateUniqueString(length: number): string {
   const randomBytes = crypto.randomBytes(Math.ceil(length / 2));
   const hexString = randomBytes.toString("hex").slice(0, length);
   const timestamp = DateTime.now().toUnixInteger().toString().substring(6);
@@ -26,7 +26,7 @@ async function encryptValue(value: string): Promise<string> {
   //   throw new Error(error.message);
   // }
 }
-async function compareValues(plainValue: string, hashValue: string) {
+async function compareValues(plainValue: string, hashValue: string): Promise<boolean> {
   return bcrypt.compare(plainValue, hashValue);
 }
 
@@ -37,7 +37,7 @@ function generateJWTToken(payload: any, expiresIn: string): string {
   });
 }
 
-function generateReference() {
+function generateReference(): string {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let reference = "";

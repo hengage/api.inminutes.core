@@ -2,6 +2,7 @@ import { Document } from "mongoose";
 import { ICustomerDocument } from "../customers";
 import { IRiderDocument } from "../riders";
 import { ErrandStatus } from "../../config/constants.config";
+import { Coordinates } from "../../types";
 
 export interface IErrandDocument extends Document {
   _id: string;
@@ -16,12 +17,12 @@ export interface IErrandDocument extends Document {
   pickupAddress: string;
   pickupCoordinates: {
     type: string;
-    coordinates: [number, number];
+    coordinates: Coordinates;
   };
   dropoffAddress: string;
   dropoffCoordinates: {
     type: string;
-    coordinates: [number, number];
+    coordinates: Coordinates;
   };
   dispatchFee: string;
   status: ErrandStatus;
@@ -39,25 +40,17 @@ export interface IErrandPackageTypeDocument extends Document {
   updatedAt: string;
 }
 
-export interface ICreateErrandData {
-  packageType: [IErrandPackageTypeDocument];
-  customer: ICustomerDocument["_id"];
-  receiver: {
-    name: string;
-    phoneNumber: string;
-  };
-  description?: string;
-  pickupAddress: string;
-  pickupCoordinates: {
-    type: string;
-    coordinates: [number, number];
-  };
-  dropoffAddress: string;
-  dropoffCoordinates: {
-    type: string;
-    coordinates: [number, number];
-  };
-  dispatchFee: string;
-  type: "instant" | "scheduled";
-  scheduledPickUpTime?: Date;
+export interface ICreateErrandData extends Pick<IErrandDocument, 
+  'packageType' | 
+  'customer' | 
+  'receiver' | 
+  'description' | 
+  'pickupAddress' | 
+  'pickupCoordinates' | 
+  'dropoffAddress' | 
+  'dropoffCoordinates' | 
+  'dispatchFee' | 
+  'type'
+> {
+  scheduledPickupTime?: Date;
 }

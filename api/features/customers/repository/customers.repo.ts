@@ -1,4 +1,8 @@
-import { formatPhoneNumberforDB, HandleException, STATUS_CODES } from "../../../utils";
+import {
+  formatPhoneNumberforDB,
+  HandleException,
+  STATUS_CODES,
+} from "../../../utils";
 import {
   ICreateCustomerData,
   ICustomerDocument,
@@ -88,17 +92,13 @@ export class CustomersRepository {
     customerId: string,
     customerData: IUpdateCustomerProfile
   ): Promise<Partial<ICustomerDocument>> {
-    // Create an array of fields to select from the customer document
-    // Populate the array with the keys from the customerData object
-    const select = Object.keys(customerData);
-    // Add "-_id" to the array to exclude the _id field from the selection
-    select.push("-_id");
+    const select = [...Object.keys(customerData), "-_id"];
 
     const customer = await Customer.findByIdAndUpdate(
       customerId,
       { $set: customerData },
-      { new: true }
-    ).select(select);
+      { new: true, select }
+    );
 
     if (!customer) {
       throw new HandleException(STATUS_CODES.NOT_FOUND, "Customer not found");

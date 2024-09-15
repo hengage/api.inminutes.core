@@ -1,34 +1,31 @@
 import { Document } from "mongoose";
+import { Coordinates } from "../../types";
 
-export interface ICustomerDocument extends Document {
+type BasicCustomerInfo = Record<
+  | "fullName"
+  | "displayName"
+  | "phoneNumber"
+  | "email"
+  | "password"
+  | "deliveryAddress"
+  | "displayPhoto",
+  string
+>;
+
+export interface ICustomerDocument extends Document, BasicCustomerInfo {
   _id: string;
-  fullName: string;
-  displayName: string;
-  phoneNumber: string;
-  email: string;
-  password: string;
   dateOfBirth: Date;
-  deliveryAddress: string;
   deliveryAddressCoords: {
     type: string;
-    coordinates: [number, number];
+    coordinates: Coordinates;
   };
-  displayPhoto: string;
 }
+export interface IUpdateCustomerProfile
+  extends Partial<
+    Pick<ICustomerDocument, "fullName" | "email" | "dateOfBirth">
+  > {}
 
-export interface IUpdateCustomerProfile {
-  fullName: string;
-  email: string;
-  dateOfBirth: Date;
-  address: string;
-}
-
-export interface ICreateCustomerData {
-  fullName: string;
-  displayName: string;
-  phoneNumber: string;
-  email: string;
-  password: string;
+export interface ICreateCustomerData
+  extends Omit<BasicCustomerInfo, "displayPhoto"> {
   dateOfBirth: string;
-  deliveryAddress: string;
 }

@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 
 import { HandleException, STATUS_CODES, handleErrorResponse } from "../../../utils";
 import { MediaService } from "../services/media.service";
+import { DynamicObject } from "../../../types";
 
 export class MediaController {
   private mediaService: MediaService;
@@ -10,7 +11,7 @@ export class MediaController {
     this.mediaService = new MediaService();
   }
   public uploadMedia = async (req: Request, res: Response) => {
-    const files = req.files as Record<string, any>;
+    const files = req.files as DynamicObject;
     const tags = req.query.tags as string;
 
     try {

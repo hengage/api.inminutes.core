@@ -15,18 +15,20 @@ import { Document } from "mongoose";
  * @property {number | null} prevPage - The page number of the previous page, or `null` if there is no previous page.
  * @property {number | null} nextPage - The page number of the next page, or `null` if there is no next page.
  */
-type PaginatedQueryResult<T extends Document> = {
-  docs: T[];
-  totalDocs: number;
-  limit: number;
-  totalPages: number;
-  page: number;
-  pagingCounter: number;
-  hasPrevPage: boolean;
-  hasNextPage: boolean;
-  prevPage: number | null;
-  nextPage: number | null;
-};
+// type PaginatedQueryResult<T extends Document> = {
+//   docs: T[];
+//   totalDocs: number;
+//   limit: number;
+//   totalPages: number;
+//   page: number;
+//   pagingCounter: number;
+//   hasPrevPage: boolean;
+//   hasNextPage: boolean;
+//   prevPage: number | null;
+//   nextPage: number | null;
+// };
+
+type PaginatedQueryResult<T extends Document> = Record<[key: string], any>;
 
 type PaginateQueryOptions = {
   page: number;
@@ -37,9 +39,13 @@ type PaginateQueryOptions = {
   lean?: boolean;
   leanWithId?: boolean;
 };
-import jwt,  { JwtPayload }  from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 type CustomJwtPayload = JwtPayload & {
   _id: string;
   phoneNumber: string;
 };
+
+type Coordinates = [number, number];
+
+type DynamicObject = Record<string, { [key: string]: any }>;
