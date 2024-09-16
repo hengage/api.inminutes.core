@@ -2,7 +2,7 @@ import { startSession, ClientSession } from "mongoose";
 import { Wallet } from "../models/wallet.model";
 import Big from "big.js";
 import { NotificationService } from "../../notifications";
-import { HandleException, STATUS_CODES } from "../../../utils";
+import { HandleException, HTTP_STATUS_CODES } from "../../../utils";
 import { walletRepo } from "../repository/wallet.repository";
 
 /**
@@ -69,7 +69,7 @@ class WalletService {
 
     if (existingWallet) {
       throw new HandleException(
-        STATUS_CODES.CONFLICT,
+        HTTP_STATUS_CODES.CONFLICT,
         "You've already added this account number. Please use a different one."
       );
     }
@@ -101,7 +101,7 @@ class WalletService {
     });
     if (!wallet) {
       throw new HandleException(
-        STATUS_CODES.NOT_FOUND,
+        HTTP_STATUS_CODES.NOT_FOUND,
         `Wallet for merchant: ${merchantId} not found`
       );
     }

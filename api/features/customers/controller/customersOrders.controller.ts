@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { STATUS_CODES, handleErrorResponse } from "../../../utils";
+import { HTTP_STATUS_CODES, handleErrorResponse } from "../../../utils";
 import { CustomersOrdersService } from "../services/customerOrders.service";
 
 export class CustomersOrdersController {
@@ -15,7 +15,7 @@ export class CustomersOrdersController {
       const orderMetrics = await this.customersOrdersService.orderMetrics(
         customerId
       );
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         success: true,
         data: { orderMetrics },
       });
@@ -33,7 +33,7 @@ export class CustomersOrdersController {
         page,
       });
       console.log({ orders });
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         success: true,
         data: { orders },
       });

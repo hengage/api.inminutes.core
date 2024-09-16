@@ -1,5 +1,5 @@
 import {Request, Response } from "express";
-import { STATUS_CODES, handleErrorResponse } from "../../../utils";
+import { HTTP_STATUS_CODES, handleErrorResponse } from "../../../utils";
 import { vendorsOrdersService } from "../services/vendorsOrders.service";
 
 class VendorsOrdersController {
@@ -9,7 +9,7 @@ class VendorsOrdersController {
       const orderMetrics = await vendorsOrdersService.orderMetrics(
         vendorId
       );
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         success: true,
         data: {orderMetrics}
       })

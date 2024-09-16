@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { STATUS_CODES, handleErrorResponse } from "../../../utils";
+import { HTTP_STATUS_CODES, handleErrorResponse } from "../../../utils";
 import {UsersService } from "../../../services";
 import { authService } from "../services/auth.service";
 
@@ -13,12 +13,12 @@ class AuthController {
   async checkPhoneNumberIstaken(req: Request, res: Response) {
     try {
       await this.usersService.isPhoneNumberTaken(req.body.phoneNumber);
-      res.status(STATUS_CODES.NO_CONTENT).json({
+      res.status(HTTP_STATUS_CODES.NO_CONTENT).json({
         message: "succesful",
       });
     } catch (error: any) {
       // if ()
-      res.status(error.status || STATUS_CODES.SERVER_ERROR).json({
+      res.status(error.status || HTTP_STATUS_CODES.SERVER_ERROR).json({
         message: "Failed ",
         error: error.message || "Server error",
       });
@@ -30,7 +30,7 @@ class AuthController {
       const accessToken = await authService.refreshAccessToken(
         req.body.refreshToken
       );
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "Access token generated",
         data: { accessToken },
       });

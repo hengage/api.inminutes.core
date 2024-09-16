@@ -1,6 +1,6 @@
 import { ClientSession } from "mongoose";
 import { convertLatLngToCell, redisClient } from "../../../services";
-import { HandleException, ORDER_STATUS, STATUS_CODES } from "../../../utils";
+import { HandleException, ORDER_STATUS, HTTP_STATUS_CODES } from "../../../utils";
 import { Order, OrderFeedback } from "../models/orders.model";
 import {
   ICreateOrderData,
@@ -95,7 +95,7 @@ export class OrdersRepository {
     ).select("rider status customer");
 
     if (!order) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, "Order not found");
+      throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "Order not found");
     }
 
     return order;
@@ -116,11 +116,11 @@ export class OrdersRepository {
       .populate({ path: "vendor", select: "location.coordinates" });
 
     if (!order) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, "Order not found");
+      throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "Order not found");
     }
     if (order?.status === ORDER_STATUS.CANCELLED) {
       throw new HandleException(
-        STATUS_CODES.UNPROCESSABLE_ENTITY,
+        HTTP_STATUS_CODES.UNPROCESSABLE_ENTITY,
         "Order already cancelled"
       );
     }
@@ -145,12 +145,12 @@ export class OrdersRepository {
     const order = await Order.findById(orderId).select("rider").lean().exec();
 
     if (!order) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, "Order not found");
+      throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "Order not found");
     }
 
     if (order.rider) {
       throw new HandleException(
-        STATUS_CODES.UNPROCESSABLE_ENTITY,
+        HTTP_STATUS_CODES.UNPROCESSABLE_ENTITY,
         "Order already assigned to a rider"
       );
     }

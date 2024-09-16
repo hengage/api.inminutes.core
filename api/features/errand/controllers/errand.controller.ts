@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { errandService } from "../services/errand.service";
-import { handleErrorResponse, STATUS_CODES } from "../../../utils";
+import { handleErrorResponse, HTTP_STATUS_CODES } from "../../../utils";
 import { ValidateErrand } from "../validation/errand.validation";
 
 export class ErrandController {
@@ -24,7 +24,7 @@ export class ErrandController {
       await this.validateErrand.create(data);
       const errand = await errandService.create(data);
 
-      res.status(STATUS_CODES.CREATED).json({
+      res.status(HTTP_STATUS_CODES.CREATED).json({
         message: "success",
         data: { errand },
       });
@@ -38,7 +38,7 @@ export class ErrandController {
       const errand = await errandService.getErrand(req.params.errandId);
 
       console.log({ errand });
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "success",
         data: { errand },
       });

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { handleErrorResponse, STATUS_CODES } from "../../../utils";
+import { handleErrorResponse, HTTP_STATUS_CODES } from "../../../utils";
 import { RiderErrandService } from "../services/ridersErrand.service";
 
 export class RiderErrandController {
@@ -23,7 +23,7 @@ export class RiderErrandController {
         page,
         limit,
       });
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "success",
         history,
       });

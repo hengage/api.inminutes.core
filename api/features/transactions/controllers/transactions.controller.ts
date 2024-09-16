@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { STATUS_CODES, handleErrorResponse } from "../../../utils";
+import { HTTP_STATUS_CODES, handleErrorResponse } from "../../../utils";
 import { paymentTransactionService } from "../services/paymentTransaction.service";
 import { validateTransactions } from "../validation/transactions.validate";
 
@@ -21,7 +21,7 @@ class TransactionController {
   webhook(req: Request, res: Response) {
     try {
       paymentTransactionService.webhook(req);
-      res.sendStatus(STATUS_CODES.OK);
+      res.sendStatus(HTTP_STATUS_CODES.OK);
     } catch (error: any) {
       console.log({ error });
       res.sendStatus(error.status);
@@ -36,7 +36,7 @@ class TransactionController {
         startDate: req.query.start as string,
         endDate: req.query.end as string,
       });
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "success",
         data: transactionHistory,
       });
@@ -50,7 +50,7 @@ class TransactionController {
       const transactionDetails = await paymentTransactionService.getDetails(
         req.params.transactionId
       );
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "success",
         data: { transactionDetails },
       });

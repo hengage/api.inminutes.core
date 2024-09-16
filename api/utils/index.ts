@@ -7,7 +7,7 @@ export { handleErrorResponse } from "./response.utils";
 
 export { HandleException } from "./handleException.utils";
 export {
-  STATUS_CODES,
+  HTTP_STATUS_CODES,
   PAYMENT_OPTIONS,
   ACCOUNT_STATUS,
   PRODUCT_STATUS,

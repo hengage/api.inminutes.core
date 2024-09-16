@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import {
-  STATUS_CODES,
+  HTTP_STATUS_CODES,
   generateJWTToken,
   handleErrorResponse,
 } from "../../../utils";
@@ -24,7 +24,7 @@ class VendorsController {
       const accessToken = generateJWTToken(jwtPayload, "1h");
       const refreshToken = generateJWTToken(jwtPayload, "14d");
 
-      res.status(STATUS_CODES.CREATED).json({
+      res.status(HTTP_STATUS_CODES.CREATED).json({
         message: "Success",
         data: { vendor, accessToken, refreshToken },
       });
@@ -43,7 +43,7 @@ class VendorsController {
       console.log({tokenFromLogin:accessToken})
       const refreshToken = generateJWTToken(jwtPayload, "14d");
 
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "Login successful",
         data: { vendor, accessToken, refreshToken },
       });
@@ -56,7 +56,7 @@ class VendorsController {
     const id = (req as any).user._id;
     try {
       const vendor = await vendorsRepo.getMe(id);
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "Success",
         data: { vendor },
       });
@@ -70,7 +70,7 @@ class VendorsController {
     const vendor = (req as any).user;
     try {
       const products = await vendorsService.getProducts(vendor._id, page);
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "success",
         data: { products },
       });
@@ -90,7 +90,7 @@ class VendorsController {
         coordinates: req.body.coordinates,
       });
 
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "message",
         data: { vendors },
       });
@@ -109,7 +109,7 @@ class VendorsController {
         coordinates: req.body.coordinates
       });
 
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "success",
         data: { vendors },
       });
@@ -129,7 +129,7 @@ class VendorsController {
 
       // console.log(vendors)
 
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "success",
         data: { vendors },
       });
@@ -147,7 +147,7 @@ class VendorsController {
         {vendorId: req.params.vendorId, page, limit}
       );
 
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "success",
         data: { products },
       });

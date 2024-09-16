@@ -2,7 +2,7 @@ import { ClientSession } from "mongoose";
 import { convertLatLngToCell, emitEvent } from "../../../services";
 import {
   HandleException,
-  STATUS_CODES,
+  HTTP_STATUS_CODES,
   calculateAverageRating,
   compareValues,
   formatPhoneNumberforDB,
@@ -24,7 +24,7 @@ export class RidersRepository {
     const rider = await Rider.findOne({ email }).select("email").lean();
 
     if (rider) {
-      throw new HandleException(STATUS_CODES.CONFLICT, "Email already taken");
+      throw new HandleException(HTTP_STATUS_CODES.CONFLICT, "Email already taken");
     }
 
     return;
@@ -44,7 +44,7 @@ export class RidersRepository {
 
     if (rider) {
       throw new HandleException(
-        STATUS_CODES.CONFLICT,
+        HTTP_STATUS_CODES.CONFLICT,
         `Looks like you already have a rider account, ` +
           `please try to login instead`
       );
@@ -92,12 +92,12 @@ export class RidersRepository {
     );
 
     if (!rider) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, "Invalid credentials");
+      throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "Invalid credentials");
     }
 
     const passwordsMatch = await compareValues(password, rider.password);
     if (!passwordsMatch) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, "Invalid credentials");
+      throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "Invalid credentials");
     }
 
     return {
@@ -117,7 +117,7 @@ export class RidersRepository {
       .lean();
 
     if (!rider) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, "Rider not found");
+      throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "Rider not found");
     }
 
     return rider;
@@ -137,7 +137,7 @@ export class RidersRepository {
     const rider = await Rider.findById(riderId).select("location");
 
     if (!rider) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, "rider not found");
+      throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "rider not found");
     }
     rider.location.coordinates = coordinates;
     rider.h3Index = convertLatLngToCell(params.coordinates);
@@ -231,7 +231,7 @@ export class RidersRepository {
       }).select("rating");
 
       if (!rider) {
-        throw new HandleException(STATUS_CODES.NOT_FOUND, "Rider not found");
+        throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "Rider not found");
       }
 
       rider.rating.averageRating = calculateAverageRating(rider, rating);

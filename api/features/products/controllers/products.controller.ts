@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { STATUS_CODES, handleErrorResponse } from "../../../utils";
+import { HTTP_STATUS_CODES, handleErrorResponse } from "../../../utils";
 import { ProductsRepository } from "../repository/products.repo";
 import { validateProducts } from "../validators/products.validators";
 import { productsService } from "../services/products.service";
@@ -15,7 +15,7 @@ export class ProductsController {
   getCategories = async (req: Request, res: Response) => {
     try {
       const categories = await this.productsRepo.getCategories();
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "success",
         data: { categories },
       });
@@ -29,7 +29,7 @@ export class ProductsController {
       await validateProducts.addProduct(req.body);
       const vendor = (req as any).user._id;
       const product = await this.productsRepo.addProduct(req.body, vendor);
-      res.status(STATUS_CODES.CREATED).json({
+      res.status(HTTP_STATUS_CODES.CREATED).json({
         message: "Success",
         data: { product },
       });
@@ -41,7 +41,7 @@ export class ProductsController {
   details = async (req: Request, res: Response) => {
     try {
       const product = await productsService.details(req.params.productId);
-      res.status(STATUS_CODES.CREATED).json({
+      res.status(HTTP_STATUS_CODES.CREATED).json({
         message: "Success",
         data: { product },
       });
@@ -55,7 +55,7 @@ export class ProductsController {
       const vendor = (req as any).user;
       console.log(vendor);
       await this.productsRepo.deleteProduct(req.params.productId, vendor._id);
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "success",
       });
     } catch (error: any) {
@@ -72,7 +72,7 @@ export class ProductsController {
         page,
         term: req.body.term,
       });
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "success",
         data: { products },
       });
@@ -90,7 +90,7 @@ export class ProductsController {
       });
 
       console.log({ products });
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "success",
         data: { products },
       });

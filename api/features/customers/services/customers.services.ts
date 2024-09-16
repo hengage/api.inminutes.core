@@ -1,4 +1,3 @@
-import { HandleException, STATUS_CODES } from "../../../utils";
 import { MediaService } from "../../media";
 import { ICreateCustomerData } from "../customers.interface";
 import { CustomersRepository } from "../repository/customers.repo";

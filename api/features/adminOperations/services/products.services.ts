@@ -1,4 +1,4 @@
-import { HandleException, PRODUCT_STATUS, STATUS_CODES } from "../../../utils";
+import { HandleException, PRODUCT_STATUS, HTTP_STATUS_CODES } from "../../../utils";
 import { Product, ProductCategory } from "../../products";
 
 export class AdminOpsForProductsService {
@@ -17,7 +17,7 @@ export class AdminOpsForProductsService {
 
     if (categoryExists) {
       throw new HandleException(
-        STATUS_CODES.CONFLICT,
+        HTTP_STATUS_CODES.CONFLICT,
         "The category name already exists"
       );
     }

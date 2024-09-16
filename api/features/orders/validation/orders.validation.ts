@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { HandleException, STATUS_CODES } from "../../../utils";
+import { HandleException, HTTP_STATUS_CODES } from "../../../utils";
 
 /**
 Validates orders using Joi schemas.
@@ -49,7 +49,7 @@ export class ValidateOrders {
     });
 
     if (error) {
-      throw new HandleException(STATUS_CODES.BAD_REQUEST, error.message);
+      throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
     }
     return;
   };
@@ -72,7 +72,7 @@ export class ValidateOrders {
     });
 
     if (error) {
-      throw new HandleException(STATUS_CODES.BAD_REQUEST, error.message);
+      throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
     }
     return;
   };
@@ -106,7 +106,7 @@ export class ValidateOrders {
     });
 
     if (error) {
-      throw new HandleException(STATUS_CODES.BAD_REQUEST, error.message);
+      throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
     }
   };
 }

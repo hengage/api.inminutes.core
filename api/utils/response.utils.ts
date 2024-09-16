@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { STATUS_CODES } from "../config/constants.config";
+import { HTTP_STATUS_CODES } from "../config/constants.config";
 
 function handleErrorResponse(
   res: Response,
@@ -14,7 +14,7 @@ function handleErrorResponse(
       ? "Server error"
       : error.message;
 
-  res.status(error.status || STATUS_CODES.SERVER_ERROR).json({
+  res.status(error.status || HTTP_STATUS_CODES.SERVER_ERROR).json({
     message,
     error: errorMessage,
   });

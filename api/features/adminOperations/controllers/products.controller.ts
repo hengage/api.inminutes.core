@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { STATUS_CODES, handleErrorResponse } from "../../../utils";
+import { HTTP_STATUS_CODES, handleErrorResponse } from "../../../utils";
 import { AdminOpsForProductsService } from "../services/products.services";
 
 export class AdminOpsForProductsController {
@@ -14,7 +14,7 @@ export class AdminOpsForProductsController {
       const category = await this.adminOpsForProductsService.createCategory(
         req.body
       );
-      res.status(STATUS_CODES.CREATED).json({
+      res.status(HTTP_STATUS_CODES.CREATED).json({
         message: "Success",
         data: { category },
       });
@@ -28,7 +28,7 @@ export class AdminOpsForProductsController {
       await this.adminOpsForProductsService.approveProduct(
         req.params.productId
       );
-      res.status(STATUS_CODES.CREATED).json({
+      res.status(HTTP_STATUS_CODES.CREATED).json({
         message: "Success",
       });
     } catch (error: any) {
@@ -39,7 +39,7 @@ export class AdminOpsForProductsController {
   async rejectProduct(req: Request, res: Response) {
     try {
       await this.adminOpsForProductsService.rejectProduct(req.params.productId);
-      res.status(STATUS_CODES.CREATED).json({
+      res.status(HTTP_STATUS_CODES.CREATED).json({
         message: "Success",
       });
     } catch (error: any) {

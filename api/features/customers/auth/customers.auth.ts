@@ -1,7 +1,7 @@
 import passport from "passport";
 import { Request, Response, NextFunction } from "express";
 import {
-  STATUS_CODES,
+  HTTP_STATUS_CODES,
   generateJWTToken,
   handleErrorResponse,
 } from "../../../utils";
@@ -51,7 +51,7 @@ export class CustomersAuthentication {
 
           if (!user) {
             return handleErrorResponse(res, {
-              status: STATUS_CODES.UNAUTHORIZED,
+              status: HTTP_STATUS_CODES.UNAUTHORIZED,
               message: info.message,
             });
           }
@@ -64,7 +64,7 @@ export class CustomersAuthentication {
           const accessToken = generateJWTToken(jwtPayload, "1h");
           const refreshToken = generateJWTToken(jwtPayload, "14d");
 
-          res.status(STATUS_CODES.OK).json({
+          res.status(HTTP_STATUS_CODES.OK).json({
             message: "Successful",
             data: { customer: { _id: user._id }, accessToken, refreshToken },
           });

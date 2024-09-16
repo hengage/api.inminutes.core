@@ -1,4 +1,4 @@
-import { HandleException, STATUS_CODES } from "../../../utils";
+import { HandleException, HTTP_STATUS_CODES } from "../../../utils";
 import { Wallet } from "../models/wallet.model";
 import { ICashoutAccount } from "../wallet.interface";
 
@@ -28,7 +28,7 @@ class WalletRepository {
       const wallet = await Wallet.findById(walletId).select("cashoutAccounts");
 
       if (!wallet) {
-        throw new HandleException(STATUS_CODES.NOT_FOUND, "Wallet not found");
+        throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "Wallet not found");
       }
 
       wallet.cashoutAccounts.push(cashoutAccount);
@@ -36,7 +36,7 @@ class WalletRepository {
 
       return updatedWallet;
     } catch (error: any) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, error.message);
+      throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, error.message);
     }
   }
 

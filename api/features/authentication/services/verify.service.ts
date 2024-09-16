@@ -4,7 +4,7 @@ import {
   TWILIO_AUTH_TOKEN,
   TWILIO_VERIFY_SID,
 } from "../../../config";
-import { HandleException, STATUS_CODES } from "../../../utils";
+import { HandleException, HTTP_STATUS_CODES } from "../../../utils";
 
 const VERIFICATION_CHANNELS = {
   SMS: "sms",
@@ -37,7 +37,7 @@ class VerifyService {
     } catch (error) {
       console.error("Error sending verification code:", error);
       throw new HandleException(
-        STATUS_CODES.SERVER_ERROR,
+        HTTP_STATUS_CODES.SERVER_ERROR,
         "Failed to send otp"
       );
     }
@@ -59,11 +59,11 @@ class VerifyService {
       if (verificationCheck.status === "approved") {
         return true;
       } else {
-        throw new HandleException(STATUS_CODES.BAD_REQUEST, "Invalid otp");
+        throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, "Invalid otp");
       }
     } catch (error: any) {
       if (error.status === 404) {
-        throw new HandleException(STATUS_CODES.BAD_REQUEST, "Invalid otp");
+        throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, "Invalid otp");
       }
       throw error;
     }
@@ -71,18 +71,18 @@ class VerifyService {
 
   private formatPhoneNumber = (phoneNumber: string): string => {
     // Remove any non-digit characters
-    const digitsOnly = phoneNumber.replace(/\D/g, '');
-    
+    const digitsOnly = phoneNumber.replace(/\D/g, "");
+
     // Check if the number starts with '234' (Nigeria's country code)
-    if (digitsOnly.startsWith('234')) {
+    if (digitsOnly.startsWith("234")) {
       return `+${digitsOnly}`;
     }
-    
+
     // If it starts with '0', replace it with '+234'
-    if (digitsOnly.startsWith('0')) {
+    if (digitsOnly.startsWith("0")) {
       return `+234${digitsOnly.slice(1)}`;
     }
-    
+
     // If it doesn't start with '0' or '234', assume it's a local number and add '+234'
     return `+234${digitsOnly}`;
   };

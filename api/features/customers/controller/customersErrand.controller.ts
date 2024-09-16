@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { CustomerErrandService } from "../services/customerErrand.service";
-import { handleErrorResponse, STATUS_CODES } from "../../../utils";
+import { handleErrorResponse, HTTP_STATUS_CODES } from "../../../utils";
 
 export class CustomerErrandController {
   private customerErrandService: CustomerErrandService;
@@ -23,7 +23,7 @@ export class CustomerErrandController {
         page,
         limit,
       });
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "success",
         history,
       });

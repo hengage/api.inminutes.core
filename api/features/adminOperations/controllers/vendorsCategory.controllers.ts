@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { STATUS_CODES, handleErrorResponse } from "../../../utils";
+import { HTTP_STATUS_CODES, handleErrorResponse } from "../../../utils";
 import { AdminOpsVendorsCategoryService } from "../services/vendorsCategory.service";
 import { ValidateAdminVendorsOps } from "../validators/adminVendorsOps.validate";
 
@@ -20,7 +20,7 @@ export class AdminOpsVendorsCategoryController {
         req.body
       );
       
-      return res.status(STATUS_CODES.CREATED).json({
+      return res.status(HTTP_STATUS_CODES.CREATED).json({
         message: "Successful",
         data: { category },
       });
@@ -36,7 +36,7 @@ export class AdminOpsVendorsCategoryController {
       const subCategory =
         await this.adminOpsVendorsCategoryService.createSubCategory(req.body);
 
-      return res.status(STATUS_CODES.CREATED).json({
+      return res.status(HTTP_STATUS_CODES.CREATED).json({
         message: "Successful",
         data: { subCategory },
       });

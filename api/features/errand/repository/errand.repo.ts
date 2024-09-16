@@ -1,7 +1,7 @@
 import {
   formatPhoneNumberforDB,
   HandleException,
-  STATUS_CODES,
+  HTTP_STATUS_CODES,
 } from "../../../utils";
 import { ErrandStatus } from "../../../config/constants.config";
 import { ICreateErrandData, IErrandDocument } from "../errand.interface";
@@ -51,7 +51,7 @@ export class ErrandRepository {
 
     if (errand?.rider) {
       throw new HandleException(
-        STATUS_CODES.CONFLICT,
+        HTTP_STATUS_CODES.CONFLICT,
         "A rider is already asssigned to this errand"
       );
     }

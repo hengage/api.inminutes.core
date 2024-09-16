@@ -7,7 +7,7 @@ import {
   // CASHOUT_CHANNEL,
   // CASHOUT_CHANNEL,
   HandleException,
-  STATUS_CODES,
+  HTTP_STATUS_CODES,
   // WALLET_STATUS,
   generateUniqueString,
 } from "../../../utils";
@@ -86,7 +86,7 @@ walletSchema.statics.creditWallet = async function (
   ).session(session);
 
   if (!wallet) {
-    throw new HandleException(STATUS_CODES.NOT_FOUND, "wallet not found");
+    throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "wallet not found");
   }
 
   wallet.balance = Big(wallet.balance).plus(amount).toFixed(2);
@@ -107,12 +107,12 @@ walletSchema.statics.debitWallet = async function (
     .session(session);
 
   if (!wallet) {
-    throw new HandleException(STATUS_CODES.NOT_FOUND, "wallet not found");
+    throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "wallet not found");
   }
 
   if (Big(wallet.balance).lt(Big(amount))) {
     throw new HandleException(
-      STATUS_CODES.UNPROCESSABLE_ENTITY,
+      HTTP_STATUS_CODES.UNPROCESSABLE_ENTITY,
       "Insufficient balance"
     );
   }

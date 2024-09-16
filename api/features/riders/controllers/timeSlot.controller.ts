@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { STATUS_CODES, handleErrorResponse } from "../../../utils";
+import { HTTP_STATUS_CODES, handleErrorResponse } from "../../../utils";
 import { timeSlotService } from "../services/timeSlot.service";
 
 class TimeSlotController {
@@ -12,7 +12,7 @@ class TimeSlotController {
         startTime: req.body.startTime,
         endTime: req.body.endTime,
       });
-      res.status(STATUS_CODES.CREATED).json({
+      res.status(HTTP_STATUS_CODES.CREATED).json({
         message: "Success",
       });
     } catch (error: any) {
@@ -26,7 +26,7 @@ class TimeSlotController {
     try {
       const cancelledSlot = await timeSlotService.cancelSlot(req.body.slotId);
       console.log({cancelledSlot})
-      return res.status(STATUS_CODES.OK).json({
+      return res.status(HTTP_STATUS_CODES.OK).json({
         message: "Success"
       })
     } catch (error: any) {

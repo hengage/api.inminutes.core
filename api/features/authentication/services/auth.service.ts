@@ -1,5 +1,5 @@
 import jwt, { decode } from "jsonwebtoken";
-import { HandleException, STATUS_CODES, generateJWTToken } from "../../../utils";
+import { HandleException, HTTP_STATUS_CODES, generateJWTToken } from "../../../utils";
 import { JWT_SECRET_KEY } from "../../../config";
 
 class AuthService {
@@ -7,7 +7,7 @@ class AuthService {
     console.log({ refreshToken });
     try {
       if (!refreshToken) {
-        throw new HandleException(STATUS_CODES.FORBIDDEN, "Unauthorized");
+        throw new HandleException(HTTP_STATUS_CODES.FORBIDDEN, "Unauthorized");
       }
       const decoded: any =  jwt.verify(refreshToken, `${JWT_SECRET_KEY}`);
       console.log({ decoded });

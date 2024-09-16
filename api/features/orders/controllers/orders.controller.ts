@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { STATUS_CODES, handleErrorResponse } from "../../../utils";
+import { HTTP_STATUS_CODES, handleErrorResponse } from "../../../utils";
 import { OrdersRepository } from "../repository/orders.repo";
 import { ordersService } from "../services/orders.service";
 import { ValidateOrders } from "../validation/orders.validation";
@@ -21,7 +21,7 @@ export class OrdersController {
         orderData: req.body,
         customer,
       });
-      res.status(STATUS_CODES.CREATED).json({
+      res.status(HTTP_STATUS_CODES.CREATED).json({
         message: "success",
         data: { order },
       });
@@ -33,7 +33,7 @@ export class OrdersController {
   orderDetails = async (req: Request, res: Response) => {
     try {
       const order = await ordersService.details(req.params.orderId);
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "success",
         data: { order },
       });

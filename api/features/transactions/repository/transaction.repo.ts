@@ -1,5 +1,5 @@
 import { ClientSession } from "mongoose";
-import { HandleException, STATUS_CODES } from "../../../utils";
+import { HandleException, HTTP_STATUS_CODES } from "../../../utils";
 import { TransactionHistory } from "../models/transaction.model";
 import {
   ITransactionHistoryDocument,
@@ -58,7 +58,7 @@ export class TransactionRepository {
 
     if (!transaction) {
       throw new HandleException(
-        STATUS_CODES.NOT_FOUND,
+        HTTP_STATUS_CODES.NOT_FOUND,
         "Transaction now found"
       );
     }

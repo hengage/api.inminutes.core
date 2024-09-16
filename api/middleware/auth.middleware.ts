@@ -4,7 +4,7 @@ import { Socket } from "socket.io";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { rateLimit } from "express-rate-limit";
 
-import { handleErrorResponse, STATUS_CODES } from "../utils";
+import { handleErrorResponse, HTTP_STATUS_CODES } from "../utils";
 import { JWT_SECRET_KEY } from "../config";
 import { JWT_ALGORITHMS } from "../config/secrets.config";
 import { CustomJwtPayload } from "../types";
@@ -25,7 +25,7 @@ const verifyAuthTokenMiddleware = async (
 
   if (!token) {
     return res
-      .status(STATUS_CODES.BAD_REQUEST)
+      .status(HTTP_STATUS_CODES.BAD_REQUEST)
       .json({ message: "Token not provided" });
   }
 
@@ -75,13 +75,13 @@ const errandHistoryMiddleware = async (
   if (!userType) {
     return handleErrorResponse(
       res,
-      STATUS_CODES.BAD_REQUEST,
+      HTTP_STATUS_CODES.BAD_REQUEST,
       "Invalid user type"
     );
   }
 
   if (userType !== "customer" && userType != "rider") {
-    return res.status(STATUS_CODES.BAD_REQUEST).json({
+    return res.status(HTTP_STATUS_CODES.BAD_REQUEST).json({
       message: "Invalid user type",
     });
   }

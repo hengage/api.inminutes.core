@@ -1,7 +1,7 @@
 import { Request, Response, response } from "express";
 import { CustomersRepository } from "../repository/customers.repo";
 import {
-  STATUS_CODES,
+  HTTP_STATUS_CODES,
   generateJWTToken,
   handleErrorResponse,
 } from "../../../utils";
@@ -32,7 +32,7 @@ export class CustomersController {
       await this.customersAuthentication.sendVerificationCode(
         recipientPhoneNumber
       );
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "OTP sent",
       });
     } catch (error: any) {
@@ -51,7 +51,7 @@ export class CustomersController {
 
       const accessToken = generateJWTToken(jwtPayload, "1h");
       const refreshToken = generateJWTToken(jwtPayload, "14d");
-      res.status(STATUS_CODES.CREATED).json({
+      res.status(HTTP_STATUS_CODES.CREATED).json({
         message: "Success",
         data: {
           customer: { _id: customer._id },
@@ -68,12 +68,12 @@ export class CustomersController {
     const _id = (req as any).user._id;
     try {
       const customer = await this.customersRepo.getProfile(_id);
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "Fetched customer profile",
         data: { customer },
       });
     } catch (error: any) {
-      res.status(error.status || STATUS_CODES.SERVER_ERROR).json({
+      res.status(error.status || HTTP_STATUS_CODES.SERVER_ERROR).json({
         message: "Error getting profile",
         error: error.message || "Server error",
       });
@@ -89,7 +89,7 @@ export class CustomersController {
         customer,
         req.body
       );
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "Success",
         data: { profile },
       });
@@ -141,7 +141,7 @@ export class CustomersController {
 
     try {
       await this.customersRepo.deleteAccount(customer);
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "Success",
       });
     } catch (error: any) {
@@ -156,7 +156,7 @@ export class CustomersController {
         customerId
       );
       console.log({ wishList });
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "success",
         data: { wishList },
       });

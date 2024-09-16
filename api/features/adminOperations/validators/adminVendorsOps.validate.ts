@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { HandleException, STATUS_CODES } from "../../../utils";
+import { HandleException, HTTP_STATUS_CODES } from "../../../utils";
 
 export class ValidateAdminVendorsOps {
   createCategory = async (payload: any) => {
@@ -14,7 +14,7 @@ export class ValidateAdminVendorsOps {
     });
 
     if (error) {
-      throw new HandleException(STATUS_CODES.BAD_REQUEST, error.message);
+      throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
     }
   };
 
@@ -30,7 +30,7 @@ export class ValidateAdminVendorsOps {
     });
 
     if (error) {
-      throw new HandleException(STATUS_CODES.BAD_REQUEST, error.message);
+      throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
     }
   };
 }

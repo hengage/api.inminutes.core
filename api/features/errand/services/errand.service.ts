@@ -1,6 +1,6 @@
 import { ErrandStatus } from "../../../config/constants.config";
 import { NotificationService } from "../../notifications";
-import { deliveryService, HandleException, STATUS_CODES } from "../../../utils";
+import { deliveryService, HandleException, HTTP_STATUS_CODES } from "../../../utils";
 import { ICreateErrandData } from "../errand.interface";
 import { ErrandRepository } from "../repository/errand.repo";
 
@@ -23,7 +23,7 @@ class ErrandService {
   getErrand = async (errandId: string) => {
     const errand = await this.errandRepo.getErrand(errandId);
     if (!errand) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, "Errand not found");
+      throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "Errand not found");
     }
 
     return errand;

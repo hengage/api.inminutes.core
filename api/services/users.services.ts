@@ -1,7 +1,7 @@
 import { Customer } from "../features/customers";
 import { Rider } from "../features/riders";
 import { Vendor } from "../features/vendors";
-import { HandleException, STATUS_CODES } from "../utils";
+import { HandleException, HTTP_STATUS_CODES } from "../utils";
 
 export class UsersService {
   public async isEmailTaken(email: string) {
@@ -28,7 +28,7 @@ export class UsersService {
 
     if (customer || vendor || rider) {
       throw new HandleException(
-        STATUS_CODES.CONFLICT,
+        HTTP_STATUS_CODES.CONFLICT,
         "Email is already taken"
       );
     }
@@ -60,7 +60,7 @@ export class UsersService {
 
     if (customer || vendor || rider) {
       throw new HandleException(
-        STATUS_CODES.CONFLICT,
+        HTTP_STATUS_CODES.CONFLICT,
         "Phone number is already taken"
       );
     }
@@ -84,7 +84,7 @@ export class UsersService {
 
     if (customer || rider) {
       throw new HandleException(
-        STATUS_CODES.CONFLICT,
+        HTTP_STATUS_CODES.CONFLICT,
         "Display name is already taken"
       );
     }
@@ -101,7 +101,7 @@ export class UsersService {
         return Rider;
       default:
         throw new HandleException(
-          STATUS_CODES.BAD_REQUEST,
+          HTTP_STATUS_CODES.BAD_REQUEST,
           "Invalid account type"
         );
     }

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { HandleException, STATUS_CODES, handleErrorResponse } from "../../../utils";
+import { HandleException, HTTP_STATUS_CODES, handleErrorResponse } from "../../../utils";
 import { MediaService } from "../services/media.service";
 import { DynamicObject } from "../../../types";
 
@@ -24,7 +24,7 @@ export class MediaController {
       }
 
       const fileUrls = await this.mediaService.uploadToCloudinary(files, tags);
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "File successfully uploaded",
         data: fileUrls,
       });

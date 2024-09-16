@@ -2,7 +2,7 @@ import { ClientSession } from "mongoose";
 import { emitEvent } from "../../../services";
 import {
   HandleException,
-  STATUS_CODES,
+  HTTP_STATUS_CODES,
   calculateAverageRating,
   compareValues,
   formatPhoneNumberforDB,
@@ -51,12 +51,12 @@ class VendorsRepository {
     );
 
     if (!vendor) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, "Invalid credentials");
+      throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "Invalid credentials");
     }
 
     const passwordsMatch = await compareValues(password, vendor.password);
     if (!passwordsMatch) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, "Invalid credentials");
+      throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "Invalid credentials");
     }
 
     return {
@@ -71,7 +71,7 @@ class VendorsRepository {
       .lean();
 
     if (!vendor) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, "Vendor not found");
+      throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "Vendor not found");
     }
 
     return vendor;
@@ -267,7 +267,7 @@ class VendorsRepository {
       }).select("rating");
 
       if (!vendor) {
-        throw new HandleException(STATUS_CODES.NOT_FOUND, "vendor not found");
+        throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "vendor not found");
       }
 
       vendor.rating.averageRating = calculateAverageRating(vendor, rating);

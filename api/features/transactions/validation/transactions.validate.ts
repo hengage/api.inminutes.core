@@ -3,7 +3,7 @@ import {
   IInitializeTransaction,
   InitializeCashoutTransferData,
 } from "../transactions.interface";
-import { HandleException, PAYMENT_PURPOSE, STATUS_CODES } from "../../../utils";
+import { HandleException, PAYMENT_PURPOSE, HTTP_STATUS_CODES } from "../../../utils";
 
 class ValidateTransactions {
   initializeTransaction = async (payload: IInitializeTransaction) => {
@@ -44,7 +44,7 @@ class ValidateTransactions {
     });
 
     if (error) {
-      throw new HandleException(STATUS_CODES.BAD_REQUEST, error.message);
+      throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
     }
     return;
   };
@@ -84,7 +84,7 @@ class ValidateTransactions {
     });
 
     if (error) {
-      throw new HandleException(STATUS_CODES.BAD_REQUEST, error.message);
+      throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
     }
     return;
   };

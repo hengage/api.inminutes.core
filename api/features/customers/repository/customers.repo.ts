@@ -1,7 +1,7 @@
 import {
   formatPhoneNumberforDB,
   HandleException,
-  STATUS_CODES,
+  HTTP_STATUS_CODES,
 } from "../../../utils";
 import {
   ICreateCustomerData,
@@ -19,7 +19,7 @@ export class CustomersRepository {
     const customer = await Customer.findOne({ email }).select("email").lean();
 
     if (customer) {
-      throw new HandleException(STATUS_CODES.CONFLICT, "Email already taken");
+      throw new HandleException(HTTP_STATUS_CODES.CONFLICT, "Email already taken");
     }
 
     return;
@@ -32,7 +32,7 @@ export class CustomersRepository {
 
     if (customer) {
       throw new HandleException(
-        STATUS_CODES.CONFLICT,
+        HTTP_STATUS_CODES.CONFLICT,
         `Looks like you already have a customer account, ` +
           `please try to login instead`
       );
@@ -76,7 +76,7 @@ export class CustomersRepository {
       .lean()
       .exec();
     if (!customer) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, "Customer not found");
+      throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "Customer not found");
     }
 
     return customer;
@@ -101,7 +101,7 @@ export class CustomersRepository {
     );
 
     if (!customer) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, "Customer not found");
+      throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "Customer not found");
     }
     return customer;
   }
@@ -151,7 +151,7 @@ export class CustomersRepository {
     );
 
     if (!customer) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, "Customer not found");
+      throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "Customer not found");
     }
     return customer;
   }
@@ -164,7 +164,7 @@ export class CustomersRepository {
     const result = await Customer.deleteOne({ _id: customerId });
 
     if (result.deletedCount === 0) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, "Customer not found");
+      throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "Customer not found");
     }
 
     console.log("Customer deleted successfully", customerId);

@@ -1,4 +1,4 @@
-import { HandleException, STATUS_CODES } from "../../../utils";
+import { HandleException, HTTP_STATUS_CODES } from "../../../utils";
 import { VendorCategory, VendorSubCategory } from "../../vendors";
 
 export class AdminOpsVendorsCategoryService {
@@ -14,7 +14,7 @@ export class AdminOpsVendorsCategoryService {
 
     if (categoryExists) {
       throw new HandleException(
-        STATUS_CODES.CONFLICT,
+        HTTP_STATUS_CODES.CONFLICT,
         "The category name already exists"
       );
     }
@@ -40,7 +40,7 @@ export class AdminOpsVendorsCategoryService {
 
     if (subCategoryExists) {
       throw new HandleException(
-        STATUS_CODES.CONFLICT,
+        HTTP_STATUS_CODES.CONFLICT,
         "The sub category name already exists"
       );
     }

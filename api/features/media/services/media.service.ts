@@ -1,6 +1,6 @@
 import { MediaUploadConfig } from "../../../config/cloudinary.config";
 import { DynamicObject } from "../../../types";
-import { HandleException, STATUS_CODES } from "../../../utils";
+import { HandleException, HTTP_STATUS_CODES } from "../../../utils";
 
 export class MediaService {
   private mediaUploadConfig: MediaUploadConfig;
@@ -42,7 +42,7 @@ export class MediaService {
       return fileUrls;
     } catch (error: any) {
       throw new HandleException(
-        error.status || STATUS_CODES.SERVER_ERROR,
+        error.status || HTTP_STATUS_CODES.SERVER_ERROR,
         error.message
       );
     }
