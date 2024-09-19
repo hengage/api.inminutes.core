@@ -9,6 +9,7 @@ import { JWT_SECRET_KEY } from "../config";
 import { JWT_ALGORITHMS } from "../config/secrets.config";
 import { CustomJwtPayload } from "../types";
 import { RATE_LIMIT_WINDOW_MS } from "../config/constants.config";
+import { createErrorResponse, handleError } from "../utils/response.utils";
 
 /**
   Verifies the authentication token for a request.
@@ -23,18 +24,19 @@ const verifyAuthTokenMiddleware = async (
 ) => {
   const token = req.headers.authorization?.split(" ")[1] || req.body.token;
 
-  if (!token) {
-    return res
-      .status(HTTP_STATUS_CODES.BAD_REQUEST)
-      .json({ message: "Token not provided" });
-  }
-
   try {
-    const decoded = decodeToken(token);
-    (req as any).user = decoded;
+    const decoded = verifyToken(token);
+    req.user = decoded;
     next();
   } catch (error: any) {
-    return res.status(401).json({ message: "Invalid or expired token" });
+    res
+      .status(HTTP_STATUS_CODES.UNAUTHORIZED)
+      .json(
+        createErrorResponse(
+          "UNAUTHORIZED",
+          "Invalid request. Please check your credentials and try again."
+        )
+      );
   }
 };
 
@@ -56,7 +58,7 @@ const socketGuard = (event: any, next: (err?: Error | undefined) => void) => {
   console.log({ tokenFromSocket: token });
 
   try {
-    const decoded = decodeToken(token);
+    const decoded = verifyToken(token);
     socket.data.user = decoded;
     next();
   } catch (error: any) {
@@ -81,9 +83,9 @@ const errandHistoryMiddleware = async (
   }
 
   if (userType !== "customer" && userType != "rider") {
-    return res.status(HTTP_STATUS_CODES.BAD_REQUEST).json({
-      message: "Invalid user type",
-    });
+    return res
+      .status(HTTP_STATUS_CODES.BAD_REQUEST)
+      .json(createErrorResponse("BAD_REQUEST", "Invalid user type."));
   }
 
   return next();
@@ -91,34 +93,25 @@ const errandHistoryMiddleware = async (
 
 // Todo: use 'rate-limit-redis' for persistent storage https://www.npmjs.com/package/rate-limit-redis
 
-const createRateLimiter = (limit: number, windowMs: number, message: string) =>
+const createRateLimiter = (limit: number, windowMs: number) =>
   rateLimit({
     windowMs,
     limit,
     standardHeaders: "draft-7",
     legacyHeaders: false,
-    message: { error: message },
+    message: createErrorResponse(
+      "BAD_REQUEST",
+      "Too many attempts, try again later"
+    ),
   });
 
-const otpLimiter = createRateLimiter(
-  5,
-  RATE_LIMIT_WINDOW_MS.DEFAULT,
-  "Too many requests, try again later"
-);
+const otpLimiter = createRateLimiter(5, RATE_LIMIT_WINDOW_MS.DEFAULT);
 
-const authLimiter = createRateLimiter(
-  6,
-  RATE_LIMIT_WINDOW_MS.DEFAULT,
-  "Too many attempts, try again later"
-);
+const authLimiter = createRateLimiter(6, RATE_LIMIT_WINDOW_MS.DEFAULT);
 
-const cashoutLimiter = createRateLimiter(
-  5,
-  RATE_LIMIT_WINDOW_MS.CASHOUT_LIMIT,
-  "Too many attempts, try again later"
-);
+const cashoutLimiter = createRateLimiter(5, RATE_LIMIT_WINDOW_MS.CASHOUT_LIMIT);
 
-const decodeToken = (token: string): CustomJwtPayload | string => {
+const verifyToken = (token: string): CustomJwtPayload | string => {
   return jwt.verify(token, `${JWT_SECRET_KEY}`, {
     algorithms: [JWT_ALGORITHMS.HS256],
   }) as CustomJwtPayload;

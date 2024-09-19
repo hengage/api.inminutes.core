@@ -50,12 +50,19 @@ type Coordinates = [number, number];
 
 type DynamicObject = Record<string, { [key: string]: any }>;
 
-type ErrorCode = 
-  | 'BAD_REQUEST'
-  | 'UNAUTHORIZED'
-  | 'FORBIDDEN'
-  | 'NOT_FOUND'
-  | 'CONFLICT'
-  | 'INTERNAL_SERVER_ERROR'
-  | 'VALIDATION_ERROR'
-  | 'DATABASE_ERROR'
+type ErrorCode =
+  | "BAD_REQUEST"
+  | "UNAUTHORIZED"
+  | "FORBIDDEN"
+  | "NOT_FOUND"
+  | "CONFLICT"
+  | "SERVER_ERROR"
+
+type ApiError = {
+  status: "error";
+  error: {
+    code: ErrorCode;
+    message: string;
+    details?: Record<string, unknown>;
+  };
+};

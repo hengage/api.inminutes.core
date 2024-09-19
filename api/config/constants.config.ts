@@ -1,4 +1,7 @@
-export const HTTP_STATUS_CODES = {
+import { ErrorCode } from "../types";
+
+export const HTTP_STATUS_CODES: Record<ErrorCode, number> &
+  Record<string, any> = {
   OK: 200,
   CREATED: 201,
   NO_CONTENT: 204,

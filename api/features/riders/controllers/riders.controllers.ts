@@ -6,6 +6,7 @@ import {
 } from "../../../utils";
 import { validateRider } from "../validators/riders.validators";
 import { ridersService } from "../services/riders.service";
+import { handleError } from "../../../utils/response.utils";
 class RidersController {
 
   constructor() {
@@ -27,6 +28,8 @@ class RidersController {
       });
     } catch (error: any) {
       handleErrorResponse(res, error);
+      const {statusCode, errorResponse} = handleError(error)
+      res.status(statusCode).json(errorResponse);
     }
   };
 
@@ -44,7 +47,8 @@ class RidersController {
         data: { rider, accessToken, refreshToken },
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      const {statusCode, errorResponse} = handleError(error)
+      res.status(statusCode).json(errorResponse);
     }
   };
 
@@ -57,7 +61,8 @@ class RidersController {
         data: { rider },
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      const {statusCode, errorResponse} = handleError(error)
+      res.status(statusCode).json(errorResponse);
     }
   };
 }
