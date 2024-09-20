@@ -7,6 +7,7 @@ import {
 } from "../../../utils";
 import { MediaService } from "../services/media.service";
 import { UploadedFiles } from "../media.interface";
+import { handleError } from "../../../utils/response.utils";
 
 export class MediaController {
   private mediaService: MediaService;
@@ -24,7 +25,7 @@ export class MediaController {
       }
 
       if (!files) {
-        throw new HandleException(400, "No file selected");
+        throw new HandleException(400, "No file selected. Please select a file.");
       }
 
       const fileUrls = await this.mediaService.uploadToCloudinary(files, tags);
@@ -33,7 +34,10 @@ export class MediaController {
         data: fileUrls,
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      // handleErrorResponse(res, error);
+      console.error("Error uploading media:", error);
+      const {statusCode, errorResponse} = handleError(error)
+      res.status(statusCode).json(errorResponse);
     }
   };
 }

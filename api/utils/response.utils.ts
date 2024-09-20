@@ -47,7 +47,6 @@ function handleError(err: unknown): {
     const errorCode = Object.entries(HTTP_STATUS_CODES).find(
       ([, code]) => code === err.status
     )?.[0] as ErrorCode;
-    console.log({errorCode});
 
     return {
       statusCode: err.status,
