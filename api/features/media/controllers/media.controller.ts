@@ -1,8 +1,12 @@
 import { Request, Response } from "express";
 
-import { HandleException, HTTP_STATUS_CODES, handleErrorResponse } from "../../../utils";
+import {
+  HandleException,
+  HTTP_STATUS_CODES,
+  handleErrorResponse,
+} from "../../../utils";
 import { MediaService } from "../services/media.service";
-import { DynamicObject } from "../../../types";
+import { UploadedFiles } from "../media.interface";
 
 export class MediaController {
   private mediaService: MediaService;
@@ -11,7 +15,7 @@ export class MediaController {
     this.mediaService = new MediaService();
   }
   public uploadMedia = async (req: Request, res: Response) => {
-    const files = req.files as DynamicObject;
+    const files = req.files as UploadedFiles;
     const tags = req.query.tags as string;
 
     try {
@@ -29,7 +33,7 @@ export class MediaController {
         data: fileUrls,
       });
     } catch (error: any) {
-      handleErrorResponse(res, error)
+      handleErrorResponse(res, error);
     }
   };
 }

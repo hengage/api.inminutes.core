@@ -48,7 +48,7 @@ type CustomJwtPayload = JwtPayload & {
 
 type Coordinates = [number, number];
 
-type DynamicObject = Record<string, { [key: string]: any }>;
+type DynamicObject = Record<any, JSONObject>;
 
 type ErrorCode =
   | "BAD_REQUEST"
@@ -57,6 +57,16 @@ type ErrorCode =
   | "NOT_FOUND"
   | "CONFLICT"
   | "SERVER_ERROR"
+
+  type JSONValue =
+  | (null | undefined)
+  | string
+  | number
+  | boolean
+  | JSONObject
+  | Array<JSONValue>;
+
+type JSONObject = { [key: string]: JSONValue };
 
 type ApiError = {
   status: "error";

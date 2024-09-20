@@ -47,7 +47,7 @@ export class CustomersOrdersService {
    */
   async orders(params: { customerId: string; page: number }) {
     const { customerId, page } = params;
-    const query = { customer: customerId };
+    const query: { customer: typeof customerId } = { customer: customerId };
 
     const options = {
       page,

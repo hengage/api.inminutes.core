@@ -1,6 +1,8 @@
 import { MediaUploadConfig } from "../../../config/cloudinary.config";
-import { DynamicObject } from "../../../types";
 import { HandleException, HTTP_STATUS_CODES } from "../../../utils";
+import { UploadedFiles } from "../media.interface";
+
+
 
 export class MediaService {
   private mediaUploadConfig: MediaUploadConfig;
@@ -13,8 +15,10 @@ export class MediaService {
    * @param  {string} mediaTags - The tags to associate with the uploaded media.
    * @returns {Promise<Record<string, string>>} An object with the uploaded file URLs.
    */
-  public uploadToCloudinary = async (mediaFiles: DynamicObject, mediaTags: string) => {
-    console.log({ mediaFiles });
+  public uploadToCloudinary = async (
+    mediaFiles: UploadedFiles,
+    mediaTags: string
+  ): Promise<Record<string, string>> => {
     try {
       const uploadPromises: Promise<string>[] = [];
       let fileUrls: Record<string, string> = {};
@@ -23,11 +27,21 @@ export class MediaService {
         const file = mediaFiles[fieldName];
 
         // Upload the file using the cloudinary upload instance
-        const uploadPromise = this.mediaUploadConfig.cloudinaryConfig(
+        let uploadPromise: Promise<string>;
+        if (typeof file?.tempFilePath === "string") {
+         
+        } else {
+          throw new HandleException(
+            HTTP_STATUS_CODES.BAD_REQUEST,
+            "Invalid file type. Only images and videos are allowed."
+          );
+        }
+
+        uploadPromise = this.mediaUploadConfig.cloudinaryConfig(
           file.tempFilePath,
           [mediaTags]
         );
-
+        
         uploadPromises.push(uploadPromise);
 
         // Store the promise result in the fileUrls object
