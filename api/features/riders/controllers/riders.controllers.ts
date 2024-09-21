@@ -6,7 +6,6 @@ import {
 } from "../../../utils";
 import { validateRider } from "../validators/riders.validators";
 import { ridersService } from "../services/riders.service";
-import { handleError } from "../../../utils/response.utils";
 class RidersController {
 
   constructor() {
@@ -27,9 +26,9 @@ class RidersController {
         data: { rider, accessToken, refreshToken },
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
-      const {statusCode, errorResponse} = handleError(error)
-      res.status(statusCode).json(errorResponse);
+      console.error("Error signing up rider:", error);
+      const {statusCode, errorJSON} = handleErrorResponse(error)
+      res.status(statusCode).json(errorJSON);
     }
   };
 
@@ -47,8 +46,9 @@ class RidersController {
         data: { rider, accessToken, refreshToken },
       });
     } catch (error: any) {
-      const {statusCode, errorResponse} = handleError(error)
-      res.status(statusCode).json(errorResponse);
+      console.error("Error on rider login:", error);
+      const {statusCode, errorJSON} = handleErrorResponse(error)
+      res.status(statusCode).json(errorJSON);
     }
   };
 
@@ -61,8 +61,9 @@ class RidersController {
         data: { rider },
       });
     } catch (error: any) {
-      const {statusCode, errorResponse} = handleError(error)
-      res.status(statusCode).json(errorResponse);
+      console.error("Error getting rider:", error);
+      const {statusCode, errorJSON} = handleErrorResponse(error)
+      res.status(statusCode).json(errorJSON);
     }
   };
 }

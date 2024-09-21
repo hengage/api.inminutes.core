@@ -11,7 +11,9 @@ class VendorsCategoryController {
         data: { catgories },
       });
     } catch (error: any) {
-      return handleErrorResponse(res, error);
+      console.error('Error fetching categories:', error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 
@@ -26,7 +28,9 @@ class VendorsCategoryController {
         data: { subCatgories },
       });
     } catch (error: any) {
-      return handleErrorResponse(res, error);
+      console.error('Error fetching subcategories:', error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 
@@ -39,7 +43,9 @@ class VendorsCategoryController {
         message: subCatgories,
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      console.error('Error fetching local market subcategory:', error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 }

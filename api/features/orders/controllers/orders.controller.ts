@@ -26,7 +26,8 @@ export class OrdersController {
         data: { order },
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 
@@ -38,7 +39,8 @@ export class OrdersController {
         data: { order },
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 
@@ -67,7 +69,8 @@ export class OrdersController {
         message: "Success",
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 }

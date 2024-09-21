@@ -29,7 +29,8 @@ export class ErrandController {
         data: { errand },
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 
@@ -43,7 +44,8 @@ export class ErrandController {
         data: { errand },
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 }

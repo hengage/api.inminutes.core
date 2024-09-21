@@ -29,7 +29,9 @@ class VendorsController {
         data: { vendor, accessToken, refreshToken },
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      console.error('Error registering vendor:', error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 
@@ -48,7 +50,9 @@ class VendorsController {
         data: { vendor, accessToken, refreshToken },
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      console.error('Error logging in vendor:', error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 
@@ -61,7 +65,9 @@ class VendorsController {
         data: { vendor },
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      console.error('Error fetching vendor details:', error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 
@@ -75,7 +81,8 @@ class VendorsController {
         data: { products },
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 
@@ -95,7 +102,9 @@ class VendorsController {
         data: { vendors },
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      console.error('Error fetching nearby vendors:', error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 
@@ -114,7 +123,9 @@ class VendorsController {
         data: { vendors },
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      console.error('Error fetching vendors by category:', error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
   
@@ -134,7 +145,9 @@ class VendorsController {
         data: { vendors },
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      console.error('Error fetching vendors by sub-category:', error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 
@@ -152,7 +165,9 @@ class VendorsController {
         data: { products },
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      console.error('Error fetching products and grouping by category:', error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 

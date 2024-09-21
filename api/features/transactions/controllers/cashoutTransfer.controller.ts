@@ -16,7 +16,9 @@ class CashoutTransferController {
       );
       res.status(HTTP_STATUS_CODES.OK).json({ message: "success" });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      console.error('Error adding cashout account:', error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 
@@ -28,7 +30,9 @@ class CashoutTransferController {
         .status(HTTP_STATUS_CODES.OK)
         .json({ message: "success", data: "Cashout approved" });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      console.error('Error initializing cashout transfer:', error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 }

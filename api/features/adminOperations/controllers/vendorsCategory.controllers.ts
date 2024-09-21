@@ -25,7 +25,8 @@ export class AdminOpsVendorsCategoryController {
         data: { category },
       });
     } catch (error: any) {
-      return handleErrorResponse(res, error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 
@@ -41,7 +42,8 @@ export class AdminOpsVendorsCategoryController {
         data: { subCategory },
       });
     } catch (error: any) {
-      return handleErrorResponse(res, error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 }

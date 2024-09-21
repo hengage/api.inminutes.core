@@ -16,7 +16,8 @@ class TimeSlotController {
         message: "Success",
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 
@@ -30,7 +31,8 @@ class TimeSlotController {
         message: "Success"
       })
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 }

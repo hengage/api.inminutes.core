@@ -20,7 +20,9 @@ export class CustomersOrdersController {
         data: { orderMetrics },
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      console.error('Error fetching order metrics:', error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 
@@ -38,7 +40,9 @@ export class CustomersOrdersController {
         data: { orders },
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      console.error('Error fetching orders:', error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 }

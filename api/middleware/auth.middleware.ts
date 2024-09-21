@@ -1,15 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 import { Socket } from "socket.io";
 
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { rateLimit } from "express-rate-limit";
 
-import { handleErrorResponse, HTTP_STATUS_CODES } from "../utils";
+import { HTTP_STATUS_CODES } from "../utils";
 import { JWT_SECRET_KEY } from "../config";
 import { JWT_ALGORITHMS } from "../config/secrets.config";
 import { CustomJwtPayload } from "../types";
 import { RATE_LIMIT_WINDOW_MS } from "../config/constants.config";
-import { createErrorResponse, handleError } from "../utils/response.utils";
+import { createErrorResponse } from "../utils/response.utils";
 
 /**
   Verifies the authentication token for a request.
@@ -55,7 +55,6 @@ const socketGuard = (event: any, next: (err?: Error | undefined) => void) => {
     console.error("Authentication error: Token not provided");
     return next(new Error("Authentication error: Token not provided"));
   }
-  console.log({ tokenFromSocket: token });
 
   try {
     const decoded = verifyToken(token);
@@ -74,13 +73,6 @@ const errandHistoryMiddleware = async (
 ) => {
   const userType = req.query.usertype as "customer" | "rider";
   console.log({ userType });
-  if (!userType) {
-    return handleErrorResponse(
-      res,
-      HTTP_STATUS_CODES.BAD_REQUEST,
-      "Invalid user type"
-    );
-  }
 
   if (userType !== "customer" && userType != "rider") {
     return res

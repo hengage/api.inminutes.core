@@ -17,11 +17,9 @@ class AuthController {
         message: "succesful",
       });
     } catch (error: any) {
-      // if ()
-      res.status(error.status || HTTP_STATUS_CODES.SERVER_ERROR).json({
-        message: "Failed ",
-        error: error.message || "Server error",
-      });
+      console.error('Error checking phone number:', error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 
@@ -35,7 +33,9 @@ class AuthController {
         data: { accessToken },
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      console.error('Error generating access token:', error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 }

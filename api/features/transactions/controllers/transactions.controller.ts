@@ -14,7 +14,10 @@ class TransactionController {
         data: response,
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      console.error('Error initializing transaction:', error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+      
     }
   }
 
@@ -41,7 +44,9 @@ class TransactionController {
         data: transactionHistory,
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      console.error('Error fetching transaction history:', error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 
@@ -55,7 +60,9 @@ class TransactionController {
         data: { transactionDetails },
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      console.error('Error fetching transaction details:', error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 }

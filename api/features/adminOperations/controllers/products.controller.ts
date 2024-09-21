@@ -18,8 +18,10 @@ export class AdminOpsForProductsController {
         message: "Success",
         data: { category },
       });
-    } catch (error: any) {
-      return handleErrorResponse(res, error);
+    } catch (error: unknown) {
+      console.log('Error creating category: ', error)
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      return res.status(statusCode).json(errorJSON);
     }
   }
 
@@ -31,8 +33,10 @@ export class AdminOpsForProductsController {
       res.status(HTTP_STATUS_CODES.CREATED).json({
         message: "Success",
       });
-    } catch (error: any) {
-      return handleErrorResponse(res, error);
+    } catch (error: unknown) {
+      console.log('Error approving product: ', error)
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      return res.status(statusCode).json(errorJSON);
     }
   }
 
@@ -43,7 +47,8 @@ export class AdminOpsForProductsController {
         message: "Success",
       });
     } catch (error: any) {
-      return handleErrorResponse(res, error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      return res.status(statusCode).json(errorJSON);
     }
   }
 }

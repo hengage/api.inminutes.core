@@ -3,25 +3,6 @@ import { HTTP_STATUS_CODES } from "../config/constants.config";
 import { ApiError, ErrorCode } from "../types";
 import { HandleException } from "./handleException.utils";
 
-function handleErrorResponse(
-  res: Response,
-  error: any,
-  message: string = "Failed"
-) {
-  console.log({ error: { status: error.status, message: error.message } });
-  console.log({ error });
-
-  const errorMessage =
-    (error.status && error.status >= 500) || error.status === undefined
-      ? "Server error"
-      : error.message;
-
-  res.status(error.status || HTTP_STATUS_CODES.SERVER_ERROR).json({
-    message,
-    error: errorMessage,
-  });
-}
-
 // Utility function to create an error response
 function createErrorResponse(
   code: ErrorCode,
@@ -39,9 +20,9 @@ function createErrorResponse(
 }
 
 // Function to handle errors and generate appropriate responses
-function handleError(err: unknown): {
+function handleErrorResponse(err: unknown): {
   statusCode: number;
-  errorResponse: ApiError;
+  errorJSON: ApiError;
 } {
   if (err instanceof HandleException) {
     const errorCode = Object.entries(HTTP_STATUS_CODES).find(
@@ -50,7 +31,7 @@ function handleError(err: unknown): {
 
     return {
       statusCode: err.status,
-      errorResponse: createErrorResponse(
+      errorJSON: createErrorResponse(
         errorCode || "INTERNAL_SERVER_ERROR",
         err.message
       ),
@@ -59,7 +40,7 @@ function handleError(err: unknown): {
     // Handle generic Error objects
     return {
       statusCode: HTTP_STATUS_CODES.SERVER_ERROR,
-      errorResponse: createErrorResponse(
+      errorJSON: createErrorResponse(
         "SERVER_ERROR",
         "An unexpected error occurred"
       ),
@@ -68,11 +49,11 @@ function handleError(err: unknown): {
     // Handle unknown error types
     return {
       statusCode: HTTP_STATUS_CODES.SERVER_ERROR,
-      errorResponse: createErrorResponse(
+      errorJSON: createErrorResponse(
         "SERVER_ERROR",
         "An unknown error occurred"
       ),
     };
   }
 }
-export { handleErrorResponse, handleError, createErrorResponse };
+export { handleErrorResponse, createErrorResponse };

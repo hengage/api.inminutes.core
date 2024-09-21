@@ -20,7 +20,8 @@ export class ProductsController {
         data: { categories },
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 
@@ -34,7 +35,8 @@ export class ProductsController {
         data: { product },
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 
@@ -46,7 +48,8 @@ export class ProductsController {
         data: { product },
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 
@@ -59,7 +62,8 @@ export class ProductsController {
         message: "success",
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 
@@ -77,7 +81,8 @@ export class ProductsController {
         data: { products },
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 
@@ -95,7 +100,8 @@ export class ProductsController {
         data: { products },
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 }

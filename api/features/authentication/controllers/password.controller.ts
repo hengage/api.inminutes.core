@@ -21,8 +21,10 @@ class PasswordController {
       res
         .status(HTTP_STATUS_CODES.OK)
         .json({ message: "Password reset successful" });
-    } catch (error: any) {
-      handleErrorResponse(res, error, "Password reset failed");
+    } catch (error: unknown) {
+      console.log(res, error, "Password reset failed", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 
@@ -45,8 +47,10 @@ class PasswordController {
       res.status(HTTP_STATUS_CODES.OK).json({
         message: "Password changed",
       });
-    } catch (error: any) {
-     handleErrorResponse(res, error, "Password change failed");
+    } catch (error: unknown) {
+      console.log("Password change failed: ", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 }

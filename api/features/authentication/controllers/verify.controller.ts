@@ -11,7 +11,8 @@ class VerifyController {
         message: "OTP sent",
       });
     } catch (error: any) {
-      handleErrorResponse(res, error, "Failed");
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 
@@ -23,7 +24,8 @@ class VerifyController {
         message: "Verification successful",
       });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 }
