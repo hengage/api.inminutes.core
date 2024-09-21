@@ -28,7 +28,10 @@ import { Document } from "mongoose";
 //   nextPage: number | null;
 // };
 
-type PaginatedQueryResult<T extends Document> = Record<[key: string], any>;
+type PaginatedQueryResult<T extends Document> = Record<
+  [key: string],
+  JSONValue
+>;
 
 type PaginateQueryOptions = {
   page: number;
@@ -56,9 +59,9 @@ type ErrorCode =
   | "FORBIDDEN"
   | "NOT_FOUND"
   | "CONFLICT"
-  | "SERVER_ERROR"
+  | "SERVER_ERROR";
 
-  type JSONValue =
+type JSONValue =
   | (null | undefined)
   | string
   | number
@@ -77,7 +80,7 @@ type ApiError = {
   };
 };
 interface ApiSuccessResponse<T> {
-  status: 'success';
+  status: "success";
   data: T;
   message?: string;
 }
