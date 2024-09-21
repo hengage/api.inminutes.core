@@ -76,3 +76,8 @@ type ApiError = {
     details?: Record<string, unknown>;
   };
 };
+interface ApiSuccessResponse<T> {
+  status: 'success';
+  data: T;
+  message?: string;
+}

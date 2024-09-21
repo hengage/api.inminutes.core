@@ -16,6 +16,7 @@ import {
 } from "../../../config";
 import { CustomersRepository } from "../repository/customers.repo";
 import { JSONValue } from "../../../types";
+import { handleSuccessResponse } from "../../../utils/response.utils";
 
 export class CustomersAuthentication {
   private twilioClient: Twilio;
@@ -66,9 +67,7 @@ export class CustomersAuthentication {
                 info.message as string
               )
             );
-            return res
-              .status(error.statusCode)
-              .json(error.errorJSON);
+            return res.status(error.statusCode).json(error.errorJSON);
           }
 
           const jwtPayload = {
@@ -79,11 +78,13 @@ export class CustomersAuthentication {
           const accessToken = generateJWTToken(jwtPayload, "1h");
           const refreshToken = generateJWTToken(jwtPayload, "14d");
 
-          res.status(HTTP_STATUS_CODES.OK).json({
-            message: "Successful",
-            data: { customer: { _id: user._id }, accessToken, refreshToken },
-          });
+          return handleSuccessResponse(res, HTTP_STATUS_CODES.OK, {
+            customer: { _id: user._id },
+            accessToken: accessToken,
+            refreshToken,
+          }, 'Login successful');
         }
+
       )(req, res, next);
     } catch (error: unknown) {
       console.log("Error logging in customer: ", error);

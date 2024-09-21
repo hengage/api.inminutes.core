@@ -1,10 +1,10 @@
 import { Response } from "express";
 import { HTTP_STATUS_CODES } from "../config/constants.config";
-import { ApiError, ErrorCode } from "../types";
+import { ApiError, ApiSuccessResponse, ErrorCode } from "../types";
 import { HandleException } from "./handleException.utils";
 
 // Utility function to create an error response
-function createErrorResponse(
+export function createErrorResponse(
   code: ErrorCode,
   message: string,
   details?: Record<string, unknown>
@@ -20,7 +20,7 @@ function createErrorResponse(
 }
 
 // Function to handle errors and generate appropriate responses
-function handleErrorResponse(err: unknown): {
+export function handleErrorResponse(err: unknown): {
   statusCode: number;
   errorJSON: ApiError;
 } {
@@ -56,4 +56,23 @@ function handleErrorResponse(err: unknown): {
     };
   }
 }
-export { handleErrorResponse, createErrorResponse };
+
+export function createSuccessResponse<T>(
+  data: T,
+  message?: string
+): ApiSuccessResponse<T> {
+  return {
+    status: "success",
+    data,
+    ...(message && { message }),
+  };
+}
+export function handleSuccessResponse<T>(
+  res: Response,
+  statusCode: number,
+  data: T,
+  message?: string
+) {
+  const successResponse = createSuccessResponse(data, message);
+  res.status(statusCode).json(successResponse);
+}
