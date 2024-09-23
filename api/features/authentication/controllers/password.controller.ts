@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { HTTP_STATUS_CODES, handleErrorResponse } from "../../../utils";
 import { passwordService } from "../services/password.service";
+import { handleSuccessResponse } from "../../../utils/response.utils";
 
 class PasswordController {
   public async resetPassword(req: Request, res: Response) {
@@ -18,11 +19,15 @@ class PasswordController {
         req.body.newPassword,
         accountType.toLowerCase()
       );
-      res
-        .status(HTTP_STATUS_CODES.OK)
-        .json({ message: "Password reset successful" });
+
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        null,
+        "Password reset successful",
+      )
     } catch (error: unknown) {
-      console.log(res, error, "Password reset failed", error);
+      console.error(res, error, "Password reset failed", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
@@ -44,11 +49,19 @@ class PasswordController {
         req.body.newPassword,
         accountType.toLowerCase()
       );
+
       res.status(HTTP_STATUS_CODES.OK).json({
         message: "Password changed",
       });
+
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        null,
+        "Password changed successfully",
+      )
     } catch (error: unknown) {
-      console.log("Password change failed: ", error);
+      console.error("Password change failed: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }

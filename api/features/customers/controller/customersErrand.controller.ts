@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { CustomerErrandService } from "../services/customerErrand.service";
 import { handleErrorResponse, HTTP_STATUS_CODES } from "../../../utils";
+import { handleSuccessResponse } from "../../../utils/response.utils";
 
 export class CustomerErrandController {
   private customerErrandService: CustomerErrandService;
@@ -14,8 +15,6 @@ export class CustomerErrandController {
     const limit = parseInt(req.query.limit as string);
     const customerId = (req as any).user._id;
 
-    console.log({ userType, customerId, page, limit });
-
     try {
       const history = await this.customerErrandService.getHistory({
         userType,
@@ -23,11 +22,10 @@ export class CustomerErrandController {
         page,
         limit,
       });
-      res.status(HTTP_STATUS_CODES.OK).json({
-        message: "success",
-        history,
-      });
-    } catch (error: any) {
+
+      return handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { history });
+    } catch (error: unknown) {
+      console.error("Error getting errand history: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }

@@ -7,6 +7,7 @@ import {
 } from "../../../utils";
 import { MediaService } from "../services/media.service";
 import { UploadedFiles } from "../media.interface";
+import { handleSuccessResponse } from "../../../utils/response.utils";
 
 export class MediaController {
   private mediaService: MediaService;
@@ -14,7 +15,7 @@ export class MediaController {
   constructor() {
     this.mediaService = new MediaService();
   }
-  public uploadMedia = async (req: Request, res: Response) => {
+  public uploadMedia = async (req: Request, res: Response): Promise<void> => {
     const files = req.files as UploadedFiles;
     const tags = req.query.tags as string;
 
@@ -28,13 +29,16 @@ export class MediaController {
       }
 
       const fileUrls = await this.mediaService.uploadToCloudinary(files, tags);
-      res.status(HTTP_STATUS_CODES.OK).json({
-        message: "File successfully uploaded",
-        data: fileUrls,
-      });
+
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        { fileUrls },
+        "File uploaded"
+      );
     } catch (error: any) {
       console.error("Error uploading media:", error);
-      const {statusCode, errorJSON} = handleErrorResponse(error)
+      const { statusCode, errorJSON } = handleErrorResponse(error)
       res.status(statusCode).json(errorJSON);
     }
   };

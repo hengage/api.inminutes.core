@@ -1,6 +1,7 @@
 import {Request, Response } from "express";
 import { HTTP_STATUS_CODES, handleErrorResponse } from "../../../utils";
 import { vendorsOrdersService } from "../services/vendorsOrders.service";
+import { handleSuccessResponse } from "../../../utils/response.utils";
 
 class VendorsOrdersController {
   async orderMetrics(req: Request, res: Response) {
@@ -9,11 +10,14 @@ class VendorsOrdersController {
       const orderMetrics = await vendorsOrdersService.orderMetrics(
         vendorId
       );
-      res.status(HTTP_STATUS_CODES.OK).json({
-        success: true,
-        data: {orderMetrics}
-      })
-    } catch (error: any) {
+
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        { orderMetrics },
+      );
+    } catch (error: unknown) {
+      console.error("Error fetching order metrics:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }

@@ -113,13 +113,11 @@ export class CustomersRepository {
    * @param displayPhoto - The new display photo URL.
    */
   async updateDIsplayPhoto(customerId: string, displayPhoto: string) {
-    const customer = Customer.findByIdAndUpdate(
+    return Customer.findByIdAndUpdate(
       customerId,
       { $set: { displayPhoto } },
-      { new: true }
-    ).select("displayPhoto");
-
-    return customer;
+      { new: true, select: "displayPhoto" }
+    );
   }
 
   /**

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import { HTTP_STATUS_CODES, handleErrorResponse } from "../../../utils";
+import { HTTP_STATUS_CODES, capitalize, handleErrorResponse } from "../../../utils";
 import { AdminOpsForProductsService } from "../services/products.services";
+import { handleSuccessResponse } from "../../../utils/response.utils";
 
 export class AdminOpsForProductsController {
   private adminOpsForProductsService: AdminOpsForProductsService;
@@ -9,46 +10,56 @@ export class AdminOpsForProductsController {
     this.adminOpsForProductsService = new AdminOpsForProductsService();
   }
 
-  async createCategory(req: Request, res: Response) {
+  async createCategory(req: Request, res: Response): Promise<void> {
     try {
       const category = await this.adminOpsForProductsService.createCategory(
         req.body
       );
-      res.status(HTTP_STATUS_CODES.CREATED).json({
-        message: "Success",
-        data: { category },
-      });
+
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.CREATED,
+        { category },
+        `${capitalize(category.name)} category created`
+      );
     } catch (error: unknown) {
-      console.log('Error creating category: ', error)
+      console.log("Error creating category: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
-      return res.status(statusCode).json(errorJSON);
+      res.status(statusCode).json(errorJSON);
     }
   }
 
-  async approveProduct(req: Request, res: Response) {
+  async approveProduct(req: Request, res: Response): Promise<void> {
     try {
       await this.adminOpsForProductsService.approveProduct(
         req.params.productId
       );
-      res.status(HTTP_STATUS_CODES.CREATED).json({
-        message: "Success",
-      });
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        null,
+        "Product has been approved"
+      );
     } catch (error: unknown) {
-      console.log('Error approving product: ', error)
+      console.log("Error approving product: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
-      return res.status(statusCode).json(errorJSON);
+      res.status(statusCode).json(errorJSON);
     }
   }
 
-  async rejectProduct(req: Request, res: Response) {
+  async rejectProduct(req: Request, res: Response): Promise<void> {
     try {
       await this.adminOpsForProductsService.rejectProduct(req.params.productId);
-      res.status(HTTP_STATUS_CODES.CREATED).json({
-        message: "Success",
-      });
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        null,
+        "Product has been rejected"
+      );
     } catch (error: any) {
+      console.error("Error rejecting product:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
-      return res.status(statusCode).json(errorJSON);
+      res.status(statusCode).json(errorJSON);
     }
   }
 }

@@ -4,7 +4,9 @@ import { HandleException, ORDER_STATUS, HTTP_STATUS_CODES } from "../../../utils
 import { Order, OrderFeedback } from "../models/orders.model";
 import {
   ICreateOrderData,
+  IOrderFeedbackDocument,
   IOrderRatingAndRemarkData,
+  IOrdersDocument,
 } from "../orders.interface";
 
 /**
@@ -40,7 +42,7 @@ export class OrdersRepository {
    * Retrieves the details of a single order.
    * @param orderId - The ID of the order to retrieve.
    */
-  async details(orderId: string) {
+  async details(orderId: string): Promise<IOrdersDocument> {
     const order = await Order.findById(orderId)
       .select({
         deliveryAddress: 1,
@@ -61,10 +63,15 @@ export class OrdersRepository {
       .populate({ path: "rider", select: "fullName phoneNumber" })
       .lean()
       .exec();
+
+    if (!order) {
+      throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "Order not found");
+    }
+
     return order;
   }
 
-  async getNewOrdersForVendors(vendorId: string) {
+  async getNewOrdersForVendors(vendorId: string): Promise<IOrdersDocument[]> {
     return await Order.find({
       vendor: vendorId,
       status: { $in: [ORDER_STATUS.PENDING, ORDER_STATUS.REQUEST_CONFIRMED] },
@@ -81,7 +88,10 @@ export class OrdersRepository {
     @param {string} params.orderId - The ID of the order.
     @param {string} params.riderId - The ID of the rider.
   */
-  async assignRider(params: { orderId: string; riderId: string }) {
+  async assignRider(params: {
+    orderId: string;
+    riderId: string;
+  }): Promise<IOrdersDocument> {
     const { orderId, riderId } = params;
     console.log({ orderrepo: orderId });
 
@@ -118,7 +128,7 @@ export class OrdersRepository {
     if (!order) {
       throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "Order not found");
     }
-    if (order?.status === ORDER_STATUS.CANCELLED) {
+    if (order.status === ORDER_STATUS.CANCELLED) {
       throw new HandleException(
         HTTP_STATUS_CODES.UNPROCESSABLE_ENTITY,
         "Order already cancelled"
@@ -141,7 +151,7 @@ export class OrdersRepository {
     @param {string} orderId - The ID of the order.
     @throws {HandleException error} If the order is already assigned to a rider.
   */
-  private async checkRiderIsAlreadyAssigned(orderId: string) {
+  private async checkRiderIsAlreadyAssigned(orderId: string): Promise<void> {
     const order = await Order.findById(orderId).select("rider").lean().exec();
 
     if (!order) {
@@ -164,7 +174,7 @@ export class OrdersRepository {
   public async createRemarkAndRating(
     createRemarkData: IOrderRatingAndRemarkData,
     session: ClientSession
-  ) {
+  ): Promise<IOrderFeedbackDocument> {
     const remark = new OrderFeedback({
       order: createRemarkData.orderId,
       ...createRemarkData,

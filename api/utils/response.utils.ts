@@ -57,7 +57,7 @@ export function handleErrorResponse(err: unknown): {
   }
 }
 
-export function createSuccessResponse<T>(
+export function createSuccessResponse<T = null>(
   data: T,
   message?: string
 ): ApiSuccessResponse<T> {
@@ -67,12 +67,12 @@ export function createSuccessResponse<T>(
     ...(message && { message }),
   };
 }
-export function handleSuccessResponse<T>(
+export function handleSuccessResponse<T = null>(
   res: Response,
   statusCode: number,
   data: T,
   message?: string
 ) {
-  const successResponse = createSuccessResponse(data, message);
+  const successResponse: ApiSuccessResponse<T> = createSuccessResponse(data, message);
   res.status(statusCode).json(successResponse);
 }

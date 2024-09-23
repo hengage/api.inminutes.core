@@ -4,6 +4,7 @@ import { HTTP_STATUS_CODES, handleErrorResponse } from "../../../utils";
 import { OrdersRepository } from "../repository/orders.repo";
 import { ordersService } from "../services/orders.service";
 import { ValidateOrders } from "../validation/orders.validation";
+import { handleSuccessResponse } from "../../../utils/response.utils";
 
 export class OrdersController {
   private ordersRepo: OrdersRepository;
@@ -25,7 +26,13 @@ export class OrdersController {
         message: "success",
         data: { order },
       });
-    } catch (error: any) {
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.CREATED,
+        { order },
+      );
+    } catch (error: unknown) {
+      console.error("Error creating order:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
@@ -38,7 +45,14 @@ export class OrdersController {
         message: "success",
         data: { order },
       });
-    } catch (error: any) {
+
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        { order },
+      );
+    } catch (error: unknown) {
+      console.error("Error fetching order details:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
@@ -65,10 +79,15 @@ export class OrdersController {
         remarkOnVendor,
         remarkOnRider,
       });
-      res.status(200).json({
-        message: "Success",
-      });
-    } catch (error: any) {
+
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        null,
+        "Order feedback submitted"
+      );
+    } catch (error: unknown) {
+      console.error("Error submitting order feedback:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }

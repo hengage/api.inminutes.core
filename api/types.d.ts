@@ -59,7 +59,10 @@ type ErrorCode =
   | "FORBIDDEN"
   | "NOT_FOUND"
   | "CONFLICT"
-  | "SERVER_ERROR";
+  | "SERVER_ERROR"
+  | "UNPROCESSABLE_ENTITY";
+
+type SuccessCode = "OK" | "CREATED" | "NO_CONTENT";
 
 type JSONValue =
   | (null | undefined)
@@ -79,7 +82,7 @@ type ApiError = {
     details?: Record<string, unknown>;
   };
 };
-interface ApiSuccessResponse<T> {
+interface ApiSuccessResponse<T = null> {
   status: "success";
   data: T;
   message?: string;

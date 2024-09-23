@@ -1,16 +1,15 @@
 import { Request, Response } from "express";
 import { HTTP_STATUS_CODES, handleErrorResponse } from "../../../utils";
 import { vendorsCategoryRepo } from "../repository/vendorsCategory.repo";
+import { handleSuccessResponse } from "../../../utils/response.utils";
 
 class VendorsCategoryController {
   async getCategories(req: Request, res: Response) {
     try {
-      const catgories = await vendorsCategoryRepo.getCategories();
-      res.status(HTTP_STATUS_CODES.OK).json({
-        message: "Successful",
-        data: { catgories },
-      });
-    } catch (error: any) {
+      const categories = await vendorsCategoryRepo.getCategories();
+
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { categories });
+    } catch (error: unknown) {
       console.error('Error fetching categories:', error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
@@ -23,11 +22,9 @@ class VendorsCategoryController {
         await vendorsCategoryRepo.getSubCategoriesByCategory(
           req.params.categoryId
         );
-      res.status(HTTP_STATUS_CODES.OK).json({
-        message: "Successful",
-        data: { subCatgories },
-      });
-    } catch (error: any) {
+
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { subCatgories });
+    } catch (error: unknown) {
       console.error('Error fetching subcategories:', error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
@@ -38,10 +35,8 @@ class VendorsCategoryController {
     try {
       const subCatgories =
         await vendorsCategoryRepo.getLocalMarketSubcategories();
-      res.status(HTTP_STATUS_CODES.OK).json({
-        success: true,
-        message: subCatgories,
-      });
+
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { subCatgories });
     } catch (error: any) {
       console.error('Error fetching local market subcategory:', error);
       const { statusCode, errorJSON } = handleErrorResponse(error);

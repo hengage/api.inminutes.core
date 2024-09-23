@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { handleErrorResponse, HTTP_STATUS_CODES } from "../../../utils";
 import { RiderErrandService } from "../services/ridersErrand.service";
+import { handleSuccessResponse } from "../../../utils/response.utils";
 
 export class RiderErrandController {
   private riderErrandService: RiderErrandService;
@@ -14,8 +15,6 @@ export class RiderErrandController {
     const limit = parseInt(req.query.limit as string);
     const riderId = (req as any).user._id;
 
-    console.log({ userType, riderId, page, limit });
-
     try {
       const history = await this.riderErrandService.getHistory({
         userType,
@@ -23,11 +22,10 @@ export class RiderErrandController {
         page,
         limit,
       });
-      res.status(HTTP_STATUS_CODES.OK).json({
-        message: "success",
-        history,
-      });
-    } catch (error: any) {
+
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { history });
+    } catch (error: unknown) {
+      console.error("Error fetching history:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }

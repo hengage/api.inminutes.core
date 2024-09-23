@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { errandService } from "../services/errand.service";
 import { handleErrorResponse, HTTP_STATUS_CODES } from "../../../utils";
 import { ValidateErrand } from "../validation/errand.validation";
+import { handleSuccessResponse } from "../../../utils/response.utils";
 
 export class ErrandController {
   // private errandService: ErrandService;
@@ -24,11 +25,13 @@ export class ErrandController {
       await this.validateErrand.create(data);
       const errand = await errandService.create(data);
 
-      res.status(HTTP_STATUS_CODES.CREATED).json({
-        message: "success",
-        data: { errand },
-      });
-    } catch (error: any) {
+      handleSuccessResponse(
+        res, 
+        HTTP_STATUS_CODES.CREATED,
+        errand
+      )
+    } catch (error: unknown) {
+      console.log("Error creating errand: ", error)
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
@@ -38,12 +41,13 @@ export class ErrandController {
     try {
       const errand = await errandService.getErrand(req.params.errandId);
 
-      console.log({ errand });
-      res.status(HTTP_STATUS_CODES.OK).json({
-        message: "success",
-        data: { errand },
-      });
-    } catch (error: any) {
+        handleSuccessResponse(
+          res,
+          HTTP_STATUS_CODES.OK,
+          errand
+        )
+    } catch (error: unknown) {
+      console.log("Error getting errand: ", error)
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }

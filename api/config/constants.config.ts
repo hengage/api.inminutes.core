@@ -1,7 +1,7 @@
-import { ErrorCode } from "../types";
+import { ErrorCode, SuccessCode } from "../types";
 
 export const HTTP_STATUS_CODES: Record<ErrorCode, number> &
-  Record<string, any> = {
+  Record<SuccessCode, number> = {
   OK: 200,
   CREATED: 201,
   NO_CONTENT: 204,

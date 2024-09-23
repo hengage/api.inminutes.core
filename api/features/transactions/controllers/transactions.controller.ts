@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { HTTP_STATUS_CODES, handleErrorResponse } from "../../../utils";
 import { paymentTransactionService } from "../services/paymentTransaction.service";
 import { validateTransactions } from "../validation/transactions.validate";
+import { handleSuccessResponse } from "../../../utils/response.utils";
 
 class TransactionController {
   async initialize(req: Request, res: Response) {
@@ -9,15 +10,18 @@ class TransactionController {
     try {
       await validateTransactions.initializeTransaction(req.body);
       const response = await paymentTransactionService.initialize(req.body);
-      res.status(200).json({
-        message: "success",
-        data: response,
-      });
-    } catch (error: any) {
+
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        response,
+        "Transaction initialized"
+      );
+    } catch (error: unknown) {
       console.error('Error initializing transaction:', error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
-      
+
     }
   }
 
@@ -39,11 +43,13 @@ class TransactionController {
         startDate: req.query.start as string,
         endDate: req.query.end as string,
       });
-      res.status(HTTP_STATUS_CODES.OK).json({
-        message: "success",
-        data: transactionHistory,
-      });
-    } catch (error: any) {
+
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        transactionHistory,
+      )
+    } catch (error: unknown) {
       console.error('Error fetching transaction history:', error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
@@ -55,11 +61,13 @@ class TransactionController {
       const transactionDetails = await paymentTransactionService.getDetails(
         req.params.transactionId
       );
-      res.status(HTTP_STATUS_CODES.OK).json({
-        message: "success",
-        data: { transactionDetails },
-      });
-    } catch (error: any) {
+
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        transactionDetails,
+      );
+    } catch (error: unknown) {
       console.error('Error fetching transaction details:', error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);

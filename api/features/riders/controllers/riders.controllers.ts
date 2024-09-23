@@ -6,13 +6,13 @@ import {
 } from "../../../utils";
 import { validateRider } from "../validators/riders.validators";
 import { ridersService } from "../services/riders.service";
+import { handleSuccessResponse } from "../../../utils/response.utils";
 class RidersController {
 
   constructor() {
   }
 
-  signup = async (req: Request, res: Response) => {
-    // async  signup (req: Request, res: Response) {
+  signup = async (req: Request, res: Response): Promise<void> => {
     try {
       await validateRider.signUp(req.body);
       const rider = await ridersService.signup(req.body);
@@ -21,18 +21,20 @@ class RidersController {
       const accessToken = generateJWTToken(jwtPayload, "1h");
       const refreshToken = generateJWTToken(jwtPayload, "14d");
 
-      res.status(HTTP_STATUS_CODES.CREATED).json({
-        message: "Success",
-        data: { rider, accessToken, refreshToken },
-      });
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.CREATED,
+        { rider, accessToken, refreshToken },
+        "Rider account created"
+      );
     } catch (error: any) {
       console.error("Error signing up rider:", error);
-      const {statusCode, errorJSON} = handleErrorResponse(error)
+      const { statusCode, errorJSON } = handleErrorResponse(error)
       res.status(statusCode).json(errorJSON);
     }
   };
 
-  login = async (req: Request, res: Response) => {
+  login = async (req: Request, res: Response): Promise<void> => {
     try {
       await validateRider.login(req.body);
       const rider = await ridersService.login(req.body);
@@ -41,13 +43,14 @@ class RidersController {
       const accessToken = generateJWTToken(jwtPayload, "1h");
       const refreshToken = generateJWTToken(jwtPayload, "14d");
 
-      res.status(HTTP_STATUS_CODES.OK).json({
-        message: "Login successful",
-        data: { rider, accessToken, refreshToken },
-      });
-    } catch (error: any) {
+      handleSuccessResponse(res,
+        HTTP_STATUS_CODES.OK,
+        { rider, accessToken, refreshToken },
+        "Login successful",
+      );
+    } catch (error: unknown) {
       console.error("Error on rider login:", error);
-      const {statusCode, errorJSON} = handleErrorResponse(error)
+      const { statusCode, errorJSON } = handleErrorResponse(error)
       res.status(statusCode).json(errorJSON);
     }
   };
@@ -56,13 +59,13 @@ class RidersController {
     const id = (req as any).user._id;
     try {
       const rider = await ridersService.getMe(id);
-      res.status(HTTP_STATUS_CODES.OK).json({
-        message: "Success",
-        data: { rider },
-      });
-    } catch (error: any) {
+
+      handleSuccessResponse(
+        res, HTTP_STATUS_CODES.OK, { rider }
+      )
+    } catch (error: unknown) {
       console.error("Error getting rider:", error);
-      const {statusCode, errorJSON} = handleErrorResponse(error)
+      const { statusCode, errorJSON } = handleErrorResponse(error)
       res.status(statusCode).json(errorJSON);
     }
   };

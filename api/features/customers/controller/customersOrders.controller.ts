@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { HTTP_STATUS_CODES, handleErrorResponse } from "../../../utils";
 import { CustomersOrdersService } from "../services/customerOrders.service";
+import { handleSuccessResponse } from "../../../utils/response.utils";
 
 export class CustomersOrdersController {
   private customersOrdersService: CustomersOrdersService;
@@ -15,10 +16,12 @@ export class CustomersOrdersController {
       const orderMetrics = await this.customersOrdersService.orderMetrics(
         customerId
       );
-      res.status(HTTP_STATUS_CODES.OK).json({
-        success: true,
-        data: { orderMetrics },
-      });
+
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        { orderMetrics },
+      );
     } catch (error: any) {
       console.error('Error fetching order metrics:', error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
@@ -34,13 +37,14 @@ export class CustomersOrdersController {
         customerId,
         page,
       });
-      console.log({ orders });
-      res.status(HTTP_STATUS_CODES.OK).json({
-        success: true,
-        data: { orders },
-      });
+
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        { orders },
+      );
     } catch (error: any) {
-      console.error('Error fetching orders:', error);
+      console.error('Error fetching orders for customer:', error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }

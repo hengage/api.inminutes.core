@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { HTTP_STATUS_CODES, handleErrorResponse } from "../../../utils";
+import { HTTP_STATUS_CODES, capitalize, handleErrorResponse } from "../../../utils";
 import { AdminOpsVendorsCategoryService } from "../services/vendorsCategory.service";
 import { ValidateAdminVendorsOps } from "../validators/adminVendorsOps.validate";
+import { handleSuccessResponse } from "../../../utils/response.utils";
 
 export class AdminOpsVendorsCategoryController {
   private validateAdminVendorsOps: ValidateAdminVendorsOps;
@@ -12,36 +13,42 @@ export class AdminOpsVendorsCategoryController {
     this.adminOpsVendorsCategoryService = new AdminOpsVendorsCategoryService();
   }
 
-  async createCategory(req: Request, res: Response) {
+  createCategory = async (req: Request, res: Response): Promise<void> => {
     try {
       await this.validateAdminVendorsOps.createCategory(req.body);
 
       const category = await this.adminOpsVendorsCategoryService.createCategory(
         req.body
       );
-      
-      return res.status(HTTP_STATUS_CODES.CREATED).json({
-        message: "Successful",
-        data: { category },
-      });
+
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.CREATED,
+        { category },
+        `${capitalize(category.name)} category created`
+      );
     } catch (error: any) {
+      console.log("Error creating category: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
   }
 
-  async createSubCategory(req: Request, res: Response) {
+  createSubCategory = async (req: Request, res: Response): Promise<void> => {
     try {
       await this.validateAdminVendorsOps.createSubCategory(req.body);
 
       const subCategory =
         await this.adminOpsVendorsCategoryService.createSubCategory(req.body);
 
-      return res.status(HTTP_STATUS_CODES.CREATED).json({
-        message: "Successful",
-        data: { subCategory },
-      });
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.CREATED,
+        { subCategory },
+        `${capitalize(subCategory.name)} sub-category created`
+      );
     } catch (error: any) {
+      console.log("Error creating sub-category: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }

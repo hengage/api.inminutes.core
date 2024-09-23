@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { HTTP_STATUS_CODES, handleErrorResponse } from "../../../utils";
 import { verifyService } from "../services/verify.service";
+import { handleSuccessResponse } from "../../../utils/response.utils";
 
 class VerifyController {
   sendVerificationCode = async (req: Request, res: Response) => {
@@ -10,7 +11,15 @@ class VerifyController {
       res.status(HTTP_STATUS_CODES.OK).json({
         message: "OTP sent",
       });
-    } catch (error: any) {
+
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        null,
+        "OTP sent successfully",
+      )
+    } catch (error: unknown) {
+      console.error("Error sending verification code: ", error)
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
@@ -20,10 +29,15 @@ class VerifyController {
     const { recipientPhoneNumber, otpCode } = req.body;
     try {
       await verifyService.checkVerificationCode(recipientPhoneNumber, otpCode);
-      res.status(HTTP_STATUS_CODES.OK).json({
-        message: "Verification successful",
-      });
-    } catch (error: any) {
+
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        null,
+        "Verification successful",
+      )
+    } catch (error: unknown) {
+      console.error("Error checking verification code: ", error)
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }

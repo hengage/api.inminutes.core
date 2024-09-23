@@ -1,11 +1,13 @@
-import { HandleException, HTTP_STATUS_CODES } from "../../../utils";
+import { capitalize, HandleException, HTTP_STATUS_CODES } from "../../../utils";
 import { VendorCategory, VendorSubCategory } from "../../vendors";
+import { IVendorCategoryDocument, IVendorSubCategoryDocument } from "../../vendors/vendors.interface";
 
 export class AdminOpsVendorsCategoryService {
   private vendorCategoryModel = VendorCategory;
   private vendorSubCategoryModel = VendorSubCategory;
 
-  async createCategory(payload: any) {
+  async createCategory(payload: { name: string; image: string })
+    : Promise<IVendorCategoryDocument> {
     const categoryExists = await this.vendorCategoryModel
       .findOne({ name: payload.name })
       .select("name")
@@ -15,7 +17,7 @@ export class AdminOpsVendorsCategoryService {
     if (categoryExists) {
       throw new HandleException(
         HTTP_STATUS_CODES.CONFLICT,
-        "The category name already exists"
+        `${capitalize(payload.name)} is an existing vendor category`
       );
     }
 
@@ -31,9 +33,10 @@ export class AdminOpsVendorsCategoryService {
     };
   }
 
-  async createSubCategory(payload: any) {
+  async createSubCategory(payload: { name: string; category: string })
+    : Promise<Omit<IVendorSubCategoryDocument, 'category'>> {
     const subCategoryExists = await this.vendorSubCategoryModel
-      .findOne({ name: payload.name })
+      .findOne({ name: payload.name, category: payload.category })
       .select("name")
       .lean()
       .exec();
@@ -41,7 +44,7 @@ export class AdminOpsVendorsCategoryService {
     if (subCategoryExists) {
       throw new HandleException(
         HTTP_STATUS_CODES.CONFLICT,
-        "The sub category name already exists"
+        `${capitalize(payload.name)} is an existing sub-category for this category`
       );
     }
 

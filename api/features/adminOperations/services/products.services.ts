@@ -1,5 +1,6 @@
-import { HandleException, PRODUCT_STATUS, HTTP_STATUS_CODES } from "../../../utils";
+import { HandleException, PRODUCT_STATUS, HTTP_STATUS_CODES, capitalize } from "../../../utils";
 import { Product, ProductCategory } from "../../products";
+import { IProductCategoryDocument } from "../../products/products.interface";
 
 export class AdminOpsForProductsService {
   private productCategoryModel = ProductCategory;
@@ -8,7 +9,9 @@ export class AdminOpsForProductsService {
   constructor() {
   }
 
-  async createCategory(payload: any) {
+  async createCategory(payload: {
+    name: string;
+  }): Promise<Pick<IProductCategoryDocument, "_id" | "name">> {
     const categoryExists = await this.productCategoryModel
       .findOne({ name: payload.name })
       .select("name")
@@ -18,7 +21,7 @@ export class AdminOpsForProductsService {
     if (categoryExists) {
       throw new HandleException(
         HTTP_STATUS_CODES.CONFLICT,
-        "The category name already exists"
+        `${capitalize(payload.name)} is an existing product category`
       );
     }
 

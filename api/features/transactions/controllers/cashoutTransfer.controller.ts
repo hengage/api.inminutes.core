@@ -6,15 +6,23 @@ import {
 } from "../../../utils";
 import { cashoutTransferService } from "../services/cashoutTransfer.service";
 import { validateTransactions } from "../validation/transactions.validate";
+import { handleSuccessResponse } from "../../../utils/response.utils";
+import { ApiSuccessResponse } from "../../../types";
 
 class CashoutTransferController {
-  async addCashoutAccount(req: Request, res: Response) {
+  async addCashoutAccount(req: Request, res: Response): Promise<void> {
     try {
       await cashoutTransferService.addCashoutAccount(
         req.body.accountDetails,
         req.body.walletId
       );
-      res.status(HTTP_STATUS_CODES.OK).json({ message: "success" });
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.CREATED,
+        null,
+        "Account added successfully"
+      );
+
     } catch (error: any) {
       console.error('Error adding cashout account:', error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
@@ -22,13 +30,17 @@ class CashoutTransferController {
     }
   }
 
-  async initialize(req: Request, res: Response) {
+  async initialize(req: Request, res: Response): Promise<void> {
     try {
       await validateTransactions.cashoutTransfer(req.body)
       await cashoutTransferService.initialize(req.body);
-      res
-        .status(HTTP_STATUS_CODES.OK)
-        .json({ message: "success", data: "Cashout approved" });
+
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        null,
+        "Cashout request approved"
+      );
     } catch (error: any) {
       console.error('Error initializing cashout transfer:', error);
       const { statusCode, errorJSON } = handleErrorResponse(error);

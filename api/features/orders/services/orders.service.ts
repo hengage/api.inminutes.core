@@ -11,6 +11,7 @@ import { ridersService } from "../../riders/";
 import {
   ICreateOrderData,
   IOrderAndMerchantsRatingData,
+  IOrdersDocument,
 } from "../orders.interface";
 
 /**
@@ -58,7 +59,7 @@ class OrdersService {
     return newOrder;
   };
 
-  async details(orderId: string) {
+  async details(orderId: string): Promise<IOrdersDocument> {
     const cacheKey = `order:${orderId}`;
     const cachedOrder = await redisClient.get(cacheKey);
     if (cachedOrder) {

@@ -1,7 +1,7 @@
 import { PaginateModel, Schema, model } from "mongoose";
 import { generateUniqueString } from "../../../utils";
-import { ORDER_STATUS,} from "../../../config/constants.config";
-import { IOrdersDocument } from "../orders.interface";
+import { ORDER_STATUS, } from "../../../config/constants.config";
+import { IOrderFeedbackDocument, IOrdersDocument } from "../orders.interface";
 import paginate from "mongoose-paginate-v2";
 
 const orderSchema = new Schema<IOrdersDocument>(
@@ -37,7 +37,7 @@ const orderSchema = new Schema<IOrdersDocument>(
     },
     // h3Index: { type: String, required: true, index: true },
     deliveryFee: { type: String, required: true },
-    serviceFee: {type: String, default: "0"},
+    serviceFee: { type: String, default: "0" },
     totalProductsCost: { type: String, required: true },
     totalCost: { type: String, required: true },
     type: { type: String, required: true, enum: ["instant", "scheduled"] },
@@ -52,7 +52,7 @@ const orderSchema = new Schema<IOrdersDocument>(
   { timestamps: true }
 );
 
-const orderFeedbackSchema = new Schema(
+const orderFeedbackSchema = new Schema<IOrderFeedbackDocument>(
   {
     _id: {
       type: String,
@@ -75,4 +75,6 @@ export const Order = model<IOrdersDocument, PaginateModel<IOrdersDocument>>(
   orderSchema
 );
 
-export const OrderFeedback = model("OrderFeedback", orderFeedbackSchema);
+export const OrderFeedback = model<IOrderFeedbackDocument>(
+  "OrderFeedback", orderFeedbackSchema
+);

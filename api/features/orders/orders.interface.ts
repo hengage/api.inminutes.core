@@ -57,6 +57,15 @@ export interface ICreateOrderData {
   scheduledDeliveryTime: Date;
 }
 
+export interface IOrderFeedbackDocument {
+  _id: string;
+  order: IOrdersDocument
+  remarkOnRider: string;
+  riderRating: number;
+  remarkOnVendor: string;
+  vendorRating: number;
+}
+
 export interface IOrderRatingAndRemarkData {
   orderId: string;
   remarkOnRider: string;

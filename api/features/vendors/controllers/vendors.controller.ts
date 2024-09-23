@@ -7,6 +7,7 @@ import {
 import { vendorsRepo } from "../repository/vendors.repo";
 import { vendorsService } from "../services/vendor.services";
 import { validateVendor } from "../validators/vendors.validators";
+import { handleSuccessResponse } from "../../../utils/response.utils";
 
 class VendorsController {
   async signup(req: Request, res: Response) {
@@ -24,11 +25,13 @@ class VendorsController {
       const accessToken = generateJWTToken(jwtPayload, "1h");
       const refreshToken = generateJWTToken(jwtPayload, "14d");
 
-      res.status(HTTP_STATUS_CODES.CREATED).json({
-        message: "Success",
-        data: { vendor, accessToken, refreshToken },
-      });
-    } catch (error: any) {
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.CREATED,
+        { vendor, accessToken, refreshToken },
+        "Vendor account created"
+      );
+    } catch (error: unknown) {
       console.error('Error registering vendor:', error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
@@ -42,14 +45,16 @@ class VendorsController {
 
       const jwtPayload = { _id: vendor._id, PhoneNumber: vendor.phoneNumber };
       const accessToken = generateJWTToken(jwtPayload, "1h");
-      console.log({tokenFromLogin:accessToken})
+      console.log({ tokenFromLogin: accessToken })
       const refreshToken = generateJWTToken(jwtPayload, "14d");
 
-      res.status(HTTP_STATUS_CODES.OK).json({
-        message: "Login successful",
-        data: { vendor, accessToken, refreshToken },
-      });
-    } catch (error: any) {
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        { vendor, accessToken, refreshToken },
+        "Login successful"
+      );
+    } catch (error: unknown) {
       console.error('Error logging in vendor:', error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
@@ -60,11 +65,9 @@ class VendorsController {
     const id = (req as any).user._id;
     try {
       const vendor = await vendorsRepo.getMe(id);
-      res.status(HTTP_STATUS_CODES.OK).json({
-        message: "Success",
-        data: { vendor },
-      });
-    } catch (error: any) {
+
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { vendor });
+    } catch (error: unknown) {
       console.error('Error fetching vendor details:', error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
@@ -76,11 +79,10 @@ class VendorsController {
     const vendor = (req as any).user;
     try {
       const products = await vendorsService.getProducts(vendor._id, page);
-      res.status(HTTP_STATUS_CODES.OK).json({
-        message: "success",
-        data: { products },
-      });
-    } catch (error: any) {
+
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { products });
+    } catch (error: unknown) {
+      console.error("Error fetching vendor products:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
@@ -97,11 +99,8 @@ class VendorsController {
         coordinates: req.body.coordinates,
       });
 
-      res.status(HTTP_STATUS_CODES.OK).json({
-        message: "message",
-        data: { vendors },
-      });
-    } catch (error: any) {
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { vendors });
+    } catch (error: unknown) {
       console.error('Error fetching nearby vendors:', error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
@@ -118,17 +117,14 @@ class VendorsController {
         coordinates: req.body.coordinates
       });
 
-      res.status(HTTP_STATUS_CODES.OK).json({
-        message: "success",
-        data: { vendors },
-      });
-    } catch (error: any) {
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { vendors });
+    } catch (error: unknown) {
       console.error('Error fetching vendors by category:', error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
   }
-  
+
   async getVendorsBySubCategory(req: Request, res: Response) {
     const page = parseInt(req.query.page as string) || 1;
     try {
@@ -138,13 +134,8 @@ class VendorsController {
         coordinates: req.body.coordinates
       });
 
-      // console.log(vendors)
-
-      res.status(HTTP_STATUS_CODES.OK).json({
-        message: "success",
-        data: { vendors },
-      });
-    } catch (error: any) {
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { vendors });
+    } catch (error: unknown) {
       console.error('Error fetching vendors by sub-category:', error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
@@ -157,14 +148,11 @@ class VendorsController {
     const limit = parseInt(req.query.limit as string) || 10
     try {
       const products = await vendorsService.getProductsAndGroupByCategory(
-        {vendorId: req.params.vendorId, page, limit}
+        { vendorId: req.params.vendorId, page, limit }
       );
 
-      res.status(HTTP_STATUS_CODES.OK).json({
-        message: "success",
-        data: { products },
-      });
-    } catch (error: any) {
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { products });
+    } catch (error: unknown)  {
       console.error('Error fetching products and grouping by category:', error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);

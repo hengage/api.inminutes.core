@@ -25,14 +25,14 @@ export class CustomersService {
     image: Record<string, any>;
   }) => {
     const { customerId, image } = params;
-    const displayPhotoUrl = await this.mediaService.uploadToCloudinary(
+    
+    const result = await this.mediaService.uploadToCloudinary(
       image,
       "display-photo"
     );
-    console.log({ displayPhotoUrl });
 
     const updatedCustomer = await Promise.all(
-      Object.values(displayPhotoUrl).map(async (url) => {
+      Object.values(result).map(async (url) => {
         const customer = await this.customersRepo.updateDIsplayPhoto(
           customerId,
           url
@@ -41,6 +41,6 @@ export class CustomersService {
       })
     );
 
-    return updatedCustomer;
+    return updatedCustomer[0];
   };
 }
