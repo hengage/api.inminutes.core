@@ -11,3 +11,4 @@ export const calculateAverageRating = (merchant: any, rating: number) => {
 
   return averageRating;
 };
+// Todo: define typings for merchant and return type

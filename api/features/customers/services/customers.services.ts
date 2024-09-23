@@ -31,16 +31,9 @@ export class CustomersService {
       "display-photo"
     );
 
-    const updatedCustomer = await Promise.all(
-      Object.values(result).map(async (url) => {
-        const customer = await this.customersRepo.updateDIsplayPhoto(
-          customerId,
-          url
-        );
-        return customer;
-      })
-    );
+    const resultUrl = Object.values(result)[0];
+    return await this.customersRepo.updateDIsplayPhoto(customerId, resultUrl);
 
-    return updatedCustomer[0];
+    // return updatedCustomer[0];
   };
 }
