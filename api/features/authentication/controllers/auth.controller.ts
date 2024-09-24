@@ -1,21 +1,25 @@
 import { Request, Response } from "express";
 import { HTTP_STATUS_CODES, handleErrorResponse } from "../../../utils";
-import {UsersService } from "../../../services";
+import { UsersService } from "../../../services";
 import { authService } from "../services/auth.service";
+import { handleSuccessResponse } from "../../../utils/response.utils";
 
 class AuthController {
   private usersService: UsersService
 
-  constructor(){
+  constructor() {
     this.usersService = new UsersService()
   }
 
-  async checkPhoneNumberIstaken(req: Request, res: Response) {
+  checkPhoneNumberIstaken = async (req: Request, res: Response) => {
     try {
       await this.usersService.isPhoneNumberTaken(req.body.phoneNumber);
-      res.status(HTTP_STATUS_CODES.NO_CONTENT).json({
-        message: "succesful",
-      });
+
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.NO_CONTENT,
+        null
+      );
     } catch (error: any) {
       console.error('Error checking phone number:', error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
@@ -28,10 +32,12 @@ class AuthController {
       const accessToken = await authService.refreshAccessToken(
         req.body.refreshToken
       );
-      res.status(HTTP_STATUS_CODES.OK).json({
-        message: "Access token generated",
-        data: { accessToken },
-      });
+
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        { accessToken },
+      );
     } catch (error: any) {
       console.error('Error generating access token:', error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
