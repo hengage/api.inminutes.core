@@ -33,7 +33,7 @@ class CustomersRoutes {
       this.customersController.signupVerificationCode
     );
     this.router.post(`/signup`, authLimiter, this.customersController.signup);
-    this.router.post("/login", authLimiter, this.customersAuthentication.login);
+    this.router.post("/login", this.customersAuthentication.login);
 
     this.router.use(verifyAuthTokenMiddleware);
     this.router.route("/me").get(this.customersController.getProfile);

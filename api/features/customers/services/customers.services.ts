@@ -15,6 +15,7 @@ export class CustomersService {
     await Promise.all([
       this.customersRepo.checkEmailIstaken(customerData.email),
       this.customersRepo.checkPhoneNumberIstaken(customerData.phoneNumber),
+      // Todo: check or username exists
     ]);
 
     return await this.customersRepo.signup(customerData);
@@ -33,7 +34,5 @@ export class CustomersService {
 
     const resultUrl = Object.values(result)[0];
     return await this.customersRepo.updateDIsplayPhoto(customerId, resultUrl);
-
-    // return updatedCustomer[0];
   };
 }

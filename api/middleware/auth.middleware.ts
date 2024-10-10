@@ -29,6 +29,7 @@ const verifyAuthTokenMiddleware = async (
     req.user = decoded;
     next();
   } catch (error: any) {
+    console.error("Authentication error:", error);
     res
       .status(HTTP_STATUS_CODES.UNAUTHORIZED)
       .json(
