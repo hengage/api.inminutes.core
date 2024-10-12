@@ -30,13 +30,14 @@ export const Msg = {
   ERROR_EMAIL_TAKEN(email: string) {
     return `Email ${email} already taken by an existing user.`;
   },
-
   ERROR_NO_WALLET_FOUND(id: string) {
     return `Wallet with id '${id}' not found`;
   },
-
   ERROR_PRODUCT_NOT_FOUND(id: string) {
     return `Product with id '${id}' not found`;
+  },
+  ERROR_ORDER_NOT_FOUND(id: string){
+    return `No order with id '${id}' found`;
   },
   ERROR_INVALID_USER_TYPE(userType: string) {
     return `Invalid user type '${userType}'`;
