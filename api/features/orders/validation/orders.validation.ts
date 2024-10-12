@@ -1,5 +1,6 @@
 import Joi from "joi";
-import { HandleException, HTTP_STATUS_CODES } from "../../../utils";
+import { HandleException, HTTP_STATUS_CODES, Msg } from "../../../utils";
+import { ORDER_TYPE } from "../../../constants";
 
 /**
 Validates orders using Joi schemas.
@@ -30,15 +31,14 @@ export class ValidateOrders {
       totalCost: Joi.string().label("Total cost").required(),
       instruction: Joi.string().label("Instruction"),
       type: Joi.string()
-        .valid("instant", "scheduled")
+        .valid(ORDER_TYPE.INSTANT, ORDER_TYPE.SCHEDULED)
         .label("Order type")
         .required(),
       scheduledDeliveryTime: Joi.string().when("type", {
-        is: "scheduled",
+        is: ORDER_TYPE.SCHEDULED,
         then: Joi.string().label("Scheduled delivery time").required(),
         otherwise: Joi.forbidden().messages({
-          "any.unknown":
-            "Scheduled pickup time is forbidden when errand type is not sheduled",
+          "any.unknown": Msg.ERROR_SCHEDULED_FORBIDDEN(),
         }),
       }),
     });

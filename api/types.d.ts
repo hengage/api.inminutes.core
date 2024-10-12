@@ -49,7 +49,7 @@ type CustomJwtPayload = JwtPayload & {
   phoneNumber: string;
 };
 
-type Coordinates = [number, number];
+type Coordinates = [lng: number, lat:number];
 
 type DynamicObject = Record<any, JSONObject>;
 
@@ -82,7 +82,7 @@ type ApiError = {
     details?: Record<string, unknown>;
   };
 };
-interface ApiSuccessResponse<T = null> {
+interface ApiSuccessResponse<T = JSONValue | null> {
   status: "success";
   data: T;
   message?: string;

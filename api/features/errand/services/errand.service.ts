@@ -1,4 +1,4 @@
-import { ErrandStatus } from "../../../config/constants.config";
+import { ErrandStatus } from "../../../constants";
 import { NotificationService } from "../../notifications";
 import { deliveryService, HandleException, HTTP_STATUS_CODES } from "../../../utils";
 import { ICreateErrandData } from "../errand.interface";

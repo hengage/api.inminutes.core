@@ -1,4 +1,4 @@
-import { HandleException, HTTP_STATUS_CODES } from "../../../utils";
+import { HandleException, HTTP_STATUS_CODES, Msg } from "../../../utils";
 import { Product, ProductCategory, WishList } from "../models/products.models";
 import { IAddProductData } from "../products.interface";
 
@@ -11,7 +11,7 @@ export class ProductsRepository {
   private productCategoryModel = ProductCategory;
   private wishListModel = WishList;
 
-  constructor() {}
+  constructor() { }
 
   /**
   @async
@@ -59,7 +59,10 @@ export class ProductsRepository {
   async decreaseproductQuantity(productId: string, quantity: number) {
     const product = await Product.findById(productId);
     if (!product) {
-      throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "Product not found");
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        Msg.ERROR_PRODUCT_NOT_FOUND(productId)
+      );
     }
     product.quantity -= quantity;
     await product.save();
@@ -97,7 +100,10 @@ export class ProductsRepository {
     });
 
     if (result.deletedCount === 0) {
-      throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "Product not found");
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        Msg.ERROR_PRODUCT_NOT_FOUND(productId)
+      );
     }
 
     console.log(" Deleted product", productId);

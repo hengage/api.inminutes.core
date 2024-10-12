@@ -5,6 +5,7 @@ import {
   TWILIO_VERIFY_SID,
 } from "../../../config";
 import { HandleException, HTTP_STATUS_CODES } from "../../../utils";
+import { OTP_CHANNEL } from "../../../constants";
 
 const VERIFICATION_CHANNELS = {
   SMS: "sms",
@@ -24,7 +25,7 @@ class VerifyService {
 
   sendVerificationCode = async (
     recipientPhoneNumber: string,
-    channel: VerificationChannel = "SMS"
+    channel: VerificationChannel = OTP_CHANNEL.SMS
   ) => {
     try {
       const verification = await this.twilioClient.verify.v2

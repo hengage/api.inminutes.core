@@ -1,3 +1,4 @@
+import { AGENDA, DISPATCH_TYPE, ORDER_TYPE } from "../constants";
 import { IErrandDocument } from "../features/errand";
 import { IOrdersDocument } from "../features/orders/orders.interface";
 import { ridersService } from "../features/riders";
@@ -28,19 +29,19 @@ class DeliveryService {
   }) => {
     const { order, distanceInKM } = params;
 
-    if (order.type === "scheduled") {
+    if (order.type === ORDER_TYPE.SCHEDULED) {
       console.log("Scheduled order", { order });
       const fiveMinutesBefore = new Date(
         order.scheduledDeliveryTime?.getTime() - 5 * 60000
       );
 
       await this.jobScheduleService.scheduleJob({
-        jobName: "schedule-dispatch-pickup",
+        jobName: AGENDA.SCHEDULE_DISPATCH_PICKUP,
         scheduledTime: order.scheduledDeliveryTime,
         jobData: {
           coordinates: order.vendor.location.coordinates,
           distanceInKM: distanceInKM,
-          dispatchType: "order",
+          dispatchType: DISPATCH_TYPE.ORDER,
           dispatchId: order._id,
         },
       });
@@ -49,31 +50,31 @@ class DeliveryService {
       await ridersService.notifyRidersForDispatchJob({
         coordinates: order.vendor.location.coordinates,
         distanceInKM,
-        dispatchType: "errand",
+        dispatchType: DISPATCH_TYPE.ORDER,
         dispatchId: order._id,
       });
     }
   };
 
   handleInstantOrScheduledErrand = async (errand: IErrandDocument) => {
-    if (errand.type === "scheduled") {
+    if (errand.type === ORDER_TYPE.SCHEDULED) {
       console.log("Scheduled errand");
       await this.jobScheduleService.scheduleJob({
-        jobName: "schedule-dispatch-pickup",
+        jobName: AGENDA.SCHEDULE_DISPATCH_PICKUP,
         scheduledTime: errand.scheduledPickupTime,
         jobData: {
           coordinates: errand.pickupCoordinates.coordinates,
           distanceInKM: 20,
-          dispatchType: "errand",
+          dispatchType: DISPATCH_TYPE.ERRAND,
           dispatchId: errand._id,
         },
       });
-    } else if (errand.type === "instant") {
+    } else if (errand.type === ORDER_TYPE.INSTANT) {
       console.log("Instant errand", { errand });
       await ridersService.notifyRidersForDispatchJob({
         coordinates: errand.pickupCoordinates.coordinates,
         distanceInKM: 20,
-        dispatchType: "errand",
+        dispatchType: DISPATCH_TYPE.ERRAND,
         dispatchId: errand._id,
       });
     }

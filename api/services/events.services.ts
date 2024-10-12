@@ -4,9 +4,9 @@ import { NotificationService } from "../features/notifications";
 import { SocketServer } from "./socket/socket.services";
 import { ordersService } from "../features/orders";
 import { startSession } from "mongoose";
+import { Events } from "../constants";
+import { Msg } from "../utils";
 
-console.log({ SocketServer });
-// const socketServer = SocketServer.getInstance()
 
 class EventEmit {
   private eventEmitter: EventEmitter;
@@ -18,7 +18,7 @@ class EventEmit {
 
     this.listenToEvents();
 
-    this.eventEmitter.on("create-wallet", async (data) => {
+    this.eventEmitter.on(Events.CREATE_WALLET, async (data) => {
       console.log({ eventData: data });
 
       try {
@@ -29,7 +29,7 @@ class EventEmit {
       }
     });
 
-    this.eventEmitter.on("notify-vendor-of-new-order", async (data) => {
+    this.eventEmitter.on(Events.NOTIFY_VENDOR_OF_ORDER, async (data) => {
       const { orderId, vendorId } = data;
 
       try {
@@ -48,7 +48,7 @@ class EventEmit {
       }
     });
 
-    this.eventEmitter.on("credit-vendor", async (data) => {
+    this.eventEmitter.on(Events.CREDIT_VENDOR, async (data) => {
       console.log({ data });
       const { vendorId: merchantId, amount } = data;
 
@@ -73,7 +73,7 @@ class EventEmit {
 
         const socketServer = SocketServer.getInstance();
         socketServer.emitEvent(
-          "wallet-balance",
+          Events.WALLET_BALANCE,
           {
             _id: updatedWallet._id,
             balance: updatedWallet.balance,
@@ -83,9 +83,7 @@ class EventEmit {
         await this.notificationService.createNotification({
           headings: { en: "Your Earnings Are In!" },
           contents: {
-            en:
-              `${amount} has been successfully credited to your wallet. ` +
-              `Head to your dashboard to see your new balance`,
+            en: Msg.WALLET_CREDITED(amount),
           },
           userId: wallet.merchantId,
         });
@@ -97,7 +95,7 @@ class EventEmit {
       }
     });
 
-    this.eventEmitter.on("credit-rider", async (data) => {
+    this.eventEmitter.on(Events.CREDIT_RIDER, async (data) => {
       const { riderId: merchantId, amount } = data;
 
       const session = await startSession();
@@ -120,7 +118,7 @@ class EventEmit {
 
         const socketServer = SocketServer.getInstance();
         socketServer.emitEvent(
-          "wallet-balance",
+          Events.WALLET_BALANCE,
           {
             _id: updatedWallet._id,
             balance: updatedWallet.balance,
@@ -130,9 +128,7 @@ class EventEmit {
         await this.notificationService.createNotification({
           headings: { en: "Your Earnings Are In!" },
           contents: {
-            en:
-              `${amount} has been successfully credited to your wallet. ` +
-              `Head to your dashboard to see your new balance`,
+            en: Msg.WALLET_CREDITED(amount),
           },
           userId: wallet.merchantId,
         });
@@ -146,14 +142,14 @@ class EventEmit {
   }
 
   private listenToEvents = () => {
-    this.eventEmitter.on("vendor-new-orders", async (data) => {
+    this.eventEmitter.on(Events.VENDOR_UNFULLFILED_ORDERS, async (data) => {
       console.log({ eventData: data });
       const vendorNewOrders = await ordersService.getNewOrdersForVendors(
         data.vendorId
       );
       const socketServer = SocketServer.getInstance();
 
-      socketServer.emitEvent("vendor-new-orders", vendorNewOrders);
+      socketServer.emitEvent(Events.VENDOR_UNFULLFILED_ORDERS, vendorNewOrders);
     });
   };
 

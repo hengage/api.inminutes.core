@@ -1,6 +1,6 @@
 import { Response } from "express";
-import { HTTP_STATUS_CODES } from "../config/constants.config";
-import { ApiError, ApiSuccessResponse, ErrorCode } from "../types";
+import { HTTP_STATUS_CODES } from "../constants";
+import { ApiError, ApiSuccessResponse, ErrorCode, JSONValue } from "../types";
 import { HandleException } from "./handleException.utils";
 
 // Utility function to create an error response
@@ -57,7 +57,7 @@ export function handleErrorResponse(err: unknown): {
   }
 }
 
-export function createSuccessResponse<T = null>(
+export function createSuccessResponse<T = JSONValue | null>(
   data: T,
   message?: string
 ): ApiSuccessResponse<T> {
@@ -67,7 +67,7 @@ export function createSuccessResponse<T = null>(
     ...(message && { message }),
   };
 }
-export function handleSuccessResponse<T = null>(
+export function handleSuccessResponse<T = JSONValue | null>(
   res: Response,
   statusCode: number,
   data: T,

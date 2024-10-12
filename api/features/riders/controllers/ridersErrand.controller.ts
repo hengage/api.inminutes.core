@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { handleErrorResponse, HTTP_STATUS_CODES } from "../../../utils";
 import { RiderErrandService } from "../services/ridersErrand.service";
 import { handleSuccessResponse } from "../../../utils/response.utils";
+import { USER_TYPE } from "../../../constants";
 
 export class RiderErrandController {
   private riderErrandService: RiderErrandService;
@@ -10,7 +11,7 @@ export class RiderErrandController {
   }
 
   getHistory = async (req: Request, res: Response) => {
-    const userType = req.query.usertype as "rider";
+    const userType = req.query.usertype as USER_TYPE.RIDER;
     const page = parseInt(req.query.page as string);
     const limit = parseInt(req.query.limit as string);
     const riderId = (req as any).user._id;

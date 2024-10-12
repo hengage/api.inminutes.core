@@ -3,7 +3,6 @@ import { Server } from "http";
 const socketIO = require("socket.io");
 
 import { Socket } from "socket.io";
-import { listenToCustomerEvents } from "./customer.socket";
 import { listenToOrderevents } from "./orders.socket";
 import { listenToRiderEvents } from "./riders.socket";
 import { listenForProductEvents } from "./products.socket";
@@ -83,7 +82,6 @@ export class SocketServer {
   };
 
   private listenToEvents(socket: Socket) {
-    listenToCustomerEvents(socket);
     listenToOrderevents(socket);
     listenToRiderEvents(socket);
     listenForProductEvents(socket);

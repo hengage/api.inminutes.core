@@ -1,5 +1,5 @@
 import {  UsersService } from "../../../services";
-import { HandleException, HTTP_STATUS_CODES, compareValues } from "../../../utils";
+import { HandleException, HTTP_STATUS_CODES, compareValues, Msg } from "../../../utils";
 
 class PasswordService {
   private usersService: UsersService;
@@ -15,7 +15,10 @@ class PasswordService {
     const AccountModel = await this.usersService.getUserAccountModel(accountType);
     const account = await (AccountModel as any).findOne({ phoneNumber }).select("phoneNumber password");
     if (!account) {
-      throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "User not found");
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        Msg.ERROR_NO_USER_FOUND_WITH_PHONE_NUMBER(phoneNumber)
+      );
     }
 
     account.password = newPassword;
@@ -33,7 +36,10 @@ class PasswordService {
       const account = await (AccountModel as any).findById(accountId).select("password");
 
       if (!account) {
-        throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "User not found");
+        throw new HandleException(
+          HTTP_STATUS_CODES.NOT_FOUND,
+          Msg.ERROR_NO_USER_FOUND(accountId)
+        );
       }
 
       const currentPasswordMatch = await compareValues(
@@ -44,7 +50,7 @@ class PasswordService {
       if (!currentPasswordMatch) {
         throw new HandleException(
           HTTP_STATUS_CODES.BAD_REQUEST,
-          "Your current password is incorrect"
+          "Invalid current password"
         );
       }
       account.password = newPassword;

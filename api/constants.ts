@@ -1,4 +1,4 @@
-import { ErrorCode, SuccessCode } from "../types";
+import { ErrorCode, SuccessCode } from "./types";
 
 export const HTTP_STATUS_CODES: Record<ErrorCode, number> &
   Record<SuccessCode, number> = {
@@ -53,6 +53,12 @@ export enum ORDER_STATUS {
   CANCELLED = "cancelled",
 }
 
+export enum ORDER_TYPE {
+  INSTANT = "instant",
+  SCHEDULED = "scheduled",
+}
+
+
 export enum RIDER_WORK_SLOT_STATUS {
   PENDING = "pending",
   STARTED = "started",
@@ -76,7 +82,75 @@ export enum ErrandStatus {
   CANCELLED = "cancelled",
 }
 
+export enum DISPATCH_TYPE {
+  ORDER = "order",
+  ERRAND = "errand",
+};
+
 export enum RATE_LIMIT_WINDOW_MS {
   DEFAULT = 15 * 60 * 1000, // 15 minutes
   CASHOUT_LIMIT = 60 * 60 * 1000, // 1 hour
+}
+
+
+export enum JWTConfig {
+  ACCESS_TOKEN_EXPIRES_IN = "1h",
+  REFRESH_TOKEN_EXPIRES = "1d",
+}
+
+export enum Events {
+  CREATE_WALLET = "create-wallet",
+  VENDOR_UNFULLFILED_ORDERS = "vendor-new-orders",
+  WALLET_BALANCE = "wallet-balance",
+  CREDIT_RIDER = "credit-rider",
+  CREDIT_VENDOR = "credit-vendor",
+  NOTIFY_VENDOR_OF_ORDER = "notify-vendor-of-new-order",
+}
+
+export enum USER_TYPE {
+  CUSTOMER = "customer",
+  VENDOR = "vendor",
+  RIDER = "rider",
+}
+
+export enum GEOLOCATION {
+  POINT = "point",
+  LOCATION_INDEX = "2dsphere",
+  MAX_DISTANCE_TO_SEARCH = 17000,
+}
+
+export enum DB_SCHEMA {
+  CUSTOMER = "Customer",
+  VENDOR = "Vendor",
+  RIDER = "Rider",
+  WALLET = "Wallet",
+  TRANSACTION = "Transaction",
+  ORDER = "Order",
+  VENDOR_CATEGORY = "VendorCategory",
+  VENDOR_SUB_CATEGORY = "VendorSubCategory",
+  PRODUCT = "Product",
+  PRODUCT_CATEGORY = "ProductCategory",
+  WISHLIST = "WishList", //Todo: use lowercase 'l' for wishlist
+  ERRAND = 'Errand',
+  ERRAND_PACKAGE_TYPE = "ErrandPackageType",
+  ORDER_FEEDBACK = "OrderFeedback"
+}
+
+export enum AGENDA {
+  START_WORK_SCHEDULE = "start-work-schedule",
+  END_WORK_SCHEDULE = "end-work-schedule",
+  SCHEDULE_DISPATCH_PICKUP = "schedule-dispatch-pickup",
+}
+
+export enum Currency {
+  NGN = "NGN",
+}
+
+export enum TRANSACTION_TYPE {
+  DEBIT = "debit",
+  CREDIT = "credit",
+}
+
+export enum OTP_CHANNEL {
+  SMS = "SMS"
 }

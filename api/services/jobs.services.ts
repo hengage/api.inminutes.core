@@ -4,6 +4,7 @@ dotenv.config();
 import { Agenda } from "agenda";
 import { DB_URL } from "../config/secrets.config";
 import { ridersService } from "../features/riders";
+import { AGENDA } from "../constants";
 
 /**
 Service for scheduling tasks and jobs.
@@ -47,7 +48,7 @@ export class SchedulerService {
   @private
   */
   private defineJobs() {
-    this.agenda?.define("schedule-dispatch-pickup", async (job: any) => {
+    this.agenda?.define(AGENDA.SCHEDULE_DISPATCH_PICKUP, async (job: any) => {
       console.log("Running schedule");
       const { coordinates, distanceInKM, dispatchType, dispatchId } = job.attrs.data;
       await ridersService.notifyRidersForDispatchJob({
@@ -58,7 +59,7 @@ export class SchedulerService {
       });
     });
 
-    this.agenda?.define("start-work-schedule", async (job: any) => {
+    this.agenda?.define(AGENDA.START_WORK_SCHEDULE, async (job: any) => {
       const { riderId, slotId } = job.attrs.data;
       console.log("Running availability to true", job.attrs.data);
       await ridersService.updateAvailability({
@@ -67,7 +68,7 @@ export class SchedulerService {
       });
     });
 
-    this.agenda?.define("end-work-schedule", async (job: any) => {
+    this.agenda?.define(AGENDA.END_WORK_SCHEDULE, async (job: any) => {
       const { riderId, slotId } = job.attrs.data;
       console.log("Running availability to false", job.attrs.data);
       await ridersService.updateAvailability({

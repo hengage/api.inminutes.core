@@ -1,6 +1,7 @@
 import jwt, { decode } from "jsonwebtoken";
 import { HandleException, HTTP_STATUS_CODES, generateJWTToken } from "../../../utils";
 import { JWT_SECRET_KEY } from "../../../config";
+import { JWTConfig } from "../../../constants";
 
 class AuthService {
   public async refreshAccessToken(refreshToken: string) {
@@ -13,7 +14,7 @@ class AuthService {
       console.log({ decoded });
       const accessToken = generateJWTToken(
         { phoneNumber: decoded.phoneNumber, _id: decoded._id },
-        "5m"
+        JWTConfig.ACCESS_TOKEN_EXPIRES_IN
       );
       return accessToken;
     } catch (error: any) {

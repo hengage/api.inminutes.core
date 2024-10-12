@@ -1,5 +1,5 @@
 import axios from "axios";
-import { HandleException, generateReference } from "../../../utils";
+import { HTTP_STATUS_CODES, HandleException, generateReference } from "../../../utils";
 // import *as crypto from "crypto";
 import { createHmac } from "crypto";
 import { Request } from "express";
@@ -13,6 +13,7 @@ import { TransactionRepository } from "../repository/transaction.repo";
 import { cashoutTransferService } from "./cashoutTransfer.service";
 import { SocketServer } from "../../../services/socket/socket.services";
 import { ClientSession } from "mongoose";
+import { Events } from "../../../constants";
 
 /**
 Service for managing transactions and interacting with Paystack API.
@@ -90,7 +91,7 @@ class PaymentTransactionService {
     );
     const digest = hash.digest("hex");
 
-    // if (digest === req.headers["x-paystack-signature"]) {
+    if (digest === req.headers["x-paystack-signature"]) {
     console.log(req.body);
     const event = req.body;
     const { reference, status, paid_at: paidAt } = event.data;
@@ -101,7 +102,7 @@ class PaymentTransactionService {
         this.transactionRepo.updateStatus({ reference, status, paidAt });
         const { purpose, orderId, vendorId } = event.data.metadata;
         if (purpose === "product purchase") {
-          emitEvent.emit("notify-vendor-of-new-order", { orderId, vendorId });
+          emitEvent.emit(Events.NOTIFY_VENDOR_OF_ORDER, { orderId, vendorId });
         }
         break;
       case "transfer.success":
@@ -117,9 +118,9 @@ class PaymentTransactionService {
       default:
         console.warn(`Unknown event type: ${event.event}`);
     }
-    // } else {
-    // throw new HandleException(STATUS_CODES.BAD_REQUEST, "Invalid signature");
-    // }
+    } else {
+    throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, "Invalid signature");
+    }
   }
 
   /**
@@ -167,7 +168,7 @@ calling the cashoutTransferService.reverseDebit method
 
       const socketServer = SocketServer.getInstance();
       socketServer.emitEvent(
-        "wallet-balance",
+        Events.WALLET_BALANCE,
         {
           _id: wallet?._id,
           balance: wallet?.balance,

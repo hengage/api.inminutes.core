@@ -1,17 +1,15 @@
-import { ClientSession, Schema, model } from "mongoose";
+import { ClientSession, model, Schema } from "mongoose";
 
 import Big from "big.js";
 
-import { IWalletDocument, IWalletMethodsDocument } from "../wallet.interface";
+import { CASHOUT_CHANNEL, Currency, USER_TYPE, WALLET_STATUS } from "../../../constants";
 import {
-  // CASHOUT_CHANNEL,
-  // CASHOUT_CHANNEL,
+  generateUniqueString,
   HandleException,
   HTTP_STATUS_CODES,
-  // WALLET_STATUS,
-  generateUniqueString,
+  Msg,
 } from "../../../utils";
-import { CASHOUT_CHANNEL, WALLET_STATUS } from "../../../config/constants.config";
+import { IWalletDocument, IWalletMethodsDocument } from "../wallet.interface";
 
 const walletSchema = new Schema<IWalletDocument>(
   {
@@ -26,14 +24,14 @@ const walletSchema = new Schema<IWalletDocument>(
     merchantType: {
       type: String,
       required: true,
-      enum: ["rider", "vendor"],
+      enum: [USER_TYPE.RIDER, USER_TYPE.VENDOR],
     },
     balance: { type: String, default: "0" },
     transactionCount: { type: Number, default: 0 },
     totalEarnings: { type: String, default: "0" },
     currency: {
       type: String,
-      default: "NGN",
+      default: Currency.NGN,
     },
     cashoutAccounts: {
       type: [
@@ -46,7 +44,7 @@ const walletSchema = new Schema<IWalletDocument>(
           bankCode: String,
           accountName: String,
           accountNumber: String,
-          currency: { type: String, default: "NGN" },
+          currency: { type: String, default: Currency.NGN },
           recipientType: { type: String, default: "nuban" },
           recipientCode: String,
           _id: false,
@@ -86,7 +84,10 @@ walletSchema.statics.creditWallet = async function (
   ).session(session);
 
   if (!wallet) {
-    throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "wallet not found");
+    throw new HandleException(
+      HTTP_STATUS_CODES.NOT_FOUND, 
+      Msg.ERROR_NO_WALLET_FOUND(walletId)
+    );
   }
 
   wallet.balance = Big(wallet.balance).plus(amount).toFixed(2);
@@ -107,7 +108,10 @@ walletSchema.statics.debitWallet = async function (
     .session(session);
 
   if (!wallet) {
-    throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "wallet not found");
+    throw new HandleException(
+      HTTP_STATUS_CODES.NOT_FOUND,
+      Msg.ERROR_NO_WALLET_FOUND(walletId)
+    );
   }
 
   if (Big(wallet.balance).lt(Big(amount))) {

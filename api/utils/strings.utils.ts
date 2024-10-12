@@ -18,14 +18,11 @@ export function toLowerCaseSetter(value: string): string {
 }
 
 export async function encryptValue(value: string): Promise<string> {
-  // try {
   const saltRounds = 10;
   const hashedValue = await bcrypt.hash(value, saltRounds);
   return hashedValue;
-  // } catch (error: any) {
-  //   throw new Error(error.message);
-  // }
 }
+
 export async function compareValues(
   plainValue: string,
   hashValue: string

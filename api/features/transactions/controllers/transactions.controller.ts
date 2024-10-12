@@ -29,9 +29,10 @@ class TransactionController {
     try {
       paymentTransactionService.webhook(req);
       res.sendStatus(HTTP_STATUS_CODES.OK);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log({ error });
-      res.sendStatus(error.status);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 

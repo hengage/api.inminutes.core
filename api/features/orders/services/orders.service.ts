@@ -13,6 +13,7 @@ import {
   IOrderAndMerchantsRatingData,
   IOrdersDocument,
 } from "../orders.interface";
+import { Events } from "../../../constants";
 
 /**
 CustomersOrdersService
@@ -257,12 +258,12 @@ class OrdersService {
       userId: order.customer,
     });
 
-    emitEvent.emit("credit-vendor", {
+    emitEvent.emit(Events.CREDIT_VENDOR, {
       vendorId: order.vendor._id,
       amount: order.totalProductsCost,
     });
 
-    emitEvent.emit("credit-rider", {
+    emitEvent.emit(Events.CREDIT_RIDER, {
       riderId: order.rider,
       amount: order.deliveryFee,
     });

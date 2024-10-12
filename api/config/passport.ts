@@ -1,9 +1,8 @@
 import { Customer, ICustomerDocument } from "../features/customers";
-import { compareValues } from "../utils";
+import { compareValues, Msg } from "../utils";
 
 import { Strategy } from "passport-local";
 import passport from "passport";
-import { msg } from "../lib";
 
 
 const localStrategy = new Strategy(
@@ -17,18 +16,18 @@ const localStrategy = new Strategy(
 
       if (!customer) {
         return done(null, false, {
-          message: msg.INCORRECT_CREDENTIALS,
+          message: Msg.ERROR_INVALID_LOGIN_CREDENTIALS(),
         });
       }
       const passwordsMatch = await compareValues(password, customer.password);
       return passwordsMatch
         ? done(null, customer)
-        : done(null, false, { message: msg.INCORRECT_CREDENTIALS });
+        : done(null, false, { message: Msg.ERROR_INVALID_LOGIN_CREDENTIALS() });
     } catch (error) {
       console.error("Authentication error:", error);
       done(null, false, { message: "An error occurred during authentication." });
     }
-    }
+  }
 );
 
 const serializeUser = () => {

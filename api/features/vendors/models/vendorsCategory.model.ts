@@ -5,6 +5,7 @@ import {
   IVendorCategoryDocument,
   IVendorSubCategoryDocument,
 } from "../vendors.interface";
+import { DB_SCHEMA } from "../../../constants";
 
 const vendorCategorySchema = new Schema<IVendorCategoryDocument>(
   {
@@ -27,17 +28,17 @@ const vendorSubCategorySchema = new Schema<IVendorSubCategoryDocument>(
       default: () => generateUniqueString(4),
     },
     name: { type: String, required: true, unique: true },
-    category: { type: String, required: true, ref: "VendorCategory" },
+    category: { type: String, required: true, ref: DB_SCHEMA.VENDOR_CATEGORY },
   },
   { timestamps: true, _id: false }
 );
 
 export const VendorSubCategory = model<IVendorSubCategoryDocument>(
-  "vendorsubcategory",
+  DB_SCHEMA.VENDOR_SUB_CATEGORY,
   vendorSubCategorySchema
 );
 
 export const VendorCategory = model<IVendorCategoryDocument>(
-  "vendorcategory",
+  DB_SCHEMA.VENDOR_CATEGORY,
   vendorCategorySchema
 );

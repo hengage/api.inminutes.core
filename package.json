@@ -39,7 +39,6 @@
     "express-fileupload": "^1.4.3",
     "express-rate-limit": "^7.4.0",
     "express-session": "^1.17.3",
-    "h3-js": "^4.1.0",
     "joi": "^17.11.0",
     "jsonwebtoken": "^9.0.2",
     "luxon": "^3.4.4",

@@ -1,6 +1,6 @@
 import { PaginateModel, Schema, model } from "mongoose";
 import { generateUniqueString } from "../../../utils";
-import { ORDER_STATUS, } from "../../../config/constants.config";
+import { DB_SCHEMA, GEOLOCATION, ORDER_STATUS, ORDER_TYPE, } from "../../../constants";
 import { IOrderFeedbackDocument, IOrdersDocument } from "../orders.interface";
 import paginate from "mongoose-paginate-v2";
 
@@ -10,15 +10,15 @@ const orderSchema = new Schema<IOrdersDocument>(
       type: String,
       default: () => generateUniqueString(5),
     },
-    customer: { type: String, required: true, ref: "Customer" },
+    customer: { type: String, required: true, ref: DB_SCHEMA.CUSTOMER },
     recipientPhoneNumber: { type: String },
-    rider: { type: String, ref: "Rider", default: null },
+    rider: { type: String, ref: DB_SCHEMA.RIDER, default: null },
     items: [
       {
-        product: { type: String, required: true, ref: "Product" },
+        product: { type: String, required: true, ref: DB_SCHEMA.PRODUCT },
         quantity: { type: Number, required: true },
         cost: { type: String, required: true },
-        vendor: { type: String, required: true, ref: "Vendor" },
+        vendor: { type: String, required: true, ref: DB_SCHEMA.VENDOR },
         addOns: [
           {
             item: { type: String },
@@ -29,18 +29,17 @@ const orderSchema = new Schema<IOrdersDocument>(
         _id: false,
       },
     ],
-    vendor: { type: String, ref: "Vendor" },
+    vendor: { type: String, ref: DB_SCHEMA.VENDOR },
     deliveryAddress: { type: String, required: true },
     deliveryLocation: {
-      type: { type: String, default: "Point" },
+      type: { type: String, default: GEOLOCATION.POINT },
       coordinates: { type: [Number, Number], required: true },
     },
-    // h3Index: { type: String, required: true, index: true },
     deliveryFee: { type: String, required: true },
     serviceFee: { type: String, default: "0" },
     totalProductsCost: { type: String, required: true },
     totalCost: { type: String, required: true },
-    type: { type: String, required: true, enum: ["instant", "scheduled"] },
+    type: { type: String, required: true, enum: Object.values(ORDER_TYPE) },
     scheduledDeliveryTime: { type: Date },
     instruction: { type: String },
     status: {
@@ -58,7 +57,7 @@ const orderFeedbackSchema = new Schema<IOrderFeedbackDocument>(
       type: String,
       default: () => generateUniqueString(5),
     },
-    order: { type: String, ref: "Order" },
+    order: { type: String, ref: DB_SCHEMA.ORDER },
     remarkOnRider: { type: String },
     remarkOnVendor: { type: String },
     vendorRating: { type: Number },
@@ -67,14 +66,14 @@ const orderFeedbackSchema = new Schema<IOrderFeedbackDocument>(
   { timestamps: { createdAt: true, updatedAt: false } }
 );
 
-orderSchema.index({ deliveryLocation: "2dsphere" });
+orderSchema.index({ deliveryLocation: GEOLOCATION.LOCATION_INDEX });
 orderSchema.plugin(paginate);
 
 export const Order = model<IOrdersDocument, PaginateModel<IOrdersDocument>>(
-  "Order",
+  DB_SCHEMA.ORDER,
   orderSchema
 );
 
 export const OrderFeedback = model<IOrderFeedbackDocument>(
-  "OrderFeedback", orderFeedbackSchema
+  DB_SCHEMA.ORDER_FEEDBACK, orderFeedbackSchema
 );

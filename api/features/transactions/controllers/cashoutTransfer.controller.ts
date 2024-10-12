@@ -1,13 +1,11 @@
 import { Request, Response } from "express";
 import {
-  HandleException,
   HTTP_STATUS_CODES,
   handleErrorResponse,
 } from "../../../utils";
 import { cashoutTransferService } from "../services/cashoutTransfer.service";
 import { validateTransactions } from "../validation/transactions.validate";
 import { handleSuccessResponse } from "../../../utils/response.utils";
-import { ApiSuccessResponse } from "../../../types";
 
 class CashoutTransferController {
   async addCashoutAccount(req: Request, res: Response): Promise<void> {
@@ -23,7 +21,7 @@ class CashoutTransferController {
         "Account added successfully"
       );
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error adding cashout account:', error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
@@ -41,7 +39,7 @@ class CashoutTransferController {
         null,
         "Cashout request approved"
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error initializing cashout transfer:', error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);

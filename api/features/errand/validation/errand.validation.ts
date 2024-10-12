@@ -1,6 +1,7 @@
 import Joi from "joi";
-import { HandleException, HTTP_STATUS_CODES } from "../../../utils";
+import { HandleException, HTTP_STATUS_CODES, Msg } from "../../../utils";
 import { ICreateErrandData } from "../errand.interface";
+import { ORDER_TYPE } from "../../../constants";
 
 export class ValidateErrand {
   create = async (createErrandData: ICreateErrandData) => {
@@ -19,7 +20,7 @@ export class ValidateErrand {
           .pattern(
             /^([0]{1}|\+?[2][3][4])([7-9]{1})([0|1]{1})([\d]{1})([\d]{7})$/
           )
-          .message("Invalid phone number format"),
+          .message(Msg.ERROR_INVALID_PHONE_FORMAT()),
       })
         .label("Receiver")
         .required(),
@@ -37,18 +38,18 @@ export class ValidateErrand {
         .required(),
       dispatchFee: Joi.string().label("Dispatch fee").required(),
       type: Joi.string()
-        .valid("instant", "scheduled")
+        .valid(ORDER_TYPE.INSTANT, ORDER_TYPE.SCHEDULED)
         .label("Errand type")
         .required(),
       scheduledPickupTime: Joi.date()
         .label("Scheduled pickup time")
         .optional()
         .when("type", {
-          is: "scheduled",
+          is: ORDER_TYPE.SCHEDULED,
           then: Joi.required(),
           otherwise: Joi.forbidden().messages({
             "any.unknown":
-              "Scheduled pickup time is forbidden when errand type is not sheduled",
+              Msg.ERROR_SCHEDULED_FORBIDDEN(),
           }),
         }),
     });

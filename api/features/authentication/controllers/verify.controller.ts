@@ -8,15 +8,12 @@ class VerifyController {
     const { recipientPhoneNumber } = req.body;
     try {
       await verifyService.sendVerificationCode(recipientPhoneNumber);
-      res.status(HTTP_STATUS_CODES.OK).json({
-        message: "OTP sent",
-      });
 
       handleSuccessResponse(
         res,
         HTTP_STATUS_CODES.OK,
         null,
-        "OTP sent successfully",
+        "OTP sent",
       )
     } catch (error: unknown) {
       console.error("Error sending verification code: ", error)
@@ -34,7 +31,7 @@ class VerifyController {
         res,
         HTTP_STATUS_CODES.OK,
         null,
-        "Verification successful",
+        "OTP verified",
       )
     } catch (error: unknown) {
       console.error("Error checking verification code: ", error)

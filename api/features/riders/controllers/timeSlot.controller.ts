@@ -17,7 +17,7 @@ class TimeSlotController {
         res,
         HTTP_STATUS_CODES.CREATED,
         { slot },
-        "Successfully booked slot"
+        "You have booked this slot"
       );
     } catch (error: any) {
       console.error("Error booking slot:", error);

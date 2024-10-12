@@ -1,7 +1,7 @@
 import { Document } from "mongoose";
 import { ICustomerDocument } from "../customers";
 import { IRiderDocument } from "../riders";
-import { ErrandStatus } from "../../config/constants.config";
+import { ErrandStatus } from "../../constants";
 import { Coordinates } from "../../types";
 
 export interface IErrandDocument extends Document {

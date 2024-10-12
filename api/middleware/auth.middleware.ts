@@ -4,11 +4,11 @@ import { Socket } from "socket.io";
 import jwt from "jsonwebtoken";
 import { rateLimit } from "express-rate-limit";
 
-import { HTTP_STATUS_CODES } from "../utils";
+import { HTTP_STATUS_CODES, Msg } from "../utils";
 import { JWT_SECRET_KEY } from "../config";
 import { JWT_ALGORITHMS } from "../config/secrets.config";
 import { CustomJwtPayload } from "../types";
-import { RATE_LIMIT_WINDOW_MS } from "../config/constants.config";
+import { RATE_LIMIT_WINDOW_MS, USER_TYPE } from "../constants";
 import { createErrorResponse } from "../utils/response.utils";
 
 /**
@@ -35,7 +35,7 @@ const verifyAuthTokenMiddleware = async (
       .json(
         createErrorResponse(
           "UNAUTHORIZED",
-          "Invalid request. Please check your credentials and try again."
+          Msg.ERROR_AUNAUTHORIZED_USER()
         )
       );
   }
@@ -72,13 +72,13 @@ const errandHistoryMiddleware = async (
   res: Response,
   next: NextFunction
 ) => {
-  const userType = req.query.usertype as "customer" | "rider";
+  const userType = req.query.usertype as USER_TYPE.CUSTOMER | USER_TYPE.RIDER;
   console.log({ userType });
 
-  if (userType !== "customer" && userType != "rider") {
+  if (userType !== USER_TYPE.CUSTOMER && userType != USER_TYPE.RIDER) {
     return res
       .status(HTTP_STATUS_CODES.BAD_REQUEST)
-      .json(createErrorResponse("BAD_REQUEST", "Invalid user type."));
+      .json(createErrorResponse("BAD_REQUEST", Msg.ERROR_INVALID_USER_TYPE(userType)));
   }
 
   return next();

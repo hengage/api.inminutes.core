@@ -1,4 +1,9 @@
-export const calculateAverageRating = (merchant: any, rating: number) => {
+import { IRiderDocument } from "../features/riders";
+import { IVendorDocument } from "../features/vendors";
+
+export const calculateAverageRating = (
+  merchant: IRiderDocument | IVendorDocument, rating: number
+): number => {
   // Increase the number of times the account has been rated
   merchant.rating.ratingCount += 1;
 
@@ -11,4 +16,3 @@ export const calculateAverageRating = (merchant: any, rating: number) => {
 
   return averageRating;
 };
-// Todo: define typings for merchant and return type

@@ -4,6 +4,7 @@ import { string } from "joi";
 import { HandleException, RIDER_WORK_SLOT_STATUS } from "../../../utils";
 import { timeSlotRepo } from "../repository/timeSlot.repo";
 import { SchedulerService } from "../../../services";
+import { AGENDA } from "../../../constants";
 
 /**
 Service for managing time slots for riders.
@@ -32,13 +33,13 @@ class TimeSlotService {
     const slot = await timeSlotRepo.bookSlot({ riderId, startTime, endTime });
 
     await this.jobscheduleService.scheduleJob({
-      jobName: "start-work-schedule",
+      jobName: AGENDA.START_WORK_SCHEDULE,
       scheduledTime: startTime,
       jobData: { riderId, slotId: slot._id },
     });
 
     await this.jobscheduleService.scheduleJob({
-      jobName: "end-work-schedule",
+      jobName: AGENDA.END_WORK_SCHEDULE,
       scheduledTime: endTime,
       jobData: { riderId, slotId: slot._id },
     });

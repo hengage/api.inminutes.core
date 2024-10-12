@@ -5,6 +5,7 @@ import {
   generateUniqueString,
   toLowerCaseSetter,
 } from "../../../utils";
+import { DB_SCHEMA, GEOLOCATION } from "../../../constants";
 
 const customerSchema = new Schema<ICustomerDocument>(
   {
@@ -40,7 +41,7 @@ const customerSchema = new Schema<ICustomerDocument>(
     dateOfBirth: { type: Date, required: true },
     deliveryAddress: { type: String },
     deliveryAddressCoords: { 
-      type: { type: String, default: "Point" },
+      type: { type: String, default: GEOLOCATION.POINT },
       coordinates: { type: [Number, Number] },
      },
     displayPhoto: { type: String },
@@ -60,4 +61,4 @@ customerSchema.pre("save", async function (next) {
   }
 });
 
-export const Customer = model<ICustomerDocument>("Customer", customerSchema);
+export const Customer = model<ICustomerDocument>(DB_SCHEMA.CUSTOMER, customerSchema);

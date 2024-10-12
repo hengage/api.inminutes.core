@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { HTTP_STATUS_CODES, handleErrorResponse } from "../../../utils";
+import { HTTP_STATUS_CODES, HandleException, Msg, handleErrorResponse } from "../../../utils";
 import { passwordService } from "../services/password.service";
 import { handleSuccessResponse } from "../../../utils/response.utils";
 
@@ -7,10 +7,10 @@ class PasswordController {
   public async resetPassword(req: Request, res: Response) {
     const accountType = req.query.accountType as string;
     if (!accountType) {
-      return res.status(HTTP_STATUS_CODES.BAD_REQUEST).json({
-        message: "Password reset failed",
-        error: "Provide account type",
-      });
+      throw new HandleException(
+        HTTP_STATUS_CODES.BAD_REQUEST,
+        Msg.ERROR_USER_TYPE_MISSING()
+      );
     }
 
     try {
@@ -36,10 +36,10 @@ class PasswordController {
   public async changePassword(req: Request, res: Response) {
     const accountType = req.query.accountType as string;
     if (!accountType) {
-      return res.status(HTTP_STATUS_CODES.BAD_REQUEST).json({
-        message: "Password change failed",
-        error: "Provide account type",
-      });
+       throw new HandleException(
+        HTTP_STATUS_CODES.BAD_REQUEST,
+         Msg.ERROR_USER_TYPE_MISSING()
+      );
     }
     const userId = (req as any).user._id;
     try {
@@ -58,7 +58,7 @@ class PasswordController {
         res,
         HTTP_STATUS_CODES.OK,
         null,
-        "Password changed successfully",
+        "Password changed"
       )
     } catch (error: unknown) {
       console.error("Password change failed: ", error);
