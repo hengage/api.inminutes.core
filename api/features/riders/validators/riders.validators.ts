@@ -1,5 +1,5 @@
 import joi from "joi";
-import { HandleException, HTTP_STATUS_CODES } from "../../../utils";
+import { HandleException, HTTP_STATUS_CODES, Msg } from "../../../utils";
 import { IRiderDocument } from "../riders.interface";
 
 /**
@@ -18,7 +18,7 @@ class ValidateRider {
         .pattern(
           /^([0]{1}|\+?[2][3][4])([7-9]{1})([0|1]{1})([\d]{1})([\d]{7})$/
         )
-        .message("Invalid phone number format"),
+        .message(Msg.ERROR_INVALID_PHONE_FORMAT()),
       email: joi
         .string()
         .required()
@@ -26,7 +26,7 @@ class ValidateRider {
         .pattern(
           /^[a-zA-Z0-9.!#$%&’*+/=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
         )
-        .message("Invalid email format"),
+        .message(Msg.ERROR_INVALID_EMAIL_FORMAT()),
       password: joi.string().required().label("Password"),
       dateOfBirth: joi.string().required().label("Date of birth"),
       residentialAddress: joi.string().required().label("Residential address"),
