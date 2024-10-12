@@ -1,4 +1,4 @@
-import { UserType } from "../../../constants";
+import { USER_TYPE } from "../../../constants";
 import { errandService } from "../../errand";
 
 export class RiderErrandService {
@@ -13,7 +13,7 @@ export class RiderErrandService {
     page,
     limit,
   }: {
-    userType: UserType.RIDER;
+    userType: USER_TYPE.RIDER;
     riderId: string;
     page?: number;
     limit?: number;

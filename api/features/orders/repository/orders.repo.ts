@@ -1,5 +1,5 @@
 import { ClientSession } from "mongoose";
-import { convertLatLngToCell, redisClient } from "../../../services";
+import { redisClient } from "../../../services";
 import { HandleException, ORDER_STATUS, HTTP_STATUS_CODES } from "../../../utils";
 import { Order, OrderFeedback } from "../models/orders.model";
 import {
