@@ -9,15 +9,16 @@ class TimeSlotController {
     try {
       const slot = timeSlotService.bookSlot({
         riderId,
-        startTime: req.body.startTime,
-        endTime: req.body.endTime,
+        areaId: req.body.areaId,
+        date: req.body.date,
+        session: req.body.session,
       });
 
       handleSuccessResponse(
         res,
         HTTP_STATUS_CODES.CREATED,
         { slot },
-        "You have booked this slot"
+        "Slot booked"
       );
     } catch (error: any) {
       console.error("Error booking slot:", error);

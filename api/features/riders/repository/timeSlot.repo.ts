@@ -1,4 +1,5 @@
-import { RiderTimeSlot } from "../models/timeSlots.model";
+import { HandleException } from "../../../utils";
+import { RiderBooking, RiderTimeSlotSession, WorkArea } from "../models/timeSlots.model";
 import { ClientSession } from "mongoose";
 
 /**
@@ -15,16 +16,45 @@ class TimeSlotRepository {
   */
   async bookSlot(params: {
     riderId: string;
-    startTime: string;
-    endTime: string;
+    areaId: string;
+    date: Date;
+    session: string;
   }) {
-    const { riderId, startTime, endTime } = params;
+    const { riderId, areaId, date, session } = params;
 
-    const timeSlot = await RiderTimeSlot.create({
-      riderId,
-      startTime,
-      endTime,
+    // const timeSlot = await RiderTimeSlot.create({
+    //   riderId,
+    //   startTime,
+    //   endTime,
+    // });
+    const area = await WorkArea.findById(areaId);
+    if (!area) {
+      throw new HandleException(400, "Area not found");
+    }
+
+    let timeSlot = await RiderTimeSlotSession.findOne({ area: areaId, date, session });
+    if (!timeSlot) {
+      timeSlot = new RiderTimeSlotSession({
+        area: areaId,
+        date,
+        session,
+        availableSlots: area.maxSlotsRequired,
+        bookedSlots: 0
+      });
+    }
+    if (timeSlot.availableSlots === 0) {
+      throw new HandleException(400, "No available slot for this session");
+    }
+    timeSlot.availableSlots -= 1;
+    timeSlot.bookedSlots += 1;
+    await timeSlot.save();
+    // Todo: use transactions to ensure booking is atomic
+
+    const booking = new RiderBooking({
+      rider: riderId,
+      timeSlot: timeSlot._id,
     });
+    await booking.save();
 
     return timeSlot;
   }
@@ -40,7 +70,7 @@ class TimeSlotRepository {
     session: ClientSession;
   }) {
     const { slotId, status, session } = params;
-    const slot = await RiderTimeSlot.findByIdAndUpdate(
+    const slot = await RiderTimeSlotSession.findByIdAndUpdate(
       slotId,
       {
         $set: { status: status },
