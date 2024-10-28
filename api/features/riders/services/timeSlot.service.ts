@@ -1,6 +1,6 @@
 import { startSession } from "mongoose";
 
-import { string } from "joi";
+import { DateTime } from 'luxon';
 import { HandleException, RIDER_WORK_SLOT_STATUS } from "../../../utils";
 import { timeSlotRepo } from "../repository/timeSlot.repo";
 import { SchedulerService } from "../../../services";
@@ -88,30 +88,29 @@ class TimeSlotService {
     }
   }
 
-  private getStartEndTimes(date: Date, session: string): [Date, Date] {
-    console.log({Date: date})
-    const startTime = new Date(date);
-    const endTime = new Date(date);
+  private getStartEndTimes(date: Date | string, session: string): [Date, Date] {
+    let startTime = DateTime.fromISO(`${date}`),
+      endTime = DateTime.fromISO(`${date}`);
+
     switch (session) {
       case TIME_SESSIONS.FIRST:
-        startTime.setHours(9, 0, 0);
-        endTime.setHours(12, 0, 0);
+        startTime = startTime.set({ hour: 9, minute: 0, second: 0 });
+        endTime = endTime.set({ hour: 12, minute: 0, second: 0 });
         break;
       case TIME_SESSIONS.SECOND:
-        startTime.setHours(12, 0, 0);
-        endTime.setHours(15, 0, 0);
+        startTime = startTime.set({ hour: 12, minute: 0, second: 0 });
+        endTime = endTime.set({ hour: 15, minute: 0, second: 0 });
         break;
       case TIME_SESSIONS.THIRD:
-        startTime.setHours(15, 0, 0);
-        endTime.setHours(18, 0, 0);
+        startTime = startTime.set({ hour: 15, minute: 0, second: 0 })
+        endTime = endTime.set({ hour: 18, minute: 0, second: 0 })
         break;
       case TIME_SESSIONS.FOURTH:
-        startTime.setHours(18, 0, 0);
-        endTime.setHours(21, 0, 0);
+        startTime = startTime.set({ hour: 18, minute: 0, second: 0 })
+        endTime = endTime.set({ hour: 21, minute: 0, second: 0 })
         break;
     }
-    console.log({startTime, endTime})
-    return [startTime, endTime];
+    return [startTime.toJSDate(), endTime.toJSDate()];
   }
 }
 
