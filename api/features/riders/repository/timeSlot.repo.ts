@@ -1,3 +1,4 @@
+import { Coordinates } from "../../../types";
 import { HandleException } from "../../../utils";
 import { RiderBooking, RiderTimeSlotSession, WorkArea } from "../models/timeSlots.model";
 import { ClientSession } from "mongoose";
@@ -79,6 +80,14 @@ class TimeSlotRepository {
     ).select("status");
     console.log({ slot });
     return slot;
+  }
+
+  async createWorkArea(createWorkAreadata: {
+    name: string,
+    coordinates: Coordinates,
+    maxSlotsRequired: number
+  }) {
+    return await new WorkArea(createWorkAreadata).save();
   }
 }
 
