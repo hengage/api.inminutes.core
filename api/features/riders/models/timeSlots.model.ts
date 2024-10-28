@@ -28,7 +28,11 @@ const timeSlotSessionSchema = new Schema<IRiderTimeSlotDocument>({
     type: String,
     default: () => generateUniqueString(7),
   },
-  area: { type: Schema.Types.ObjectId, ref: DB_SCHEMA.WORK_AREA, required: true },
+  area: {
+    type: String,
+    ref: DB_SCHEMA.WORK_AREA,
+    required: true
+  },
   date: { type: Date, required: true },
   session: {
     type: String,
@@ -36,6 +40,7 @@ const timeSlotSessionSchema = new Schema<IRiderTimeSlotDocument>({
     required: true
   },
   availableSlots: { type: Number, required: true },
+  numberOfSlotsBooked: { type: Number, required: true },
 },
   {
     timestamps: true,
@@ -55,7 +60,7 @@ const riderBookingSchema = new Schema<IRiderBookingDocument>({
   },
   timeSlot: {
     type: String,
-    ref: DB_SCHEMA.WORK_TIME_SLOT,
+    ref: DB_SCHEMA.RIDERS_WORK_TIME_SLOT,
     required: true
   },
   status: {
@@ -102,6 +107,6 @@ export const WorkArea = model<IWorkAreaDocument>(
 );
 
 export const RiderTimeSlotSession = model<IRiderTimeSlotDocument>(
-  DB_SCHEMA.WORK_TIME_SLOT,
+  DB_SCHEMA.RIDERS_WORK_TIME_SLOT,
   timeSlotSessionSchema
 );

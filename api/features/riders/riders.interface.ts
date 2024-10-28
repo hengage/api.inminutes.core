@@ -43,7 +43,7 @@ export interface IRiderTimeSlotDocument extends Document {
   date: Date;
   session: TIME_SESSIONS;
   availableSlots: number;
-  bookedSlots: number;
+  numberOfSlotsBooked: number;
 }
 
 export interface IWorkAreaDocument extends Document {

@@ -6,8 +6,9 @@ import { handleSuccessResponse } from "../../../utils/response.utils";
 class TimeSlotController {
   async bookSlot(req: Request, res: Response) {
     const riderId = (req as any).user._id;
+    // Todo: validate endpoint data
     try {
-      const slot = timeSlotService.bookSlot({
+      const slot = await timeSlotService.bookSlot({
         riderId,
         areaId: req.body.areaId,
         date: req.body.date,

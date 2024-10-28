@@ -89,6 +89,7 @@ class TimeSlotService {
   }
 
   private getStartEndTimes(date: Date, session: string): [Date, Date] {
+    console.log({Date: date})
     const startTime = new Date(date);
     const endTime = new Date(date);
     switch (session) {
@@ -109,6 +110,7 @@ class TimeSlotService {
         endTime.setHours(21, 0, 0);
         break;
     }
+    console.log({startTime, endTime})
     return [startTime, endTime];
   }
 }

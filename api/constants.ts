@@ -135,7 +135,7 @@ export enum DB_SCHEMA {
   ERRAND_PACKAGE_TYPE = "ErrandPackageType",
   ORDER_FEEDBACK = "OrderFeedback",
   WORK_AREA = "WorkArea",
-  WORK_TIME_SLOT = "WorkTimeSlot",
+  RIDERS_WORK_TIME_SLOT = "RidersWorkTimeSlot",
   RIDER_BOOKING = "RiderBooking",
 }
 

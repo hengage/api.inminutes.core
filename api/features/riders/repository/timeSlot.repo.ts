@@ -30,7 +30,7 @@ class TimeSlotRepository {
     // });
     const area = await WorkArea.findById(areaId);
     if (!area) {
-      throw new HandleException(400, "Area not found");
+      throw new HandleException(400, "The location is invalid or has not been inputed yet");
     }
 
     let timeSlot = await RiderTimeSlotSession.findOne({ area: areaId, date, session });
@@ -40,14 +40,18 @@ class TimeSlotRepository {
         date,
         session,
         availableSlots: area.maxSlotsRequired,
-        bookedSlots: 0
+        bookedSlots: 0,
+        numberOfSlotsBooked: 0,
       });
     }
     if (timeSlot.availableSlots === 0) {
-      throw new HandleException(400, "No available slot for this session");
+      throw new HandleException(
+        400,
+        "The location is fully booked for this session. Please choose another session."
+      );
     }
     timeSlot.availableSlots -= 1;
-    timeSlot.bookedSlots += 1;
+    timeSlot.numberOfSlotsBooked += 1;
     await timeSlot.save();
     // Todo: use transactions to ensure booking is atomic
 
