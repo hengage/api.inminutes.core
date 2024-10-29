@@ -4,7 +4,7 @@ import { DateTime } from 'luxon';
 import { HandleException, RIDER_WORK_SLOT_STATUS } from "../../../utils";
 import { timeSlotRepo } from "../repository/timeSlot.repo";
 import { SchedulerService } from "../../../services";
-import { AGENDA, TIME_SESSIONS } from "../../../constants";
+import { AGENDA, RIDERS_SLOT_SESSIONS } from "../../../constants";
 
 /**
 Service for managing time slots for riders.
@@ -95,19 +95,19 @@ class TimeSlotService {
       endTime = DateTime.fromISO(`${date}`);
 
     switch (session) {
-      case TIME_SESSIONS.FIRST:
+      case RIDERS_SLOT_SESSIONS.FIRST:
         startTime = startTime.set({ hour: 9, minute: 0, second: 0 });
         endTime = endTime.set({ hour: 12, minute: 0, second: 0 });
         break;
-      case TIME_SESSIONS.SECOND:
+      case RIDERS_SLOT_SESSIONS.SECOND:
         startTime = startTime.set({ hour: 12, minute: 0, second: 0 });
         endTime = endTime.set({ hour: 15, minute: 0, second: 0 });
         break;
-      case TIME_SESSIONS.THIRD:
+      case RIDERS_SLOT_SESSIONS.THIRD:
         startTime = startTime.set({ hour: 15, minute: 0, second: 0 })
         endTime = endTime.set({ hour: 18, minute: 0, second: 0 })
         break;
-      case TIME_SESSIONS.FOURTH:
+      case RIDERS_SLOT_SESSIONS.FOURTH:
         startTime = startTime.set({ hour: 18, minute: 0, second: 0 })
         endTime = endTime.set({ hour: 21, minute: 0, second: 0 })
         break;

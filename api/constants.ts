@@ -158,7 +158,7 @@ export enum OTP_CHANNEL {
   SMS = "SMS"
 }
 
-export enum TIME_SESSIONS {
+export enum RIDERS_SLOT_SESSIONS {
   FIRST = '9am-12pm',
   SECOND = '12pm-3pm',
   THIRD = '3pm-6pm',

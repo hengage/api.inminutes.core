@@ -1,6 +1,6 @@
 import { Document } from "mongoose";
 import { RIDER_WORK_SLOT_STATUS } from "../../utils";
-import { TIME_SESSIONS } from "../../constants";
+import { RIDERS_SLOT_SESSIONS } from "../../constants";
 import { Coordinates } from "../../types";
 
 export interface IRiderDocument extends Document {
@@ -41,7 +41,7 @@ export interface IRiderTimeSlotDocument extends Document {
   _id: string;
   area: IWorkAreaDocument;
   date: Date;
-  session: TIME_SESSIONS;
+  session: RIDERS_SLOT_SESSIONS;
   availableSlots: number;
   numberOfSlotsBooked: number;
 }
