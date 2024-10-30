@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import { IRiderBookingDocument, IRiderTimeSlotDocument, IWorkAreaDocument } from "../riders.interface";
 import { generateUniqueString } from "../../../utils";
-import { DB_SCHEMA, GEOLOCATION, RIDER_WORK_SLOT_STATUS, TIME_SESSIONS, } from "../../../constants";
+import { DB_SCHEMA, GEOLOCATION, RIDER_WORK_SLOT_STATUS, RIDERS_SLOT_SESSIONS, } from "../../../constants";
 
 // const TimeSlotSchema = new Schema<IRiderTimeSlotDocument>(
 //   {
@@ -36,7 +36,7 @@ const timeSlotSessionSchema = new Schema<IRiderTimeSlotDocument>({
   date: { type: Date, required: true },
   session: {
     type: String,
-    enum: Object.values(TIME_SESSIONS),
+    enum: Object.values(RIDERS_SLOT_SESSIONS),
     required: true
   },
   availableSlots: { type: Number, required: true },
