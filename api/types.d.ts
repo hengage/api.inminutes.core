@@ -28,10 +28,15 @@ import { Document } from "mongoose";
 //   nextPage: number | null;
 // };
 
+/**
+ * Redundant.
+ * Use mongose 'PaginateResult' type instead
+ */
 type PaginatedQueryResult<T extends Document> = Record<
   [key: string],
   JSONValue
 >;
+// Todo: make redundant. Use mongoose PaginateResult type
 
 type PaginateQueryOptions = {
   page: number;
@@ -49,7 +54,7 @@ type CustomJwtPayload = JwtPayload & {
   phoneNumber: string;
 };
 
-type Coordinates = [lng: number, lat:number];
+type Coordinates = [lng: number, lat: number];
 
 type DynamicObject = Record<any, JSONObject>;
 
