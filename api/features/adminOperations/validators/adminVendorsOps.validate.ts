@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { HandleException, HTTP_STATUS_CODES } from "../../../utils";
+import { ACCOUNT_STATUS, HandleException, HTTP_STATUS_CODES } from "../../../utils";
 
 export class ValidateAdminVendorsOps {
   createCategory = async (payload: any) => {
@@ -33,4 +33,25 @@ export class ValidateAdminVendorsOps {
       throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
     }
   };
+
+  updateAccountStatus = async (payload: any) => {
+    const schema = Joi.object({
+      status: Joi.string().
+        required()
+        .valid(...Object.values(ACCOUNT_STATUS))
+        .messages({
+          "any.only":
+            `Invalid status. Options are: ${Object.values(ACCOUNT_STATUS).join(", ")}`,
+        }),
+    });
+
+    const { error } = schema.validate(payload, {
+      allowUnknown: false,
+      abortEarly: false,
+    });
+
+    if (error) {
+      throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
+    }
+  }
 }

@@ -48,6 +48,8 @@ type PaginateQueryOptions = {
   leanWithId?: boolean;
 };
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { IRiderDocument } from "./features/riders";
+import { ICustomerDocument } from "./features/customers";
 
 type CustomJwtPayload = JwtPayload & {
   _id: string;
@@ -92,3 +94,8 @@ interface ApiSuccessResponse<T = JSONValue | null> {
   data: T;
   message?: string;
 }
+
+type UserId =
+  | IVendorDocument["_id"]
+  | IRiderDocument["_id"]
+  | ICustomerDocument["_id"];

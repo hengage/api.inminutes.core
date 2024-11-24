@@ -1,3 +1,6 @@
+import { ACCOUNT_STATUS } from "../constants";
+import { UserId } from "../types";
+
 export const Msg = {
   ERROR_NO_USER_FOUND(data: unknown) {
     return `No user found at (${JSON.stringify(data)})`;
@@ -36,7 +39,7 @@ export const Msg = {
   ERROR_PRODUCT_NOT_FOUND(id: string) {
     return `Product with id '${id}' not found`;
   },
-  ERROR_ORDER_NOT_FOUND(id: string){
+  ERROR_ORDER_NOT_FOUND(id: string) {
     return `No order with id '${id}' found`;
   },
   ERROR_INVALID_USER_TYPE(userType: string) {
@@ -63,5 +66,9 @@ export const Msg = {
       `${amount} has been successfully credited to your wallet. ` +
       `Head to your dashboard to see your new balance`
     );
+  },
+
+  USER_ACCOUNT_STATUS_UPDATED(userId: UserId, status: ACCOUNT_STATUS) {
+    return `Vendor ${userId} is now ${status}`
   },
 };
