@@ -1,6 +1,6 @@
 import { PaginateResult } from "mongoose";
 import { IVendorDocument, Vendor } from "../../vendors";
-import { ACCOUNT_STATUS, HandleException, HTTP_STATUS_CODES } from "../../../utils";
+import { ACCOUNT_STATUS, HandleException, HTTP_STATUS_CODES, Msg } from "../../../utils";
 
 export class AdminOpsVendorsService {
     private vendorModel = Vendor;
@@ -47,7 +47,7 @@ export class AdminOpsVendorsService {
         if (!vendor) {
             throw new HandleException(
                 HTTP_STATUS_CODES.NOT_FOUND,
-                "Vendor not found"
+                Msg.ERROR_VENDOR_NOT_FOUND(vendorId)
             );
         }
         vendor.accountStatus = status;
