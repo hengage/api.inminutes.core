@@ -29,6 +29,7 @@ const vendorSchema = new Schema<IVendorDocument>(
       set: function (value: string) {
         return toLowerCaseSetter(value);
       },
+      index: true,
     },
     businessLogo: { type: String, required: true },
     email: {
@@ -38,6 +39,7 @@ const vendorSchema = new Schema<IVendorDocument>(
       set: function (value: string) {
         return toLowerCaseSetter(value);
       },
+      index: true
     },
     phoneNumber: { type: String, required: true, unique: true },
     password: { type: String, required: true },

@@ -1,11 +1,12 @@
 import { PaginateResult, FilterQuery } from "mongoose";
 import { IVendorDocument, Vendor } from "../../vendors";
 import { ACCOUNT_STATUS, HandleException, HTTP_STATUS_CODES, Msg } from "../../../utils";
+import { buildFilterQuery } from "../../../utils/db.utils";
 
 export class AdminOpsVendorsService {
     private vendorModel = Vendor;
 
-    async getAllVendors(page = 1, filter?: GetVendorsFilter): Promise<PaginateResult<IVendorDocument>> {
+    async getAllVendors(page = 1, filter: GetVendorsFilter): Promise<PaginateResult<IVendorDocument>> {
         const options = {
             page: page,
             limit: 26,
@@ -16,11 +17,12 @@ export class AdminOpsVendorsService {
 
         const filterQuery: FilterQuery<IVendorDocument> = {};
         if (filter) {
-            const validFilters = ['accountStatus', 'category', 'subCategory'];
-            Object.entries(filter).forEach(([key, value]) => {
-                console.log({ key })
-                if (validFilters.includes(key) && value) filterQuery[key] = value;
-            });
+            const recordFilter: Record<string, string> = Object.fromEntries(
+                Object.entries(filter).filter(([_, v]) => v !== undefined)
+            );
+
+            const searchFields = ['businessName', 'email', 'phoneNumber'];
+            buildFilterQuery(recordFilter, filterQuery, searchFields);
         }
 
         const vendors = await this.vendorModel.paginate(filterQuery, options);
@@ -68,4 +70,5 @@ interface GetVendorsFilter {
     accountStatus?: ACCOUNT_STATUS;
     category?: string;
     subCategory?: string;
+    search: string
 }
