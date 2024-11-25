@@ -33,5 +33,8 @@ export class AdminOpsVendorsRoutes {
     this.router
       .route('/:vendorId/status')
       .put(this.adminOpsVendorsController.setAccountStatus)
+    this.router
+      .route("/:vendorId/approval")
+      .put(this.adminOpsVendorsController.approveOrDisapproveVendor);
   }
 }

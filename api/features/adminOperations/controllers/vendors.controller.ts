@@ -38,7 +38,8 @@ export class AdminOpsVendorsController {
         }
     }
 
-    setAccountStatus = async (req: Request, res: Response): Promise<void> => {
+    setAccountStatus = async (req: Request, res: Response):
+     Promise<void> => {
         // Todo: Add validation for req.body.status
         try {
             await this.validateAdminVendorsOps.updateAccountStatus(req.body);
@@ -56,6 +57,29 @@ export class AdminOpsVendorsController {
             );
         } catch (error) {
             console.error("Error setting vendor account status: ", error);
+            const { statusCode, errorJSON } = handleErrorResponse(error);
+            res.status(statusCode).json(errorJSON);
+        }
+    }
+
+    approveOrDisapproveVendor = async (req: Request, res: Response):
+        Promise<void> => {
+        try {
+            await this.vendorsService.approveOrDisapproveVendor(
+                req.params.vendorId,
+                req.body.approved
+            );
+            handleSuccessResponse(
+                res,
+                HTTP_STATUS_CODES.OK,
+                null,
+                req.body.approved
+                    ? Msg.APPROVED('vendor', req.params.vendorId)
+                    : Msg.DISAPPROVED('vendor', req.params.vendorId)
+
+            );
+        } catch (error) {
+            console.error("Error approving or disapproving vendor: ", error);
             const { statusCode, errorJSON } = handleErrorResponse(error);
             res.status(statusCode).json(errorJSON);
         }
