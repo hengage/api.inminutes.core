@@ -71,4 +71,11 @@ export const Msg = {
   USER_ACCOUNT_STATUS_UPDATED(userId: UserId, status: ACCOUNT_STATUS) {
     return `Vendor ${userId} is now ${status}`
   },
+  APPROVED(type: string, id: string) {
+    return `${type} ${id} is now approved`;
+  },
+  DISAPPROVED(type: string, id: string) {
+    return `${type} ${id} has been disapproved`;
+  },
 };
+

@@ -64,6 +64,24 @@ export class AdminOpsVendorsService {
         vendor.accountStatus = status;
         await vendor.save();
     }
+
+    // Approve or disapprove vendor
+    async approveOrDisapproveVendor(
+        vendorId: IVendorDocument["_id"],
+        approved: boolean
+    ): Promise<void> {
+        const vendor = await this.vendorModel
+            .findById(vendorId)
+            .select("_id approved");
+        if (!vendor) {
+            throw new HandleException(
+                HTTP_STATUS_CODES.NOT_FOUND,
+                Msg.ERROR_VENDOR_NOT_FOUND(vendorId)
+            );
+        }
+        vendor.approved = approved;
+        await vendor.save();
+    }
 }
 
 interface GetVendorsFilter {
