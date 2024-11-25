@@ -1,11 +1,11 @@
-import { PaginateResult } from "mongoose";
+import { PaginateResult, FilterQuery } from "mongoose";
 import { IVendorDocument, Vendor } from "../../vendors";
 import { ACCOUNT_STATUS, HandleException, HTTP_STATUS_CODES, Msg } from "../../../utils";
 
 export class AdminOpsVendorsService {
     private vendorModel = Vendor;
 
-    async getAllVendors(page = 1): Promise<PaginateResult<IVendorDocument>> {
+    async getAllVendors(page = 1, filter?: GetVendorsFilter): Promise<PaginateResult<IVendorDocument>> {
         const options = {
             page: page,
             limit: 26,
@@ -14,7 +14,16 @@ export class AdminOpsVendorsService {
             leanWithId: false,
         };
 
-        const vendors = await this.vendorModel.paginate({}, options);
+        const filterQuery: FilterQuery<IVendorDocument> = {};
+        if (filter) {
+            const validFilters = ['accountStatus', 'category', 'subCategory'];
+            Object.entries(filter).forEach(([key, value]) => {
+                console.log({ key })
+                if (validFilters.includes(key) && value) filterQuery[key] = value;
+            });
+        }
+
+        const vendors = await this.vendorModel.paginate(filterQuery, options);
         return vendors;
     }
 
@@ -53,4 +62,10 @@ export class AdminOpsVendorsService {
         vendor.accountStatus = status;
         await vendor.save();
     }
+}
+
+interface GetVendorsFilter {
+    accountStatus?: ACCOUNT_STATUS;
+    category?: string;
+    subCategory?: string;
 }
