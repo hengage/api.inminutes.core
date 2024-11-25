@@ -8,8 +8,16 @@ export class AdminOpsVendorsController {
     private vendorsService = new AdminOpsVendorsService();
     private validateAdminVendorsOps = new ValidateAdminVendorsOps
     getAllVendors = async (req: Request, res: Response): Promise<void> => {
+
         try {
-            const vendors = await this.vendorsService.getAllVendors(req.query.page as unknown as number);
+            const vendors = await this.vendorsService.getAllVendors(
+                req.query.page as unknown as number,
+                {
+                    accountStatus: req.query.accountStatus as ACCOUNT_STATUS,
+                    category: req.query.category as string,
+                    subCategory: req.query.subCategory as string
+                }
+            );
             handleSuccessResponse(res, HTTP_STATUS_CODES.OK, vendors);
 
         } catch (error) {
