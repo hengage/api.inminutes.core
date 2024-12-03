@@ -39,7 +39,7 @@ export class AdminOpsVendorsController {
     }
 
     setAccountStatus = async (req: Request, res: Response):
-     Promise<void> => {
+        Promise<void> => {
         // Todo: Add validation for req.body.status
         try {
             await this.validateAdminVendorsOps.updateAccountStatus(req.body);
@@ -84,4 +84,17 @@ export class AdminOpsVendorsController {
             res.status(statusCode).json(errorJSON);
         }
     }
+
+    productMetrics = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const metrics = await this.vendorsService.productMetrics(
+                req.params.vendorId
+            );
+            handleSuccessResponse(res, HTTP_STATUS_CODES.OK, metrics);
+        } catch (error) {
+            console.error("Error getting product metrics: ", error);
+            const { statusCode, errorJSON } = handleErrorResponse(error);
+            res.status(statusCode).json(errorJSON);
+        }
+    };
 }
