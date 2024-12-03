@@ -87,7 +87,7 @@ export class AdminOpsVendorsService {
 
     async productMetrics(
         vendorId: IVendorDocument["_id"]
-    ) {
+    ): Promise<ProductMetrics> {
         const metrics = await this.productModel.aggregate([
             { $match: { vendor: vendorId } },
             {
