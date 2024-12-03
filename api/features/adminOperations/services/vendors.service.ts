@@ -1,10 +1,12 @@
 import { PaginateResult, FilterQuery } from "mongoose";
 import { IVendorDocument, Vendor } from "../../vendors";
-import { ACCOUNT_STATUS, HandleException, HTTP_STATUS_CODES, Msg } from "../../../utils";
+import { ACCOUNT_STATUS, HandleException, HTTP_STATUS_CODES, Msg, PRODUCT_STATUS } from "../../../utils";
 import { buildFilterQuery } from "../../../utils/db.utils";
+import { Product } from "../../products";
 
 export class AdminOpsVendorsService {
     private vendorModel = Vendor;
+    private productModel = Product;
 
     async getAllVendors(page = 1, filter: GetVendorsFilter): Promise<PaginateResult<IVendorDocument>> {
         const options = {
@@ -82,6 +84,46 @@ export class AdminOpsVendorsService {
         vendor.approved = approved;
         await vendor.save();
     }
+
+    async productMetrics(
+        vendorId: IVendorDocument["_id"]
+    ) {
+        const metrics = await this.productModel.aggregate([
+            { $match: { vendor: vendorId } },
+            {
+                $facet: {
+                    byStatus: [
+                        {
+                            $group: {
+                                _id: '$status',
+                                count: { $sum: 1 }
+                            }
+                        },
+                    ],
+                    total: [
+                        { $count: 'total' }
+                    ]
+                }
+            }
+        ]);
+
+        // Transform results into required format
+        const statusCounts = metrics[0].byStatus.reduce((
+            acc: Record<string, number>,
+            curr: { _id: string, count: number }
+        ) => {
+            acc[curr._id.toLowerCase()] = curr.count;
+            return acc;
+        }, {});
+
+        return {
+            pendingProducts: statusCounts.pending || 0,
+            approvedProducts: statusCounts.approved || 0,
+            rejectedProducts: statusCounts.rejected || 0,
+            totalProducts: metrics[0].total[0].total
+        };
+
+    }
 }
 
 interface GetVendorsFilter {
@@ -89,4 +131,11 @@ interface GetVendorsFilter {
     category?: string;
     subCategory?: string;
     search: string
+}
+
+interface ProductMetrics {
+    pendingProducts: number;
+    approvedProducts: number;
+    rejectedProducts: number;
+    totalProducts: number;
 }
