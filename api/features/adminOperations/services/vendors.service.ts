@@ -130,7 +130,7 @@ interface GetVendorsFilter {
     accountStatus?: ACCOUNT_STATUS;
     category?: string;
     subCategory?: string;
-    search: string
+    searchQuery: string
 }
 
 interface ProductMetrics {

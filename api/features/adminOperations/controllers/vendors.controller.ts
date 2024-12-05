@@ -16,7 +16,7 @@ export class AdminOpsVendorsController {
                     accountStatus: req.query.accountStatus as ACCOUNT_STATUS,
                     category: req.query.category as string,
                     subCategory: req.query.subCategory as string,
-                    search: req.query.search as string,
+                    searchQuery: req.query.searchQuery as string,
                 }
             );
             handleSuccessResponse(res, HTTP_STATUS_CODES.OK, vendors);
