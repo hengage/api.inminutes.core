@@ -1,9 +1,12 @@
 import { PaginateResult } from "mongoose";
 import { IRiderDocument, Rider } from "../../riders";
+import { buildFilterQuery } from "../../../utils/db.utils";
+import { FilterQuery } from "mongoose";
+import { ACCOUNT_STATUS } from "../../../utils";
 
 
 export const adminOpsRidersService = {
-  async getRiders(page = 1): Promise<PaginateResult<IRiderDocument>> {
+  async getRiders(page = 1, filter: GetRidersFilter): Promise<PaginateResult<IRiderDocument>> {
 
     const options = {
       page: page,
@@ -13,8 +16,24 @@ export const adminOpsRidersService = {
       leanWithId: false,
     }
 
-    const riders = await Rider.paginate({}, options);
+    const filterQuery: FilterQuery<IRiderDocument> = {};
+    if (filter) {
+      const recordFilter: Record<string, string> = Object.fromEntries(
+        Object.entries(filter).filter(([_, v]) => v !== undefined)
+      );
+
+      const searchFields = ["fullName", "phoneNumber", "email",];
+      buildFilterQuery(recordFilter, filterQuery, searchFields);
+    }
+
+    const riders = await Rider.paginate(filterQuery, options);
     return riders;
   }
 }
 
+interface GetRidersFilter {
+  searchQuery?: string;
+  vehicleType?: string;
+  currentlyWorking?: string;
+  accountStatus: ACCOUNT_STATUS
+}
