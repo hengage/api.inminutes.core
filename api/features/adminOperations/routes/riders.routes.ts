@@ -24,5 +24,8 @@ export class AdminOpsRidersRoutes {
         this.router
             .route("/:riderId")
             .get(this.adminOpsForRidersController.riderDetails)
+        this.router
+            .route("/:riderId/account-status")
+            .patch(this.adminOpsForRidersController.setAccountStatus)
     }
 }

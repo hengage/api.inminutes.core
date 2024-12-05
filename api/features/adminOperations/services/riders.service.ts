@@ -42,6 +42,25 @@ export const adminOpsRidersService = {
       );
     }
     return rider;
+  },
+
+  /**
+        * Updates rider account status
+        * @param rider - The rider's ID
+        * @param status - New account status
+        */
+  async setAccountStatus(riderId: IRiderDocument['_id'], status: ACCOUNT_STATUS):
+    Promise<void> {
+    const rider = await Rider.findById(riderId)
+      .select("_id businessName accountStatus")
+    if (!rider) {
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        Msg.ERROR_RIDER_NOT_FOUND(riderId)
+      );
+    }
+    rider.accountStatus = status;
+    await rider.save();
   }
 }
 

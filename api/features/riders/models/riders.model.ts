@@ -1,11 +1,12 @@
 import { PaginateModel, Schema, model } from "mongoose";
-import { IRiderDocument } from "../riders.interface";
+import paginate from "mongoose-paginate-v2";
 import {
+  ACCOUNT_STATUS,
   encryptValue,
   generateUniqueString,
   toLowerCaseSetter,
 } from "../../../utils";
-import paginate from "mongoose-paginate-v2";
+import { IRiderDocument } from "../riders.interface";
 
 const riderSchema = new Schema<IRiderDocument>(
   {
@@ -50,6 +51,11 @@ const riderSchema = new Schema<IRiderDocument>(
     dateOfBirth: { type: Date, required: true },
     residentialAddress: { type: String, required: true },
     currentlyWorking: { type: Boolean, default: false },
+    accountStatus: {
+      type: String,
+      default: ACCOUNT_STATUS.ACTIVE,
+      enum: Object.values(ACCOUNT_STATUS),
+    },
     rating: {
       totalRatingSum: { type: Number, default: 0 },
       ratingCount: { type: Number, default: 0 },

@@ -1,5 +1,5 @@
 import { Document } from "mongoose";
-import { RIDER_WORK_SLOT_STATUS } from "../../utils";
+import { ACCOUNT_STATUS, RIDER_WORK_SLOT_STATUS } from "../../utils";
 
 export interface IRiderDocument extends Document {
   _id: string;
@@ -16,6 +16,7 @@ export interface IRiderDocument extends Document {
   dateOfBirth: Date;
   residentialAddress: string;
   currentlyWorking: boolean;
+  accountStatus: ACCOUNT_STATUS
   rating: {
     totalRatingSum: number;
     ratingCount: number;
