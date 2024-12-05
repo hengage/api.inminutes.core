@@ -3,7 +3,8 @@ import {
   IInitializeTransaction,
   InitializeCashoutTransferData,
 } from "../transactions.interface";
-import { HandleException, PAYMENT_PURPOSE, HTTP_STATUS_CODES } from "../../../utils";
+import { HandleException } from "../../../utils";
+import { HTTP_STATUS_CODES, PAYMENT_PURPOSE } from "../../../constants";
 
 class ValidateTransactions {
   initializeTransaction = async (payload: IInitializeTransaction) => {

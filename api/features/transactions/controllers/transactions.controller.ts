@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
-import { HTTP_STATUS_CODES, handleErrorResponse } from "../../../utils";
+import { handleErrorResponse } from "../../../utils";
 import { paymentTransactionService } from "../services/paymentTransaction.service";
 import { validateTransactions } from "../validation/transactions.validate";
 import { handleSuccessResponse } from "../../../utils/response.utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 class TransactionController {
   async initialize(req: Request, res: Response) {

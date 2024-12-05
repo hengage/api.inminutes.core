@@ -1,8 +1,5 @@
-import {
-  formatPhoneNumberforDB,
-  HandleException,
-  HTTP_STATUS_CODES,
-} from "../../../utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
+import { formatPhoneNumberforDB, HandleException } from "../../../utils";
 import {
   ICreateCustomerData,
   ICustomerDocument,
@@ -34,7 +31,7 @@ export class CustomersRepository {
       throw new HandleException(
         HTTP_STATUS_CODES.CONFLICT,
         `Looks like you already have a customer account, ` +
-          `please try to login instead`
+        `please try to login instead`
       );
     }
 

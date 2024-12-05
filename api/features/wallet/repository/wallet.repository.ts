@@ -1,4 +1,5 @@
-import { HandleException, HTTP_STATUS_CODES, Msg } from "../../../utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
+import { HandleException, Msg } from "../../../utils";
 import { Wallet } from "../models/wallet.model";
 import { ICashoutAccount } from "../wallet.interface";
 
@@ -57,7 +58,7 @@ class WalletRepository {
     return cashoutAccounts;
   }
 
- 
+
   /**
    @async
     Retrieves the balance of a wallet.
@@ -70,11 +71,11 @@ class WalletRepository {
       .exec();
   }
 
-   /**
-    Retrieves a wallet by merchant ID with specified fields.
-    @param {string} data.merchantId - The ID of the merchant.
-    @param {string} data.selectFields - The fields to select.
-  */
+  /**
+   Retrieves a wallet by merchant ID with specified fields.
+   @param {string} data.merchantId - The ID of the merchant.
+   @param {string} data.selectFields - The fields to select.
+ */
   async getWalletByMerchantId(data: {
     merchantId: string;
     selectFields: string;

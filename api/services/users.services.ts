@@ -1,7 +1,8 @@
+import { HTTP_STATUS_CODES } from "../constants";
 import { Customer, ICustomerDocument } from "../features/customers";
 import { Rider } from "../features/riders";
 import { Vendor } from "../features/vendors";
-import { HandleException, HTTP_STATUS_CODES } from "../utils";
+import { HandleException } from "../utils";
 
 export class UsersService {
   public async isEmailTaken(email: string) {

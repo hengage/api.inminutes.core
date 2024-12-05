@@ -2,7 +2,8 @@ import { PaginateResult } from "mongoose";
 import { IRiderDocument, Rider } from "../../riders";
 import { buildFilterQuery } from "../../../utils/db.utils";
 import { FilterQuery } from "mongoose";
-import { ACCOUNT_STATUS, HandleException, HTTP_STATUS_CODES, Msg } from "../../../utils";
+import { ACCOUNT_STATUS, HTTP_STATUS_CODES } from "../../../constants";
+import { HandleException, Msg } from "../../../utils";
 
 
 export const adminOpsRidersService = {

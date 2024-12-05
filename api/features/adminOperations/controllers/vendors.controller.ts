@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { AdminOpsVendorsService } from "../services/vendors.service";
-import { ACCOUNT_STATUS, HTTP_STATUS_CODES, Msg } from "../../../utils";
+import { ACCOUNT_STATUS, HTTP_STATUS_CODES } from "../../../constants";
+import { Msg } from "../../../utils";
 import { handleErrorResponse, handleSuccessResponse } from "../../../utils/response.utils";
 import { ValidateAdminVendorsOps } from "../validators/adminVendorsOps.validate";
 

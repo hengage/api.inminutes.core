@@ -1,7 +1,6 @@
 import passport from "passport";
 import { Request, Response, NextFunction } from "express";
 import {
-  HTTP_STATUS_CODES,
   HandleException,
   generateJWTToken,
   handleErrorResponse,
@@ -17,6 +16,7 @@ import {
 import { CustomersRepository } from "../repository/customers.repo";
 import { JSONValue } from "../../../types";
 import { handleSuccessResponse } from "../../../utils/response.utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 export class CustomersAuthentication {
   private twilioClient: Twilio;

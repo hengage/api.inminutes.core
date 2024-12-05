@@ -1,10 +1,10 @@
 import { startSession } from "mongoose";
 
 import { string } from "joi";
-import { HandleException, RIDER_WORK_SLOT_STATUS } from "../../../utils";
+import { HandleException, } from "../../../utils";
 import { timeSlotRepo } from "../repository/timeSlot.repo";
 import { SchedulerService } from "../../../services";
-import { AGENDA } from "../../../constants";
+import { AGENDA, RIDER_WORK_SLOT_STATUS } from "../../../constants";
 
 /**
 Service for managing time slots for riders.

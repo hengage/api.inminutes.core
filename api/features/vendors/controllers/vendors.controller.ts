@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import {
-  HTTP_STATUS_CODES,
   generateJWTToken,
   handleErrorResponse,
 } from "../../../utils";
@@ -8,6 +7,7 @@ import { vendorsRepo } from "../repository/vendors.repo";
 import { vendorsService } from "../services/vendor.services";
 import { validateVendor } from "../validators/vendors.validators";
 import { handleSuccessResponse } from "../../../utils/response.utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 class VendorsController {
   async signup(req: Request, res: Response) {
@@ -152,7 +152,7 @@ class VendorsController {
       );
 
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { products });
-    } catch (error: unknown)  {
+    } catch (error: unknown) {
       console.error('Error fetching products and grouping by category:', error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);

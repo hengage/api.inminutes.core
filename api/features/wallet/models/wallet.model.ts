@@ -2,11 +2,10 @@ import { ClientSession, model, Schema } from "mongoose";
 
 import Big from "big.js";
 
-import { CASHOUT_CHANNEL, Currency, USER_TYPE, WALLET_STATUS } from "../../../constants";
+import { CASHOUT_CHANNEL, Currency, HTTP_STATUS_CODES, USER_TYPE, WALLET_STATUS } from "../../../constants";
 import {
   generateUniqueString,
   HandleException,
-  HTTP_STATUS_CODES,
   Msg,
 } from "../../../utils";
 import { IWalletDocument, IWalletMethodsDocument } from "../wallet.interface";
@@ -85,7 +84,7 @@ walletSchema.statics.creditWallet = async function (
 
   if (!wallet) {
     throw new HandleException(
-      HTTP_STATUS_CODES.NOT_FOUND, 
+      HTTP_STATUS_CODES.NOT_FOUND,
       Msg.ERROR_NO_WALLET_FOUND(walletId)
     );
   }
@@ -93,7 +92,7 @@ walletSchema.statics.creditWallet = async function (
   wallet.balance = Big(wallet.balance).plus(amount).toFixed(2);
   wallet.totalEarnings = Big(wallet.totalEarnings).plus(amount).toFixed(2);
   wallet.transactionCount++;
-  await wallet.save({session});
+  await wallet.save({ session });
   return wallet;
 };
 

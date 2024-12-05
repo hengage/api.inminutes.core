@@ -1,6 +1,6 @@
 import { startSession } from "mongoose";
 
-import { deliveryService, HandleException, ORDER_STATUS } from "../../../utils";
+import { deliveryService, HandleException, } from "../../../utils";
 import { NotificationService } from "../../notifications";
 import { Order } from "../models/orders.model";
 import { OrdersRepository } from "../repository/orders.repo";
@@ -13,7 +13,7 @@ import {
   IOrderAndMerchantsRatingData,
   IOrdersDocument,
 } from "../orders.interface";
-import { Events } from "../../../constants";
+import { Events, ORDER_STATUS } from "../../../constants";
 
 /**
 CustomersOrdersService

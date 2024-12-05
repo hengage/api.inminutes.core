@@ -1,5 +1,5 @@
 import axios from "axios";
-import { HTTP_STATUS_CODES, HandleException, generateReference } from "../../../utils";
+import { HandleException, generateReference } from "../../../utils";
 // import *as crypto from "crypto";
 import { createHmac } from "crypto";
 import { Request } from "express";
@@ -13,7 +13,7 @@ import { TransactionRepository } from "../repository/transaction.repo";
 import { cashoutTransferService } from "./cashoutTransfer.service";
 import { SocketServer } from "../../../services/socket/socket.services";
 import { ClientSession } from "mongoose";
-import { Events } from "../../../constants";
+import { Events, HTTP_STATUS_CODES } from "../../../constants";
 
 /**
 Service for managing transactions and interacting with Paystack API.
@@ -92,34 +92,34 @@ class PaymentTransactionService {
     const digest = hash.digest("hex");
 
     if (digest === req.headers["x-paystack-signature"]) {
-    console.log(req.body);
-    const event = req.body;
-    const { reference, status, paid_at: paidAt } = event.data;
+      console.log(req.body);
+      const event = req.body;
+      const { reference, status, paid_at: paidAt } = event.data;
 
-    switch (event.event) {
-      case "charge.success":
-        console.log({ metadata: event.data.metadata });
-        this.transactionRepo.updateStatus({ reference, status, paidAt });
-        const { purpose, orderId, vendorId } = event.data.metadata;
-        if (purpose === "product purchase") {
-          emitEvent.emit(Events.NOTIFY_VENDOR_OF_ORDER, { orderId, vendorId });
-        }
-        break;
-      case "transfer.success":
-      case "transfer.failed":
-        console.log({ reference, status });
-        this.transactionRepo.updateStatus({ reference, status });
+      switch (event.event) {
+        case "charge.success":
+          console.log({ metadata: event.data.metadata });
+          this.transactionRepo.updateStatus({ reference, status, paidAt });
+          const { purpose, orderId, vendorId } = event.data.metadata;
+          if (purpose === "product purchase") {
+            emitEvent.emit(Events.NOTIFY_VENDOR_OF_ORDER, { orderId, vendorId });
+          }
+          break;
+        case "transfer.success":
+        case "transfer.failed":
+          console.log({ reference, status });
+          this.transactionRepo.updateStatus({ reference, status });
 
-        // Credit wallet on failed transfer
-        if (event.event === "transfer.failed") {
-          this.handleFailedCashoutTransaction(event);
-        }
-        break;
-      default:
-        console.warn(`Unknown event type: ${event.event}`);
-    }
+          // Credit wallet on failed transfer
+          if (event.event === "transfer.failed") {
+            this.handleFailedCashoutTransaction(event);
+          }
+          break;
+        default:
+          console.warn(`Unknown event type: ${event.event}`);
+      }
     } else {
-    throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, "Invalid signature");
+      throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, "Invalid signature");
     }
   }
 

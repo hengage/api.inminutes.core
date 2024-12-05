@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { CustomerErrandService } from "../services/customerErrand.service";
-import { handleErrorResponse, HTTP_STATUS_CODES } from "../../../utils";
+import { handleErrorResponse } from "../../../utils";
 import { handleSuccessResponse } from "../../../utils/response.utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 export class CustomerErrandController {
   private customerErrandService: CustomerErrandService;

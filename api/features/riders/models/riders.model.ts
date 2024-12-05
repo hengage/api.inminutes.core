@@ -1,12 +1,12 @@
 import { PaginateModel, Schema, model } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import {
-  ACCOUNT_STATUS,
   encryptValue,
   generateUniqueString,
   toLowerCaseSetter,
 } from "../../../utils";
 import { IRiderDocument } from "../riders.interface";
+import { ACCOUNT_STATUS } from "../../../constants";
 
 const riderSchema = new Schema<IRiderDocument>(
   {

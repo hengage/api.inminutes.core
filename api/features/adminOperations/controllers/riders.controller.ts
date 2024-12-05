@@ -1,4 +1,5 @@
-import { ACCOUNT_STATUS, handleErrorResponse, HTTP_STATUS_CODES } from "../../../utils";
+import { ACCOUNT_STATUS, HTTP_STATUS_CODES } from "../../../constants";
+import { handleErrorResponse, } from "../../../utils";
 import { handleSuccessResponse } from "../../../utils/response.utils";
 import { adminOpsRidersService } from "../services/riders.service";
 import { Request, Response } from "express";

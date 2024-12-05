@@ -1,5 +1,6 @@
 import { MediaUploadConfig } from "../../../config/cloudinary.config";
-import { HandleException, HTTP_STATUS_CODES } from "../../../utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
+import { HandleException } from "../../../utils";
 import { UploadedFiles } from "../media.interface";
 
 
@@ -29,7 +30,7 @@ export class MediaService {
         // Upload the file using the cloudinary upload instance
         let uploadPromise: Promise<string>;
         if (typeof file?.tempFilePath === "string") {
-         
+
         } else {
           throw new HandleException(
             HTTP_STATUS_CODES.BAD_REQUEST,
@@ -41,7 +42,7 @@ export class MediaService {
           file.tempFilePath,
           [mediaTags]
         );
-        
+
         uploadPromises.push(uploadPromise);
 
         // Store the promise result in the fileUrls object

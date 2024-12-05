@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { HTTP_STATUS_CODES, capitalize, handleErrorResponse } from "../../../utils";
+import { capitalize, handleErrorResponse } from "../../../utils";
 import { AdminOpsForProductsService } from "../services/products.services";
 import { handleSuccessResponse } from "../../../utils/response.utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 export class AdminOpsForProductsController {
   private adminOpsForProductsService: AdminOpsForProductsService;

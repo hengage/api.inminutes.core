@@ -1,8 +1,7 @@
 import { ClientSession } from "mongoose";
-import {  emitEvent } from "../../../services";
+import { emitEvent } from "../../../services";
 import {
   HandleException,
-  HTTP_STATUS_CODES,
   calculateAverageRating,
   compareValues,
   formatPhoneNumberforDB,
@@ -10,7 +9,7 @@ import {
 } from "../../../utils";
 import { Rider } from "../models/riders.model";
 import { ICreateRiderData, IRiderDocument } from "../riders.interface";
-import { Events } from "../../../constants";
+import { Events, HTTP_STATUS_CODES } from "../../../constants";
 
 /**
 Repository for rider-related database operations.

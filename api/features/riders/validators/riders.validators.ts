@@ -1,6 +1,7 @@
 import joi from "joi";
-import { HandleException, HTTP_STATUS_CODES, Msg } from "../../../utils";
+import { HandleException, Msg } from "../../../utils";
 import { IRiderDocument } from "../riders.interface";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 /**
 Class for validating rider data.

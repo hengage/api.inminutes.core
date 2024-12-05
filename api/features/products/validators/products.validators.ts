@@ -1,5 +1,6 @@
 import Joi from "joi";
-import { HandleException, HTTP_STATUS_CODES } from "../../../utils";
+import { HandleException } from "../../../utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 class ValidateProducts {
   addProduct = async (payload: any) => {

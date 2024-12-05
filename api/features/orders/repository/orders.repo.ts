@@ -1,6 +1,6 @@
 import { ClientSession } from "mongoose";
 import { redisClient } from "../../../services";
-import { HandleException, ORDER_STATUS, HTTP_STATUS_CODES, Msg } from "../../../utils";
+import { HandleException, Msg } from "../../../utils";
 import { Order, OrderFeedback } from "../models/orders.model";
 import {
   ICreateOrderData,
@@ -8,6 +8,7 @@ import {
   IOrderRatingAndRemarkData,
   IOrdersDocument,
 } from "../orders.interface";
+import { HTTP_STATUS_CODES, ORDER_STATUS } from "../../../constants";
 
 /**
  * A repository class that handles orders-related database operations.

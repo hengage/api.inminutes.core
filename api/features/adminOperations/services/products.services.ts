@@ -1,4 +1,5 @@
-import { HandleException, PRODUCT_STATUS, HTTP_STATUS_CODES, capitalize } from "../../../utils";
+import { HTTP_STATUS_CODES, PRODUCT_STATUS } from "../../../constants";
+import { HandleException, capitalize } from "../../../utils";
 import { Product, ProductCategory } from "../../products";
 import { IProductCategoryDocument } from "../../products/products.interface";
 

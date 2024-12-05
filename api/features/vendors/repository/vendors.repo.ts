@@ -2,7 +2,6 @@ import { ClientSession } from "mongoose";
 import { emitEvent } from "../../../services";
 import {
   HandleException,
-  HTTP_STATUS_CODES,
   calculateAverageRating,
   compareValues,
   formatPhoneNumberforDB,
@@ -10,7 +9,7 @@ import {
 } from "../../../utils";
 import { Vendor } from "../models/vendors.model";
 import { IVendorDocument, IVendorSignupData } from "../vendors.interface";
-import { Events, GEOLOCATION } from "../../../constants";
+import { Events, GEOLOCATION, HTTP_STATUS_CODES } from "../../../constants";
 import { Coordinates } from "../../../types";
 
 /**

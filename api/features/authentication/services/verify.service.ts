@@ -4,8 +4,8 @@ import {
   TWILIO_AUTH_TOKEN,
   TWILIO_VERIFY_SID,
 } from "../../../config";
-import { HandleException, HTTP_STATUS_CODES } from "../../../utils";
-import { OTP_CHANNEL } from "../../../constants";
+import { HandleException } from "../../../utils";
+import { HTTP_STATUS_CODES, OTP_CHANNEL } from "../../../constants";
 
 const VERIFICATION_CHANNELS = {
   SMS: "sms",
