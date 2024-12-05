@@ -1,10 +1,11 @@
-import { Schema, model } from "mongoose";
+import { PaginateModel, Schema, model } from "mongoose";
 import { IRiderDocument } from "../riders.interface";
 import {
   encryptValue,
   generateUniqueString,
   toLowerCaseSetter,
 } from "../../../utils";
+import paginate from "mongoose-paginate-v2";
 
 const riderSchema = new Schema<IRiderDocument>(
   {
@@ -12,15 +13,17 @@ const riderSchema = new Schema<IRiderDocument>(
       type: String,
       default: () => generateUniqueString(5),
     },
-    fullName: { type: String, required: true, 
-      set: function(value: string) {
+    fullName: {
+      type: String, required: true,
+      set: function (value: string) {
         return toLowerCaseSetter(value);
-      } },
+      }
+    },
     displayName: {
       type: String,
       required: true,
       unique: true,
-      set: function(value: string) {
+      set: function (value: string) {
         return toLowerCaseSetter(value);
       },
     },
@@ -28,7 +31,7 @@ const riderSchema = new Schema<IRiderDocument>(
       type: String,
       required: true,
       unique: true,
-      set: function(value: string) {
+      set: function (value: string) {
         return toLowerCaseSetter(value);
       },
     },
@@ -57,6 +60,7 @@ const riderSchema = new Schema<IRiderDocument>(
 );
 
 riderSchema.index({ location: "2dsphere" });
+riderSchema.plugin(paginate);
 
 riderSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
@@ -68,4 +72,7 @@ riderSchema.pre("save", async function (next) {
   }
 });
 
-export const Rider = model<IRiderDocument>("Rider", riderSchema);
+export const Rider = model<
+  IRiderDocument,
+  PaginateModel<IRiderDocument>
+>("Rider", riderSchema);
