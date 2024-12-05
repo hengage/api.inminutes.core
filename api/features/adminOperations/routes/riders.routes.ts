@@ -20,5 +20,9 @@ export class AdminOpsRidersRoutes {
         this.router
             .route("/")
             .get(this.adminOpsForRidersController.getRiders)
+
+        this.router
+            .route("/:riderId")
+            .get(this.adminOpsForRidersController.riderDetails)
     }
 }

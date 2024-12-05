@@ -2,7 +2,7 @@ import { PaginateResult } from "mongoose";
 import { IRiderDocument, Rider } from "../../riders";
 import { buildFilterQuery } from "../../../utils/db.utils";
 import { FilterQuery } from "mongoose";
-import { ACCOUNT_STATUS } from "../../../utils";
+import { ACCOUNT_STATUS, HandleException, HTTP_STATUS_CODES, Msg } from "../../../utils";
 
 
 export const adminOpsRidersService = {
@@ -28,6 +28,20 @@ export const adminOpsRidersService = {
 
     const riders = await Rider.paginate(filterQuery, options);
     return riders;
+  },
+
+  async riderDetails(riderId: string): Promise<IRiderDocument | null> {
+    const rider = await Rider.findById(riderId)
+      .select("-__v -updatedAt -location.type -password")
+      .lean();
+
+    if (!rider) {
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        Msg.ERROR_RIDER_NOT_FOUND(riderId)
+      );
+    }
+    return rider;
   }
 }
 

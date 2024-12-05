@@ -3,9 +3,6 @@ import { handleSuccessResponse } from "../../../utils/response.utils";
 import { adminOpsRidersService } from "../services/riders.service";
 import { Request, Response } from "express";
 
-interface AdminOpsRidersController {
-    getRiders(req: Request, res: Response): Promise<void>;
-}
 
 export const adminOpsRidersController: AdminOpsRidersController = {
     async getRiders(req: Request, res: Response): Promise<void> {
@@ -25,5 +22,23 @@ export const adminOpsRidersController: AdminOpsRidersController = {
             const { statusCode, errorJSON } = handleErrorResponse(error);
             res.status(statusCode).json(errorJSON);
         }
+    },
+
+    async riderDetails(req: Request, res: Response): Promise<void> {
+        try {
+            const rider = await adminOpsRidersService.riderDetails(
+                req.params.riderId
+            );
+            handleSuccessResponse(res, HTTP_STATUS_CODES.OK, rider);
+        } catch (error) {
+            console.error("Error getting rider details: ", error);
+            const { statusCode, errorJSON } = handleErrorResponse(error);
+            res.status(statusCode).json(errorJSON);
+        }
     }
 };
+
+interface AdminOpsRidersController {
+    getRiders(req: Request, res: Response): Promise<void>;
+    riderDetails(req: Request, res: Response): Promise<void>;
+}
