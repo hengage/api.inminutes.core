@@ -63,10 +63,10 @@ export class AdminOpsVendorsController {
         }
     }
 
-    approveOrDisapproveVendor = async (req: Request, res: Response):
+    setApprovalStatus = async (req: Request, res: Response):
         Promise<void> => {
         try {
-            await this.vendorsService.approveOrDisapproveVendor(
+            await this.vendorsService.setApprovalStatus(
                 req.params.vendorId,
                 req.body.approved
             );
