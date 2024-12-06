@@ -1,8 +1,8 @@
 import { Document } from "mongoose";
 
-import { ORDER_STATUS } from "../../utils";
 import { IVendorDocument } from "../vendors";
 import { IRiderDocument } from "../riders";
+import { ORDER_STATUS } from "../../constants";
 
 export interface IAddOn {
   item: string;

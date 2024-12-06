@@ -45,7 +45,7 @@ export const adminOpsRidersController: AdminOpsRidersController = {
                 req.body.status
             );
             handleSuccessResponse(res, HTTP_STATUS_CODES.OK, {
-                message: "Rider account status updated successfully",
+                message: `Rider is now ${req.body.status.toLowerCase()}`,
             });
         } catch (error) {
             console.error("Error setting rider account status: ", error);
