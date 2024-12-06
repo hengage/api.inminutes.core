@@ -1,6 +1,6 @@
 import { Document } from "mongoose";
 import { IVendorDocument } from "../vendors";
-import { PRODUCT_STATUS } from "../../utils";
+import { PRODUCT_STATUS } from "../../constants";
 
 export interface IProductCategoryDocument extends Document {
   _id: string;
