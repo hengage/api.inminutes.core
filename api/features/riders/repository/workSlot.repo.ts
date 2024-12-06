@@ -1,13 +1,13 @@
 import { Coordinates } from "../../../types";
 import { HandleException } from "../../../utils";
-import { RiderBooking, RiderTimeSlotSession, WorkArea } from "../models/timeSlots.model";
+import { RiderBooking, RidersWorkSlotSession, WorkArea } from "../models/workSlot.model";
 import { ClientSession } from "mongoose";
 
 /**
 Repository for managing time slots for riders.
 @class
 */
-class TimeSlotRepository {
+class WorkSlotRepository {
   /*
   @async
   Books a working time slot for a rider.
@@ -23,45 +23,47 @@ class TimeSlotRepository {
   }) {
     const { riderId, areaId, date, session } = params;
 
-    // const timeSlot = await RiderTimeSlot.create({
+    // const workSlotSession = await RidersWorkSlotSession.create({
     //   riderId,
     //   startTime,
     //   endTime,
     // });
     const area = await WorkArea.findById(areaId);
     if (!area) {
-      throw new HandleException(400, "The location is invalid or has not been inputed yet");
+      throw new HandleException(
+        400,
+        "The location is invalid or has not been added yet"
+      );
     }
 
-    let timeSlot = await RiderTimeSlotSession.findOne({ area: areaId, date, session });
-    if (!timeSlot) {
-      timeSlot = new RiderTimeSlotSession({
+    let workSlotSession = await RidersWorkSlotSession.findOne({ area: areaId, date, session });
+    if (!workSlotSession) {
+      workSlotSession = new RidersWorkSlotSession({
         area: areaId,
         date,
         session,
         availableSlots: area.maxSlotsRequired,
-        bookedSlots: 0,
         numberOfSlotsBooked: 0,
       });
     }
-    if (timeSlot.availableSlots === 0) {
+    if (workSlotSession.availableSlots === 0) {
       throw new HandleException(
         400,
         "The location is fully booked for this session. Please choose another session."
       );
     }
-    timeSlot.availableSlots -= 1;
-    timeSlot.numberOfSlotsBooked += 1;
-    await timeSlot.save();
+    workSlotSession.availableSlots -= 1;
+    workSlotSession.numberOfSlotsBooked += 1;
+    await workSlotSession.save();
     // Todo: use transactions to ensure booking is atomic
 
     const booking = new RiderBooking({
       rider: riderId,
-      timeSlot: timeSlot._id,
+      workSlotSession: workSlotSession._id,
     });
     await booking.save();
 
-    return timeSlot;
+    return workSlotSession;
   }
 
   /** Updates the status of a time slot.
@@ -75,7 +77,7 @@ class TimeSlotRepository {
     session: ClientSession;
   }) {
     const { slotId, status, session } = params;
-    const slot = await RiderTimeSlotSession.findByIdAndUpdate(
+    const slot = await RidersWorkSlotSession.findByIdAndUpdate(
       slotId,
       {
         $set: { status: status },
@@ -95,4 +97,4 @@ class TimeSlotRepository {
   }
 }
 
-export const timeSlotRepo = new TimeSlotRepository();
+export const workSlotRepo = new WorkSlotRepository();

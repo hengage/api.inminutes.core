@@ -1,16 +1,16 @@
 import { startSession } from "mongoose";
 
 import { DateTime } from 'luxon';
-import { AGENDA, RIDER_WORK_SLOT_STATUS, RIDERS_SLOT_SESSIONS } from "../../../constants";
+import { AGENDA, RIDER_WORK_SLOT_STATUS, WORK_SLOT_SESSIONS } from "../../../constants";
 import { SchedulerService } from "../../../services";
 import { HandleException } from "../../../utils";
-import { timeSlotRepo } from "../repository/timeSlot.repo";
+import { workSlotRepo } from "../repository/workSlot.repo";
 
 /**
 Service for managing time slots for riders.
 @class
 */
-class TimeSlotService {
+class WorkSlotService {
   private jobscheduleService: SchedulerService;
   constructor() {
     this.jobscheduleService = SchedulerService.getInstance();
@@ -35,7 +35,7 @@ class TimeSlotService {
     // Todo: add validation
     // Todo: use transactions for this operation
 
-    const slot = await timeSlotRepo.bookSlot({
+    const slot = await workSlotRepo.bookSlot({
       riderId,
       areaId,
       date,
@@ -74,7 +74,7 @@ class TimeSlotService {
         slotId
       );
 
-      await timeSlotRepo.updateStatus({
+      await workSlotRepo.updateStatus({
         slotId,
         status: RIDER_WORK_SLOT_STATUS.CANCELLED,
         session,
@@ -95,19 +95,19 @@ class TimeSlotService {
       endTime = DateTime.fromISO(`${date}`);
 
     switch (session) {
-      case RIDERS_SLOT_SESSIONS.FIRST:
+      case WORK_SLOT_SESSIONS.FIRST:
         startTime = startTime.set({ hour: 9, minute: 0, second: 0 });
         endTime = endTime.set({ hour: 12, minute: 0, second: 0 });
         break;
-      case RIDERS_SLOT_SESSIONS.SECOND:
+      case WORK_SLOT_SESSIONS.SECOND:
         startTime = startTime.set({ hour: 12, minute: 0, second: 0 });
         endTime = endTime.set({ hour: 15, minute: 0, second: 0 });
         break;
-      case RIDERS_SLOT_SESSIONS.THIRD:
+      case WORK_SLOT_SESSIONS.THIRD:
         startTime = startTime.set({ hour: 15, minute: 0, second: 0 })
         endTime = endTime.set({ hour: 18, minute: 0, second: 0 })
         break;
-      case RIDERS_SLOT_SESSIONS.FOURTH:
+      case WORK_SLOT_SESSIONS.FOURTH:
         startTime = startTime.set({ hour: 18, minute: 0, second: 0 })
         endTime = endTime.set({ hour: 21, minute: 0, second: 0 })
         break;
@@ -117,4 +117,4 @@ class TimeSlotService {
 }
 
 
-export const timeSlotService = new TimeSlotService();
+export const workSlotService = new WorkSlotService();

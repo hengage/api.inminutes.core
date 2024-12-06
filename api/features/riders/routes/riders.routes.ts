@@ -4,7 +4,7 @@ import {
   verifyAuthTokenMiddleware,
 } from "../../../middleware";
 import { ridersController } from "../controllers/riders.controllers";
-import { timeSlotController } from "../controllers/timeSlot.controller";
+import { workSlotController } from "../controllers/workSlot.controller";
 import { RiderErrandController } from "../controllers/ridersErrand.controller";
 import { authLimiter } from "../../../middleware/auth.middleware";
 
@@ -24,8 +24,8 @@ class RidersRoutes {
     this.router.use(verifyAuthTokenMiddleware);
 
     this.router.route("/me").get(ridersController.getMe);
-    this.router.route("/book-slot").post(timeSlotController.bookSlot);
-    this.router.route("/cancel-slot").post(timeSlotController.cancelSlot);
+    this.router.route("/book-slot").post(workSlotController.bookSlot);
+    this.router.route("/cancel-slot").post(workSlotController.cancelSlot);
 
     this.router
       .route("/errand")

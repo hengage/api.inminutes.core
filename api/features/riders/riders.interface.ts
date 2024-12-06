@@ -1,15 +1,7 @@
 import { Document } from "mongoose";
-<<<<<<< HEAD
-import {
-  USER_APPROVAL_STATUS,
-  ACCOUNT_STATUS,
-  RIDER_WORK_SLOT_STATUS
-} from "../../constants";
-=======
-import { RIDER_WORK_SLOT_STATUS } from "../../utils";
-import { RIDERS_SLOT_SESSIONS } from "../../constants";
+import { USER_APPROVAL_STATUS, ACCOUNT_STATUS, RIDER_WORK_SLOT_STATUS, } from "../../constants";
+import { WORK_SLOT_SESSIONS } from "../../constants";
 import { Coordinates } from "../../types";
->>>>>>> dev
 
 export interface IRiderDocument extends Document {
   _id: string;
@@ -45,13 +37,13 @@ export interface ICreateRiderData {
   residentialAddress: string,
 }
 
-export interface IRiderTimeSlotDocument extends Document {
+export interface IWorkSlotSessionDocument extends Document {
 
   // status: RIDER_WORK_SLOT_STATUS;
   _id: string;
   area: IWorkAreaDocument;
   date: Date;
-  session: RIDERS_SLOT_SESSIONS;
+  session: WORK_SLOT_SESSIONS;
   availableSlots: number;
   numberOfSlotsBooked: number;
 }
@@ -68,6 +60,6 @@ export interface IWorkAreaDocument extends Document {
 
 export interface IRiderBookingDocument extends Document {
   rider: string;
-  timeSlot: string;
+  workSlotSession: string;
   status: RIDER_WORK_SLOT_STATUS;
 }

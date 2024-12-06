@@ -1,7 +1,16 @@
 import { Schema, model } from "mongoose";
-import { IRiderBookingDocument, IRiderTimeSlotDocument, IWorkAreaDocument } from "../riders.interface";
+import {
+  IRiderBookingDocument,
+  IWorkSlotSessionDocument,
+  IWorkAreaDocument
+} from "../riders.interface";
 import { generateUniqueString } from "../../../utils";
-import { DB_SCHEMA, GEOLOCATION, RIDER_WORK_SLOT_STATUS, RIDERS_SLOT_SESSIONS, } from "../../../constants";
+import {
+  DB_SCHEMA,
+  GEOLOCATION,
+  RIDER_WORK_SLOT_STATUS,
+  WORK_SLOT_SESSIONS,
+} from "../../../constants";
 
 // const TimeSlotSchema = new Schema<IRiderTimeSlotDocument>(
 //   {
@@ -23,7 +32,7 @@ import { DB_SCHEMA, GEOLOCATION, RIDER_WORK_SLOT_STATUS, RIDERS_SLOT_SESSIONS, }
 //   }
 // );
 
-const timeSlotSessionSchema = new Schema<IRiderTimeSlotDocument>({
+const workSlotSessionSchema = new Schema<IWorkSlotSessionDocument>({
   _id: {
     type: String,
     default: () => generateUniqueString(7),
@@ -36,7 +45,7 @@ const timeSlotSessionSchema = new Schema<IRiderTimeSlotDocument>({
   date: { type: Date, required: true },
   session: {
     type: String,
-    enum: Object.values(RIDERS_SLOT_SESSIONS),
+    enum: Object.values(WORK_SLOT_SESSIONS),
     required: true
   },
   availableSlots: { type: Number, required: true },
@@ -58,9 +67,9 @@ const riderBookingSchema = new Schema<IRiderBookingDocument>({
     ref: DB_SCHEMA.RIDER,
     required: true
   },
-  timeSlot: {
+  workSlotSession: {
     type: String,
-    ref: DB_SCHEMA.RIDERS_WORK_TIME_SLOT,
+    ref: DB_SCHEMA.WORK_TIME_SESSION,
     required: true
   },
   status: {
@@ -106,7 +115,7 @@ export const WorkArea = model<IWorkAreaDocument>(
   areaSchema
 );
 
-export const RiderTimeSlotSession = model<IRiderTimeSlotDocument>(
-  DB_SCHEMA.RIDERS_WORK_TIME_SLOT,
-  timeSlotSessionSchema
+export const RidersWorkSlotSession = model<IWorkSlotSessionDocument>(
+  DB_SCHEMA.WORK_TIME_SESSION,
+  workSlotSessionSchema
 );

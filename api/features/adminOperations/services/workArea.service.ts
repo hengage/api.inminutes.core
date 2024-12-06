@@ -1,6 +1,6 @@
 import { Coordinates } from "../../../types";
-import { IWorkAreaDocument, RiderTimeSlotSession, WorkArea } from "../../riders";
-import { IRiderTimeSlotDocument } from "../../riders/riders.interface";
+import { IWorkAreaDocument, RidersWorkSlotSession, WorkArea } from "../../riders";
+import { IWorkSlotSessionDocument } from "../../riders/riders.interface";
 
 export const adminOpsWorkAreaService = {
     async addWorkArea(workAreaData: addWorkAreaData):
@@ -33,8 +33,8 @@ export const adminOpsWorkAreaService = {
     async getWorkSlotSessionsPerArea(
         areaId: string,
         date: Date
-    ): Promise<Partial<IRiderTimeSlotDocument>[]> {
-        const timeSlots = await RiderTimeSlotSession.find(
+    ): Promise<Partial<IWorkSlotSessionDocument>[]> {
+        const timeSlots = await RidersWorkSlotSession.find(
             {
                 area: areaId,
                 date
