@@ -133,7 +133,10 @@ export enum DB_SCHEMA {
   WISHLIST = "WishList", //Todo: use lowercase 'l' for wishlist
   ERRAND = 'Errand',
   ERRAND_PACKAGE_TYPE = "ErrandPackageType",
-  ORDER_FEEDBACK = "OrderFeedback"
+  ORDER_FEEDBACK = "OrderFeedback",
+  WORK_AREA = "WorkArea",
+  RIDERS_WORK_TIME_SLOT = "RidersWorkTimeSlot",
+  RIDER_BOOKING = "RiderBooking",
 }
 
 export enum AGENDA {
@@ -153,4 +156,11 @@ export enum TRANSACTION_TYPE {
 
 export enum OTP_CHANNEL {
   SMS = "SMS"
+}
+
+export enum RIDERS_SLOT_SESSIONS {
+  FIRST = '9am-12pm',
+  SECOND = '12pm-3pm',
+  THIRD = '3pm-6pm',
+  FOURTH = '6pm-9pm',
 }

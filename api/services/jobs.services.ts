@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import { Agenda } from "agenda";
+import { Agenda, JobAttributesData } from "agenda";
 import { DB_URL } from "../config/secrets.config";
 import { ridersService } from "../features/riders";
 import { AGENDA } from "../constants";
@@ -14,7 +14,7 @@ export class SchedulerService {
   private static instance: SchedulerService;
   private agenda: Agenda | undefined;
 
-  public constructor() {}
+  public constructor() { }
 
   public static getInstance(): SchedulerService {
     if (!SchedulerService.instance) {
@@ -87,7 +87,7 @@ export class SchedulerService {
   async scheduleJob(params: {
     jobName: string;
     scheduledTime: Date | string;
-    jobData: object;
+    jobData: JobAttributesData;
   }) {
     const { jobName, scheduledTime, jobData } = params;
     await this.agenda?.schedule(scheduledTime, jobName, jobData);

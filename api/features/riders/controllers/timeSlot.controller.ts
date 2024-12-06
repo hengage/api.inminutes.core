@@ -6,18 +6,20 @@ import { handleSuccessResponse } from "../../../utils/response.utils";
 class TimeSlotController {
   async bookSlot(req: Request, res: Response) {
     const riderId = (req as any).user._id;
+    // Todo: validate endpoint data
     try {
-      const slot = timeSlotService.bookSlot({
+      const slot = await timeSlotService.bookSlot({
         riderId,
-        startTime: req.body.startTime,
-        endTime: req.body.endTime,
+        areaId: req.body.areaId,
+        date: req.body.date,
+        session: req.body.session,
       });
 
       handleSuccessResponse(
         res,
         HTTP_STATUS_CODES.CREATED,
         { slot },
-        "You have booked this slot"
+        "Slot booked"
       );
     } catch (error: any) {
       console.error("Error booking slot:", error);
