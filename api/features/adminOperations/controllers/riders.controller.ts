@@ -53,10 +53,29 @@ export const adminOpsRidersController: AdminOpsRidersController = {
             res.status(statusCode).json(errorJSON);
         }
     },
+
+    async setApprovalStatus(req: Request, res: Response): Promise<void> {
+        try {
+            await adminOpsRidersService.setApprovalStatus(
+                req.params.riderId,
+                req.body.status
+            );
+            handleSuccessResponse(
+                res, HTTP_STATUS_CODES.OK,
+                {
+                    message: `Rider approval request has been ${req.body.status.toLowerCase()}`,
+                });
+        } catch (error) {
+            console.error("Error setting rider approval status: ", error);
+            const { statusCode, errorJSON } = handleErrorResponse(error);
+            res.status(statusCode).json(errorJSON);
+        }
+    },
 };
 
 interface AdminOpsRidersController {
     getRiders(req: Request, res: Response): Promise<void>;
     riderDetails(req: Request, res: Response): Promise<void>;
     setAccountStatus(req: Request, res: Response): Promise<void>;
+    setApprovalStatus(req: Request, res: Response): Promise<void>;
 }

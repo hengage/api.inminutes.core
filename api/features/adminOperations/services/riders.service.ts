@@ -2,7 +2,7 @@ import { PaginateResult } from "mongoose";
 import { IRiderDocument, Rider } from "../../riders";
 import { buildFilterQuery } from "../../../utils/db.utils";
 import { FilterQuery } from "mongoose";
-import { ACCOUNT_STATUS, HTTP_STATUS_CODES } from "../../../constants";
+import { ACCOUNT_STATUS, HTTP_STATUS_CODES, USER_APPROVAL_STATUS } from "../../../constants";
 import { HandleException, Msg } from "../../../utils";
 
 
@@ -62,6 +62,24 @@ export const adminOpsRidersService = {
       );
     }
     rider.accountStatus = status;
+    await rider.save();
+  },
+
+  async setApprovalStatus(
+    riderId: IRiderDocument["_id"],
+    approved: USER_APPROVAL_STATUS
+  ): Promise<void> {
+    const rider = await Rider
+      .findById(riderId)
+      .select("_id approved");
+
+    if (!rider) {
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        Msg.ERROR_VENDOR_NOT_FOUND(riderId)
+      );
+    }
+    rider.approvalStatus = approved;
     await rider.save();
   }
 }

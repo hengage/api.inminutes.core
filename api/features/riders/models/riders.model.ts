@@ -6,7 +6,7 @@ import {
   toLowerCaseSetter,
 } from "../../../utils";
 import { IRiderDocument } from "../riders.interface";
-import { ACCOUNT_STATUS } from "../../../constants";
+import { ACCOUNT_STATUS, USER_APPROVAL_STATUS } from "../../../constants";
 
 const riderSchema = new Schema<IRiderDocument>(
   {
@@ -55,6 +55,10 @@ const riderSchema = new Schema<IRiderDocument>(
       type: String,
       default: ACCOUNT_STATUS.ACTIVE,
       enum: Object.values(ACCOUNT_STATUS),
+    },
+    approvalStatus: {
+      type: String,
+      default: USER_APPROVAL_STATUS.PENDING
     },
     rating: {
       totalRatingSum: { type: Number, default: 0 },

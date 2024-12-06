@@ -13,10 +13,6 @@ export class AdminOpsRidersRoutes {
     }
 
     async initializeRoutes() {
-        // this.router
-        //   .route("/:riderId/approval")
-        //   .patch(this.adminOpsForRidersController.approveRider)
-
         this.router
             .route("/")
             .get(this.adminOpsForRidersController.getRiders)
@@ -27,5 +23,8 @@ export class AdminOpsRidersRoutes {
         this.router
             .route("/:riderId/account-status")
             .patch(this.adminOpsForRidersController.setAccountStatus)
+        this.router
+            .route("/:riderId/approval")
+            .patch(this.adminOpsForRidersController.setApprovalStatus)
     }
 }

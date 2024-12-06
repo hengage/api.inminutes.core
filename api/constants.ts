@@ -24,6 +24,12 @@ export enum ACCOUNT_STATUS {
   SUSPENDED = "suspended",
 }
 
+export enum USER_APPROVAL_STATUS {
+  PENDING = "pending",
+  APPROVED = "approved",
+  REJECTED = "rejected",
+}
+
 export enum PRODUCT_STATUS {
   PENDING = "pending",
   APPROVED = "approved",

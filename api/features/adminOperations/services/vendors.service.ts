@@ -69,7 +69,7 @@ export class AdminOpsVendorsService {
     }
 
     // Approve or disapprove vendor
-    async approveOrDisapproveVendor(
+    async setApprovalStatus(
         vendorId: IVendorDocument["_id"],
         approved: boolean
     ): Promise<void> {
