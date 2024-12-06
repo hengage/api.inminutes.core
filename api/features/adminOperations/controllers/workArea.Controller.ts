@@ -24,5 +24,16 @@ export const AdminOpsworkAreaController = {
             const { statusCode, errorJSON } = handleErrorResponse(error);
             res.status(statusCode).json(errorJSON);
         }
-    }
+    },
+
+    async getWorkAreas(req: Request, res: Response) {
+        try {
+            const workAreas = await adminOpsWorkAreaService.getWorkAreas();
+            handleSuccessResponse(res, HTTP_STATUS_CODES.OK, workAreas);
+        } catch (error: unknown) {
+            console.log("Error getting work areas: ", error);
+            const { statusCode, errorJSON } = handleErrorResponse(error);
+            res.status(statusCode).json(errorJSON);
+        }
+    },
 }

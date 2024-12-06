@@ -19,7 +19,15 @@ export const adminOpsWorkAreaService = {
             name: workArea.name,
             maxSlotsRequired: workArea.maxSlotsRequired,
         };
-    }
+    },
+
+    async getWorkAreas(): Promise<Partial<IWorkAreaDocument>[]> {
+        const workAreas = await WorkArea.find()
+            .select('_id name maxSlotsRequired')
+            .lean()
+            .exec();
+        return workAreas
+    },
 }
 
 export interface addWorkAreaData {

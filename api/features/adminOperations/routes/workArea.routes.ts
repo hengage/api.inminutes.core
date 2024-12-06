@@ -16,6 +16,9 @@ export class AdminOpsWorkAreaRoutes {
         this.router.
             route("/").
             post(this.adminOpsworkAreaController.addWorkArea);
+        this.router.
+            route("/").
+            get(this.adminOpsworkAreaController.getWorkAreas);
     }
 }
 
