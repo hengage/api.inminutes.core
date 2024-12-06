@@ -19,6 +19,9 @@ export class AdminOpsWorkAreaRoutes {
         this.router.
             route("/").
             get(this.adminOpsworkAreaController.getWorkAreas);
+        this.router
+            .route("/:workAreaId/time-slots-sessions")
+            .get(this.adminOpsworkAreaController.getWorkSlotSessionsPerArea);
     }
 }
 

@@ -36,4 +36,18 @@ export const AdminOpsworkAreaController = {
             res.status(statusCode).json(errorJSON);
         }
     },
+
+    async getWorkSlotSessionsPerArea(req: Request, res: Response) {
+        try {
+            const timeSlots = await adminOpsWorkAreaService.getWorkSlotSessionsPerArea(
+                req.params.workAreaId,
+                req.query.date as unknown as Date
+            );
+            handleSuccessResponse(res, HTTP_STATUS_CODES.OK, timeSlots);
+        } catch (error: unknown) {
+            console.log("Error getting time slots: ", error);
+            const { statusCode, errorJSON } = handleErrorResponse(error);
+            res.status(statusCode).json(errorJSON);
+        }
+    }
 }
