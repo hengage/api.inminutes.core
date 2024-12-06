@@ -28,10 +28,15 @@ import { Document } from "mongoose";
 //   nextPage: number | null;
 // };
 
+/**
+ * Redundant.
+ * Use mongose 'PaginateResult' type instead
+ */
 type PaginatedQueryResult<T extends Document> = Record<
   [key: string],
   JSONValue
 >;
+// Todo: make redundant. Use mongoose PaginateResult type
 
 type PaginateQueryOptions = {
   page: number;
@@ -43,13 +48,16 @@ type PaginateQueryOptions = {
   leanWithId?: boolean;
 };
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { IRiderDocument } from "./features/riders";
+import { ICustomerDocument } from "./features/customers";
+import { ACCOUNT_STATUS } from "./utils";
 
 type CustomJwtPayload = JwtPayload & {
   _id: string;
   phoneNumber: string;
 };
 
-type Coordinates = [lng: number, lat:number];
+type Coordinates = [lng: number, lat: number];
 
 type DynamicObject = Record<any, JSONObject>;
 
@@ -87,3 +95,10 @@ interface ApiSuccessResponse<T = JSONValue | null> {
   data: T;
   message?: string;
 }
+
+type UserId =
+  | IVendorDocument["_id"]
+  | IRiderDocument["_id"]
+  | ICustomerDocument["_id"];
+
+type AccountStatus = ACCOUNT_STATUS

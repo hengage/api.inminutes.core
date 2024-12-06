@@ -58,4 +58,75 @@ export class AdminOpsVendorsCategoryService {
       name: subCategory.name,
     };
   }
+
+  async getCategories(): Promise<IVendorCategoryDocument[]> {
+    const categories = await this.vendorCategoryModel
+      .find()
+      .select("name image")
+      .lean()
+      .exec();
+
+    return categories;
+  }
+
+  async getCategory(categoryId: string): Promise<IVendorCategoryDocument> {
+    const category = await this.vendorCategoryModel
+      .findById(categoryId)
+      .select("name image")
+      .lean()
+      .exec();
+
+    if (!category) {
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        "Category not found"
+      );
+    }
+    return category;
+  }
+
+  async updateCategory(
+    categoryId: string,
+    updateCategoryData: IUpdateCategory
+  ): Promise<IVendorCategoryDocument> {
+    const category = await this.vendorCategoryModel
+      .findByIdAndUpdate(
+        categoryId,
+        { $set: updateCategoryData },
+        { new: true }
+      )
+      .select("name image")
+      .lean()
+      .exec();
+
+    if (!category) {
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        "Category not found"
+      );
+    }
+    return category;
+  }
+
+  async deleteCategory(categoryId: string): Promise<IVendorCategoryDocument> {
+    const category = await this.vendorCategoryModel
+      .findByIdAndDelete(categoryId)
+      .select("name image")
+      .lean()
+      .exec();
+
+    if (!category) {
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        "Category not found"
+      );
+    }
+    return category;
+  }
+}
+
+
+interface IUpdateCategory {
+  name?: IVendorCategoryDocument['_id'];
+  image?: IVendorCategoryDocument["image"];
 }
