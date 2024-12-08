@@ -20,8 +20,11 @@ export class AdminOpsWorkAreaRoutes {
             route("/").
             get(this.adminOpsworkAreaController.getWorkAreas);
         this.router
-            .route("/:workAreaId/time-slots-sessions")
+            .route("/:workAreaId/sessions")
             .get(this.adminOpsworkAreaController.getWorkSlotSessionsPerArea);
+        this.router
+            .route("/:workAreaId/sessions/:workSessionId/riders")
+            .get(this.adminOpsworkAreaController.getBookedRidersForSession);
     }
 }
 

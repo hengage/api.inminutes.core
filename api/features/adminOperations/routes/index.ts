@@ -32,7 +32,7 @@ export class AdminOpsRoutes {
     this.router.use("/products", this.adminOpsProductsRoutes.router);
     this.router.use("/riders", this.adminOpsRidersRoutes.router);
     this.router.use("/wallet", this.adminOpsWalletRoutes.router);
-    this.router.use("/work-area", this.adminOpsWorkAreaRoutes.router);
+    this.router.use("/work-areas", this.adminOpsWorkAreaRoutes.router);
   }
 }
 

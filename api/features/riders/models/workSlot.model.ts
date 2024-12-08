@@ -70,7 +70,8 @@ const riderBookingSchema = new Schema<IRiderBookingDocument>({
   workSlotSession: {
     type: String,
     ref: DB_SCHEMA.WORK_TIME_SESSION,
-    required: true
+    required: true,
+    index: true
   },
   status: {
     type: String,

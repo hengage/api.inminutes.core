@@ -1,6 +1,6 @@
 import { Coordinates } from "../../../types";
-import { IWorkAreaDocument, RidersWorkSlotSession, WorkArea } from "../../riders";
-import { IWorkSlotSessionDocument } from "../../riders/riders.interface";
+import { IWorkAreaDocument, RiderBooking, RidersWorkSlotSession, WorkArea } from "../../riders";
+import { IRiderBookingDocument, IWorkSlotSessionDocument } from "../../riders/riders.interface";
 
 export const adminOpsWorkAreaService = {
     async addWorkArea(workAreaData: addWorkAreaData):
@@ -46,6 +46,23 @@ export const adminOpsWorkAreaService = {
 
         return timeSlots;
     },
+
+    async getBookedRidersForSession(workSessionId: IWorkSlotSessionDocument['_id'])
+        : Promise<IRiderBookingDocument['rider'][]> {
+        const riderBookings = await RiderBooking.find(
+            { workSlotSession: workSessionId }
+        )
+            .select("rider")
+            .populate({
+                path: 'rider',
+                select: "fullName _id"
+            })
+            .lean()
+            .exec();
+
+        const riders = riderBookings.map((booking) => booking.rider);
+        return riders;
+    }
 }
 
 export interface addWorkAreaData {

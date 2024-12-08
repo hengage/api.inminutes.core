@@ -49,5 +49,19 @@ export const AdminOpsworkAreaController = {
             const { statusCode, errorJSON } = handleErrorResponse(error);
             res.status(statusCode).json(errorJSON);
         }
+    },
+
+    async getBookedRidersForSession(req: Request, res: Response) {
+        try {
+            const bookedRiders =
+                await adminOpsWorkAreaService.getBookedRidersForSession(
+                    req.params.workSessionId
+                );
+            handleSuccessResponse(res, HTTP_STATUS_CODES.OK, bookedRiders);
+        } catch (error: unknown) {
+            console.log("Error getting booked riders: ", error);
+            const { statusCode, errorJSON } = handleErrorResponse(error);
+            res.status(statusCode).json(errorJSON);
+        }
     }
 }
