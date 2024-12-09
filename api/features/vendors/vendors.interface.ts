@@ -1,5 +1,5 @@
 import { Document } from "mongoose";
-import { ACCOUNT_STATUS, PAYMENT_OPTIONS } from "../../utils";
+import { ACCOUNT_STATUS, PAYMENT_OPTIONS, USER_APPROVAL_STATUS } from "../../constants";
 
 export interface IVendorDocument extends Document {
   _id: string;
@@ -19,6 +19,7 @@ export interface IVendorDocument extends Document {
   subCategory: IVendorSubCategoryDocument;
   paymentOptions: PAYMENT_OPTIONS[];
   accountStatus: ACCOUNT_STATUS;
+  approvalStatus: USER_APPROVAL_STATUS
   approved: boolean;
   rating: {
     totalRatingSum: number;

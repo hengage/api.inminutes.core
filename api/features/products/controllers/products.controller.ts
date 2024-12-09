@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 
-import { HTTP_STATUS_CODES, handleErrorResponse } from "../../../utils";
+import { handleErrorResponse } from "../../../utils";
 import { ProductsRepository } from "../repository/products.repo";
 import { validateProducts } from "../validators/products.validators";
 import { productsService } from "../services/products.service";
 import { handleSuccessResponse } from "../../../utils/response.utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 export class ProductsController {
   private productsRepo: ProductsRepository;

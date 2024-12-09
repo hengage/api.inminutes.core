@@ -1,4 +1,4 @@
-import { ORDER_STATUS } from "../../../utils";
+import { ORDER_STATUS } from "../../../constants";
 import { Order, ordersService } from "../../orders";
 
 class VendorsOrdersService {

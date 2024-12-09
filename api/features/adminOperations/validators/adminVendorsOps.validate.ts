@@ -1,5 +1,6 @@
 import Joi from "joi";
-import { ACCOUNT_STATUS, HandleException, HTTP_STATUS_CODES } from "../../../utils";
+import { HandleException } from "../../../utils";
+import { ACCOUNT_STATUS, HTTP_STATUS_CODES } from "../../../constants";
 
 export class ValidateAdminVendorsOps {
   createCategory = async (payload: any) => {

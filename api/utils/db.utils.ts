@@ -15,14 +15,20 @@ export function buildFilterQuery<T>(
 ): FilterQuery<T> {
     // Handle non-search filters
     Object.entries(filter).forEach(([key, value]) => {
-        if (value && key !== 'search') {
+        if (value && key !== 'searchQuery') {
             (filterQuery as any)[key] = value;
         }
     });
 
     // Handle search
-    if (filter.search && filter.search.length >= 2 && filter.search.length <= 20) {
-        const sanitizedSearch = filter.search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    if (
+        filter.searchQuery
+        && filter.searchQuery.length >= 2
+        && filter.searchQuery.length <= 20
+    ) {
+        const sanitizedSearch = filter.searchQuery.replace(
+            /[.*+?^${}()|[\]\\]/g, '\\$&'
+        );
         const searchRegex = new RegExp(sanitizedSearch, 'i');
         (filterQuery as any).$or = searchFields!.map(field => ({ [field]: searchRegex }));
     }

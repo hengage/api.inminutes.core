@@ -1,15 +1,12 @@
 import { Request, Response, response } from "express";
 import { CustomersRepository } from "../repository/customers.repo";
-import {
-  HTTP_STATUS_CODES,
-  generateJWTToken,
-  handleErrorResponse,
-} from "../../../utils";
+import { generateJWTToken, handleErrorResponse, } from "../../../utils";
 import { ValidateCustomer } from "../validators/customers.validator";
 import { CustomersService } from "../services/customers.services";
 import { CustomersAuthentication } from "../auth/customers.auth";
 import { ProductsRepository } from "../../products";
 import { handleSuccessResponse } from "../../../utils/response.utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 export class CustomersController {
   private validateCustomer: ValidateCustomer;
@@ -163,7 +160,7 @@ export class CustomersController {
 
     try {
       await this.customersRepo.deleteAccount(customer);
-      
+
       return handleSuccessResponse(
         res,
         HTTP_STATUS_CODES.NO_CONTENT,

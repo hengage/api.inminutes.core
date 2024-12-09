@@ -1,7 +1,7 @@
 import Joi from "joi";
-import { HandleException, HTTP_STATUS_CODES, Msg } from "../../../utils";
+import { HandleException, Msg } from "../../../utils";
 import { ICreateErrandData } from "../errand.interface";
-import { ORDER_TYPE } from "../../../constants";
+import { HTTP_STATUS_CODES, ORDER_TYPE } from "../../../constants";
 
 export class ValidateErrand {
   create = async (createErrandData: ICreateErrandData) => {

@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { HTTP_STATUS_CODES, handleErrorResponse } from "../../../utils";
+import { handleErrorResponse } from "../../../utils";
 import { CustomersOrdersService } from "../services/customerOrders.service";
 import { handleSuccessResponse } from "../../../utils/response.utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 export class CustomersOrdersController {
   private customersOrdersService: CustomersOrdersService;

@@ -1,6 +1,7 @@
 import joi from "joi";
-import { HandleException, HTTP_STATUS_CODES, Msg } from "../../../utils";
+import { HandleException, Msg } from "../../../utils";
 import { IVendorSignupData } from "../vendors.interface";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 class ValidateVendor {
   signUp = async (payload: IVendorSignupData) => {

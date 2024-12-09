@@ -8,6 +8,7 @@ import {
   DB_SCHEMA,
   GEOLOCATION,
   PAYMENT_OPTIONS,
+  USER_APPROVAL_STATUS,
 } from "../../../constants";
 
 import {
@@ -67,7 +68,10 @@ const vendorSchema = new Schema<IVendorDocument>(
       default: ACCOUNT_STATUS.ACTIVE,
       enum: Object.values(ACCOUNT_STATUS),
     },
-    approved: { type: Boolean, default: false },
+    approvalStatus: {
+      type: String,
+      default: USER_APPROVAL_STATUS.PENDING
+    },
     rating: {
       totalRatingSum: { type: Number, default: 0 },
       ratingCount: { type: Number, default: 0 },

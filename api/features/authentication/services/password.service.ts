@@ -1,5 +1,6 @@
-import {  UsersService } from "../../../services";
-import { HandleException, HTTP_STATUS_CODES, compareValues, Msg } from "../../../utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
+import { UsersService } from "../../../services";
+import { HandleException, compareValues, Msg } from "../../../utils";
 
 class PasswordService {
   private usersService: UsersService;

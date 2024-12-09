@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { AdminOpsVendorsService } from "../services/vendors.service";
-import { ACCOUNT_STATUS, HTTP_STATUS_CODES, Msg } from "../../../utils";
+import { ACCOUNT_STATUS, HTTP_STATUS_CODES } from "../../../constants";
+import { Msg } from "../../../utils";
 import { handleErrorResponse, handleSuccessResponse } from "../../../utils/response.utils";
 import { ValidateAdminVendorsOps } from "../validators/adminVendorsOps.validate";
 
@@ -16,7 +17,7 @@ export class AdminOpsVendorsController {
                     accountStatus: req.query.accountStatus as ACCOUNT_STATUS,
                     category: req.query.category as string,
                     subCategory: req.query.subCategory as string,
-                    search: req.query.search as string,
+                    searchQuery: req.query.searchQuery as string,
                 }
             );
             handleSuccessResponse(res, HTTP_STATUS_CODES.OK, vendors);
@@ -62,10 +63,10 @@ export class AdminOpsVendorsController {
         }
     }
 
-    approveOrDisapproveVendor = async (req: Request, res: Response):
+    setApprovalStatus = async (req: Request, res: Response):
         Promise<void> => {
         try {
-            await this.vendorsService.approveOrDisapproveVendor(
+            await this.vendorsService.setApprovalStatus(
                 req.params.vendorId,
                 req.body.approved
             );

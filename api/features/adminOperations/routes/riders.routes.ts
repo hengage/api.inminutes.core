@@ -1,15 +1,30 @@
-import { Router } from "express";
-import { adminOpsForRidersController } from "../controllers/riders.controllers";
+import { Router } from "express"
+import { adminOpsRidersController } from "../controllers/riders.controller"
 
 export class AdminOpsRidersRoutes {
-  router = Router();
+    public router: Router
+    private adminOpsForRidersController: typeof adminOpsRidersController
 
-  constructor() {
-    this.initializeRoutes();
-  }
+    constructor() {
+        this.adminOpsForRidersController = adminOpsRidersController
 
-  initializeRoutes() {
+        this.router = Router()
+        this.initializeRoutes()
+    }
 
-    this.router.route("/work-area").post(adminOpsForRidersController.createWorkArea);
-  }
+    async initializeRoutes() {
+        this.router
+            .route("/")
+            .get(this.adminOpsForRidersController.getRiders)
+
+        this.router
+            .route("/:riderId")
+            .get(this.adminOpsForRidersController.riderDetails)
+        this.router
+            .route("/:riderId/account-status")
+            .patch(this.adminOpsForRidersController.setAccountStatus)
+        this.router
+            .route("/:riderId/approval")
+            .patch(this.adminOpsForRidersController.setApprovalStatus)
+    }
 }

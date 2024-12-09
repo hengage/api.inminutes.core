@@ -24,6 +24,12 @@ export enum ACCOUNT_STATUS {
   SUSPENDED = "suspended",
 }
 
+export enum USER_APPROVAL_STATUS {
+  PENDING = "pending",
+  APPROVED = "approved",
+  REJECTED = "rejected",
+}
+
 export enum PRODUCT_STATUS {
   PENDING = "pending",
   APPROVED = "approved",
@@ -135,7 +141,7 @@ export enum DB_SCHEMA {
   ERRAND_PACKAGE_TYPE = "ErrandPackageType",
   ORDER_FEEDBACK = "OrderFeedback",
   WORK_AREA = "WorkArea",
-  RIDERS_WORK_TIME_SLOT = "RidersWorkTimeSlot",
+  WORK_TIME_SESSION = "WorkTimeSession",
   RIDER_BOOKING = "RiderBooking",
 }
 
@@ -158,7 +164,7 @@ export enum OTP_CHANNEL {
   SMS = "SMS"
 }
 
-export enum RIDERS_SLOT_SESSIONS {
+export enum WORK_SLOT_SESSIONS {
   FIRST = '9am-12pm',
   SECOND = '12pm-3pm',
   THIRD = '3pm-6pm',

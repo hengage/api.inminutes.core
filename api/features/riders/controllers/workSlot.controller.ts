@@ -1,14 +1,15 @@
 import { Request, Response } from "express";
-import { HTTP_STATUS_CODES, handleErrorResponse } from "../../../utils";
-import { timeSlotService } from "../services/timeSlot.service";
+import { handleErrorResponse } from "../../../utils";
+import { workSlotService } from "../services/workSlot.service";
 import { handleSuccessResponse } from "../../../utils/response.utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
-class TimeSlotController {
+class WorkSlotController {
   async bookSlot(req: Request, res: Response) {
     const riderId = (req as any).user._id;
     // Todo: validate endpoint data
     try {
-      const slot = await timeSlotService.bookSlot({
+      const slot = await workSlotService.bookSlot({
         riderId,
         areaId: req.body.areaId,
         date: req.body.date,
@@ -30,7 +31,7 @@ class TimeSlotController {
 
   async cancelSlot(req: Request, res: Response) {
     try {
-      const cancelledSlot = await timeSlotService.cancelSlot(req.body.slotId);
+      const cancelledSlot = await workSlotService.cancelSlot(req.body.slotId);
 
       handleSuccessResponse(
         res,
@@ -46,4 +47,4 @@ class TimeSlotController {
   }
 }
 
-export const timeSlotController = new TimeSlotController();
+export const workSlotController = new WorkSlotController();

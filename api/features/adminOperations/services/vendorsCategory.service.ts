@@ -1,4 +1,5 @@
-import { capitalize, HandleException, HTTP_STATUS_CODES } from "../../../utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
+import { capitalize, HandleException } from "../../../utils";
 import { VendorCategory, VendorSubCategory } from "../../vendors";
 import { IVendorCategoryDocument, IVendorSubCategoryDocument } from "../../vendors/vendors.interface";
 

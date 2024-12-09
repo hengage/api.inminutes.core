@@ -2,8 +2,9 @@ import { startSession, ClientSession } from "mongoose";
 import { Wallet } from "../models/wallet.model";
 import Big from "big.js";
 import { NotificationService } from "../../notifications";
-import { HandleException, HTTP_STATUS_CODES } from "../../../utils";
+import { HandleException } from "../../../utils";
 import { walletRepo } from "../repository/wallet.repository";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 /**
 Provides methods for managing wallet operations.

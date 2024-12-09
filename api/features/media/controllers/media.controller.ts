@@ -1,13 +1,10 @@
 import { Request, Response } from "express";
 
-import {
-  HandleException,
-  HTTP_STATUS_CODES,
-  handleErrorResponse,
-} from "../../../utils";
+import { HandleException, handleErrorResponse, } from "../../../utils";
 import { MediaService } from "../services/media.service";
 import { UploadedFiles } from "../media.interface";
 import { handleSuccessResponse } from "../../../utils/response.utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 export class MediaController {
   private mediaService: MediaService;

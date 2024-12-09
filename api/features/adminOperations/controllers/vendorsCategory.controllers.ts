@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
-import { HTTP_STATUS_CODES, capitalize, handleErrorResponse } from "../../../utils";
+import { capitalize, handleErrorResponse } from "../../../utils";
 import { AdminOpsVendorsCategoryService } from "../services/vendorsCategory.service";
 import { ValidateAdminVendorsOps } from "../validators/adminVendorsOps.validate";
 import { handleSuccessResponse } from "../../../utils/response.utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 export class AdminOpsVendorsCategoryController {
   private validateAdminVendorsOps: ValidateAdminVendorsOps;

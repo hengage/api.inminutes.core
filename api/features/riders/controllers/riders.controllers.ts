@@ -1,12 +1,9 @@
 import { Request, Response } from "express";
-import {
-  HTTP_STATUS_CODES,
-  generateJWTToken,
-  handleErrorResponse,
-} from "../../../utils";
+import { generateJWTToken, handleErrorResponse, } from "../../../utils";
 import { validateRider } from "../validators/riders.validators";
 import { ridersService } from "../services/riders.service";
 import { handleSuccessResponse } from "../../../utils/response.utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
 class RidersController {
 
   constructor() {

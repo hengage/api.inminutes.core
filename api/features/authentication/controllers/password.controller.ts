@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { HTTP_STATUS_CODES, HandleException, Msg, handleErrorResponse } from "../../../utils";
+import { HandleException, Msg, handleErrorResponse } from "../../../utils";
 import { passwordService } from "../services/password.service";
 import { handleSuccessResponse } from "../../../utils/response.utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 class PasswordController {
   public async resetPassword(req: Request, res: Response) {
@@ -36,9 +37,9 @@ class PasswordController {
   public async changePassword(req: Request, res: Response) {
     const accountType = req.query.accountType as string;
     if (!accountType) {
-       throw new HandleException(
+      throw new HandleException(
         HTTP_STATUS_CODES.BAD_REQUEST,
-         Msg.ERROR_USER_TYPE_MISSING()
+        Msg.ERROR_USER_TYPE_MISSING()
       );
     }
     const userId = (req as any).user._id;

@@ -1,11 +1,9 @@
 import { Request, Response } from "express";
-import {
-  HTTP_STATUS_CODES,
-  handleErrorResponse,
-} from "../../../utils";
+import { handleErrorResponse } from "../../../utils";
 import { cashoutTransferService } from "../services/cashoutTransfer.service";
 import { validateTransactions } from "../validation/transactions.validate";
 import { handleSuccessResponse } from "../../../utils/response.utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 class CashoutTransferController {
   async addCashoutAccount(req: Request, res: Response): Promise<void> {

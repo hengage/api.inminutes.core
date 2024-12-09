@@ -1,4 +1,5 @@
-import { HandleException, HTTP_STATUS_CODES, Msg } from "../../../utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
+import { HandleException, Msg } from "../../../utils";
 import { Product, ProductCategory, WishList } from "../models/products.models";
 import { IAddProductData } from "../products.interface";
 

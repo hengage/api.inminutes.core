@@ -1,6 +1,6 @@
 import Joi from "joi";
-import { HandleException, HTTP_STATUS_CODES, Msg } from "../../../utils";
-import { ORDER_TYPE } from "../../../constants";
+import { HandleException, Msg } from "../../../utils";
+import { HTTP_STATUS_CODES, ORDER_TYPE } from "../../../constants";
 
 /**
 Validates orders using Joi schemas.

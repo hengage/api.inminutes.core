@@ -1,4 +1,5 @@
-import { HandleException, HTTP_STATUS_CODES } from "../../../utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
+import { HandleException, } from "../../../utils";
 import { Product } from "../../products";
 import { Vendor } from "../models/vendors.model";
 

@@ -1,6 +1,7 @@
 import { PaginateResult, FilterQuery } from "mongoose";
 import { IVendorDocument, Vendor } from "../../vendors";
-import { ACCOUNT_STATUS, HandleException, HTTP_STATUS_CODES, Msg, PRODUCT_STATUS } from "../../../utils";
+import { ACCOUNT_STATUS, HTTP_STATUS_CODES, } from "../../../constants";
+import { HandleException, Msg, } from "../../../utils";
 import { buildFilterQuery } from "../../../utils/db.utils";
 import { Product } from "../../products";
 
@@ -68,7 +69,7 @@ export class AdminOpsVendorsService {
     }
 
     // Approve or disapprove vendor
-    async approveOrDisapproveVendor(
+    async setApprovalStatus(
         vendorId: IVendorDocument["_id"],
         approved: boolean
     ): Promise<void> {
@@ -130,7 +131,7 @@ interface GetVendorsFilter {
     accountStatus?: ACCOUNT_STATUS;
     category?: string;
     subCategory?: string;
-    search: string
+    searchQuery: string
 }
 
 interface ProductMetrics {

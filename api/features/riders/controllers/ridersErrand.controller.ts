@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { handleErrorResponse, HTTP_STATUS_CODES } from "../../../utils";
+import { handleErrorResponse } from "../../../utils";
 import { RiderErrandService } from "../services/ridersErrand.service";
 import { handleSuccessResponse } from "../../../utils/response.utils";
-import { USER_TYPE } from "../../../constants";
+import { HTTP_STATUS_CODES, USER_TYPE } from "../../../constants";
 
 export class RiderErrandController {
   private riderErrandService: RiderErrandService;

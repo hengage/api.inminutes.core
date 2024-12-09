@@ -1,14 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import { Socket } from "socket.io";
 
-import jwt from "jsonwebtoken";
 import { rateLimit } from "express-rate-limit";
+import jwt from "jsonwebtoken";
 
-import { HTTP_STATUS_CODES, Msg } from "../utils";
 import { JWT_SECRET_KEY } from "../config";
 import { JWT_ALGORITHMS } from "../config/secrets.config";
+import { HTTP_STATUS_CODES, RATE_LIMIT_WINDOW_MS, USER_TYPE } from "../constants";
 import { CustomJwtPayload } from "../types";
-import { RATE_LIMIT_WINDOW_MS, USER_TYPE } from "../constants";
+import { Msg } from "../utils";
 import { createErrorResponse } from "../utils/response.utils";
 
 /**
@@ -111,10 +111,8 @@ const verifyToken = (token: string): CustomJwtPayload | string => {
 };
 
 export {
-  verifyAuthTokenMiddleware,
-  socketGuard,
-  errandHistoryMiddleware,
-  otpLimiter,
   authLimiter,
-  cashoutLimiter,
+  cashoutLimiter, errandHistoryMiddleware,
+  otpLimiter, socketGuard, verifyAuthTokenMiddleware
 };
+
