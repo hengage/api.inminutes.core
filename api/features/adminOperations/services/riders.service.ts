@@ -76,7 +76,7 @@ export const adminOpsRidersService = {
     if (!rider) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_VENDOR_NOT_FOUND(riderId)
+        Msg.ERROR_RIDER_NOT_FOUND(riderId)
       );
     }
     rider.approvalStatus = approved;
