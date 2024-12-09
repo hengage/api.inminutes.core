@@ -72,8 +72,7 @@ const riderBookingSchema = new Schema<IRiderBookingDocument>({
     type: String,
     ref: DB_SCHEMA.WORK_TIME_SESSION,
     required: true,
-    index: true,
-    unique: true,
+    index: true
   },
   status: {
     type: String,

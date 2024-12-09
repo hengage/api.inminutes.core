@@ -30,7 +30,6 @@ class WorkSlotRepository {
         "The location is fully booked for this session. Please choose another session."
       );
     }
-
     workSlotSession.availableSlots -= 1;
     workSlotSession.numberOfSlotsBooked += 1;
     await workSlotSession.save();
