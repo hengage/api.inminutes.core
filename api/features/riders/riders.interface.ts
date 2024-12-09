@@ -63,3 +63,20 @@ export interface IRiderBookingDocument extends Document {
   workSlotSession: string;
   status: RIDER_WORK_SLOT_STATUS;
 }
+
+export interface IBookSlotData {
+  riderId: IRiderDocument['_id'];
+  areaId: IWorkAreaDocument["_id"];
+  date: Date;
+  session: IWorkSlotSessions;
+}
+
+export interface ICreateWorkSlotSession {
+  areaId: IWorkAreaDocument["_id"],
+  date: Date,
+  session: string,
+  maxSlots: number
+}
+
+
+export type IWorkSlotSessions = `${WORK_SLOT_SESSIONS}`;
