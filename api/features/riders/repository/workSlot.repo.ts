@@ -2,6 +2,7 @@ import { Coordinates } from "../../../types";
 import { HandleException } from "../../../utils";
 import { RiderBooking, RidersWorkSlotSession, WorkArea } from "../models/workSlot.model";
 import { ClientSession } from "mongoose";
+import { IRiderDocument, IWorkAreaDocument, IWorkSlotSessionDocument } from "../riders.interface";
 
 /**
 Repository for managing time slots for riders.
@@ -23,20 +24,12 @@ class WorkSlotRepository {
   }) {
     const { riderId, areaId, date, session } = params;
 
-    // const workSlotSession = await RidersWorkSlotSession.create({
-    //   riderId,
-    //   startTime,
-    //   endTime,
-    // });
-    const area = await WorkArea.findById(areaId);
-    if (!area) {
-      throw new HandleException(
-        400,
-        "The location is invalid or has not been added yet"
-      );
-    }
+    const area = await this.validateWorkAreaExists(areaId);
 
-    let workSlotSession = await RidersWorkSlotSession.findOne({ area: areaId, date, session });
+    let workSlotSession = await RidersWorkSlotSession.findOne(
+      { area: areaId, date, session }
+    );
+
     if (!workSlotSession) {
       workSlotSession = new RidersWorkSlotSession({
         area: areaId,
@@ -46,12 +39,16 @@ class WorkSlotRepository {
         numberOfSlotsBooked: 0,
       });
     }
+
+    await this.checkExistingBooking(riderId, workSlotSession._id);
+
     if (workSlotSession.availableSlots === 0) {
       throw new HandleException(
         400,
         "The location is fully booked for this session. Please choose another session."
       );
     }
+
     workSlotSession.availableSlots -= 1;
     workSlotSession.numberOfSlotsBooked += 1;
     await workSlotSession.save();
@@ -64,6 +61,38 @@ class WorkSlotRepository {
     await booking.save();
 
     return workSlotSession;
+  }
+
+  private async validateWorkAreaExists(areaId: string):
+    Promise<IWorkAreaDocument> {
+    const area = await WorkArea.findById(areaId);
+    if (!area) {
+      throw new HandleException(
+        400,
+        "The location is invalid or has not been added yet"
+      );
+    }
+    return area;
+  }
+
+  /**
+ * Checks if rider has already booked this session
+ */
+  private async checkExistingBooking(
+    riderId: IRiderDocument["_id"],
+    workSlotSessionId: IWorkSlotSessionDocument["_id"])
+    : Promise<void> {
+    const existingBooking = await RiderBooking.exists({
+      rider: riderId,
+      workSlotSession: workSlotSessionId
+    });
+
+    if (existingBooking) {
+      throw new HandleException(
+        409,
+        "You have already booked this session"
+      );
+    }
   }
 
   /** Updates the status of a time slot.
