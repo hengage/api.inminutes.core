@@ -2,43 +2,25 @@ import { Coordinates } from "../../../types";
 import { HandleException } from "../../../utils";
 import { RiderBooking, RidersWorkSlotSession, WorkArea } from "../models/workSlot.model";
 import { ClientSession } from "mongoose";
-import { IRiderDocument, IWorkAreaDocument, IWorkSlotSessionDocument } from "../riders.interface";
+import { IBookSlotData, ICreateWorkSlotSession, IRiderDocument, IWorkAreaDocument, IWorkSlotSessionDocument } from "../riders.interface";
 
 /**
 Repository for managing time slots for riders.
 @class
 */
 class WorkSlotRepository {
-  /*
-  @async
-  Books a working time slot for a rider.
-  @param {string} params.riderId - The ID of the rider booking the slot.
-  @param {string} params.startTime - The start time of the slot.
-  @param {string} params.endTime - The end time of the slot.
-  */
-  async bookSlot(params: {
-    riderId: string;
-    areaId: string;
-    date: Date;
-    session: string;
-  }) {
-    const { riderId, areaId, date, session } = params;
+  async bookSlot(bookSlotData: IBookSlotData) {
+    const { riderId, areaId, date, session } = bookSlotData;
 
     const area = await this.validateWorkAreaExists(areaId);
 
-    let workSlotSession = await RidersWorkSlotSession.findOne(
-      { area: areaId, date, session }
-    );
-
-    if (!workSlotSession) {
-      workSlotSession = new RidersWorkSlotSession({
-        area: areaId,
-        date,
-        session,
-        availableSlots: area.maxSlotsRequired,
-        numberOfSlotsBooked: 0,
-      });
-    }
+    // Get or create work slot session
+    const workSlotSession = await this.getOrCreateWorkSlotSession({
+      areaId,
+      date,
+      session,
+      maxSlots: area.maxSlotsRequired,
+    });
 
     await this.checkExistingBooking(riderId, workSlotSession._id);
 
@@ -93,6 +75,33 @@ class WorkSlotRepository {
         "You have already booked this session"
       );
     }
+  }
+
+  /**
+  * Gets or creates a work slot session
+  */
+  private async getOrCreateWorkSlotSession(
+    createWorkSessionData: ICreateWorkSlotSession
+  ): Promise<IWorkSlotSessionDocument> {
+    const { areaId, date, session, maxSlots } = createWorkSessionData;
+
+    let workSlotSession = await RidersWorkSlotSession.findOne({
+      area: areaId,
+      date,
+      session
+    });
+
+    if (!workSlotSession) {
+      workSlotSession = new RidersWorkSlotSession({
+        area: areaId,
+        date,
+        session,
+        availableSlots: maxSlots,
+        numberOfSlotsBooked: 0,
+      });
+    }
+
+    return workSlotSession;
   }
 
   /** Updates the status of a time slot.

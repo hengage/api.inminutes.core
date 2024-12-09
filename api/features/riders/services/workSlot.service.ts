@@ -5,6 +5,7 @@ import { AGENDA, RIDER_WORK_SLOT_STATUS, WORK_SLOT_SESSIONS } from "../../../con
 import { SchedulerService } from "../../../services";
 import { HandleException } from "../../../utils";
 import { workSlotRepo } from "../repository/workSlot.repo";
+import { IBookSlotData } from "../riders.interface";
 
 /**
 Service for managing time slots for riders.
@@ -25,13 +26,8 @@ class WorkSlotService {
    * @param {string} params.session - The time session (e.g. '9am-12pm', '12pm-3pm', etc).
    * @returns {Promise<object>} The booked time slot document.
    */
-  async bookSlot(params: {
-    riderId: string;
-    areaId: string;
-    date: Date
-    session: string;
-  }) {
-    const { riderId, areaId, date, session } = params;
+  async bookSlot(bookSlotData: IBookSlotData) {
+    const { riderId, areaId, date, session } = bookSlotData;
     // Todo: add validation
     // Todo: use transactions for this operation
 
