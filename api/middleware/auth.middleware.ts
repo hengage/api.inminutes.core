@@ -11,7 +11,6 @@ import {
   RATE_LIMIT_WINDOW_MS,
   USER_TYPE,
 } from "../constants";
-import { CustomJwtPayload } from "../types";
 import { Msg } from "../utils";
 import { createErrorResponse } from "../utils/response.utils";
 

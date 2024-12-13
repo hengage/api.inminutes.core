@@ -20,7 +20,7 @@ export class OrdersController {
 
     try {
       const order = await ordersService.create({
-        orderData: req.body,
+        createOrderData: req.body,
         customer,
       });
       res.status(HTTP_STATUS_CODES.CREATED).json({
@@ -34,7 +34,6 @@ export class OrdersController {
       res.status(statusCode).json(errorJSON);
     }
   };
-
   orderDetails = async (req: Request, res: Response) => {
     try {
       const order = await ordersService.details(req.params.orderId);
