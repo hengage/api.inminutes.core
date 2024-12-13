@@ -16,16 +16,16 @@ export class Routes {
         The main purpose of this class is to provide a centralized location to manage
         the routing configuration for the application, making it easier  to add, modify, or remove routes as needed.
     */
-  private mediaRoutes: MediaRoutes
-  private adminOpsRoutes: AdminOpsRoutes
-  private ordersRoutes: OrdersRoutes
-  private productsRoutes: ProductsRoutes
-  private errandRoutes: ErrandRoutes
+  private mediaRoutes: MediaRoutes;
+  private adminOpsRoutes: AdminOpsRoutes;
+  private ordersRoutes: OrdersRoutes;
+  private productsRoutes: ProductsRoutes;
+  private errandRoutes: ErrandRoutes;
   public router: Router;
 
   constructor() {
     this.mediaRoutes = new MediaRoutes();
-    this.adminOpsRoutes = new AdminOpsRoutes()
+    this.adminOpsRoutes = new AdminOpsRoutes();
     this.productsRoutes = new ProductsRoutes();
     this.ordersRoutes = new OrdersRoutes();
     this.errandRoutes = new ErrandRoutes();
@@ -42,8 +42,8 @@ export class Routes {
     this.router.use("/products", this.productsRoutes.router);
     this.router.use("/orders", this.ordersRoutes.router);
     this.router.use("/transaction", transactionRoutes.router);
-    this.router.use("/admin", this.adminOpsRoutes.router)
+    this.router.use("/admin", this.adminOpsRoutes.router);
     this.router.use("/media", this.mediaRoutes.router);
-    this.router.use('/errand', this.errandRoutes.router);
+    this.router.use("/errand", this.errandRoutes.router);
   }
 }

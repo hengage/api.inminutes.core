@@ -20,25 +20,20 @@ export class OrdersController {
 
     try {
       const order = await ordersService.create({
-        orderData: req.body,
+        createOrderData: req.body,
         customer,
       });
       res.status(HTTP_STATUS_CODES.CREATED).json({
         message: "success",
         data: { order },
       });
-      handleSuccessResponse(
-        res,
-        HTTP_STATUS_CODES.CREATED,
-        { order },
-      );
+      handleSuccessResponse(res, HTTP_STATUS_CODES.CREATED, { order });
     } catch (error: unknown) {
       console.error("Error creating order:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
   };
-
   orderDetails = async (req: Request, res: Response) => {
     try {
       const order = await ordersService.details(req.params.orderId);
@@ -47,11 +42,7 @@ export class OrdersController {
         data: { order },
       });
 
-      handleSuccessResponse(
-        res,
-        HTTP_STATUS_CODES.OK,
-        { order },
-      );
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { order });
     } catch (error: unknown) {
       console.error("Error fetching order details:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
@@ -85,7 +76,7 @@ export class OrdersController {
         res,
         HTTP_STATUS_CODES.OK,
         null,
-        "Order feedback submitted"
+        "Order feedback submitted",
       );
     } catch (error: unknown) {
       console.error("Error submitting order feedback:", error);

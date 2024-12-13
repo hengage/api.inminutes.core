@@ -3,10 +3,10 @@ import { AdminOpsForProductsController } from "../controllers/products.controlle
 
 export class AdminOpsProductsRoutes {
   public router: Router;
-  private adminOpsForProductsController: AdminOpsForProductsController
+  private adminOpsForProductsController: AdminOpsForProductsController;
 
   constructor() {
-    this.adminOpsForProductsController = new AdminOpsForProductsController()
+    this.adminOpsForProductsController = new AdminOpsForProductsController();
 
     this.router = Router();
     this.initializeRoutes();
@@ -16,12 +16,12 @@ export class AdminOpsProductsRoutes {
     this.router
       .route("/category")
       .post(this.adminOpsForProductsController.createCategory);
-   
-      this.router
+
+    this.router
       .route("/:productId/approve")
       .patch(this.adminOpsForProductsController.approveProduct);
-   
-      this.router
+
+    this.router
       .route("/:productId/reject")
       .patch(this.adminOpsForProductsController.rejectProduct);
   }

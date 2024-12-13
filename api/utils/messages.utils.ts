@@ -49,17 +49,20 @@ export const Msg = {
     return "Scheduled pickup time is forbidden when errand type is not sheduled";
   },
   ERROR_INVALID_PHONE_FORMAT() {
-    return "Invalid phone number format"
+    return "Invalid phone number format";
   },
 
   ERROR_INVALID_EMAIL_FORMAT() {
-    return "Invalid email format"
+    return "Invalid email format";
   },
   ERROR_INVALID_PASSWORD_FORMAT() {
-    return "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+    return "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character";
   },
   ERROR_USER_TYPE_MISSING() {
     return "User type is required";
+  },
+  ERROR_UNKNOWN_ERROR() {
+    return "An unknown error occurred";
   },
   WALLET_CREDITED(amount: string) {
     return (
@@ -69,7 +72,7 @@ export const Msg = {
   },
 
   USER_ACCOUNT_STATUS_UPDATED(userId: UserId, status: ACCOUNT_STATUS) {
-    return `Vendor ${userId} is now ${status}`
+    return `Vendor ${userId} is now ${status}`;
   },
   APPROVED(type: string, id: string) {
     return `${type} ${id} is now approved`;
@@ -78,4 +81,3 @@ export const Msg = {
     return `${type} ${id} has been disapproved`;
   },
 };
-

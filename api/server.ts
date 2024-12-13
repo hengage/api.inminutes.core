@@ -8,11 +8,8 @@ import { SocketServer } from "./services/socket/socket.services";
 
 const app = new App();
 
-
 const server = app.listenToPort(PORT, NODE_ENV);
 
 const socket = SocketServer.getInstance(server);
 
 socket.connectSocket();
-
-

@@ -1,4 +1,7 @@
-import { Document } from "mongoose";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { ICustomerDocument } from "./features/customers";
+import { IRiderDocument } from "./features/riders";
+import { ACCOUNT_STATUS } from "./utils";
 
 /**
  * Represents the result of a paginated query, including the requested page of documents, as well as metadata about the pagination.
@@ -32,10 +35,7 @@ import { Document } from "mongoose";
  * Redundant.
  * Use mongose 'PaginateResult' type instead
  */
-type PaginatedQueryResult<T extends Document> = Record<
-  [key: string],
-  JSONValue
->;
+type PaginatedQueryResult = Record<[key: string], JSONValue>;
 // Todo: make redundant. Use mongoose PaginateResult type
 
 type PaginateQueryOptions = {
@@ -46,15 +46,6 @@ type PaginateQueryOptions = {
   sort: { [key: string]: 1 | -1 };
   lean?: boolean;
   leanWithId?: boolean;
-};
-import jwt, { JwtPayload } from "jsonwebtoken";
-import { IRiderDocument } from "./features/riders";
-import { ICustomerDocument } from "./features/customers";
-import { ACCOUNT_STATUS } from "./utils";
-
-type CustomJwtPayload = JwtPayload & {
-  _id: string;
-  phoneNumber: string;
 };
 
 type Coordinates = [lng: number, lat: number];
@@ -101,4 +92,4 @@ type UserId =
   | IRiderDocument["_id"]
   | ICustomerDocument["_id"];
 
-type AccountStatus = ACCOUNT_STATUS
+type AccountStatus = ACCOUNT_STATUS;

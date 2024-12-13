@@ -1,6 +1,11 @@
 import { PaginateModel, Schema, model } from "mongoose";
 import { generateUniqueString } from "../../../utils";
-import { DB_SCHEMA, GEOLOCATION, ORDER_STATUS, ORDER_TYPE, } from "../../../constants";
+import {
+  DB_SCHEMA,
+  GEOLOCATION,
+  ORDER_STATUS,
+  ORDER_TYPE,
+} from "../../../constants";
 import { IOrderFeedbackDocument, IOrdersDocument } from "../orders.interface";
 import paginate from "mongoose-paginate-v2";
 
@@ -48,7 +53,7 @@ const orderSchema = new Schema<IOrdersDocument>(
       default: ORDER_STATUS.PENDING,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const orderFeedbackSchema = new Schema<IOrderFeedbackDocument>(
@@ -63,7 +68,7 @@ const orderFeedbackSchema = new Schema<IOrderFeedbackDocument>(
     vendorRating: { type: Number },
     riderRating: { type: Number },
   },
-  { timestamps: { createdAt: true, updatedAt: false } }
+  { timestamps: { createdAt: true, updatedAt: false } },
 );
 
 orderSchema.index({ deliveryLocation: GEOLOCATION.LOCATION_INDEX });
@@ -71,9 +76,10 @@ orderSchema.plugin(paginate);
 
 export const Order = model<IOrdersDocument, PaginateModel<IOrdersDocument>>(
   DB_SCHEMA.ORDER,
-  orderSchema
+  orderSchema,
 );
 
 export const OrderFeedback = model<IOrderFeedbackDocument>(
-  DB_SCHEMA.ORDER_FEEDBACK, orderFeedbackSchema
+  DB_SCHEMA.ORDER_FEEDBACK,
+  orderFeedbackSchema,
 );

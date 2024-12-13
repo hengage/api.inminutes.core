@@ -40,17 +40,19 @@ export interface IErrandPackageTypeDocument extends Document {
   updatedAt: string;
 }
 
-export interface ICreateErrandData extends Pick<IErrandDocument, 
-  'packageType' | 
-  'customer' | 
-  'receiver' | 
-  'description' | 
-  'pickupAddress' | 
-  'pickupCoordinates' | 
-  'dropoffAddress' | 
-  'dropoffCoordinates' | 
-  'dispatchFee' | 
-  'type'
-> {
+export interface ICreateErrandData
+  extends Pick<
+    IErrandDocument,
+    | "packageType"
+    | "customer"
+    | "receiver"
+    | "description"
+    | "pickupAddress"
+    | "pickupCoordinates"
+    | "dropoffAddress"
+    | "dropoffCoordinates"
+    | "dispatchFee"
+    | "type"
+  > {
   scheduledPickupTime?: Date;
 }

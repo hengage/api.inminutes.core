@@ -6,8 +6,11 @@ import jwt from "jsonwebtoken";
 
 import { JWT_SECRET_KEY } from "../config";
 import { JWT_ALGORITHMS } from "../config/secrets.config";
-import { HTTP_STATUS_CODES, RATE_LIMIT_WINDOW_MS, USER_TYPE } from "../constants";
-import { CustomJwtPayload } from "../types";
+import {
+  HTTP_STATUS_CODES,
+  RATE_LIMIT_WINDOW_MS,
+  USER_TYPE,
+} from "../constants";
 import { Msg } from "../utils";
 import { createErrorResponse } from "../utils/response.utils";
 
@@ -20,7 +23,7 @@ import { createErrorResponse } from "../utils/response.utils";
 const verifyAuthTokenMiddleware = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const token = req.headers.authorization?.split(" ")[1] || req.body.token;
 
@@ -33,10 +36,7 @@ const verifyAuthTokenMiddleware = async (
     res
       .status(HTTP_STATUS_CODES.UNAUTHORIZED)
       .json(
-        createErrorResponse(
-          "UNAUTHORIZED",
-          Msg.ERROR_AUNAUTHORIZED_USER()
-        )
+        createErrorResponse("UNAUTHORIZED", Msg.ERROR_AUNAUTHORIZED_USER()),
       );
   }
 };
@@ -61,16 +61,19 @@ const socketGuard = (event: any, next: (err?: Error | undefined) => void) => {
     const decoded = verifyToken(token);
     socket.data.user = decoded;
     next();
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.log({ error });
-    return next(new Error("Authentication error: " + error.message));
+    if (error instanceof Error) {
+      return next(new Error("Authentication error: " + error.message));
+    } else {
+      return next(new Error("An Unknown error occured"));
+    }
   }
 };
-
 const errandHistoryMiddleware = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const userType = req.query.usertype as USER_TYPE.CUSTOMER | USER_TYPE.RIDER;
   console.log({ userType });
@@ -78,7 +81,12 @@ const errandHistoryMiddleware = async (
   if (userType !== USER_TYPE.CUSTOMER && userType != USER_TYPE.RIDER) {
     return res
       .status(HTTP_STATUS_CODES.BAD_REQUEST)
-      .json(createErrorResponse("BAD_REQUEST", Msg.ERROR_INVALID_USER_TYPE(userType)));
+      .json(
+        createErrorResponse(
+          "BAD_REQUEST",
+          Msg.ERROR_INVALID_USER_TYPE(userType),
+        ),
+      );
   }
 
   return next();
@@ -94,7 +102,7 @@ const createRateLimiter = (limit: number, windowMs: number) =>
     legacyHeaders: false,
     message: createErrorResponse(
       "BAD_REQUEST",
-      "Too many attempts, try again later"
+      "Too many attempts, try again later",
     ),
   });
 
@@ -104,15 +112,17 @@ const authLimiter = createRateLimiter(6, RATE_LIMIT_WINDOW_MS.DEFAULT);
 
 const cashoutLimiter = createRateLimiter(5, RATE_LIMIT_WINDOW_MS.CASHOUT_LIMIT);
 
-const verifyToken = (token: string): CustomJwtPayload | string => {
+const verifyToken = (token: string): jwt.JwtPayload | string => {
   return jwt.verify(token, `${JWT_SECRET_KEY}`, {
     algorithms: [JWT_ALGORITHMS.HS256],
-  }) as CustomJwtPayload;
+  });
 };
 
 export {
   authLimiter,
-  cashoutLimiter, errandHistoryMiddleware,
-  otpLimiter, socketGuard, verifyAuthTokenMiddleware
+  cashoutLimiter,
+  errandHistoryMiddleware,
+  otpLimiter,
+  socketGuard,
+  verifyAuthTokenMiddleware,
 };
-

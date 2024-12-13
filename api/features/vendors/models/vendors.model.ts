@@ -40,7 +40,7 @@ const vendorSchema = new Schema<IVendorDocument>(
       set: function (value: string) {
         return toLowerCaseSetter(value);
       },
-      index: true
+      index: true,
     },
     phoneNumber: { type: String, required: true, unique: true },
     password: { type: String, required: true },
@@ -70,7 +70,7 @@ const vendorSchema = new Schema<IVendorDocument>(
     },
     approvalStatus: {
       type: String,
-      default: USER_APPROVAL_STATUS.PENDING
+      default: USER_APPROVAL_STATUS.PENDING,
     },
     rating: {
       totalRatingSum: { type: Number, default: 0 },
@@ -78,7 +78,7 @@ const vendorSchema = new Schema<IVendorDocument>(
       averageRating: { type: Number, default: 0 },
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 vendorSchema.plugin(paginate);
@@ -88,13 +88,13 @@ vendorSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
     try {
       this.password = await encryptValue(this.password);
-    } catch (error: any) {
-      return next(error);
+    } catch (error) {
+      return next(error instanceof Error ? error : new Error(String(error)));
     }
   }
 });
 
 export const Vendor = model<IVendorDocument, PaginateModel<IVendorDocument>>(
   DB_SCHEMA.VENDOR,
-  vendorSchema
+  vendorSchema,
 );

@@ -12,7 +12,6 @@ export class ErrandController {
 
   constructor() {
     this.validateErrand = new ValidateErrand();
-
   }
 
   create = async (req: Request, res: Response) => {
@@ -26,13 +25,9 @@ export class ErrandController {
       await this.validateErrand.create(data);
       const errand = await errandService.create(data);
 
-      handleSuccessResponse(
-        res,
-        HTTP_STATUS_CODES.CREATED,
-        errand
-      )
+      handleSuccessResponse(res, HTTP_STATUS_CODES.CREATED, errand);
     } catch (error: unknown) {
-      console.log("Error creating errand: ", error)
+      console.log("Error creating errand: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
@@ -42,13 +37,9 @@ export class ErrandController {
     try {
       const errand = await errandService.getErrand(req.params.errandId);
 
-      handleSuccessResponse(
-        res,
-        HTTP_STATUS_CODES.OK,
-        errand
-      )
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, errand);
     } catch (error: unknown) {
-      console.log("Error getting errand: ", error)
+      console.log("Error getting errand: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }

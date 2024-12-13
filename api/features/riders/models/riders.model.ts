@@ -15,10 +15,11 @@ const riderSchema = new Schema<IRiderDocument>(
       default: () => generateUniqueString(5),
     },
     fullName: {
-      type: String, required: true,
+      type: String,
+      required: true,
       set: function (value: string) {
         return toLowerCaseSetter(value);
-      }
+      },
     },
     displayName: {
       type: String,
@@ -58,7 +59,7 @@ const riderSchema = new Schema<IRiderDocument>(
     },
     approvalStatus: {
       type: String,
-      default: USER_APPROVAL_STATUS.PENDING
+      default: USER_APPROVAL_STATUS.PENDING,
     },
     rating: {
       totalRatingSum: { type: Number, default: 0 },
@@ -66,7 +67,7 @@ const riderSchema = new Schema<IRiderDocument>(
       averageRating: { type: Number, default: 0 },
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 riderSchema.index({ location: "2dsphere" });
@@ -76,13 +77,13 @@ riderSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
     try {
       this.password = await encryptValue(this.password);
-    } catch (error: any) {
-      return next(error);
+    } catch (error) {
+      return next(error instanceof Error ? error : new Error(String(error)));
     }
   }
 });
 
-export const Rider = model<
-  IRiderDocument,
-  PaginateModel<IRiderDocument>
->("Rider", riderSchema);
+export const Rider = model<IRiderDocument, PaginateModel<IRiderDocument>>(
+  "Rider",
+  riderSchema,
+);

@@ -27,7 +27,7 @@ export class RidersRepository {
     if (rider) {
       throw new HandleException(
         HTTP_STATUS_CODES.CONFLICT,
-        Msg.ERROR_EMAIL_TAKEN(email)
+        Msg.ERROR_EMAIL_TAKEN(email),
       );
     }
 
@@ -50,7 +50,7 @@ export class RidersRepository {
       throw new HandleException(
         HTTP_STATUS_CODES.CONFLICT,
         `Looks like you already have a rider account, ` +
-        `please try to login instead`
+        `please try to login instead`,
       );
     }
 
@@ -63,9 +63,7 @@ export class RidersRepository {
   @param {object} riderData - The rider data.
   */
   async signup(riderData: ICreateRiderData): Promise<Partial<IRiderDocument>> {
-    const formattedPhoneNumber = formatPhoneNumberforDB(
-      riderData.phoneNumber
-    );
+    const formattedPhoneNumber = formatPhoneNumberforDB(riderData.phoneNumber);
     const rider = await Rider.create({
       ...riderData,
       phoneNumber: formattedPhoneNumber,
@@ -92,13 +90,13 @@ export class RidersRepository {
   async login(loginData: { email: string; password: string }) {
     const { email, password } = loginData;
     const rider = await Rider.findOne({ email }).select(
-      "email phoneNumber password"
+      "email phoneNumber password",
     );
 
     if (!rider) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_INVALID_LOGIN_CREDENTIALS()
+        Msg.ERROR_INVALID_LOGIN_CREDENTIALS(),
       );
     }
 
@@ -106,7 +104,7 @@ export class RidersRepository {
     if (!passwordsMatch) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_INVALID_LOGIN_CREDENTIALS()
+        Msg.ERROR_INVALID_LOGIN_CREDENTIALS(),
       );
     }
 
@@ -127,7 +125,10 @@ export class RidersRepository {
       .lean();
 
     if (!rider) {
-      throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, Msg.ERROR_RIDER_NOT_FOUND(id));
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        Msg.ERROR_RIDER_NOT_FOUND(id),
+      );
     }
 
     return rider;
@@ -149,7 +150,7 @@ export class RidersRepository {
     if (!rider) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_RIDER_NOT_FOUND(riderId)
+        Msg.ERROR_RIDER_NOT_FOUND(riderId),
       );
     }
     rider.location.coordinates = coordinates;
@@ -218,7 +219,7 @@ export class RidersRepository {
       {
         $set: { currentlyWorking },
       },
-      { new: true }
+      { new: true },
     )
       .select("currentlyWorking")
       .exec();
@@ -234,7 +235,7 @@ export class RidersRepository {
   */
   updateRating = async (
     ratingData: { riderId: string; rating: number },
-    session: ClientSession
+    session: ClientSession,
   ) => {
     const { riderId, rating } = ratingData;
     try {
@@ -245,15 +246,24 @@ export class RidersRepository {
       if (!rider) {
         throw new HandleException(
           HTTP_STATUS_CODES.NOT_FOUND,
-          Msg.ERROR_RIDER_NOT_FOUND(riderId)
+          Msg.ERROR_RIDER_NOT_FOUND(riderId),
         );
       }
 
       rider.rating.averageRating = calculateAverageRating(rider, rating);
 
       await rider.save({ session });
-    } catch (error: any) {
-      throw new HandleException(error.status, error.message);
+    } catch (error: unknown) {
+      if (error instanceof HandleException) {
+        throw new HandleException(
+          error.status,
+          error.message
+        );
+      }
+      throw new HandleException(
+        HTTP_STATUS_CODES.SERVER_ERROR,
+        Msg.ERROR_UNKNOWN_ERROR()
+      );
     }
   };
 }

@@ -8,15 +8,9 @@ class VendorsOrdersController {
   async orderMetrics(req: Request, res: Response) {
     const vendorId = (req as any).user._id;
     try {
-      const orderMetrics = await vendorsOrdersService.orderMetrics(
-        vendorId
-      );
+      const orderMetrics = await vendorsOrdersService.orderMetrics(vendorId);
 
-      handleSuccessResponse(
-        res,
-        HTTP_STATUS_CODES.OK,
-        { orderMetrics },
-      );
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { orderMetrics });
     } catch (error: unknown) {
       console.error("Error fetching order metrics:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);

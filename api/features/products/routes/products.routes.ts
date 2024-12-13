@@ -3,7 +3,7 @@ import { ProductsController } from "../controllers/products.controller";
 import { verifyAuthTokenMiddleware } from "../../../middleware";
 
 export class ProductsRoutes {
-  private productsController: ProductsController
+  private productsController: ProductsController;
   router = Router();
   constructor() {
     this.productsController = new ProductsController();
@@ -20,6 +20,8 @@ export class ProductsRoutes {
     this.router.route("/").post(this.productsController.addProduct);
     this.router.route("/search").get(this.productsController.searchProducts);
     this.router.route("/:productId").get(this.productsController.details);
-    this.router.route("/:productId").delete(this.productsController.deleteProduct);
+    this.router
+      .route("/:productId")
+      .delete(this.productsController.deleteProduct);
   }
 }

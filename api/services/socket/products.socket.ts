@@ -13,11 +13,17 @@ function listenForProductEvents(socket: Socket) {
       });
 
       socket.emit("added-product-to-wishlist", wishList);
-    } catch (error: any) {
-      socket.emit("add-product-to-wishlist-error", error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        socket.emit("add-product-to-wishlist-error", error.message);
+      } else {
+        socket.emit(
+          "add-product-to-wishlist-error",
+          "An unknown error occurred",
+        );
+      }
     }
   });
-
   socket.on("remove-product-from-wishlist", async (message) => {
     console.log({ message });
     const { productId } = message;
@@ -30,13 +36,19 @@ function listenForProductEvents(socket: Socket) {
       console.log({ wishList });
 
       socket.emit("product-removed-from-wishlist", "Removed from wish list");
-    } catch (error: any) {
-      socket.emit("remove-product-from-wishlist-error", error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        socket.emit("remove-product-from-wishlist-error", error.message);
+      } else {
+        socket.emit(
+          "remove-product-from-wishlist-error",
+          "An unknown error occurred",
+        );
+      }
     }
   });
-
   socket.on("check-product-is-in-wishlist", async function (message) {
-    const {  productId } = message;
+    const { productId } = message;
     try {
       const isInWishList =
         await productsService.checkProductIsInCustomerWishList({
@@ -45,8 +57,15 @@ function listenForProductEvents(socket: Socket) {
         });
       console.log({ isInWishList });
       socket.emit("checked-if-product-in-wishlist", isInWishList);
-    } catch (error: any) {
-      socket.emit("check-product-is-in-wishlist-error", error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        socket.emit("check-product-is-in-wishlist-error", error.message);
+      } else {
+        socket.emit(
+          "check-product-is-in-wishlist-error",
+          "An unknown error occurred",
+        );
+      }
     }
   });
 }

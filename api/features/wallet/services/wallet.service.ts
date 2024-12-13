@@ -1,6 +1,5 @@
-import { startSession, ClientSession } from "mongoose";
+import { ClientSession } from "mongoose";
 import { Wallet } from "../models/wallet.model";
-import Big from "big.js";
 import { NotificationService } from "../../notifications";
 import { HandleException } from "../../../utils";
 import { walletRepo } from "../repository/wallet.repository";
@@ -24,14 +23,14 @@ class WalletService {
   */
   async debitWallet(
     data: { amount: string; walletId: string },
-    session: ClientSession
+    session: ClientSession,
   ) {
     return await Wallet.debitWallet(
       {
         amount: data.amount,
         walletId: data.walletId,
       },
-      session
+      session,
     );
   }
 
@@ -43,7 +42,7 @@ class WalletService {
   */
   async creditWallet(
     creditData: { walletId: string; amount: string },
-    session: ClientSession
+    session: ClientSession,
   ) {
     const { amount, walletId } = creditData;
     const wallet = await Wallet.creditWallet(
@@ -51,7 +50,7 @@ class WalletService {
         amount: amount,
         walletId,
       },
-      session
+      session,
     );
     console.log({ "Credited merchant": wallet });
     return wallet;
@@ -71,7 +70,7 @@ class WalletService {
     if (existingWallet) {
       throw new HandleException(
         HTTP_STATUS_CODES.CONFLICT,
-        "You've already added this account number. Please use a different one."
+        "You've already added this account number. Please use a different one.",
       );
     }
     return;
@@ -103,7 +102,7 @@ class WalletService {
     if (!wallet) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        `Wallet for merchant: ${merchantId} not found`
+        `Wallet for merchant: ${merchantId} not found`,
       );
     }
     return wallet;

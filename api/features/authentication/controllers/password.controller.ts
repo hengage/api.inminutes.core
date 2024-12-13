@@ -10,7 +10,7 @@ class PasswordController {
     if (!accountType) {
       throw new HandleException(
         HTTP_STATUS_CODES.BAD_REQUEST,
-        Msg.ERROR_USER_TYPE_MISSING()
+        Msg.ERROR_USER_TYPE_MISSING(),
       );
     }
 
@@ -18,7 +18,7 @@ class PasswordController {
       await passwordService.resetPassword(
         req.body.phoneNumber,
         req.body.newPassword,
-        accountType.toLowerCase()
+        accountType.toLowerCase(),
       );
 
       handleSuccessResponse(
@@ -26,7 +26,7 @@ class PasswordController {
         HTTP_STATUS_CODES.OK,
         null,
         "Password reset successful",
-      )
+      );
     } catch (error: unknown) {
       console.error(res, error, "Password reset failed", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
@@ -39,7 +39,7 @@ class PasswordController {
     if (!accountType) {
       throw new HandleException(
         HTTP_STATUS_CODES.BAD_REQUEST,
-        Msg.ERROR_USER_TYPE_MISSING()
+        Msg.ERROR_USER_TYPE_MISSING(),
       );
     }
     const userId = (req as any).user._id;
@@ -48,7 +48,7 @@ class PasswordController {
         userId,
         req.body.currentPassword,
         req.body.newPassword,
-        accountType.toLowerCase()
+        accountType.toLowerCase(),
       );
 
       res.status(HTTP_STATUS_CODES.OK).json({
@@ -59,8 +59,8 @@ class PasswordController {
         res,
         HTTP_STATUS_CODES.OK,
         null,
-        "Password changed"
-      )
+        "Password changed",
+      );
     } catch (error: unknown) {
       console.error("Password change failed: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);

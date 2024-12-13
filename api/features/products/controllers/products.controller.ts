@@ -18,12 +18,7 @@ export class ProductsController {
     try {
       const categories = await this.productsRepo.getCategories();
 
-      handleSuccessResponse(
-        res,
-        HTTP_STATUS_CODES.OK,
-        { categories },
-      );
-
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { categories });
     } catch (error: unknown) {
       console.log("Error getting categories: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
@@ -46,7 +41,7 @@ export class ProductsController {
         res,
         HTTP_STATUS_CODES.CREATED,
         { product },
-        "Product added"
+        "Product added",
       );
     } catch (error: unknown) {
       console.log("Error adding product: ", error);
@@ -59,10 +54,7 @@ export class ProductsController {
     try {
       const product = await productsService.details(req.params.productId);
 
-      handleSuccessResponse(
-        res, HTTP_STATUS_CODES.OK,
-        { product },
-      )
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { product });
     } catch (error: unknown) {
       console.log("Error getting product details: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
@@ -75,12 +67,7 @@ export class ProductsController {
       const vendor = (req as any).user;
       await this.productsRepo.deleteProduct(req.params.productId, vendor._id);
 
-      handleSuccessResponse(
-        res,
-        HTTP_STATUS_CODES.OK,
-        null,
-        "Product deleted"
-      );
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, null, "Product deleted");
     } catch (error: any) {
       console.log("Error deleting product: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
@@ -98,11 +85,7 @@ export class ProductsController {
         term: req.body.term,
       });
 
-      handleSuccessResponse(
-        res,
-        HTTP_STATUS_CODES.OK,
-        { products },
-      );
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { products });
     } catch (error: unknown) {
       console.error("Error querying for products:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
@@ -112,7 +95,7 @@ export class ProductsController {
 
   getProductsByCategory = async (
     req: Request,
-    res: Response
+    res: Response,
   ): Promise<void> => {
     const page = parseInt(req.query.page as string) || 1;
     try {

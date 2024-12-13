@@ -7,23 +7,22 @@ import { AdminOpsWorkAreaRoutes } from "./workArea.routes";
 
 export class AdminOpsRoutes {
   public router: Router;
-  public adminOpsVendorsRoutes: AdminOpsVendorsRoutes
-  public adminOpsProductsRoutes: AdminOpsProductsRoutes
+  public adminOpsVendorsRoutes: AdminOpsVendorsRoutes;
+  public adminOpsProductsRoutes: AdminOpsProductsRoutes;
   public adminOpsRidersRoutes: AdminOpsRidersRoutes;
   public adminOpsWalletRoutes: AdminOpsWalletRoutes;
   public adminOpsWorkAreaRoutes: AdminOpsWorkAreaRoutes;
 
   constructor() {
-    this.adminOpsVendorsRoutes = new AdminOpsVendorsRoutes()
+    this.adminOpsVendorsRoutes = new AdminOpsVendorsRoutes();
     this.adminOpsRidersRoutes = new AdminOpsRidersRoutes();
-    this.adminOpsProductsRoutes = new AdminOpsProductsRoutes()
+    this.adminOpsProductsRoutes = new AdminOpsProductsRoutes();
     this.adminOpsRidersRoutes = new AdminOpsRidersRoutes();
     this.adminOpsWalletRoutes = new AdminOpsWalletRoutes();
     this.adminOpsWorkAreaRoutes = new AdminOpsWorkAreaRoutes();
 
     this.router = Router();
     this.initializeRoutes();
-
   }
 
   private initializeRoutes() {
@@ -35,4 +34,3 @@ export class AdminOpsRoutes {
     this.router.use("/work-areas", this.adminOpsWorkAreaRoutes.router);
   }
 }
-

@@ -5,10 +5,9 @@ import { IProductCategoryDocument } from "../../products/products.interface";
 
 export class AdminOpsForProductsService {
   private productCategoryModel = ProductCategory;
-  private productModel = Product
+  private productModel = Product;
 
-  constructor() {
-  }
+  constructor() {}
 
   async createCategory(payload: {
     name: string;
@@ -22,7 +21,7 @@ export class AdminOpsForProductsService {
     if (categoryExists) {
       throw new HandleException(
         HTTP_STATUS_CODES.CONFLICT,
-        `${capitalize(payload.name)} is an existing product category`
+        `${capitalize(payload.name)} is an existing product category`,
       );
     }
 
@@ -42,7 +41,7 @@ export class AdminOpsForProductsService {
       {
         $set: { status: PRODUCT_STATUS.APPROVED },
       },
-      { new: true }
+      { new: true },
     );
   }
 
@@ -52,7 +51,7 @@ export class AdminOpsForProductsService {
       {
         $set: { status: PRODUCT_STATUS.REJECTED },
       },
-      { new: true }
+      { new: true },
     );
   }
 }

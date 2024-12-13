@@ -2,7 +2,8 @@ import { IRiderDocument } from "../features/riders";
 import { IVendorDocument } from "../features/vendors";
 
 export const calculateAverageRating = (
-  merchant: IRiderDocument | IVendorDocument, rating: number
+  merchant: IRiderDocument | IVendorDocument,
+  rating: number,
 ): number => {
   // Increase the number of times the account has been rated
   merchant.rating.ratingCount += 1;

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { HandleException, handleErrorResponse, } from "../../../utils";
+import { HandleException, handleErrorResponse } from "../../../utils";
 import { MediaService } from "../services/media.service";
 import { UploadedFiles } from "../media.interface";
 import { handleSuccessResponse } from "../../../utils/response.utils";
@@ -22,7 +22,10 @@ export class MediaController {
       }
 
       if (!files) {
-        throw new HandleException(400, "No file selected. Please select a file.");
+        throw new HandleException(
+          400,
+          "No file selected. Please select a file.",
+        );
       }
 
       const fileUrls = await this.mediaService.uploadToCloudinary(files, tags);
@@ -31,11 +34,11 @@ export class MediaController {
         res,
         HTTP_STATUS_CODES.OK,
         { fileUrls },
-        "File uploaded"
+        "File uploaded",
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error uploading media:", error);
-      const { statusCode, errorJSON } = handleErrorResponse(error)
+      const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
   };

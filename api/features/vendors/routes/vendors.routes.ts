@@ -13,8 +13,8 @@ class VendorsRoutes {
   }
 
   initializeRoutes() {
-    this.router.route("/register").post(authLimiter,vendorsController.signup);
-    this.router.route("/login").post(authLimiter,vendorsController.login);
+    this.router.route("/register").post(authLimiter, vendorsController.signup);
+    this.router.route("/login").post(authLimiter, vendorsController.login);
 
     this.router.route("/category").get(vendorsCategoryController.getCategories);
     this.router

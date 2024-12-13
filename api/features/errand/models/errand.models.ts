@@ -47,7 +47,7 @@ const errandSchema = new Schema<IErrandDocument>(
       default: ErrandStatus.PENDING,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const errandPackageTypeSchema = new Schema<IErrandPackageTypeDocument>(
@@ -67,17 +67,17 @@ const errandPackageTypeSchema = new Schema<IErrandPackageTypeDocument>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 errandSchema.plugin(paginate);
 
 export const Errand = model<IErrandDocument, PaginateModel<IErrandDocument>>(
   DB_SCHEMA.ERRAND,
-  errandSchema
+  errandSchema,
 );
 
 export const ErrandPackageType = model<IErrandPackageTypeDocument>(
   DB_SCHEMA.ERRAND_PACKAGE_TYPE,
-  errandPackageTypeSchema
+  errandPackageTypeSchema,
 );

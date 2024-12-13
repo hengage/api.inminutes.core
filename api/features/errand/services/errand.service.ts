@@ -23,7 +23,10 @@ class ErrandService {
   getErrand = async (errandId: string) => {
     const errand = await this.errandRepo.getErrand(errandId);
     if (!errand) {
-      throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "Errand not found");
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        "Errand not found",
+      );
     }
 
     return errand;
@@ -72,7 +75,6 @@ class ErrandService {
       userId: errand?.customer,
     });
   };
-
 
   arrivedDeliveryLocation = async (errandId: string) => {
     const errand = await this.errandRepo.updateStatus({

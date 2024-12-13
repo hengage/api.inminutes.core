@@ -1,5 +1,5 @@
 import axios from "axios";
-import { HandleException, generateReference } from "../../../utils";
+import { HandleException, Msg, generateReference } from "../../../utils";
 // import *as crypto from "crypto";
 import { createHmac } from "crypto";
 import { Request } from "express";
@@ -54,12 +54,12 @@ class PaymentTransactionService {
         payload,
         {
           headers: this.headers,
-        }
+        },
       );
 
       console.log({ reponseData: response.data });
 
-      const createdHistory = this.createHistory({
+      this.createHistory({
         amount: initializeTransactionData.amount,
         reason: initializeTransactionData.metadata.reason,
         customer: initializeTransactionData.metadata.customerId,
@@ -67,19 +67,22 @@ class PaymentTransactionService {
         status: "pending",
       })
         .then((createdHistory) => console.log(createdHistory))
-        .catch((error: any) => {
+        .catch((error: unknown) => {
           console.error("Error creating transaction history: ", error);
         });
 
       console.log({});
 
       return response.data.data;
-    } catch (error: any) {
-      console.error({ error: error.response.data });
-      throw new HandleException(error.status, error.message);
+    } catch (error: unknown) {
+      if (error instanceof HandleException) {
+        throw new HandleException(error.status, error.message);
+      } else {
+        throw new HandleException(HTTP_STATUS_CODES.SERVER_ERROR,
+          Msg.ERROR_UNKNOWN_ERROR());
+      }
     }
   }
-
   /**
    * Processes incoming webhook events from Paystack and
    *  takes appropriate actions based on the event type,
@@ -87,7 +90,7 @@ class PaymentTransactionService {
    */
   webhook(req: Request) {
     const hash = createHmac("sha512", `${PAYSTACK_SECRET_KEY}`).update(
-      JSON.stringify(req.body)
+      JSON.stringify(req.body),
     );
     const digest = hash.digest("hex");
 
@@ -102,7 +105,10 @@ class PaymentTransactionService {
           this.transactionRepo.updateStatus({ reference, status, paidAt });
           const { purpose, orderId, vendorId } = event.data.metadata;
           if (purpose === "product purchase") {
-            emitEvent.emit(Events.NOTIFY_VENDOR_OF_ORDER, { orderId, vendorId });
+            emitEvent.emit(Events.NOTIFY_VENDOR_OF_ORDER, {
+              orderId,
+              vendorId,
+            });
           }
           break;
         case "transfer.success":
@@ -119,7 +125,10 @@ class PaymentTransactionService {
           console.warn(`Unknown event type: ${event.event}`);
       }
     } else {
-      throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, "Invalid signature");
+      throw new HandleException(
+        HTTP_STATUS_CODES.BAD_REQUEST,
+        "Invalid signature",
+      );
     }
   }
 
@@ -130,18 +139,18 @@ class PaymentTransactionService {
   */
   async createHistory(
     transactionHistoryData: ICreateTransactionHistoryData,
-    session?: ClientSession
+    session?: ClientSession,
   ) {
     return await this.transactionRepo.createHistory(
       transactionHistoryData,
-      session
+      session,
     );
   }
 
   async getTransactionByReference(reference: string, selectFields: string) {
     return this.transactionRepo.getTransactionByReference(
       reference,
-      selectFields
+      selectFields,
     );
   }
 
@@ -173,7 +182,7 @@ calling the cashoutTransferService.reverseDebit method
           _id: wallet?._id,
           balance: wallet?.balance,
         },
-        wallet?.merchantId
+        wallet?.merchantId,
       );
     } catch (error) {
       console.error({ error });

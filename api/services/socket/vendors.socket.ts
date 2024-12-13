@@ -6,13 +6,16 @@ export function listenToVendorEvents(socket: Socket) {
     console.log({ message });
     try {
       const newOrders = await vendorsOrdersService.getNewOrders(
-        message.vendorId
+        message.vendorId,
       );
       console.log({ newOrders });
       socket.emit("vendor-new-orders", newOrders);
-    } catch (error: any) {
-      console.error("Error getting new vendor orders: ", error);
-      socket.emit("update-rider-location-error", error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        socket.emit("get-vendor-new-orders-error", error.message);
+      } else {
+        socket.emit("get-vendor-new-orders-error", "An unknown error occurred");
+      }
     }
   });
 }

@@ -14,17 +14,12 @@ export class CustomersOrdersController {
   orderMetrics = async (req: Request, res: Response) => {
     const customerId = (req as any).user._id;
     try {
-      const orderMetrics = await this.customersOrdersService.orderMetrics(
-        customerId
-      );
+      const orderMetrics =
+        await this.customersOrdersService.orderMetrics(customerId);
 
-      handleSuccessResponse(
-        res,
-        HTTP_STATUS_CODES.OK,
-        { orderMetrics },
-      );
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { orderMetrics });
     } catch (error: any) {
-      console.error('Error fetching order metrics:', error);
+      console.error("Error fetching order metrics:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
@@ -39,13 +34,9 @@ export class CustomersOrdersController {
         page,
       });
 
-      handleSuccessResponse(
-        res,
-        HTTP_STATUS_CODES.OK,
-        { orders },
-      );
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { orders });
     } catch (error: any) {
-      console.error('Error fetching orders for customer:', error);
+      console.error("Error fetching orders for customer:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }

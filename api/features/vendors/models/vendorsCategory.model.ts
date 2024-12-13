@@ -17,7 +17,7 @@ const vendorCategorySchema = new Schema<IVendorCategoryDocument>(
     name: { type: String, required: true, unique: true },
     image: { type: String, required: true },
   },
-  { timestamps: true, _id: false }
+  { timestamps: true, _id: false },
 );
 
 const vendorSubCategorySchema = new Schema<IVendorSubCategoryDocument>(
@@ -30,15 +30,15 @@ const vendorSubCategorySchema = new Schema<IVendorSubCategoryDocument>(
     name: { type: String, required: true, unique: true },
     category: { type: String, required: true, ref: DB_SCHEMA.VENDOR_CATEGORY },
   },
-  { timestamps: true, _id: false }
+  { timestamps: true, _id: false },
 );
 
 export const VendorSubCategory = model<IVendorSubCategoryDocument>(
   DB_SCHEMA.VENDOR_SUB_CATEGORY,
-  vendorSubCategorySchema
+  vendorSubCategorySchema,
 );
 
 export const VendorCategory = model<IVendorCategoryDocument>(
   DB_SCHEMA.VENDOR_CATEGORY,
-  vendorCategorySchema
+  vendorCategorySchema,
 );

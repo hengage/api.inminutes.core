@@ -1,7 +1,6 @@
 import joi from "joi";
 import { HandleException, Msg } from "../../../utils";
 import { ICustomerDocument } from "../customers.interface";
-import { Response } from "express";
 import { HTTP_STATUS_CODES } from "../../../constants";
 
 export class ValidateCustomer {
@@ -14,12 +13,16 @@ export class ValidateCustomer {
         .label("Phone number")
         .required()
         .pattern(
-          /^([0]{1}|\+?[2][3][4])([7-9]{1})([0|1]{1})([\d]{1})([\d]{7})$/
+          /^([0]{1}|\+?[2][3][4])([7-9]{1})([0|1]{1})([\d]{1})([\d]{7})$/,
         )
         .message(Msg.ERROR_INVALID_PHONE_FORMAT()),
-      email: joi.string().label("Email").required().pattern(
-        /^[a-zA-Z0-9.!#$%&’*+/=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
-      )
+      email: joi
+        .string()
+        .label("Email")
+        .required()
+        .pattern(
+          /^[a-zA-Z0-9.!#$%&’*+/=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+        )
         .message(Msg.ERROR_INVALID_EMAIL_FORMAT()),
       dateOfBirth: joi.string().label("Date of birth").required(),
       address: joi.string().label("Address").required(),

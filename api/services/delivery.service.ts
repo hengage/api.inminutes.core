@@ -31,9 +31,6 @@ class DeliveryService {
 
     if (order.type === ORDER_TYPE.SCHEDULED) {
       console.log("Scheduled order", { order });
-      const fiveMinutesBefore = new Date(
-        order.scheduledDeliveryTime?.getTime() - 5 * 60000
-      );
 
       await this.jobScheduleService.scheduleJob({
         jobName: AGENDA.SCHEDULE_DISPATCH_PICKUP,

@@ -22,15 +22,14 @@ export class OrdersRepository {
    * @param  {string} params.customer - The id of the customer making the order
    * @param  {CreateOrderParams} params.orderData - The other  creation data for the order.
    **/
-  async create(params: { orderData: ICreateOrderData; customer: string }) {
-    const { orderData, customer } = params;
-    console.log({ orderData });
+  async create(params: { createOrderData: ICreateOrderData; customer: string }) {
+    const { createOrderData, customer } = params;
 
     const payload = {
       customer,
-      ...orderData,
+      ...createOrderData,
       deliveryLocation: {
-        coordinates: orderData.deliveryLocation,
+        coordinates: createOrderData.deliveryLocation,
       },
     };
     const order = await Order.create(payload);
@@ -68,7 +67,7 @@ export class OrdersRepository {
     if (!order) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_ORDER_NOT_FOUND(orderId)
+        Msg.ERROR_ORDER_NOT_FOUND(orderId),
       );
     }
 
@@ -105,13 +104,13 @@ export class OrdersRepository {
       {
         $set: { rider: riderId },
       },
-      { new: true }
+      { new: true },
     ).select("rider status customer");
 
     if (!order) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_ORDER_NOT_FOUND(orderId)
+        Msg.ERROR_ORDER_NOT_FOUND(orderId),
       );
     }
 
@@ -128,20 +127,20 @@ export class OrdersRepository {
   async updateStatus(params: { orderId: string; status: ORDER_STATUS }) {
     const order = await Order.findById(params.orderId)
       .select(
-        "status customer type scheduledDeliveryTime totalProductsCost rider deliveryFee"
+        "status customer type scheduledDeliveryTime totalProductsCost rider deliveryFee",
       )
       .populate({ path: "vendor", select: "location.coordinates" });
 
     if (!order) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_ORDER_NOT_FOUND(params.orderId)
+        Msg.ERROR_ORDER_NOT_FOUND(params.orderId),
       );
     }
     if (order.status === ORDER_STATUS.CANCELLED) {
       throw new HandleException(
         HTTP_STATUS_CODES.UNPROCESSABLE_ENTITY,
-        "Order already cancelled"
+        "Order already cancelled",
       );
     }
 
@@ -167,14 +166,14 @@ export class OrdersRepository {
     if (!order) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_ORDER_NOT_FOUND(orderId)
+        Msg.ERROR_ORDER_NOT_FOUND(orderId),
       );
     }
 
     if (order.rider) {
       throw new HandleException(
         HTTP_STATUS_CODES.UNPROCESSABLE_ENTITY,
-        "Order already assigned to a rider"
+        "Order already assigned to a rider",
       );
     }
   }
@@ -186,7 +185,7 @@ export class OrdersRepository {
   */
   public async createRemarkAndRating(
     createRemarkData: IOrderRatingAndRemarkData,
-    session: ClientSession
+    session: ClientSession,
   ): Promise<IOrderFeedbackDocument> {
     const remark = new OrderFeedback({
       order: createRemarkData.orderId,

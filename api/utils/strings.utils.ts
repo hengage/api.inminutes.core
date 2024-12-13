@@ -1,7 +1,7 @@
-import crypto from "crypto";
 import bcrypt from "bcrypt";
-import { DateTime } from "luxon";
+import crypto from "crypto";
 import jwt from "jsonwebtoken";
+import { DateTime } from "luxon";
 import { JWT_SECRET_KEY } from "../config";
 import { JWT_ALGORITHMS } from "../config/secrets.config";
 
@@ -25,12 +25,15 @@ export async function encryptValue(value: string): Promise<string> {
 
 export async function compareValues(
   plainValue: string,
-  hashValue: string
+  hashValue: string,
 ): Promise<boolean> {
   return bcrypt.compare(plainValue, hashValue);
 }
 
-export function generateJWTToken(payload: any, expiresIn: string): string {
+export function generateJWTToken(
+  payload: jwt.JwtPayload,
+  expiresIn: string,
+): string {
   return jwt.sign(payload, `${JWT_SECRET_KEY}`, {
     algorithm: JWT_ALGORITHMS.HS256,
     expiresIn,
@@ -84,7 +87,6 @@ export function formatPhoneNumberforDB(phoneNumber: string): string {
 export function capitalize(name: string): string {
   return name
     .split(" ")
-    .map((word) => word.charAt(0)
-      .toUpperCase() + word.slice(1))
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 }

@@ -20,7 +20,7 @@ class WorkSlotController {
         res,
         HTTP_STATUS_CODES.CREATED,
         { slot },
-        "Slot booked"
+        "Slot booked",
       );
     } catch (error: any) {
       console.error("Error booking slot:", error);
@@ -37,7 +37,7 @@ class WorkSlotController {
         res,
         HTTP_STATUS_CODES.OK,
         { cancelledSlot },
-        "Your work slot has been cancelled"
+        "Your work slot has been cancelled",
       );
     } catch (error: unknown) {
       console.log("Error cancelling slot:", error);

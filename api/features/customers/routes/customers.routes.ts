@@ -30,7 +30,7 @@ class CustomersRoutes {
     this.router.post(
       "/send-otp",
       otpLimiter,
-      this.customersController.signupVerificationCode
+      this.customersController.signupVerificationCode,
     );
     this.router.post(`/signup`, authLimiter, this.customersController.signup);
     this.router.post("/login", this.customersAuthentication.login);

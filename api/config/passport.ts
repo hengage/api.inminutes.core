@@ -4,14 +4,13 @@ import { compareValues, Msg } from "../utils";
 import { Strategy } from "passport-local";
 import passport from "passport";
 
-
 const localStrategy = new Strategy(
   { usernameField: "phoneNumber" },
-  async (phoneNumber: string, password: string, done: Function) => {
+  async (phoneNumber: string, password: string, done: Done) => {
     try {
       const customer = await Customer.findOne(
         { phoneNumber },
-        { phoneNumber: 1, password: 1 }
+        { phoneNumber: 1, password: 1 },
       ).lean();
 
       if (!customer) {
@@ -25,9 +24,11 @@ const localStrategy = new Strategy(
         : done(null, false, { message: Msg.ERROR_INVALID_LOGIN_CREDENTIALS() });
     } catch (error) {
       console.error("Authentication error:", error);
-      done(null, false, { message: "An error occurred during authentication." });
+      done(null, false, {
+        message: "An error occurred during authentication.",
+      });
     }
-  }
+  },
 );
 
 const serializeUser = () => {
@@ -45,3 +46,5 @@ const passportStrategySetup = () => {
 };
 
 export { passportStrategySetup, serializeUser };
+
+type Done = (error: unknown, user?: any, options?: { message: string }) => void;

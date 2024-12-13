@@ -1,6 +1,6 @@
-import { Request, Response, response } from "express";
+import { Request, Response } from "express";
 import { CustomersRepository } from "../repository/customers.repo";
-import { generateJWTToken, handleErrorResponse, } from "../../../utils";
+import { generateJWTToken, handleErrorResponse } from "../../../utils";
 import { ValidateCustomer } from "../validators/customers.validator";
 import { CustomersService } from "../services/customers.services";
 import { CustomersAuthentication } from "../auth/customers.auth";
@@ -28,7 +28,7 @@ export class CustomersController {
 
     try {
       await this.customersAuthentication.sendVerificationCode(
-        recipientPhoneNumber
+        recipientPhoneNumber,
       );
       res.status(HTTP_STATUS_CODES.OK).json({
         message: "OTP sent",
@@ -37,10 +37,10 @@ export class CustomersController {
         res,
         HTTP_STATUS_CODES.OK,
         null,
-        'OTP sent"'
+        'OTP sent"',
       );
     } catch (error: any) {
-      console.error('Error sending code: ', error)
+      console.error("Error sending code: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
@@ -62,7 +62,7 @@ export class CustomersController {
         res,
         HTTP_STATUS_CODES.CREATED,
         { customer: { _id: customer._id }, accessToken, refreshToken },
-        "Created customer account"
+        "Created customer account",
       );
     } catch (error: unknown) {
       console.error("Error creating customer account: ", error);
@@ -91,7 +91,7 @@ export class CustomersController {
       await this.validateCustomer.updateProfile(req.body);
       const profile = await this.customersRepo.updateProfile(
         customer,
-        req.body
+        req.body,
       );
       res.status(HTTP_STATUS_CODES.OK).json({
         message: "Success",
@@ -122,7 +122,7 @@ export class CustomersController {
         res,
         HTTP_STATUS_CODES.OK,
         { customer },
-        "Display photo changed"
+        "Display photo changed",
       );
     } catch (error: unknown) {
       console.error("Error updating customer photo: ", error);
@@ -146,10 +146,10 @@ export class CustomersController {
         res,
         HTTP_STATUS_CODES.OK,
         { customer },
-        "Delivery addressed updated"
+        "Delivery addressed updated",
       );
     } catch (error: any) {
-      console.error('Error updating delivery address', error)
+      console.error("Error updating delivery address", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
@@ -161,13 +161,9 @@ export class CustomersController {
     try {
       await this.customersRepo.deleteAccount(customer);
 
-      return handleSuccessResponse(
-        res,
-        HTTP_STATUS_CODES.NO_CONTENT,
-        null,
-      );
-    } catch (error: any) {
-      console.error('Error deleting customer account', error)
+      return handleSuccessResponse(res, HTTP_STATUS_CODES.NO_CONTENT, null);
+    } catch (error: unknown) {
+      console.error("Error deleting customer account", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
@@ -176,17 +172,12 @@ export class CustomersController {
   getWishList = async (req: Request, res: Response) => {
     const customerId = (req as any).user._id;
     try {
-      const wishList = await this.productsRepo.getWishListForCustomer(
-        customerId
-      );
+      const wishList =
+        await this.productsRepo.getWishListForCustomer(customerId);
 
-      return handleSuccessResponse(
-        res,
-        HTTP_STATUS_CODES.OK,
-        wishList,
-      );
-    } catch (error: any) {
-      console.error('Error getting wishlist: ', error)
+      return handleSuccessResponse(res, HTTP_STATUS_CODES.OK, wishList);
+    } catch (error: unknown) {
+      console.error("Error getting wishlist: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }

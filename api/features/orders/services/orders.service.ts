@@ -1,6 +1,6 @@
 import { startSession } from "mongoose";
 
-import { deliveryService, HandleException, } from "../../../utils";
+import { deliveryService, HandleException } from "../../../utils";
 import { NotificationService } from "../../notifications";
 import { Order } from "../models/orders.model";
 import { OrdersRepository } from "../repository/orders.repo";
@@ -32,13 +32,13 @@ class OrdersService {
   }
 
   create = async (params: {
-    orderData: ICreateOrderData;
+    createOrderData: ICreateOrderData;
     customer: string;
   }) => {
-    const { orderData, customer } = params;
-    await this.validateOrders.create(orderData);
+    const { createOrderData, customer } = params;
+    await this.validateOrders.create(createOrderData);
 
-    const order = await this.ordersRepo.create({ orderData, customer });
+    const order = await this.ordersRepo.create({ createOrderData, customer });
     const newOrder = await Order.findById(order.id)
       .select({
         deliveryAddress: 1,
@@ -311,7 +311,6 @@ class OrdersService {
     session.startTransaction();
 
     try {
-
       const riderRatingPromise = riderRating
         ? ridersService.updateRating({ riderId, rating: riderRating }, session)
         : Promise.resolve(); // Resolve to empty if no rider rating
@@ -325,7 +324,7 @@ class OrdersService {
         vendorRatingPromise,
         this.ordersRepo.createRemarkAndRating(
           { orderId, vendorRating, riderRating, remarkOnVendor, remarkOnRider },
-          session
+          session,
         ),
       ]);
 

@@ -7,7 +7,6 @@ import { startSession } from "mongoose";
 import { Events } from "../constants";
 import { Msg } from "../utils";
 
-
 class EventEmit {
   private eventEmitter: EventEmitter;
   private notificationService: NotificationService;
@@ -24,7 +23,7 @@ class EventEmit {
       try {
         const wallet = await walletRepo.create(data);
         console.log("Created wallet", wallet);
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.log({ error });
       }
     });
@@ -43,7 +42,7 @@ class EventEmit {
           data: { order: orderId },
           userId: vendorId,
         });
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error({ error });
       }
     });
@@ -66,7 +65,7 @@ class EventEmit {
             walletId: wallet?._id,
             amount,
           },
-          session
+          session,
         );
 
         await session.commitTransaction();
@@ -78,7 +77,7 @@ class EventEmit {
             _id: updatedWallet._id,
             balance: updatedWallet.balance,
           },
-          merchantId
+          merchantId,
         );
         await this.notificationService.createNotification({
           headings: { en: "Your Earnings Are In!" },
@@ -87,7 +86,7 @@ class EventEmit {
           },
           userId: wallet.merchantId,
         });
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error({ error });
         await session.abortTransaction();
       } finally {
@@ -111,7 +110,7 @@ class EventEmit {
             walletId: wallet?._id,
             amount,
           },
-          session
+          session,
         );
 
         await session.commitTransaction();
@@ -123,7 +122,7 @@ class EventEmit {
             _id: updatedWallet._id,
             balance: updatedWallet.balance,
           },
-          merchantId
+          merchantId,
         );
         await this.notificationService.createNotification({
           headings: { en: "Your Earnings Are In!" },
@@ -132,7 +131,7 @@ class EventEmit {
           },
           userId: wallet.merchantId,
         });
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error({ error });
         await session.abortTransaction();
       } finally {
@@ -145,7 +144,7 @@ class EventEmit {
     this.eventEmitter.on(Events.VENDOR_UNFULLFILED_ORDERS, async (data) => {
       console.log({ eventData: data });
       const vendorNewOrders = await ordersService.getNewOrdersForVendors(
-        data.vendorId
+        data.vendorId,
       );
       const socketServer = SocketServer.getInstance();
 
@@ -153,7 +152,7 @@ class EventEmit {
     });
   };
 
-  emit(eventName: string, message: any) {
+  emit(eventName: string, message: Record<string, unknown>) {
     console.log({ eventMessage: message });
     this.eventEmitter.emit(eventName, message);
   }

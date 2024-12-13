@@ -17,5 +17,5 @@ export {
   generateJWTToken,
   generateReference,
   formatPhoneNumberforDB,
-  capitalize
+  capitalize,
 } from "./strings.utils";

@@ -1,20 +1,6 @@
 import * as OneSignal from "@onesignal/node-onesignal";
 
-import { ONE_SIGNAL_API_KEY, ONE_SIGNAL_APP_ID } from "./secrets.config";
-
-// const app_key_provider = {
-//   getToken() {
-//     return `${ONE_SIGNAL_API_KEY}`;
-//   },
-// };
-
-// const configuration = OneSignal.createConfiguration({
-//   authMethods: {
-//     app_key: {
-//       tokenProvider: app_key_provider,
-//     },
-//   },
-// });
+import { ONE_SIGNAL_API_KEY } from "./secrets.config";
 
 const configuration = OneSignal.createConfiguration({
   // userKey: `${ONE_SIGNAL_API_KEY}`,

@@ -1,6 +1,6 @@
 import { Server } from "http";
 
-const socketIO = require("socket.io");
+import socketIO from "socket.io";
 
 import { Socket } from "socket.io";
 import { listenToOrderevents } from "./orders.socket";
@@ -12,16 +12,15 @@ import { listenToVendorEvents } from "./vendors.socket";
 import { listenToErrandEvents } from "./errand.socket";
 
 export class SocketServer {
-  private io: Socket;
+  private io: socketIO.Server;
   private static instance: SocketServer;
   // public socket: Socket;
   public sockets: Map<string, Socket> = new Map();
 
   constructor(server: Server) {
-    this.io = socketIO(server);
+    this.io = new socketIO.Server(server);
     // this.socket = {} as Socket;
   }
-
   public static getInstance(server?: Server): SocketServer {
     if (!SocketServer.instance && server) {
       SocketServer.instance = new SocketServer(server);
@@ -47,7 +46,7 @@ export class SocketServer {
       socket.on("disconnect", async (reason, details) => {
         console.log(`User disconnected. Reason: ${reason}`);
 
-         // Remove user ID and socket from the Map when disconnected.
+        // Remove user ID and socket from the Map when disconnected.
         this.sockets.delete(userId);
         console.log({ "socket map on disconnection": this.sockets });
       });
@@ -69,8 +68,8 @@ export class SocketServer {
         socket.emit(eventName, data);
         console.log(
           `Emitted event '${eventName}' from server. Data: ${JSON.stringify(
-            data
-          )}`
+            data,
+          )}`,
         );
       } else {
         console.log(`Socket not found`);
@@ -87,7 +86,7 @@ export class SocketServer {
     listenForProductEvents(socket);
     listenToWalletEvents(socket);
     listenToVendorEvents(socket);
-    listenToErrandEvents(socket)
+    listenToErrandEvents(socket);
     this.disconnectOnLogOut(socket);
   }
 

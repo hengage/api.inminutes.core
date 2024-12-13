@@ -7,5 +7,5 @@ import fileUpload from "express-fileupload";
  * or a single `fileUpload.UploadedFile` instance.
  */
 export interface UploadedFiles {
-    [fieldname: string]: Express.Request["files"] | fileUpload.UploadedFile;
-  }
+  [fieldname: string]: Express.Request["files"] | fileUpload.UploadedFile;
+}

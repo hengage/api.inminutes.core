@@ -6,41 +6,33 @@ import { handleSuccessResponse } from "../../../utils/response.utils";
 import { HTTP_STATUS_CODES } from "../../../constants";
 
 class AuthController {
-  private usersService: UsersService
+  private usersService: UsersService;
 
   constructor() {
-    this.usersService = new UsersService()
+    this.usersService = new UsersService();
   }
 
   checkPhoneNumberIstaken = async (req: Request, res: Response) => {
     try {
       await this.usersService.isPhoneNumberTaken(req.body.phoneNumber);
 
-      handleSuccessResponse(
-        res,
-        HTTP_STATUS_CODES.NO_CONTENT,
-        null
-      );
-    } catch (error: any) {
-      console.error('Error checking phone number:', error);
+      handleSuccessResponse(res, HTTP_STATUS_CODES.NO_CONTENT, null);
+    } catch (error: unknown) {
+      console.error("Error checking phone number:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
-  }
+  };
 
   async refreshAccessToken(req: Request, res: Response) {
     try {
       const accessToken = await authService.refreshAccessToken(
-        req.body.refreshToken
+        req.body.refreshToken,
       );
 
-      handleSuccessResponse(
-        res,
-        HTTP_STATUS_CODES.OK,
-        { accessToken },
-      );
-    } catch (error: any) {
-      console.error('Error generating access token:', error);
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { accessToken });
+    } catch (error: unknown) {
+      console.error("Error generating access token:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
