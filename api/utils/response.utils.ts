@@ -7,7 +7,7 @@ import { HandleException } from "./handleException.utils";
 export function createErrorResponse(
   code: ErrorCode,
   message: string,
-  details?: Record<string, unknown>
+  details?: Record<string, unknown>,
 ): ApiError {
   return {
     status: "error",
@@ -26,14 +26,14 @@ export function handleErrorResponse(err: unknown): {
 } {
   if (err instanceof HandleException) {
     const errorCode = Object.entries(HTTP_STATUS_CODES).find(
-      ([, code]) => code === err.status
+      ([, code]) => code === err.status,
     )?.[0] as ErrorCode;
 
     return {
       statusCode: err.status,
       errorJSON: createErrorResponse(
         errorCode || "INTERNAL_SERVER_ERROR",
-        err.message
+        err.message,
       ),
     };
   } else if (err instanceof Error) {
@@ -42,7 +42,7 @@ export function handleErrorResponse(err: unknown): {
       statusCode: HTTP_STATUS_CODES.SERVER_ERROR,
       errorJSON: createErrorResponse(
         "SERVER_ERROR",
-        "An unexpected error occurred"
+        "An unexpected error occurred",
       ),
     };
   } else {
@@ -51,7 +51,7 @@ export function handleErrorResponse(err: unknown): {
       statusCode: HTTP_STATUS_CODES.SERVER_ERROR,
       errorJSON: createErrorResponse(
         "SERVER_ERROR",
-        "An unknown error occurred"
+        "An unknown error occurred",
       ),
     };
   }
@@ -59,7 +59,7 @@ export function handleErrorResponse(err: unknown): {
 
 export function createSuccessResponse<T = JSONValue | null>(
   data: T,
-  message?: string
+  message?: string,
 ): ApiSuccessResponse<T> {
   return {
     status: "success",
@@ -71,8 +71,11 @@ export function handleSuccessResponse<T = JSONValue | null>(
   res: Response,
   statusCode: number,
   data: T,
-  message?: string
+  message?: string,
 ) {
-  const successResponse: ApiSuccessResponse<T> = createSuccessResponse(data, message);
+  const successResponse: ApiSuccessResponse<T> = createSuccessResponse(
+    data,
+    message,
+  );
   res.status(statusCode).json(successResponse);
 }

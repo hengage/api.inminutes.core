@@ -17,7 +17,7 @@ const transactionHistorySchema = new Schema<ITransactionHistoryDocument>(
     reference: { type: String, required: true },
     recipientCode: { type: String },
     reason: { type: String, required: true },
-    transferCode: { type: String, },
+    transferCode: { type: String },
     type: {
       type: String,
       enum: [TRANSACTION_TYPE.CREDIT, TRANSACTION_TYPE.DEBIT],
@@ -31,7 +31,7 @@ const transactionHistorySchema = new Schema<ITransactionHistoryDocument>(
     paidAt: { type: Date },
     currency: { type: String, default: Currency.NGN },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 transactionHistorySchema.plugin(paginate);

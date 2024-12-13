@@ -59,7 +59,7 @@ export interface ICreateOrderData {
 
 export interface IOrderFeedbackDocument {
   _id: string;
-  order: IOrdersDocument
+  order: IOrdersDocument;
   remarkOnRider: string;
   riderRating: number;
   remarkOnVendor: string;

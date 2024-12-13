@@ -14,7 +14,7 @@ class AuthService {
       console.log({ decoded });
       const accessToken = generateJWTToken(
         { phoneNumber: decoded.phoneNumber, _id: decoded._id },
-        JWTConfig.ACCESS_TOKEN_EXPIRES_IN
+        JWTConfig.ACCESS_TOKEN_EXPIRES_IN,
       );
       return accessToken;
     } catch (error: any) {

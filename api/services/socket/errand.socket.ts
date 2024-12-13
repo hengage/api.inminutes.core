@@ -4,13 +4,13 @@ import { errandService } from "../../features/errand";
 function listenToErrandEvents(socket: Socket) {
   socket.on("assign-rider-to-errand", async (message) => {
     try {
-       await errandService.assignRider({
+      await errandService.assignRider({
         errandId: message.errandId,
         riderId: message.riderId,
       });
       socket.emit(
         "assigned-rider-to-errand",
-        "You have been assigned to this errand"
+        "You have been assigned to this errand",
       );
     } catch (error: any) {
       socket.emit("assign-rider-to-errand-error", error.message);

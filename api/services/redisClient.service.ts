@@ -26,12 +26,12 @@ class RedisClient {
   public async setWithExpiry(
     key: string,
     value: string,
-    expiryTimeInSeconds: number
+    expiryTimeInSeconds: number,
   ) {
     try {
       await this.redisClient.setEx(key, expiryTimeInSeconds, value);
       console.log(
-        `Set ${key} in Redis with expiry ${expiryTimeInSeconds} seconds`
+        `Set ${key} in Redis with expiry ${expiryTimeInSeconds} seconds`,
       );
     } catch (error) {
       console.error("Error setting value in Redis:", error);
@@ -72,9 +72,9 @@ class RedisClient {
       await this.redisClient.flushDb();
       console.log("Flush redis");
     } catch (error: any) {
-      console.error('Error flushing redis: ', error);
+      console.error("Error flushing redis: ", error);
     }
   }
 }
 
-export const redisClient = new RedisClient()
+export const redisClient = new RedisClient();

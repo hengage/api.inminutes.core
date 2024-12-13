@@ -1,7 +1,11 @@
 import { startSession } from "mongoose";
 
-import { DateTime } from 'luxon';
-import { AGENDA, RIDER_WORK_SLOT_STATUS, WORK_SLOT_SESSIONS } from "../../../constants";
+import { DateTime } from "luxon";
+import {
+  AGENDA,
+  RIDER_WORK_SLOT_STATUS,
+  WORK_SLOT_SESSIONS,
+} from "../../../constants";
 import { SchedulerService } from "../../../services";
 import { HandleException } from "../../../utils";
 import { workSlotRepo } from "../repository/workSlot.repo";
@@ -50,25 +54,24 @@ class WorkSlotService {
         jobName: AGENDA.END_WORK_SCHEDULE,
         scheduledTime: endTime,
         jobData: { riderId, slotId: slot._id },
-      })
+      }),
     ]);
 
     return slot;
   }
 
   /**
-  *Cancels a booked time slot.
-  *@param {string} slotId - The ID of the time slot to cancel.
-  *@returns {object} The cancelled time slot document.
-  */
+   *Cancels a booked time slot.
+   *@param {string} slotId - The ID of the time slot to cancel.
+   *@returns {object} The cancelled time slot document.
+   */
   async cancelSlot(slotId: string) {
     console.log({ slotId });
     const session = await startSession();
     session.startTransaction();
     try {
-      const cancelledTimeSlot = await this.jobscheduleService.cancelRiderSlot(
-        slotId
-      );
+      const cancelledTimeSlot =
+        await this.jobscheduleService.cancelRiderSlot(slotId);
 
       await workSlotRepo.updateStatus({
         slotId,
@@ -100,17 +103,16 @@ class WorkSlotService {
         endTime = endTime.set({ hour: 15, minute: 0, second: 0 });
         break;
       case WORK_SLOT_SESSIONS.THIRD:
-        startTime = startTime.set({ hour: 15, minute: 0, second: 0 })
-        endTime = endTime.set({ hour: 18, minute: 0, second: 0 })
+        startTime = startTime.set({ hour: 15, minute: 0, second: 0 });
+        endTime = endTime.set({ hour: 18, minute: 0, second: 0 });
         break;
       case WORK_SLOT_SESSIONS.FOURTH:
-        startTime = startTime.set({ hour: 18, minute: 0, second: 0 })
-        endTime = endTime.set({ hour: 21, minute: 0, second: 0 })
+        startTime = startTime.set({ hour: 18, minute: 0, second: 0 });
+        endTime = endTime.set({ hour: 21, minute: 0, second: 0 });
         break;
     }
     return [startTime.toJSDate(), endTime.toJSDate()];
   }
 }
-
 
 export const workSlotService = new WorkSlotService();

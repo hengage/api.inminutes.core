@@ -7,7 +7,7 @@ import { Model } from "mongoose";
 export interface IWalletDocument extends Document {
   _id: string;
   merchantId: string; // Can be rider ID or vendor ID
-  merchantType: 'rider' | 'vendor';
+  merchantType: "rider" | "vendor";
   balance: string;
   transactionCount: number;
   totalEarnings: string;
@@ -19,11 +19,11 @@ export interface IWalletDocument extends Document {
 export interface IWalletMethodsDocument extends Model<IWalletDocument> {
   creditWallet(
     creditData: { amount: string; walletId?: string },
-    session: ClientSession
+    session: ClientSession,
   ): Promise<IWalletDocument>;
   debitWallet(
     debitData: { amount: string; walletId?: string },
-    session?: ClientSession
+    session?: ClientSession,
   ): Promise<IWalletDocument>;
 }
 

@@ -25,7 +25,7 @@ class VerifyService {
 
   sendVerificationCode = async (
     recipientPhoneNumber: string,
-    channel: VerificationChannel = OTP_CHANNEL.SMS
+    channel: VerificationChannel = OTP_CHANNEL.SMS,
   ) => {
     try {
       const verification = await this.twilioClient.verify.v2
@@ -39,14 +39,14 @@ class VerifyService {
       console.error("Error sending verification code:", error);
       throw new HandleException(
         HTTP_STATUS_CODES.SERVER_ERROR,
-        "Failed to send otp"
+        "Failed to send otp",
       );
     }
   };
 
   checkVerificationCode = async (
     recipientPhoneNumber: string,
-    otpCode: string
+    otpCode: string,
   ) => {
     try {
       const verificationCheck = await this.twilioClient.verify.v2

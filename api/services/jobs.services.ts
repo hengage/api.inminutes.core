@@ -14,7 +14,7 @@ export class SchedulerService {
   private static instance: SchedulerService;
   private agenda: Agenda | undefined;
 
-  public constructor() { }
+  public constructor() {}
 
   public static getInstance(): SchedulerService {
     if (!SchedulerService.instance) {
@@ -50,7 +50,8 @@ export class SchedulerService {
   private defineJobs() {
     this.agenda?.define(AGENDA.SCHEDULE_DISPATCH_PICKUP, async (job: any) => {
       console.log("Running schedule");
-      const { coordinates, distanceInKM, dispatchType, dispatchId } = job.attrs.data;
+      const { coordinates, distanceInKM, dispatchType, dispatchId } =
+        job.attrs.data;
       await ridersService.notifyRidersForDispatchJob({
         coordinates,
         distanceInKM,

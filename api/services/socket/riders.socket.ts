@@ -1,10 +1,9 @@
 import { Socket } from "socket.io";
 import { ridersService } from "../../features/riders";
 
-
 function listenToRiderEvents(socket: Socket) {
   socket.on("update-rider-location", async (message) => {
-    const {  coordinates } = message;
+    const { coordinates } = message;
     console.log({ message });
 
     try {

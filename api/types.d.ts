@@ -32,7 +32,7 @@ import { Document } from "mongoose";
  * Redundant.
  * Use mongose 'PaginateResult' type instead
  */
-type PaginatedQueryResult<T extends Document> = Record<
+type PaginatedQueryResult = Record<
   [key: string],
   JSONValue
 >;
@@ -101,4 +101,4 @@ type UserId =
   | IRiderDocument["_id"]
   | ICustomerDocument["_id"];
 
-type AccountStatus = ACCOUNT_STATUS
+type AccountStatus = ACCOUNT_STATUS;

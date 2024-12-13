@@ -6,7 +6,7 @@ export function listenToVendorEvents(socket: Socket) {
     console.log({ message });
     try {
       const newOrders = await vendorsOrdersService.getNewOrders(
-        message.vendorId
+        message.vendorId,
       );
       console.log({ newOrders });
       socket.emit("vendor-new-orders", newOrders);

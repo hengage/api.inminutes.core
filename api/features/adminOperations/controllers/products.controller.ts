@@ -14,14 +14,14 @@ export class AdminOpsForProductsController {
   async createCategory(req: Request, res: Response): Promise<void> {
     try {
       const category = await this.adminOpsForProductsService.createCategory(
-        req.body
+        req.body,
       );
 
       handleSuccessResponse(
         res,
         HTTP_STATUS_CODES.CREATED,
         { category },
-        `${capitalize(category.name)} category created`
+        `${capitalize(category.name)} category created`,
       );
     } catch (error: unknown) {
       console.log("Error creating category: ", error);
@@ -33,13 +33,13 @@ export class AdminOpsForProductsController {
   async approveProduct(req: Request, res: Response): Promise<void> {
     try {
       await this.adminOpsForProductsService.approveProduct(
-        req.params.productId
+        req.params.productId,
       );
       handleSuccessResponse(
         res,
         HTTP_STATUS_CODES.OK,
         null,
-        "Product has been approved"
+        "Product has been approved",
       );
     } catch (error: unknown) {
       console.log("Error approving product: ", error);
@@ -55,7 +55,7 @@ export class AdminOpsForProductsController {
         res,
         HTTP_STATUS_CODES.OK,
         null,
-        "Product has been rejected"
+        "Product has been rejected",
       );
     } catch (error: any) {
       console.error("Error rejecting product:", error);

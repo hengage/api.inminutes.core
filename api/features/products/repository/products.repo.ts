@@ -12,7 +12,7 @@ export class ProductsRepository {
   private productCategoryModel = ProductCategory;
   private wishListModel = WishList;
 
-  constructor() { }
+  constructor() {}
 
   /**
   @async
@@ -62,7 +62,7 @@ export class ProductsRepository {
     if (!product) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_PRODUCT_NOT_FOUND(productId)
+        Msg.ERROR_PRODUCT_NOT_FOUND(productId),
       );
     }
     product.quantity -= quantity;
@@ -103,7 +103,7 @@ export class ProductsRepository {
     if (result.deletedCount === 0) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_PRODUCT_NOT_FOUND(productId)
+        Msg.ERROR_PRODUCT_NOT_FOUND(productId),
       );
     }
 
@@ -166,7 +166,7 @@ export class ProductsRepository {
     const wishList = await WishList.findOneAndUpdate(
       { customer: customerId },
       { $addToSet: { products: productId } },
-      { upsert: true, new: true }
+      { upsert: true, new: true },
     );
 
     return wishList;
@@ -182,7 +182,7 @@ export class ProductsRepository {
     const wishList = await WishList.findOneAndUpdate(
       { customer: customerId },
       { $pull: { products: productId } },
-      { new: true }
+      { new: true },
     );
 
     return wishList;

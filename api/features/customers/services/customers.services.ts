@@ -26,10 +26,10 @@ export class CustomersService {
     image: Record<string, any>;
   }) => {
     const { customerId, image } = params;
-    
+
     const result = await this.mediaService.uploadToCloudinary(
       image,
-      "display-photo"
+      "display-photo",
     );
 
     const resultUrl = Object.values(result)[0];

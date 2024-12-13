@@ -11,7 +11,7 @@ export class NotificationService {
   /**
    * Builds a notification object with the given options.
    * @param {NotificationOptions} options - The notification options.
-  */
+   */
   private buildNotification(options: NotificationOptions) {
     const notification = new OneSignal.Notification();
 
@@ -33,9 +33,8 @@ export class NotificationService {
     const notification = this.buildNotification(options);
 
     try {
-      const notificationResponse = await oneSignalClient.createNotification(
-        notification
-      );
+      const notificationResponse =
+        await oneSignalClient.createNotification(notification);
 
       console.log({ notificationResponse });
     } catch (error: any) {

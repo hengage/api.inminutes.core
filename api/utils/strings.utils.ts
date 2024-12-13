@@ -25,7 +25,7 @@ export async function encryptValue(value: string): Promise<string> {
 
 export async function compareValues(
   plainValue: string,
-  hashValue: string
+  hashValue: string,
 ): Promise<boolean> {
   return bcrypt.compare(plainValue, hashValue);
 }
@@ -84,7 +84,6 @@ export function formatPhoneNumberforDB(phoneNumber: string): string {
 export function capitalize(name: string): string {
   return name
     .split(" ")
-    .map((word) => word.charAt(0)
-      .toUpperCase() + word.slice(1))
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 }

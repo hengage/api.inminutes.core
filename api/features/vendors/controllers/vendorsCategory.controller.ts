@@ -11,7 +11,7 @@ class VendorsCategoryController {
 
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { categories });
     } catch (error: unknown) {
-      console.error('Error fetching categories:', error);
+      console.error("Error fetching categories:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
@@ -19,14 +19,13 @@ class VendorsCategoryController {
 
   async getSubCategoriesByCategory(req: Request, res: Response) {
     try {
-      const subCatgories =
-        await vendorsCategoryRepo.getSubCategoriesByCategory(
-          req.params.categoryId
-        );
+      const subCatgories = await vendorsCategoryRepo.getSubCategoriesByCategory(
+        req.params.categoryId,
+      );
 
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { subCatgories });
     } catch (error: unknown) {
-      console.error('Error fetching subcategories:', error);
+      console.error("Error fetching subcategories:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
@@ -39,7 +38,7 @@ class VendorsCategoryController {
 
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { subCatgories });
     } catch (error: any) {
-      console.error('Error fetching local market subcategory:', error);
+      console.error("Error fetching local market subcategory:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }

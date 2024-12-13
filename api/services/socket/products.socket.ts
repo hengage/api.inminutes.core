@@ -36,7 +36,7 @@ function listenForProductEvents(socket: Socket) {
   });
 
   socket.on("check-product-is-in-wishlist", async function (message) {
-    const {  productId } = message;
+    const { productId } = message;
     try {
       const isInWishList =
         await productsService.checkProductIsInCustomerWishList({

@@ -30,7 +30,7 @@ export class UsersService {
     if (customer || vendor || rider) {
       throw new HandleException(
         HTTP_STATUS_CODES.CONFLICT,
-        "Email is already taken"
+        "Email is already taken",
       );
     }
 
@@ -43,18 +43,21 @@ export class UsersService {
     const result = await Customer.findOne({ phoneNumber })
       .select("phoneNumber")
       .lean()
-      .then((customer: PhoneNumberDocument | null) =>
-        customer || Vendor.findOne({ phoneNumber }).select("phoneNumber").lean()
+      .then(
+        (customer: PhoneNumberDocument | null) =>
+          customer ||
+          Vendor.findOne({ phoneNumber }).select("phoneNumber").lean(),
       )
-      .then((vendor: PhoneNumberDocument | null) =>
-        vendor || Rider.findOne({ phoneNumber }).select("phoneNumber").lean()
+      .then(
+        (vendor: PhoneNumberDocument | null) =>
+          vendor || Rider.findOne({ phoneNumber }).select("phoneNumber").lean(),
       );
 
     console.log({ result });
     if (result) {
       throw new HandleException(
         HTTP_STATUS_CODES.CONFLICT,
-        "Phone number is already taken"
+        "Phone number is already taken",
       );
     }
     return false;
@@ -78,7 +81,7 @@ export class UsersService {
     if (customer || rider) {
       throw new HandleException(
         HTTP_STATUS_CODES.CONFLICT,
-        "Display name is already taken"
+        "Display name is already taken",
       );
     }
     return false;
@@ -95,7 +98,7 @@ export class UsersService {
       default:
         throw new HandleException(
           HTTP_STATUS_CODES.BAD_REQUEST,
-          "Invalid account type"
+          "Invalid account type",
         );
     }
   }

@@ -19,21 +19,21 @@ export class AdminOpsVendorsCategoryController {
       await this.validateAdminVendorsOps.createCategory(req.body);
 
       const category = await this.adminOpsVendorsCategoryService.createCategory(
-        req.body
+        req.body,
       );
 
       handleSuccessResponse(
         res,
         HTTP_STATUS_CODES.CREATED,
         { category },
-        `${capitalize(category.name)} category created`
+        `${capitalize(category.name)} category created`,
       );
     } catch (error: unknown) {
       console.log("Error creating category: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
-  }
+  };
 
   createSubCategory = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -46,46 +46,39 @@ export class AdminOpsVendorsCategoryController {
         res,
         HTTP_STATUS_CODES.CREATED,
         { subCategory },
-        `${capitalize(subCategory.name)} sub-category created`
+        `${capitalize(subCategory.name)} sub-category created`,
       );
     } catch (error: unknown) {
       console.log("Error creating sub-category: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
-  }
+  };
 
   getCategories = async (req: Request, res: Response): Promise<void> => {
     try {
-      const categories = await this.adminOpsVendorsCategoryService.getCategories();
-      handleSuccessResponse(
-        res,
-        HTTP_STATUS_CODES.OK,
-        { categories },
-      );
+      const categories =
+        await this.adminOpsVendorsCategoryService.getCategories();
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { categories });
     } catch (error: unknown) {
       console.log("Error getting categories: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
-  }
+  };
 
   getCategory = async (req: Request, res: Response): Promise<void> => {
     try {
       const category = await this.adminOpsVendorsCategoryService.getCategory(
-        req.params.categoryId
+        req.params.categoryId,
       );
-      handleSuccessResponse(
-        res,
-        HTTP_STATUS_CODES.OK,
-        { category },
-      );
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { category });
     } catch (error: unknown) {
       console.log("Error getting category: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
-  }
+  };
 
   updateCategory = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -93,13 +86,13 @@ export class AdminOpsVendorsCategoryController {
       // Todo: validate req
       const category = await this.adminOpsVendorsCategoryService.updateCategory(
         req.params.categoryId,
-        req.body
+        req.body,
       );
       handleSuccessResponse(
         res,
         HTTP_STATUS_CODES.OK,
         { category },
-        `${capitalize(category.name)} category updated`
+        `${capitalize(category.name)} category updated`,
       );
     } catch (error: unknown) {
       console.log("Error updating category: ", error);
@@ -111,7 +104,7 @@ export class AdminOpsVendorsCategoryController {
   deleteCategory = async (req: Request, res: Response): Promise<void> => {
     try {
       await this.adminOpsVendorsCategoryService.deleteCategory(
-        req.params.categoryId
+        req.params.categoryId,
       );
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, {}, "Category deleted");
     } catch (error: unknown) {

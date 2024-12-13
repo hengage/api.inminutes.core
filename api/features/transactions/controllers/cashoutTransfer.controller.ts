@@ -10,17 +10,16 @@ class CashoutTransferController {
     try {
       await cashoutTransferService.addCashoutAccount(
         req.body.accountDetails,
-        req.body.walletId
+        req.body.walletId,
       );
       handleSuccessResponse(
         res,
         HTTP_STATUS_CODES.CREATED,
         null,
-        "Account added successfully"
+        "Account added successfully",
       );
-
     } catch (error: unknown) {
-      console.error('Error adding cashout account:', error);
+      console.error("Error adding cashout account:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
@@ -28,17 +27,17 @@ class CashoutTransferController {
 
   async initialize(req: Request, res: Response): Promise<void> {
     try {
-      await validateTransactions.cashoutTransfer(req.body)
+      await validateTransactions.cashoutTransfer(req.body);
       await cashoutTransferService.initialize(req.body);
 
       handleSuccessResponse(
         res,
         HTTP_STATUS_CODES.OK,
         null,
-        "Cashout request approved"
+        "Cashout request approved",
       );
     } catch (error: unknown) {
-      console.error('Error initializing cashout transfer:', error);
+      console.error("Error initializing cashout transfer:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }

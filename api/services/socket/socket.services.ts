@@ -47,7 +47,7 @@ export class SocketServer {
       socket.on("disconnect", async (reason, details) => {
         console.log(`User disconnected. Reason: ${reason}`);
 
-         // Remove user ID and socket from the Map when disconnected.
+        // Remove user ID and socket from the Map when disconnected.
         this.sockets.delete(userId);
         console.log({ "socket map on disconnection": this.sockets });
       });
@@ -69,8 +69,8 @@ export class SocketServer {
         socket.emit(eventName, data);
         console.log(
           `Emitted event '${eventName}' from server. Data: ${JSON.stringify(
-            data
-          )}`
+            data,
+          )}`,
         );
       } else {
         console.log(`Socket not found`);
@@ -87,7 +87,7 @@ export class SocketServer {
     listenForProductEvents(socket);
     listenToWalletEvents(socket);
     listenToVendorEvents(socket);
-    listenToErrandEvents(socket)
+    listenToErrandEvents(socket);
     this.disconnectOnLogOut(socket);
   }
 

@@ -18,7 +18,7 @@ export class ValidateErrand {
           .label("Receiver's phone number")
           .required()
           .pattern(
-            /^([0]{1}|\+?[2][3][4])([7-9]{1})([0|1]{1})([\d]{1})([\d]{7})$/
+            /^([0]{1}|\+?[2][3][4])([7-9]{1})([0|1]{1})([\d]{1})([\d]{7})$/,
           )
           .message(Msg.ERROR_INVALID_PHONE_FORMAT()),
       })
@@ -48,8 +48,7 @@ export class ValidateErrand {
           is: ORDER_TYPE.SCHEDULED,
           then: Joi.required(),
           otherwise: Joi.forbidden().messages({
-            "any.unknown":
-              Msg.ERROR_SCHEDULED_FORBIDDEN(),
+            "any.unknown": Msg.ERROR_SCHEDULED_FORBIDDEN(),
           }),
         }),
     });

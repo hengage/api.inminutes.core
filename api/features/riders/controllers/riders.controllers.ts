@@ -1,13 +1,11 @@
 import { Request, Response } from "express";
-import { generateJWTToken, handleErrorResponse, } from "../../../utils";
+import { generateJWTToken, handleErrorResponse } from "../../../utils";
 import { validateRider } from "../validators/riders.validators";
 import { ridersService } from "../services/riders.service";
 import { handleSuccessResponse } from "../../../utils/response.utils";
 import { HTTP_STATUS_CODES } from "../../../constants";
 class RidersController {
-
-  constructor() {
-  }
+  constructor() {}
 
   signup = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -22,11 +20,11 @@ class RidersController {
         res,
         HTTP_STATUS_CODES.CREATED,
         { rider, accessToken, refreshToken },
-        "Rider account created"
+        "Rider account created",
       );
     } catch (error: any) {
       console.error("Error signing up rider:", error);
-      const { statusCode, errorJSON } = handleErrorResponse(error)
+      const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
   };
@@ -40,14 +38,15 @@ class RidersController {
       const accessToken = generateJWTToken(jwtPayload, "1h");
       const refreshToken = generateJWTToken(jwtPayload, "14d");
 
-      handleSuccessResponse(res,
+      handleSuccessResponse(
+        res,
         HTTP_STATUS_CODES.OK,
         { rider, accessToken, refreshToken },
         "Login successful",
       );
     } catch (error: unknown) {
       console.error("Error on rider login:", error);
-      const { statusCode, errorJSON } = handleErrorResponse(error)
+      const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
   };
@@ -57,12 +56,10 @@ class RidersController {
     try {
       const rider = await ridersService.getMe(id);
 
-      handleSuccessResponse(
-        res, HTTP_STATUS_CODES.OK, { rider }
-      )
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { rider });
     } catch (error: unknown) {
       console.error("Error getting rider:", error);
-      const { statusCode, errorJSON } = handleErrorResponse(error)
+      const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
   };

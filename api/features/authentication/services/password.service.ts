@@ -6,19 +6,22 @@ class PasswordService {
   private usersService: UsersService;
 
   constructor() {
-    this.usersService = new UsersService()
+    this.usersService = new UsersService();
   }
   async resetPassword(
     phoneNumber: string,
     newPassword: string,
-    accountType: string
+    accountType: string,
   ) {
-    const AccountModel = await this.usersService.getUserAccountModel(accountType);
-    const account = await (AccountModel as any).findOne({ phoneNumber }).select("phoneNumber password");
+    const AccountModel =
+      await this.usersService.getUserAccountModel(accountType);
+    const account = await (AccountModel as any)
+      .findOne({ phoneNumber })
+      .select("phoneNumber password");
     if (!account) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_NO_USER_FOUND_WITH_PHONE_NUMBER(phoneNumber)
+        Msg.ERROR_NO_USER_FOUND_WITH_PHONE_NUMBER(phoneNumber),
       );
     }
 
@@ -30,28 +33,31 @@ class PasswordService {
     accountId: string,
     currentPassword: string,
     newPassword: string,
-    accountType: string
+    accountType: string,
   ) {
     try {
-      const AccountModel = await this.usersService.getUserAccountModel(accountType);
-      const account = await (AccountModel as any).findById(accountId).select("password");
+      const AccountModel =
+        await this.usersService.getUserAccountModel(accountType);
+      const account = await (AccountModel as any)
+        .findById(accountId)
+        .select("password");
 
       if (!account) {
         throw new HandleException(
           HTTP_STATUS_CODES.NOT_FOUND,
-          Msg.ERROR_NO_USER_FOUND(accountId)
+          Msg.ERROR_NO_USER_FOUND(accountId),
         );
       }
 
       const currentPasswordMatch = await compareValues(
         currentPassword,
-        account.password
+        account.password,
       );
 
       if (!currentPasswordMatch) {
         throw new HandleException(
           HTTP_STATUS_CODES.BAD_REQUEST,
-          "Invalid current password"
+          "Invalid current password",
         );
       }
       account.password = newPassword;

@@ -1,22 +1,22 @@
+import { NextFunction, Request, Response } from "express";
 import passport from "passport";
-import { Request, Response, NextFunction } from "express";
-import {
-  HandleException,
-  generateJWTToken,
-  handleErrorResponse,
-} from "../../../utils";
-import { ICustomerDocument } from "../customers.interface";
-import { ValidateCustomer } from "../validators/customers.validator";
 import { Twilio } from "twilio";
 import {
   TWILIO_ACCOUNT_SID,
   TWILIO_AUTH_TOKEN,
   TWILIO_VERIFY_SID,
 } from "../../../config";
-import { CustomersRepository } from "../repository/customers.repo";
-import { JSONValue } from "../../../types";
-import { handleSuccessResponse } from "../../../utils/response.utils";
 import { HTTP_STATUS_CODES } from "../../../constants";
+import { JSONValue } from "../../../types";
+import {
+  HandleException,
+  generateJWTToken,
+  handleErrorResponse,
+} from "../../../utils";
+import { handleSuccessResponse } from "../../../utils/response.utils";
+import { ICustomerDocument } from "../customers.interface";
+import { CustomersRepository } from "../repository/customers.repo";
+import { ValidateCustomer } from "../validators/customers.validator";
 
 export class CustomersAuthentication {
   private twilioClient: Twilio;
@@ -43,7 +43,7 @@ export class CustomersAuthentication {
   public login = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> => {
     try {
       await this.validateCustomer.login(req.body);
@@ -54,7 +54,7 @@ export class CustomersAuthentication {
         async (
           err: unknown,
           user: ICustomerDocument,
-          info: Record<string, JSONValue>
+          info: Record<string, JSONValue>,
         ) => {
           if (err) {
             return next(err);
@@ -64,8 +64,8 @@ export class CustomersAuthentication {
             const error = handleErrorResponse(
               new HandleException(
                 HTTP_STATUS_CODES.UNAUTHORIZED,
-                info.message as string
-              )
+                info.message as string,
+              ),
             );
             return res.status(error.statusCode).json(error.errorJSON);
           }
@@ -78,13 +78,17 @@ export class CustomersAuthentication {
           const accessToken = generateJWTToken(jwtPayload, "1h");
           const refreshToken = generateJWTToken(jwtPayload, "14d");
 
-          return handleSuccessResponse(res, HTTP_STATUS_CODES.OK, {
-            customer: { _id: user._id },
-            accessToken: accessToken,
-            refreshToken,
-          }, 'Login successful');
-        }
-
+          return handleSuccessResponse(
+            res,
+            HTTP_STATUS_CODES.OK,
+            {
+              customer: { _id: user._id },
+              accessToken: accessToken,
+              refreshToken,
+            },
+            "Login successful",
+          );
+        },
       )(req, res, next);
     } catch (error: unknown) {
       console.log("Error logging in customer: ", error);

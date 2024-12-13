@@ -2,12 +2,14 @@ import { ClientSession, model, Schema } from "mongoose";
 
 import Big from "big.js";
 
-import { CASHOUT_CHANNEL, Currency, HTTP_STATUS_CODES, USER_TYPE, WALLET_STATUS } from "../../../constants";
 import {
-  generateUniqueString,
-  HandleException,
-  Msg,
-} from "../../../utils";
+  CASHOUT_CHANNEL,
+  Currency,
+  HTTP_STATUS_CODES,
+  USER_TYPE,
+  WALLET_STATUS,
+} from "../../../constants";
+import { generateUniqueString, HandleException, Msg } from "../../../utils";
 import { IWalletDocument, IWalletMethodsDocument } from "../wallet.interface";
 
 const walletSchema = new Schema<IWalletDocument>(
@@ -58,7 +60,7 @@ const walletSchema = new Schema<IWalletDocument>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 walletSchema.pre("validate", function (next) {
@@ -74,18 +76,18 @@ walletSchema.statics.creditWallet = async function (
     amount: string;
     walletId: string;
   },
-  session: ClientSession
+  session: ClientSession,
 ) {
   const { amount, walletId } = creditData;
 
-  const wallet = await this.findById(walletId).select(
-    "balance merchantId transactionCount totalEarnings"
-  ).session(session);
+  const wallet = await this.findById(walletId)
+    .select("balance merchantId transactionCount totalEarnings")
+    .session(session);
 
   if (!wallet) {
     throw new HandleException(
       HTTP_STATUS_CODES.NOT_FOUND,
-      Msg.ERROR_NO_WALLET_FOUND(walletId)
+      Msg.ERROR_NO_WALLET_FOUND(walletId),
     );
   }
 
@@ -98,7 +100,7 @@ walletSchema.statics.creditWallet = async function (
 
 walletSchema.statics.debitWallet = async function (
   debitData: { amount: string; walletId: string },
-  session: ClientSession
+  session: ClientSession,
 ) {
   const { amount, walletId } = debitData;
 
@@ -109,14 +111,14 @@ walletSchema.statics.debitWallet = async function (
   if (!wallet) {
     throw new HandleException(
       HTTP_STATUS_CODES.NOT_FOUND,
-      Msg.ERROR_NO_WALLET_FOUND(walletId)
+      Msg.ERROR_NO_WALLET_FOUND(walletId),
     );
   }
 
   if (Big(wallet.balance).lt(Big(amount))) {
     throw new HandleException(
       HTTP_STATUS_CODES.UNPROCESSABLE_ENTITY,
-      "Insufficient balance"
+      "Insufficient balance",
     );
   }
   wallet.balance = Big(wallet.balance).minus(amount).toFixed(2);
@@ -127,5 +129,5 @@ walletSchema.statics.debitWallet = async function (
 
 export const Wallet = model<IWalletDocument, IWalletMethodsDocument>(
   "Wallet",
-  walletSchema
+  walletSchema,
 );

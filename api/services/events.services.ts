@@ -7,7 +7,6 @@ import { startSession } from "mongoose";
 import { Events } from "../constants";
 import { Msg } from "../utils";
 
-
 class EventEmit {
   private eventEmitter: EventEmitter;
   private notificationService: NotificationService;
@@ -66,7 +65,7 @@ class EventEmit {
             walletId: wallet?._id,
             amount,
           },
-          session
+          session,
         );
 
         await session.commitTransaction();
@@ -78,7 +77,7 @@ class EventEmit {
             _id: updatedWallet._id,
             balance: updatedWallet.balance,
           },
-          merchantId
+          merchantId,
         );
         await this.notificationService.createNotification({
           headings: { en: "Your Earnings Are In!" },
@@ -111,7 +110,7 @@ class EventEmit {
             walletId: wallet?._id,
             amount,
           },
-          session
+          session,
         );
 
         await session.commitTransaction();
@@ -123,7 +122,7 @@ class EventEmit {
             _id: updatedWallet._id,
             balance: updatedWallet.balance,
           },
-          merchantId
+          merchantId,
         );
         await this.notificationService.createNotification({
           headings: { en: "Your Earnings Are In!" },
@@ -145,7 +144,7 @@ class EventEmit {
     this.eventEmitter.on(Events.VENDOR_UNFULLFILED_ORDERS, async (data) => {
       console.log({ eventData: data });
       const vendorNewOrders = await ordersService.getNewOrdersForVendors(
-        data.vendorId
+        data.vendorId,
       );
       const socketServer = SocketServer.getInstance();
 

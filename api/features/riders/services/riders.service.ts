@@ -93,7 +93,7 @@ class RidersService {
 
   async updateRating(
     ratingData: { riderId: string; rating: number },
-    session: ClientSession
+    session: ClientSession,
   ) {
     return this.ridersRepo.updateRating(ratingData, session);
   }

@@ -1,5 +1,9 @@
 import { Document } from "mongoose";
-import { USER_APPROVAL_STATUS, ACCOUNT_STATUS, RIDER_WORK_SLOT_STATUS, } from "../../constants";
+import {
+  USER_APPROVAL_STATUS,
+  ACCOUNT_STATUS,
+  RIDER_WORK_SLOT_STATUS,
+} from "../../constants";
 import { WORK_SLOT_SESSIONS } from "../../constants";
 import { Coordinates } from "../../types";
 
@@ -28,17 +32,16 @@ export interface IRiderDocument extends Document {
 }
 
 export interface ICreateRiderData {
-  fullName: string,
-  displayName: string,
-  email: string,
-  phoneNumber: string,
-  password: string,
-  dateOfBirth: string,
-  residentialAddress: string,
+  fullName: string;
+  displayName: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+  dateOfBirth: string;
+  residentialAddress: string;
 }
 
 export interface IWorkSlotSessionDocument extends Document {
-
   // status: RIDER_WORK_SLOT_STATUS;
   _id: string;
   area: IWorkAreaDocument;
@@ -65,18 +68,17 @@ export interface IRiderBookingDocument extends Document {
 }
 
 export interface IBookSlotData {
-  riderId: IRiderDocument['_id'];
+  riderId: IRiderDocument["_id"];
   areaId: IWorkAreaDocument["_id"];
   date: Date;
   session: IWorkSlotSessions;
 }
 
 export interface ICreateWorkSlotSession {
-  areaId: IWorkAreaDocument["_id"],
-  date: Date,
-  session: string,
-  maxSlots: number
+  areaId: IWorkAreaDocument["_id"];
+  date: Date;
+  session: string;
+  maxSlots: number;
 }
-
 
 export type IWorkSlotSessions = `${WORK_SLOT_SESSIONS}`;

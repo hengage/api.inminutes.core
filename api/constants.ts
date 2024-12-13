@@ -64,7 +64,6 @@ export enum ORDER_TYPE {
   SCHEDULED = "scheduled",
 }
 
-
 export enum RIDER_WORK_SLOT_STATUS {
   PENDING = "pending",
   STARTED = "started",
@@ -91,13 +90,12 @@ export enum ErrandStatus {
 export enum DISPATCH_TYPE {
   ORDER = "order",
   ERRAND = "errand",
-};
+}
 
 export enum RATE_LIMIT_WINDOW_MS {
   DEFAULT = 15 * 60 * 1000, // 15 minutes
   CASHOUT_LIMIT = 60 * 60 * 1000, // 1 hour
 }
-
 
 export enum JWTConfig {
   ACCESS_TOKEN_EXPIRES_IN = "1h",
@@ -137,7 +135,7 @@ export enum DB_SCHEMA {
   PRODUCT = "Product",
   PRODUCT_CATEGORY = "ProductCategory",
   WISHLIST = "WishList", //Todo: use lowercase 'l' for wishlist
-  ERRAND = 'Errand',
+  ERRAND = "Errand",
   ERRAND_PACKAGE_TYPE = "ErrandPackageType",
   ORDER_FEEDBACK = "OrderFeedback",
   WORK_AREA = "WorkArea",
@@ -161,12 +159,12 @@ export enum TRANSACTION_TYPE {
 }
 
 export enum OTP_CHANNEL {
-  SMS = "SMS"
+  SMS = "SMS",
 }
 
 export enum WORK_SLOT_SESSIONS {
-  FIRST = '9am-12pm',
-  SECOND = '12pm-3pm',
-  THIRD = '3pm-6pm',
-  FOURTH = '6pm-9pm',
+  FIRST = "9am-12pm",
+  SECOND = "12pm-3pm",
+  THIRD = "3pm-6pm",
+  FOURTH = "6pm-9pm",
 }

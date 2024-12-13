@@ -2,7 +2,7 @@ import { PaginateModel, Schema, model } from "mongoose";
 
 import paginate from "mongoose-paginate-v2";
 
-import { DB_SCHEMA, PRODUCT_STATUS, } from "../../../constants";
+import { DB_SCHEMA, PRODUCT_STATUS } from "../../../constants";
 import { generateUniqueString } from "../../../utils";
 import {
   IProductCategoryDocument,
@@ -22,7 +22,7 @@ const productCategorySchema = new Schema<IProductCategoryDocument>(
       unique: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const productSchema = new Schema<IProductDocument>(
@@ -52,7 +52,7 @@ const productSchema = new Schema<IProductDocument>(
       enum: Object.values(PRODUCT_STATUS),
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 productSchema.plugin(paginate);
@@ -68,14 +68,14 @@ const wishListSchema = new Schema<IWishListDocument>({
 
 export const ProductCategory = model<IProductCategoryDocument>(
   DB_SCHEMA.PRODUCT_CATEGORY,
-  productCategorySchema
+  productCategorySchema,
 );
 export const Product = model<IProductDocument, PaginateModel<IProductDocument>>(
   DB_SCHEMA.PRODUCT,
-  productSchema
+  productSchema,
 );
 
 export const WishList = model<IWishListDocument>(
   DB_SCHEMA.WISHLIST,
-  wishListSchema
+  wishListSchema,
 );

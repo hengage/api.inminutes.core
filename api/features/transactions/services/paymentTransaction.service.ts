@@ -54,7 +54,7 @@ class PaymentTransactionService {
         payload,
         {
           headers: this.headers,
-        }
+        },
       );
 
       console.log({ reponseData: response.data });
@@ -87,7 +87,7 @@ class PaymentTransactionService {
    */
   webhook(req: Request) {
     const hash = createHmac("sha512", `${PAYSTACK_SECRET_KEY}`).update(
-      JSON.stringify(req.body)
+      JSON.stringify(req.body),
     );
     const digest = hash.digest("hex");
 
@@ -102,7 +102,10 @@ class PaymentTransactionService {
           this.transactionRepo.updateStatus({ reference, status, paidAt });
           const { purpose, orderId, vendorId } = event.data.metadata;
           if (purpose === "product purchase") {
-            emitEvent.emit(Events.NOTIFY_VENDOR_OF_ORDER, { orderId, vendorId });
+            emitEvent.emit(Events.NOTIFY_VENDOR_OF_ORDER, {
+              orderId,
+              vendorId,
+            });
           }
           break;
         case "transfer.success":
@@ -119,7 +122,10 @@ class PaymentTransactionService {
           console.warn(`Unknown event type: ${event.event}`);
       }
     } else {
-      throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, "Invalid signature");
+      throw new HandleException(
+        HTTP_STATUS_CODES.BAD_REQUEST,
+        "Invalid signature",
+      );
     }
   }
 
@@ -130,18 +136,18 @@ class PaymentTransactionService {
   */
   async createHistory(
     transactionHistoryData: ICreateTransactionHistoryData,
-    session?: ClientSession
+    session?: ClientSession,
   ) {
     return await this.transactionRepo.createHistory(
       transactionHistoryData,
-      session
+      session,
     );
   }
 
   async getTransactionByReference(reference: string, selectFields: string) {
     return this.transactionRepo.getTransactionByReference(
       reference,
-      selectFields
+      selectFields,
     );
   }
 
@@ -173,7 +179,7 @@ calling the cashoutTransferService.reverseDebit method
           _id: wallet?._id,
           balance: wallet?.balance,
         },
-        wallet?.merchantId
+        wallet?.merchantId,
       );
     } catch (error) {
       console.error({ error });

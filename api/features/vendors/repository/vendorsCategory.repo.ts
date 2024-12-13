@@ -32,7 +32,7 @@ class VendorsCategoryRepository {
     @param {string} categoryId - The ID of the category to retrieve sub-categories for.
  */
   async getSubCategoriesByCategory(
-    categoryId: string
+    categoryId: string,
   ): Promise<IVendorSubCategoryDocument[]> {
     const catgories = await VendorSubCategory.find({ category: categoryId })
       .select("name")

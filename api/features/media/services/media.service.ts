@@ -3,8 +3,6 @@ import { HTTP_STATUS_CODES } from "../../../constants";
 import { HandleException } from "../../../utils";
 import { UploadedFiles } from "../media.interface";
 
-
-
 export class MediaService {
   private mediaUploadConfig: MediaUploadConfig;
 
@@ -18,11 +16,11 @@ export class MediaService {
    */
   public uploadToCloudinary = async (
     mediaFiles: UploadedFiles,
-    mediaTags: string
+    mediaTags: string,
   ): Promise<Record<string, string>> => {
     try {
       const uploadPromises: Promise<string>[] = [];
-      let fileUrls: Record<string, string> = {};
+      const fileUrls: Record<string, string> = {};
 
       for (const fieldName in mediaFiles) {
         const file = mediaFiles[fieldName];
@@ -30,17 +28,16 @@ export class MediaService {
         // Upload the file using the cloudinary upload instance
         let uploadPromise: Promise<string>;
         if (typeof file?.tempFilePath === "string") {
-
         } else {
           throw new HandleException(
             HTTP_STATUS_CODES.BAD_REQUEST,
-            "Invalid file type. Only images and videos are allowed."
+            "Invalid file type. Only images and videos are allowed.",
           );
         }
 
         uploadPromise = this.mediaUploadConfig.cloudinaryConfig(
           file.tempFilePath,
-          [mediaTags]
+          [mediaTags],
         );
 
         uploadPromises.push(uploadPromise);
@@ -58,7 +55,7 @@ export class MediaService {
     } catch (error: any) {
       throw new HandleException(
         error.status || HTTP_STATUS_CODES.SERVER_ERROR,
-        error.message
+        error.message,
       );
     }
   };

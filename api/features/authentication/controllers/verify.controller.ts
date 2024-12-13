@@ -10,14 +10,9 @@ class VerifyController {
     try {
       await verifyService.sendVerificationCode(recipientPhoneNumber);
 
-      handleSuccessResponse(
-        res,
-        HTTP_STATUS_CODES.OK,
-        null,
-        "OTP sent",
-      )
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, null, "OTP sent");
     } catch (error: unknown) {
-      console.error("Error sending verification code: ", error)
+      console.error("Error sending verification code: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
@@ -28,14 +23,9 @@ class VerifyController {
     try {
       await verifyService.checkVerificationCode(recipientPhoneNumber, otpCode);
 
-      handleSuccessResponse(
-        res,
-        HTTP_STATUS_CODES.OK,
-        null,
-        "OTP verified",
-      )
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, null, "OTP verified");
     } catch (error: unknown) {
-      console.error("Error checking verification code: ", error)
+      console.error("Error checking verification code: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }

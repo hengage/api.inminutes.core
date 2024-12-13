@@ -2,7 +2,7 @@ import { Schema, model } from "mongoose";
 import {
   IRiderBookingDocument,
   IWorkSlotSessionDocument,
-  IWorkAreaDocument
+  IWorkAreaDocument,
 } from "../riders.interface";
 import { generateUniqueString } from "../../../utils";
 import {
@@ -32,92 +32,95 @@ import {
 //   }
 // );
 
-const workSlotSessionSchema = new Schema<IWorkSlotSessionDocument>({
-  _id: {
-    type: String,
-    default: () => generateUniqueString(7),
-  },
-  area: {
-    type: String,
-    ref: DB_SCHEMA.WORK_AREA,
-    required: true
-  },
-  date: { type: Date, required: true },
-  session: {
-    type: String,
-    enum: Object.values(WORK_SLOT_SESSIONS),
-    required: true
-  },
-  availableSlots: { type: Number, required: true },
-  numberOfSlotsBooked: { type: Number, required: true },
-},
+const workSlotSessionSchema = new Schema<IWorkSlotSessionDocument>(
   {
-    timestamps: true,
-  }
-);
-
-
-const riderBookingSchema = new Schema<IRiderBookingDocument>({
-  _id: {
-    type: String,
-    default: () => generateUniqueString(7),
-  },
-  rider: {
-    type: String,
-    ref: DB_SCHEMA.RIDER,
-    required: true,
-    index: true,
-  },
-  workSlotSession: {
-    type: String,
-    ref: DB_SCHEMA.WORK_TIME_SESSION,
-    required: true,
-    index: true
-  },
-  status: {
-    type: String,
-    enum: Object.values(RIDER_WORK_SLOT_STATUS),
-    default: RIDER_WORK_SLOT_STATUS.PENDING,
-  },
-}, {
-  timestamps: true,
-});
-
-
-const areaSchema = new Schema<IWorkAreaDocument>({
-  _id: {
-    type: String,
-    default: () => generateUniqueString(7),
-  },
-  name: { type: String, required: true, unique: true },
-  location: {
-    type: {
+    _id: {
       type: String,
-      default: GEOLOCATION.POINT,
+      default: () => generateUniqueString(7),
     },
-    coordinates: {
-      type: [Number, Number],
+    area: {
+      type: String,
+      ref: DB_SCHEMA.WORK_AREA,
       required: true,
     },
+    date: { type: Date, required: true },
+    session: {
+      type: String,
+      enum: Object.values(WORK_SLOT_SESSIONS),
+      required: true,
+    },
+    availableSlots: { type: Number, required: true },
+    numberOfSlotsBooked: { type: Number, required: true },
   },
-  maxSlotsRequired: { type: Number, required: true },
-}, {
-  timestamps: true,
-});
+  {
+    timestamps: true,
+  },
+);
 
+const riderBookingSchema = new Schema<IRiderBookingDocument>(
+  {
+    _id: {
+      type: String,
+      default: () => generateUniqueString(7),
+    },
+    rider: {
+      type: String,
+      ref: DB_SCHEMA.RIDER,
+      required: true,
+      index: true,
+    },
+    workSlotSession: {
+      type: String,
+      ref: DB_SCHEMA.WORK_TIME_SESSION,
+      required: true,
+      index: true,
+    },
+    status: {
+      type: String,
+      enum: Object.values(RIDER_WORK_SLOT_STATUS),
+      default: RIDER_WORK_SLOT_STATUS.PENDING,
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
 
+const areaSchema = new Schema<IWorkAreaDocument>(
+  {
+    _id: {
+      type: String,
+      default: () => generateUniqueString(7),
+    },
+    name: { type: String, required: true, unique: true },
+    location: {
+      type: {
+        type: String,
+        default: GEOLOCATION.POINT,
+      },
+      coordinates: {
+        type: [Number, Number],
+        required: true,
+      },
+    },
+    maxSlotsRequired: { type: Number, required: true },
+  },
+  {
+    timestamps: true,
+  },
+);
 
 export const RiderBooking = model<IRiderBookingDocument>(
   DB_SCHEMA.RIDER_BOOKING,
-  riderBookingSchema
+  riderBookingSchema,
 );
 
 export const WorkArea = model<IWorkAreaDocument>(
   DB_SCHEMA.WORK_AREA,
-  areaSchema
+  areaSchema,
 );
 
 export const RidersWorkSlotSession = model<IWorkSlotSessionDocument>(
   DB_SCHEMA.WORK_TIME_SESSION,
-  workSlotSessionSchema
+  workSlotSessionSchema,
 );

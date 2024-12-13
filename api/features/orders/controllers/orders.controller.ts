@@ -27,11 +27,7 @@ export class OrdersController {
         message: "success",
         data: { order },
       });
-      handleSuccessResponse(
-        res,
-        HTTP_STATUS_CODES.CREATED,
-        { order },
-      );
+      handleSuccessResponse(res, HTTP_STATUS_CODES.CREATED, { order });
     } catch (error: unknown) {
       console.error("Error creating order:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
@@ -47,11 +43,7 @@ export class OrdersController {
         data: { order },
       });
 
-      handleSuccessResponse(
-        res,
-        HTTP_STATUS_CODES.OK,
-        { order },
-      );
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { order });
     } catch (error: unknown) {
       console.error("Error fetching order details:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
@@ -85,7 +77,7 @@ export class OrdersController {
         res,
         HTTP_STATUS_CODES.OK,
         null,
-        "Order feedback submitted"
+        "Order feedback submitted",
       );
     } catch (error: unknown) {
       console.error("Error submitting order feedback:", error);

@@ -37,12 +37,11 @@ export class ValidateAdminVendorsOps {
 
   updateAccountStatus = async (payload: any) => {
     const schema = Joi.object({
-      status: Joi.string().
-        required()
+      status: Joi.string()
+        .required()
         .valid(...Object.values(ACCOUNT_STATUS))
         .messages({
-          "any.only":
-            `Invalid status. Options are: ${Object.values(ACCOUNT_STATUS).join(", ")}`,
+          "any.only": `Invalid status. Options are: ${Object.values(ACCOUNT_STATUS).join(", ")}`,
         }),
     });
 
@@ -54,5 +53,5 @@ export class ValidateAdminVendorsOps {
     if (error) {
       throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
     }
-  }
+  };
 }

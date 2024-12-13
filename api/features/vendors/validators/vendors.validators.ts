@@ -15,7 +15,7 @@ class ValidateVendor {
           .required()
           .label("Password")
           .pattern(
-            /^([0]{1}|\+?[2][3][4])([7-9]{1})([0|1]{1})([\d]{1})([\d]{7})$/
+            /^([0]{1}|\+?[2][3][4])([7-9]{1})([0|1]{1})([\d]{1})([\d]{7})$/,
           )
           .message(Msg.ERROR_INVALID_PHONE_FORMAT()),
         email: joi
@@ -23,7 +23,7 @@ class ValidateVendor {
           .required()
           .label("Email")
           .pattern(
-            /^[a-zA-Z0-9.!#$%&’*+/=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+            /^[a-zA-Z0-9.!#$%&’*+/=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
           )
           .message(Msg.ERROR_INVALID_EMAIL_FORMAT()),
         address: joi.string().required().label("Address"),

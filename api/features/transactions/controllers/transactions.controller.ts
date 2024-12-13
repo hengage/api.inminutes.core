@@ -16,13 +16,12 @@ class TransactionController {
         res,
         HTTP_STATUS_CODES.OK,
         response,
-        "Transaction initialized"
+        "Transaction initialized",
       );
     } catch (error: unknown) {
-      console.error('Error initializing transaction:', error);
+      console.error("Error initializing transaction:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
-
     }
   }
 
@@ -46,13 +45,9 @@ class TransactionController {
         endDate: req.query.end as string,
       });
 
-      handleSuccessResponse(
-        res,
-        HTTP_STATUS_CODES.OK,
-        transactionHistory,
-      )
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, transactionHistory);
     } catch (error: unknown) {
-      console.error('Error fetching transaction history:', error);
+      console.error("Error fetching transaction history:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
@@ -61,16 +56,12 @@ class TransactionController {
   async getDetails(req: Request, res: Response) {
     try {
       const transactionDetails = await paymentTransactionService.getDetails(
-        req.params.transactionId
+        req.params.transactionId,
       );
 
-      handleSuccessResponse(
-        res,
-        HTTP_STATUS_CODES.OK,
-        transactionDetails,
-      );
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, transactionDetails);
     } catch (error: unknown) {
-      console.error('Error fetching transaction details:', error);
+      console.error("Error fetching transaction details:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }

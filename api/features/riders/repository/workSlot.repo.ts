@@ -1,8 +1,18 @@
 import { Coordinates } from "../../../types";
 import { HandleException } from "../../../utils";
-import { RiderBooking, RidersWorkSlotSession, WorkArea } from "../models/workSlot.model";
+import {
+  RiderBooking,
+  RidersWorkSlotSession,
+  WorkArea,
+} from "../models/workSlot.model";
 import { ClientSession } from "mongoose";
-import { IBookSlotData, ICreateWorkSlotSession, IRiderDocument, IWorkAreaDocument, IWorkSlotSessionDocument } from "../riders.interface";
+import {
+  IBookSlotData,
+  ICreateWorkSlotSession,
+  IRiderDocument,
+  IWorkAreaDocument,
+  IWorkSlotSessionDocument,
+} from "../riders.interface";
 
 /**
 Repository for managing time slots for riders.
@@ -27,7 +37,7 @@ class WorkSlotRepository {
     if (workSlotSession.availableSlots === 0) {
       throw new HandleException(
         400,
-        "The location is fully booked for this session. Please choose another session."
+        "The location is fully booked for this session. Please choose another session.",
       );
     }
     workSlotSession.availableSlots -= 1;
@@ -44,50 +54,48 @@ class WorkSlotRepository {
     return workSlotSession;
   }
 
-  private async validateWorkAreaExists(areaId: string):
-    Promise<IWorkAreaDocument> {
+  private async validateWorkAreaExists(
+    areaId: string,
+  ): Promise<IWorkAreaDocument> {
     const area = await WorkArea.findById(areaId);
     if (!area) {
       throw new HandleException(
         400,
-        "The location is invalid or has not been added yet"
+        "The location is invalid or has not been added yet",
       );
     }
     return area;
   }
 
   /**
- * Checks if rider has already booked this session
- */
+   * Checks if rider has already booked this session
+   */
   private async checkExistingBooking(
     riderId: IRiderDocument["_id"],
-    workSlotSessionId: IWorkSlotSessionDocument["_id"])
-    : Promise<void> {
+    workSlotSessionId: IWorkSlotSessionDocument["_id"],
+  ): Promise<void> {
     const existingBooking = await RiderBooking.exists({
       rider: riderId,
-      workSlotSession: workSlotSessionId
+      workSlotSession: workSlotSessionId,
     });
 
     if (existingBooking) {
-      throw new HandleException(
-        409,
-        "You have already booked this session"
-      );
+      throw new HandleException(409, "You have already booked this session");
     }
   }
 
   /**
-  * Gets or creates a work slot session
-  */
+   * Gets or creates a work slot session
+   */
   private async getOrCreateWorkSlotSession(
-    createWorkSessionData: ICreateWorkSlotSession
+    createWorkSessionData: ICreateWorkSlotSession,
   ): Promise<IWorkSlotSessionDocument> {
     const { areaId, date, session, maxSlots } = createWorkSessionData;
 
     let workSlotSession = await RidersWorkSlotSession.findOne({
       area: areaId,
       date,
-      session
+      session,
     });
 
     if (!workSlotSession) {
@@ -119,16 +127,16 @@ class WorkSlotRepository {
       {
         $set: { status: status },
       },
-      { new: true, session }
+      { new: true, session },
     ).select("status");
     console.log({ slot });
     return slot;
   }
 
   async createWorkArea(createWorkAreadata: {
-    name: string,
-    coordinates: Coordinates,
-    maxSlotsRequired: number
+    name: string;
+    coordinates: Coordinates;
+    maxSlotsRequired: number;
   }) {
     return await new WorkArea(createWorkAreadata).save();
   }

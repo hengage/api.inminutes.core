@@ -23,7 +23,7 @@ class VendorsRepository {
   @param {object} vendorData - The vendor signup data.
   */
   async signup(
-    vendorData: IVendorSignupData
+    vendorData: IVendorSignupData,
   ): Promise<Partial<IVendorDocument>> {
     const vendor = await Vendor.create({
       ...vendorData,
@@ -48,13 +48,13 @@ class VendorsRepository {
 
   async login(email: string, password: string) {
     const vendor = await Vendor.findOne({ email }).select(
-      "email phoneNumber password"
+      "email phoneNumber password",
     );
 
     if (!vendor) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_INVALID_LOGIN_CREDENTIALS()
+        Msg.ERROR_INVALID_LOGIN_CREDENTIALS(),
       );
     }
 
@@ -62,7 +62,7 @@ class VendorsRepository {
     if (!passwordsMatch) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_INVALID_LOGIN_CREDENTIALS()
+        Msg.ERROR_INVALID_LOGIN_CREDENTIALS(),
       );
     }
 
@@ -80,7 +80,7 @@ class VendorsRepository {
     if (!vendor) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_VENDOR_NOT_FOUND(id)
+        Msg.ERROR_VENDOR_NOT_FOUND(id),
       );
     }
 
@@ -262,7 +262,7 @@ class VendorsRepository {
 */
   async updateRating(
     updateRatingDto: { vendorId: string; rating: number },
-    session: ClientSession
+    session: ClientSession,
   ) {
     const { vendorId, rating } = updateRatingDto;
     try {
@@ -273,7 +273,7 @@ class VendorsRepository {
       if (!vendor) {
         throw new HandleException(
           HTTP_STATUS_CODES.NOT_FOUND,
-          Msg.ERROR_VENDOR_NOT_FOUND(vendorId)
+          Msg.ERROR_VENDOR_NOT_FOUND(vendorId),
         );
       }
 

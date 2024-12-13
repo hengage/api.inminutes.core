@@ -13,7 +13,7 @@ class ValidateTransactions {
         .email()
         .required()
         .pattern(
-          /^[a-zA-Z0-9.!#$%&’*+/=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+          /^[a-zA-Z0-9.!#$%&’*+/=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
         )
         .message("Invalid email format"),
       amount: Joi.string().required(),
@@ -24,7 +24,7 @@ class ValidateTransactions {
             .required()
             .valid(
               PAYMENT_PURPOSE.PRODUCT_PURCHASE,
-              PAYMENT_PURPOSE.PACKAGE_DELIVERY
+              PAYMENT_PURPOSE.PACKAGE_DELIVERY,
             ),
           orderId: Joi.string().required(),
           vendorId: Joi.string().when("reason", {
@@ -51,7 +51,7 @@ class ValidateTransactions {
   };
 
   cashoutTransfer = async (
-    cashoutTransferData: InitializeCashoutTransferData
+    cashoutTransferData: InitializeCashoutTransferData,
   ) => {
     const schema = Joi.object({
       amount: Joi.number().label("Amount").required().messages({
