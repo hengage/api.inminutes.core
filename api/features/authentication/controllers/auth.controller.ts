@@ -17,7 +17,7 @@ class AuthController {
       await this.usersService.isPhoneNumberTaken(req.body.phoneNumber);
 
       handleSuccessResponse(res, HTTP_STATUS_CODES.NO_CONTENT, null);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error checking phone number:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
@@ -31,7 +31,7 @@ class AuthController {
       );
 
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { accessToken });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error generating access token:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);

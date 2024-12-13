@@ -6,7 +6,7 @@ import passport from "passport";
 
 const localStrategy = new Strategy(
   { usernameField: "phoneNumber" },
-  async (phoneNumber: string, password: string, done: Function) => {
+  async (phoneNumber: string, password: string, done: Done) => {
     try {
       const customer = await Customer.findOne(
         { phoneNumber },
@@ -46,3 +46,5 @@ const passportStrategySetup = () => {
 };
 
 export { passportStrategySetup, serializeUser };
+
+type Done = (error: unknown, user?: any, options?: { message: string }) => void;

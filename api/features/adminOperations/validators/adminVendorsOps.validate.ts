@@ -1,15 +1,16 @@
 import Joi from "joi";
 import { HandleException } from "../../../utils";
 import { ACCOUNT_STATUS, HTTP_STATUS_CODES } from "../../../constants";
+import { ICreateCategory, ICreateSubCategory } from "../services/vendorsCategory.service";
 
 export class ValidateAdminVendorsOps {
-  createCategory = async (payload: any) => {
+  createCategory = async (createCategoryData: ICreateCategory) => {
     const createCategorySchema = Joi.object({
       name: Joi.string().required(),
       image: Joi.string().required(),
     });
 
-    const { error } = createCategorySchema.validate(payload, {
+    const { error } = createCategorySchema.validate(createCategoryData, {
       allowUnknown: false,
       abortEarly: false,
     });
@@ -19,13 +20,13 @@ export class ValidateAdminVendorsOps {
     }
   };
 
-  createSubCategory = async (payload: any) => {
+  createSubCategory = async (createSubCategoryData: ICreateSubCategory) => {
     const createSubCategorySchema = Joi.object({
       name: Joi.string().required(),
       category: Joi.string().required(),
     });
 
-    const { error } = createSubCategorySchema.validate(payload, {
+    const { error } = createSubCategorySchema.validate(createSubCategoryData, {
       allowUnknown: false,
       abortEarly: false,
     });
@@ -35,7 +36,7 @@ export class ValidateAdminVendorsOps {
     }
   };
 
-  updateAccountStatus = async (payload: any) => {
+  updateAccountStatus = async (updateAccountStatusData: { status: string }) => {
     const schema = Joi.object({
       status: Joi.string()
         .required()
@@ -45,7 +46,7 @@ export class ValidateAdminVendorsOps {
         }),
     });
 
-    const { error } = schema.validate(payload, {
+    const { error } = schema.validate(updateAccountStatusData, {
       allowUnknown: false,
       abortEarly: false,
     });

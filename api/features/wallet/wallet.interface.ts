@@ -1,7 +1,5 @@
 import { ClientSession, Document } from "mongoose";
 import { WALLET_STATUS } from "../../utils";
-import { IRiderDocument } from "../riders";
-import { IVendorDocument } from "../vendors";
 import { Model } from "mongoose";
 
 export interface IWalletDocument extends Document {

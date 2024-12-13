@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import { Agenda, JobAttributesData } from "agenda";
+import { Agenda, Job, JobAttributesData } from "agenda";
 import { DB_URL } from "../config/secrets.config";
 import { ridersService } from "../features/riders";
 import { AGENDA } from "../constants";
@@ -48,35 +48,44 @@ export class SchedulerService {
   @private
   */
   private defineJobs() {
-    this.agenda?.define(AGENDA.SCHEDULE_DISPATCH_PICKUP, async (job: any) => {
-      console.log("Running schedule");
-      const { coordinates, distanceInKM, dispatchType, dispatchId } =
-        job.attrs.data;
-      await ridersService.notifyRidersForDispatchJob({
-        coordinates,
-        distanceInKM,
-        dispatchType,
-        dispatchId,
-      });
-    });
+    this.agenda?.define(
+      AGENDA.SCHEDULE_DISPATCH_PICKUP,
+      async (job: Job<JobAttributesData>) => {
+        console.log("Running schedule");
+        const { coordinates, distanceInKM, dispatchType, dispatchId } =
+          job.attrs.data;
+        await ridersService.notifyRidersForDispatchJob({
+          coordinates,
+          distanceInKM,
+          dispatchType,
+          dispatchId,
+        });
+      },
+    );
 
-    this.agenda?.define(AGENDA.START_WORK_SCHEDULE, async (job: any) => {
-      const { riderId, slotId } = job.attrs.data;
-      console.log("Running availability to true", job.attrs.data);
-      await ridersService.updateAvailability({
-        riderId,
-        currentlyWorking: true,
-      });
-    });
+    this.agenda?.define(
+      AGENDA.START_WORK_SCHEDULE,
+      async (job: Job<JobAttributesData>) => {
+        const { riderId } = job.attrs.data;
+        console.log("Running availability to true", job.attrs.data);
+        await ridersService.updateAvailability({
+          riderId,
+          currentlyWorking: true,
+        });
+      },
+    );
 
-    this.agenda?.define(AGENDA.END_WORK_SCHEDULE, async (job: any) => {
-      const { riderId, slotId } = job.attrs.data;
-      console.log("Running availability to false", job.attrs.data);
-      await ridersService.updateAvailability({
-        riderId,
-        currentlyWorking: false,
-      });
-    });
+    this.agenda?.define(
+      AGENDA.END_WORK_SCHEDULE,
+      async (job: Job<JobAttributesData>) => {
+        const { riderId } = job.attrs.data;
+        console.log("Running availability to false", job.attrs.data);
+        await ridersService.updateAvailability({
+          riderId,
+          currentlyWorking: false,
+        });
+      },
+    );
   }
 
   /**

@@ -12,8 +12,12 @@ function listenToRiderEvents(socket: Socket) {
         coordinates,
       });
       console.log("updated location");
-    } catch (error: any) {
-      socket.emit("update-rider-location-error", error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        socket.emit("update-rider-location-error", error.message);
+      } else {
+        socket.emit("update-rider-location-error", "An unknown error occurred");
+      }
     }
   });
 }

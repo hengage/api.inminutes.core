@@ -71,7 +71,7 @@ class RedisClient {
     try {
       await this.redisClient.flushDb();
       console.log("Flush redis");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error flushing redis: ", error);
     }
   }

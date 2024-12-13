@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { HandleException } from "../utils/";
 
-HandleException;
-
 class CentralErrorHandler {
   /*
   Provides a centralized middleware for handling errors in HTTP requests
@@ -19,7 +17,7 @@ class CentralErrorHandler {
   }
 
   public handle404OrServerError(
-    err: any,
+    err: Error & { status?: number },
     req: Request,
     res: Response,
     next: NextFunction,

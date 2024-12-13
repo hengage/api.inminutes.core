@@ -5,6 +5,7 @@ import { UsersService } from "../../../services/users.services";
 import { IOrdersDocument } from "../../orders/orders.interface";
 import { IErrandDocument } from "../../errand";
 import { DISPATCH_TYPE } from "../../../constants";
+import { IRiderDocument } from "../riders.interface";
 
 class RidersService {
   private notificationService: NotificationService;
@@ -58,7 +59,7 @@ class RidersService {
       distanceInKM,
     });
 
-    riders.forEach((rider: any) => {
+    riders.forEach((rider: IRiderDocument) => {
       this.notificationService.createNotification({
         headings: { en: "New Dispatch Available" },
         contents: {

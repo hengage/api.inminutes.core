@@ -61,6 +61,9 @@ export const Msg = {
   ERROR_USER_TYPE_MISSING() {
     return "User type is required";
   },
+  ERROR_UNKNOWN_ERROR() {
+    return "An unknown error occurred";
+  },
   WALLET_CREDITED(amount: string) {
     return (
       `${amount} has been successfully credited to your wallet. ` +

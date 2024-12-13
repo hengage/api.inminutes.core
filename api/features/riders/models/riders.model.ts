@@ -77,8 +77,8 @@ riderSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
     try {
       this.password = await encryptValue(this.password);
-    } catch (error: any) {
-      return next(error);
+    } catch (error) {
+      return next(error instanceof Error ? error : new Error(String(error)));
     }
   }
 });

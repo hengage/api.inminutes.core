@@ -33,8 +33,8 @@ class App {
     try {
       await this.dbConfig.connect();
       console.log("Connected to database");
-    } catch (error: any) {
-      console.error(error.message);
+    } catch (error: unknown) {
+      console.error(error);
     }
   }
 

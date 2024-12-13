@@ -32,13 +32,13 @@ class OrdersService {
   }
 
   create = async (params: {
-    orderData: ICreateOrderData;
+    createOrderData: ICreateOrderData;
     customer: string;
   }) => {
-    const { orderData, customer } = params;
-    await this.validateOrders.create(orderData);
+    const { createOrderData, customer } = params;
+    await this.validateOrders.create(createOrderData);
 
-    const order = await this.ordersRepo.create({ orderData, customer });
+    const order = await this.ordersRepo.create({ createOrderData, customer });
     const newOrder = await Order.findById(order.id)
       .select({
         deliveryAddress: 1,

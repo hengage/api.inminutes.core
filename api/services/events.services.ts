@@ -23,7 +23,7 @@ class EventEmit {
       try {
         const wallet = await walletRepo.create(data);
         console.log("Created wallet", wallet);
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.log({ error });
       }
     });
@@ -42,7 +42,7 @@ class EventEmit {
           data: { order: orderId },
           userId: vendorId,
         });
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error({ error });
       }
     });
@@ -86,7 +86,7 @@ class EventEmit {
           },
           userId: wallet.merchantId,
         });
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error({ error });
         await session.abortTransaction();
       } finally {
@@ -131,7 +131,7 @@ class EventEmit {
           },
           userId: wallet.merchantId,
         });
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error({ error });
         await session.abortTransaction();
       } finally {
@@ -152,7 +152,7 @@ class EventEmit {
     });
   };
 
-  emit(eventName: string, message: any) {
+  emit(eventName: string, message: Record<string, unknown>) {
     console.log({ eventMessage: message });
     this.eventEmitter.emit(eventName, message);
   }

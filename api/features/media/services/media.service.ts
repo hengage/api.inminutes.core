@@ -26,26 +26,24 @@ export class MediaService {
         const file = mediaFiles[fieldName];
 
         // Upload the file using the cloudinary upload instance
-        let uploadPromise: Promise<string>;
         if (typeof file?.tempFilePath === "string") {
+          const uploadPromise = this.mediaUploadConfig.cloudinaryConfig(
+            file.tempFilePath,
+            [mediaTags],
+          );
+
+          uploadPromises.push(uploadPromise);
+
+          // Store the promise result in the fileUrls object
+          uploadPromise.then((url) => {
+            fileUrls[fieldName] = url;
+          });
         } else {
           throw new HandleException(
             HTTP_STATUS_CODES.BAD_REQUEST,
             "Invalid file type. Only images and videos are allowed.",
           );
         }
-
-        uploadPromise = this.mediaUploadConfig.cloudinaryConfig(
-          file.tempFilePath,
-          [mediaTags],
-        );
-
-        uploadPromises.push(uploadPromise);
-
-        // Store the promise result in the fileUrls object
-        uploadPromise.then((url) => {
-          fileUrls[fieldName] = url;
-        });
       }
 
       // Wait for all uploads to complete

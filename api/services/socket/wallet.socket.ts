@@ -15,27 +15,38 @@ function listenToWalletEvents(socket: Socket) {
         });
       }
       socket.emit("fetched-cashout-accounts", cashoutAccounts);
-    } catch (error: any) {
-      socket.emit("get-cashout-accounts-error", error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        socket.emit("get-cashout-accounts-error", error.message);
+      } else {
+        socket.emit("get-cashout-accounts-error", "An unknown error occurred");
+      }
     }
   });
-
   socket.on("get-wallet-balance", async (message) => {
     try {
       const balance = await walletService.getBalance(message.merchantId);
       console.log({ balance });
       socket.emit("wallet-balance", balance);
-    } catch (error: any) {
-      socket.emit("get-wallet-balance-error", error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        socket.emit("get-wallet-balance-error", error.message);
+      } else {
+        socket.emit("get-wallet-balance-error", "An unknown error occurred");
+      }
       console.error(error);
     }
   });
-
   socket.on("wallet-balance", async (message) => {
     try {
       console.log({ message });
-    } catch (error: any) {
-      console.error({ error });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        socket.emit("get-wallet-balance-error", error.message);
+      } else {
+        socket.emit("get-wallet-balance-error", "An unknown error occurred");
+      }
+      console.error(error);
     }
   });
 }

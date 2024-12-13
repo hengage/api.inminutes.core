@@ -3,11 +3,12 @@ import { startSession } from "mongoose";
 import { DateTime } from "luxon";
 import {
   AGENDA,
+  HTTP_STATUS_CODES,
   RIDER_WORK_SLOT_STATUS,
   WORK_SLOT_SESSIONS,
 } from "../../../constants";
 import { SchedulerService } from "../../../services";
-import { HandleException } from "../../../utils";
+import { HandleException, Msg } from "../../../utils";
 import { workSlotRepo } from "../repository/workSlot.repo";
 import { IBookSlotData } from "../riders.interface";
 
@@ -81,14 +82,18 @@ class WorkSlotService {
 
       await session.commitTransaction();
       return cancelledTimeSlot;
-    } catch (error: any) {
+    } catch (error: unknown) {
       await session.abortTransaction();
-      throw new HandleException(error.status, error.message);
+      if (error instanceof HandleException) {
+        throw new HandleException(error.status, error.message);
+      } else {
+        throw new HandleException(HTTP_STATUS_CODES.SERVER_ERROR,
+          Msg.ERROR_UNKNOWN_ERROR());
+      }
     } finally {
       session.endSession();
     }
   }
-
   private getStartEndTimes(date: Date | string, session: string): [Date, Date] {
     let startTime = DateTime.fromISO(`${date}`),
       endTime = DateTime.fromISO(`${date}`);

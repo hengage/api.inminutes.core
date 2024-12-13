@@ -1,7 +1,7 @@
-import crypto from "crypto";
 import bcrypt from "bcrypt";
-import { DateTime } from "luxon";
+import crypto from "crypto";
 import jwt from "jsonwebtoken";
+import { DateTime } from "luxon";
 import { JWT_SECRET_KEY } from "../config";
 import { JWT_ALGORITHMS } from "../config/secrets.config";
 
@@ -30,7 +30,10 @@ export async function compareValues(
   return bcrypt.compare(plainValue, hashValue);
 }
 
-export function generateJWTToken(payload: any, expiresIn: string): string {
+export function generateJWTToken(
+  payload: jwt.JwtPayload,
+  expiresIn: string,
+): string {
   return jwt.sign(payload, `${JWT_SECRET_KEY}`, {
     algorithm: JWT_ALGORITHMS.HS256,
     expiresIn,

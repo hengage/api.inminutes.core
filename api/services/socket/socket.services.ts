@@ -1,6 +1,6 @@
 import { Server } from "http";
 
-const socketIO = require("socket.io");
+import socketIO from "socket.io";
 
 import { Socket } from "socket.io";
 import { listenToOrderevents } from "./orders.socket";
@@ -12,16 +12,15 @@ import { listenToVendorEvents } from "./vendors.socket";
 import { listenToErrandEvents } from "./errand.socket";
 
 export class SocketServer {
-  private io: Socket;
+  private io: socketIO.Server;
   private static instance: SocketServer;
   // public socket: Socket;
   public sockets: Map<string, Socket> = new Map();
 
   constructor(server: Server) {
-    this.io = socketIO(server);
+    this.io = new socketIO.Server(server);
     // this.socket = {} as Socket;
   }
-
   public static getInstance(server?: Server): SocketServer {
     if (!SocketServer.instance && server) {
       SocketServer.instance = new SocketServer(server);

@@ -1,5 +1,5 @@
 import { HTTP_STATUS_CODES } from "../constants";
-import { Customer, ICustomerDocument } from "../features/customers";
+import { Customer } from "../features/customers";
 import { Rider } from "../features/riders";
 import { Vendor } from "../features/vendors";
 import { HandleException } from "../utils";

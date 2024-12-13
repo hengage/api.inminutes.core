@@ -57,7 +57,7 @@ export class AdminOpsForProductsController {
         null,
         "Product has been rejected",
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error rejecting product:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);

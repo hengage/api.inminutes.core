@@ -50,7 +50,7 @@ export class RidersRepository {
       throw new HandleException(
         HTTP_STATUS_CODES.CONFLICT,
         `Looks like you already have a rider account, ` +
-          `please try to login instead`,
+        `please try to login instead`,
       );
     }
 
@@ -253,8 +253,17 @@ export class RidersRepository {
       rider.rating.averageRating = calculateAverageRating(rider, rating);
 
       await rider.save({ session });
-    } catch (error: any) {
-      throw new HandleException(error.status, error.message);
+    } catch (error: unknown) {
+      if (error instanceof HandleException) {
+        throw new HandleException(
+          error.status,
+          error.message
+        );
+      }
+      throw new HandleException(
+        HTTP_STATUS_CODES.SERVER_ERROR,
+        Msg.ERROR_UNKNOWN_ERROR()
+      );
     }
   };
 }

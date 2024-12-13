@@ -36,7 +36,7 @@ export class MediaController {
         { fileUrls },
         "File uploaded",
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error uploading media:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);

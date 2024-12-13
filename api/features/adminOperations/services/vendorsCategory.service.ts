@@ -137,3 +137,13 @@ interface IUpdateCategory {
   name?: IVendorCategoryDocument["_id"];
   image?: IVendorCategoryDocument["image"];
 }
+
+export interface ICreateCategory {
+  name: string;
+  image: string;
+}
+
+export interface ICreateSubCategory {
+  name: string;
+  category: string;
+}

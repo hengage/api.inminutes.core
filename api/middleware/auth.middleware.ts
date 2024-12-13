@@ -62,12 +62,15 @@ const socketGuard = (event: any, next: (err?: Error | undefined) => void) => {
     const decoded = verifyToken(token);
     socket.data.user = decoded;
     next();
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.log({ error });
-    return next(new Error("Authentication error: " + error.message));
+    if (error instanceof Error) {
+      return next(new Error("Authentication error: " + error.message));
+    } else {
+      return next(new Error("An Unknown error occured"));
+    }
   }
 };
-
 const errandHistoryMiddleware = async (
   req: Request,
   res: Response,
@@ -110,10 +113,10 @@ const authLimiter = createRateLimiter(6, RATE_LIMIT_WINDOW_MS.DEFAULT);
 
 const cashoutLimiter = createRateLimiter(5, RATE_LIMIT_WINDOW_MS.CASHOUT_LIMIT);
 
-const verifyToken = (token: string): CustomJwtPayload | string => {
+const verifyToken = (token: string): jwt.JwtPayload | string => {
   return jwt.verify(token, `${JWT_SECRET_KEY}`, {
     algorithms: [JWT_ALGORITHMS.HS256],
-  }) as CustomJwtPayload;
+  });
 };
 
 export {

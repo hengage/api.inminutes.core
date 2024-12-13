@@ -1,3 +1,4 @@
+import { FileArray, UploadedFile } from "express-fileupload";
 import { MediaService } from "../../media";
 import { ICreateCustomerData } from "../customers.interface";
 import { CustomersRepository } from "../repository/customers.repo";
@@ -23,7 +24,7 @@ export class CustomersService {
 
   updateProfilePhoto = async (params: {
     customerId: string;
-    image: Record<string, any>;
+    image: Record<string, FileArray | UploadedFile>;
   }) => {
     const { customerId, image } = params;
 

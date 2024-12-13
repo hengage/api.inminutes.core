@@ -1,4 +1,4 @@
-import { Request, Response, response } from "express";
+import { Request, Response } from "express";
 import { CustomersRepository } from "../repository/customers.repo";
 import { generateJWTToken, handleErrorResponse } from "../../../utils";
 import { ValidateCustomer } from "../validators/customers.validator";
@@ -162,7 +162,7 @@ export class CustomersController {
       await this.customersRepo.deleteAccount(customer);
 
       return handleSuccessResponse(res, HTTP_STATUS_CODES.NO_CONTENT, null);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error deleting customer account", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
@@ -176,7 +176,7 @@ export class CustomersController {
         await this.productsRepo.getWishListForCustomer(customerId);
 
       return handleSuccessResponse(res, HTTP_STATUS_CODES.OK, wishList);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error getting wishlist: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);

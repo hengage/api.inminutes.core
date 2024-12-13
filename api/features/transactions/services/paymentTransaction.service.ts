@@ -1,5 +1,5 @@
 import axios from "axios";
-import { HandleException, generateReference } from "../../../utils";
+import { HandleException, Msg, generateReference } from "../../../utils";
 // import *as crypto from "crypto";
 import { createHmac } from "crypto";
 import { Request } from "express";
@@ -59,7 +59,7 @@ class PaymentTransactionService {
 
       console.log({ reponseData: response.data });
 
-      const createdHistory = this.createHistory({
+      this.createHistory({
         amount: initializeTransactionData.amount,
         reason: initializeTransactionData.metadata.reason,
         customer: initializeTransactionData.metadata.customerId,
@@ -67,19 +67,22 @@ class PaymentTransactionService {
         status: "pending",
       })
         .then((createdHistory) => console.log(createdHistory))
-        .catch((error: any) => {
+        .catch((error: unknown) => {
           console.error("Error creating transaction history: ", error);
         });
 
       console.log({});
 
       return response.data.data;
-    } catch (error: any) {
-      console.error({ error: error.response.data });
-      throw new HandleException(error.status, error.message);
+    } catch (error: unknown) {
+      if (error instanceof HandleException) {
+        throw new HandleException(error.status, error.message);
+      } else {
+        throw new HandleException(HTTP_STATUS_CODES.SERVER_ERROR,
+          Msg.ERROR_UNKNOWN_ERROR());
+      }
     }
   }
-
   /**
    * Processes incoming webhook events from Paystack and
    *  takes appropriate actions based on the event type,

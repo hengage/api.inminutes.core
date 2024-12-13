@@ -1,7 +1,6 @@
 import joi from "joi";
 import { HandleException, Msg } from "../../../utils";
 import { ICustomerDocument } from "../customers.interface";
-import { Response } from "express";
 import { HTTP_STATUS_CODES } from "../../../constants";
 
 export class ValidateCustomer {
