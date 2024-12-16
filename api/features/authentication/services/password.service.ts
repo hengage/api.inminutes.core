@@ -16,7 +16,7 @@ class PasswordService {
   ) {
     const AccountModel =
       await this.usersService.getUserAccountModel(accountType);
-    const account = await (AccountModel as unknown as AccountModelType)
+    const account = await (AccountModel as AccountModelType)
       .findOne({ phoneNumber })
       .select("phoneNumber password");
     if (!account) {
@@ -39,7 +39,7 @@ class PasswordService {
     try {
       const AccountModel =
         await this.usersService.getUserAccountModel(accountType);
-      const account = await (AccountModel as unknown as AccountModelType)
+      const account = await (AccountModel as AccountModelType)
         .findById(accountId)
         .select("password");
 
