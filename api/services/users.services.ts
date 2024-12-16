@@ -1,7 +1,8 @@
+import { HTTP_STATUS_CODES } from "../constants";
 import { Customer } from "../features/customers";
 import { Rider } from "../features/riders";
 import { Vendor } from "../features/vendors";
-import { HandleException, STATUS_CODES } from "../utils";
+import { HandleException } from "../utils";
 
 export class UsersService {
   public async isEmailTaken(email: string) {
@@ -28,8 +29,8 @@ export class UsersService {
 
     if (customer || vendor || rider) {
       throw new HandleException(
-        STATUS_CODES.CONFLICT,
-        "Email is already taken"
+        HTTP_STATUS_CODES.CONFLICT,
+        "Email is already taken",
       );
     }
 
@@ -37,31 +38,26 @@ export class UsersService {
   }
 
   public async isPhoneNumberTaken(phoneNumber: string) {
-    const customer = await Customer.findOne({
-      phoneNumber: { $eq: phoneNumber },
-    })
+    type PhoneNumberDocument = { phoneNumber: string };
+
+    const result = await Customer.findOne({ phoneNumber })
       .select("phoneNumber")
       .lean()
-      .exec();
+      .then(
+        (customer: PhoneNumberDocument | null) =>
+          customer ||
+          Vendor.findOne({ phoneNumber }).select("phoneNumber").lean(),
+      )
+      .then(
+        (vendor: PhoneNumberDocument | null) =>
+          vendor || Rider.findOne({ phoneNumber }).select("phoneNumber").lean(),
+      );
 
-    const vendor = await Vendor.findOne({
-      phoneNumber: { $eq: phoneNumber },
-    })
-      .select("phoneNumber")
-      .lean()
-      .exec();
-
-    const rider = await Rider.findOne({
-      phoneNumber: { $eq: phoneNumber },
-    })
-      .select("email")
-      .lean()
-      .exec();
-
-    if (customer || vendor || rider) {
+    console.log({ result });
+    if (result) {
       throw new HandleException(
-        STATUS_CODES.CONFLICT,
-        "Phone number is already taken"
+        HTTP_STATUS_CODES.CONFLICT,
+        "Phone number is already taken",
       );
     }
     return false;
@@ -84,8 +80,8 @@ export class UsersService {
 
     if (customer || rider) {
       throw new HandleException(
-        STATUS_CODES.CONFLICT,
-        "Display name is already taken"
+        HTTP_STATUS_CODES.CONFLICT,
+        "Display name is already taken",
       );
     }
     return false;
@@ -101,8 +97,8 @@ export class UsersService {
         return Rider;
       default:
         throw new HandleException(
-          STATUS_CODES.BAD_REQUEST,
-          "Invalid account type"
+          HTTP_STATUS_CODES.BAD_REQUEST,
+          "Invalid account type",
         );
     }
   }

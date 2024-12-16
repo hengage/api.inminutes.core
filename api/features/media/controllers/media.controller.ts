@@ -1,7 +1,10 @@
 import { Request, Response } from "express";
 
-import { HandleException, STATUS_CODES, handleErrorResponse } from "../../../utils";
+import { HandleException, handleErrorResponse } from "../../../utils";
 import { MediaService } from "../services/media.service";
+import { UploadedFiles } from "../media.interface";
+import { handleSuccessResponse } from "../../../utils/response.utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 export class MediaController {
   private mediaService: MediaService;
@@ -9,8 +12,8 @@ export class MediaController {
   constructor() {
     this.mediaService = new MediaService();
   }
-  public uploadMedia = async (req: Request, res: Response) => {
-    const files = req.files as Record<string, any>;
+  public uploadMedia = async (req: Request, res: Response): Promise<void> => {
+    const files = req.files as UploadedFiles;
     const tags = req.query.tags as string;
 
     try {
@@ -19,16 +22,24 @@ export class MediaController {
       }
 
       if (!files) {
-        throw new HandleException(400, "No file selected");
+        throw new HandleException(
+          400,
+          "No file selected. Please select a file.",
+        );
       }
 
       const fileUrls = await this.mediaService.uploadToCloudinary(files, tags);
-      res.status(STATUS_CODES.OK).json({
-        message: "File successfully uploaded",
-        data: fileUrls,
-      });
-    } catch (error: any) {
-      handleErrorResponse(res, error)
+
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        { fileUrls },
+        "File uploaded",
+      );
+    } catch (error: unknown) {
+      console.error("Error uploading media:", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 }

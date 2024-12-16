@@ -1,5 +1,7 @@
 import Joi from "joi";
-import { HandleException, STATUS_CODES } from "../../../utils";
+import { HandleException, Msg } from "../../../utils";
+import { HTTP_STATUS_CODES, ORDER_TYPE } from "../../../constants";
+import { ICreateOrderData } from "../orders.interface";
 
 /**
 Validates orders using Joi schemas.
@@ -11,7 +13,7 @@ export class ValidateOrders {
   @param {object} payload - The create order payload.
   @throws {HandleException error} If the payload is invalid.
   */
-  create = async (payload: any) => {
+  create = async (payload: ICreateOrderData) => {
     const schema = Joi.object({
       recipientPhoneNumber: Joi.string()
         .label("Recipient's phone number")
@@ -30,15 +32,14 @@ export class ValidateOrders {
       totalCost: Joi.string().label("Total cost").required(),
       instruction: Joi.string().label("Instruction"),
       type: Joi.string()
-        .valid("instant", "scheduled")
+        .valid(ORDER_TYPE.INSTANT, ORDER_TYPE.SCHEDULED)
         .label("Order type")
         .required(),
       scheduledDeliveryTime: Joi.string().when("type", {
-        is: "scheduled",
+        is: ORDER_TYPE.SCHEDULED,
         then: Joi.string().label("Scheduled delivery time").required(),
         otherwise: Joi.forbidden().messages({
-          "any.unknown":
-            "Scheduled pickup time is forbidden when errand type is not sheduled",
+          "any.unknown": Msg.ERROR_SCHEDULED_FORBIDDEN(),
         }),
       }),
     });
@@ -49,7 +50,7 @@ export class ValidateOrders {
     });
 
     if (error) {
-      throw new HandleException(STATUS_CODES.BAD_REQUEST, error.message);
+      throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
     }
     return;
   };
@@ -59,20 +60,20 @@ export class ValidateOrders {
   @param {object} payload - The assign rider payload.
   @throws {HandleException error} If the payload is invalid.
   */
-  assignRider = async (payload: { orderId: string; riderId: string }) => {
+  assignRider = async (assignRiderData: { orderId: string; riderId: string }) => {
     const schema = Joi.object({
       orderId: Joi.string().label("Order id").required(),
       riderId: Joi.string().label("Rider id").required(),
     });
 
-    const { error } = schema.validate(payload, {
+    const { error } = schema.validate(assignRiderData, {
       allowUnknown: false,
       abortEarly: false,
       // stripUnknown: true,
     });
 
     if (error) {
-      throw new HandleException(STATUS_CODES.BAD_REQUEST, error.message);
+      throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
     }
     return;
   };
@@ -82,7 +83,7 @@ export class ValidateOrders {
   @param {object} payload - The order feedback payload.
   @throws {HandleException} If the payload is invalid.
   */
-  orderFeedback = async (payload: { rating: number }) => {
+  orderFeedback = async (orderFeedbackData: { rating: number }) => {
     const schema = Joi.object({
       vendorRating: Joi.number().integer().min(1).max(5).label("rating"),
       riderRating: Joi.number().integer().min(1).max(5).label("rating"),
@@ -100,13 +101,13 @@ export class ValidateOrders {
         .label("Rider"),
     });
 
-    const { error } = schema.validate(payload, {
+    const { error } = schema.validate(orderFeedbackData, {
       allowUnknown: false,
       abortEarly: false,
     });
 
     if (error) {
-      throw new HandleException(STATUS_CODES.BAD_REQUEST, error.message);
+      throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
     }
   };
 }

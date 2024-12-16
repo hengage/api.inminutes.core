@@ -1,13 +1,16 @@
 import { ClientSession } from "mongoose";
-import {  emitEvent } from "../../../services";
+import { emitEvent } from "../../../services";
 import {
   HandleException,
-  STATUS_CODES,
   calculateAverageRating,
   compareValues,
+  formatPhoneNumberforDB,
+  Msg,
 } from "../../../utils";
 import { Vendor } from "../models/vendors.model";
 import { IVendorDocument, IVendorSignupData } from "../vendors.interface";
+import { Events, GEOLOCATION, HTTP_STATUS_CODES } from "../../../constants";
+import { Coordinates } from "../../../types";
 
 /**
 Repository for managing vendors.
@@ -20,16 +23,17 @@ class VendorsRepository {
   @param {object} vendorData - The vendor signup data.
   */
   async signup(
-    vendorData: IVendorSignupData
+    vendorData: IVendorSignupData,
   ): Promise<Partial<IVendorDocument>> {
     const vendor = await Vendor.create({
       ...vendorData,
+      phoneNumber: formatPhoneNumberforDB(vendorData.phoneNumber),
       location: {
         coordinates: vendorData.location,
       },
     });
 
-    emitEvent.emit("create-wallet", {
+    emitEvent.emit(Events.CREATE_WALLET, {
       vendorId: vendor._id,
     });
 
@@ -44,16 +48,22 @@ class VendorsRepository {
 
   async login(email: string, password: string) {
     const vendor = await Vendor.findOne({ email }).select(
-      "email phoneNumber password"
+      "email phoneNumber password",
     );
 
     if (!vendor) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, "Invalid credentials");
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        Msg.ERROR_INVALID_LOGIN_CREDENTIALS(),
+      );
     }
 
     const passwordsMatch = await compareValues(password, vendor.password);
     if (!passwordsMatch) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, "Invalid credentials");
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        Msg.ERROR_INVALID_LOGIN_CREDENTIALS(),
+      );
     }
 
     return {
@@ -68,7 +78,10 @@ class VendorsRepository {
       .lean();
 
     if (!vendor) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, "Vendor not found");
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        Msg.ERROR_VENDOR_NOT_FOUND(id),
+      );
     }
 
     return vendor;
@@ -82,20 +95,17 @@ class VendorsRepository {
     @param {number} params.limit - The number of vendors to retrieve per page.
   */
   async findVendorsByLocation(params: {
-    coordinates: [lng: number, lat: number];
+    coordinates: Coordinates;
     page: number;
     limit: number;
   }) {
     const { coordinates, page, limit } = params;
 
-    // const origin = convertLatLngToCell(coordinates);
-    // const query = { h3Index: origin };
-
     const query = {
       location: {
         $near: {
-          $geometry: { type: "Point", coordinates },
-          $maxDistance: 17000,
+          $geometry: { type: GEOLOCATION.POINT, coordinates },
+          $maxDistance: GEOLOCATION.MAX_DISTANCE_TO_SEARCH,
         },
       },
     };
@@ -140,7 +150,7 @@ class VendorsRepository {
   async getVendorsByCategory(params: {
     categoryId: string;
     page: number;
-    coordinates: [lng: number, lat: number];
+    coordinates: Coordinates;
   }) {
     const { categoryId, coordinates, page } = params;
     const limit = 20;
@@ -149,8 +159,8 @@ class VendorsRepository {
       category: categoryId,
       location: {
         $near: {
-          $geometry: { type: "Point", coordinates },
-          $maxDistance: 17000,
+          $geometry: { type: GEOLOCATION.POINT, coordinates },
+          $maxDistance: GEOLOCATION.MAX_DISTANCE_TO_SEARCH,
         },
       },
     };
@@ -197,20 +207,17 @@ class VendorsRepository {
   */
   async getVendorsBySubCategory(params: {
     subCategoryId: string;
-    coordinates: [lng: number, lat: number];
+    coordinates: Coordinates;
     page: number;
   }) {
     const { page, coordinates } = params;
     const limit = 20;
 
-    // const origin = convertLatLngToCell(params.coordinates);
-    // const query = { subCategory: params.subCategoryId,  h3Index: origin };
-
     const query = {
       subCategory: params.subCategoryId,
       location: {
         $near: {
-          $geometry: { type: "Point", coordinates },
+          $geometry: { type: GEOLOCATION.POINT, coordinates },
           $maxDistance: 17000,
         },
       },
@@ -255,7 +262,7 @@ class VendorsRepository {
 */
   async updateRating(
     updateRatingDto: { vendorId: string; rating: number },
-    session: ClientSession
+    session: ClientSession,
   ) {
     const { vendorId, rating } = updateRatingDto;
     try {
@@ -264,14 +271,17 @@ class VendorsRepository {
       }).select("rating");
 
       if (!vendor) {
-        throw new HandleException(STATUS_CODES.NOT_FOUND, "vendor not found");
+        throw new HandleException(
+          HTTP_STATUS_CODES.NOT_FOUND,
+          Msg.ERROR_VENDOR_NOT_FOUND(vendorId),
+        );
       }
 
       vendor.rating.averageRating = calculateAverageRating(vendor, rating);
 
       await vendor.save({ session });
-    } catch (error: any) {
-      throw new HandleException(error.status, error.message);
+    } catch (error: unknown) {
+      throw error;
     }
   }
 }

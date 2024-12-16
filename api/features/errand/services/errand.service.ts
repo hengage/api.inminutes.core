@@ -1,6 +1,6 @@
-import { ErrandStatus } from "../../../utils/constants.utils";
+import { ErrandStatus, HTTP_STATUS_CODES } from "../../../constants";
 import { NotificationService } from "../../notifications";
-import { deliveryService, HandleException, STATUS_CODES } from "../../../utils";
+import { deliveryService, HandleException } from "../../../utils";
 import { ICreateErrandData } from "../errand.interface";
 import { ErrandRepository } from "../repository/errand.repo";
 
@@ -23,7 +23,10 @@ class ErrandService {
   getErrand = async (errandId: string) => {
     const errand = await this.errandRepo.getErrand(errandId);
     if (!errand) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, "Errand not found");
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        "Errand not found",
+      );
     }
 
     return errand;
@@ -38,6 +41,38 @@ class ErrandService {
     return await this.errandRepo.updateStatus({
       errandId,
       status: ErrandStatus.PICKED_UP,
+    });
+  };
+
+  inTransit = async (errandId: string) => {
+    const errand = await this.errandRepo.updateStatus({
+      errandId,
+      status: ErrandStatus.IN_TRANSIT,
+    });
+
+    this.notification.createNotification({
+      headings: { en: "Package in transit" },
+      contents: {
+        en: "The package is in transit, on the way to your delivery location",
+      },
+      data: { errandId: errand?._id },
+      userId: errand?.customer,
+    });
+  };
+
+  nearby = async (errandId: string) => {
+    const errand = await this.errandRepo.updateStatus({
+      errandId,
+      status: ErrandStatus.NEARBY,
+    });
+
+    this.notification.createNotification({
+      headings: { en: "Package nearby" },
+      contents: {
+        en: "The package is nearby, please be ready to pick it up",
+      },
+      data: { errandId: errand?._id },
+      userId: errand?.customer,
     });
   };
 

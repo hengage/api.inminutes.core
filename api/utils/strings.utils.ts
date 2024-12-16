@@ -1,11 +1,11 @@
-import crypto from "crypto";
 import bcrypt from "bcrypt";
-import { DateTime } from "luxon";
+import crypto from "crypto";
 import jwt from "jsonwebtoken";
+import { DateTime } from "luxon";
 import { JWT_SECRET_KEY } from "../config";
 import { JWT_ALGORITHMS } from "../config/secrets.config";
 
-function generateUniqueString(length: number) {
+export function generateUniqueString(length: number): string {
   const randomBytes = crypto.randomBytes(Math.ceil(length / 2));
   const hexString = randomBytes.toString("hex").slice(0, length);
   const timestamp = DateTime.now().toUnixInteger().toString().substring(6);
@@ -13,31 +13,34 @@ function generateUniqueString(length: number) {
   return uniqueString;
 }
 
-function toLowerCaseSetter(value: string): string {
+export function toLowerCaseSetter(value: string): string {
   return value?.toLowerCase();
 }
 
-async function encryptValue(value: string): Promise<string> {
-  // try {
+export async function encryptValue(value: string): Promise<string> {
   const saltRounds = 10;
   const hashedValue = await bcrypt.hash(value, saltRounds);
   return hashedValue;
-  // } catch (error: any) {
-  //   throw new Error(error.message);
-  // }
 }
-async function compareValues(plainValue: string, hashValue: string) {
+
+export async function compareValues(
+  plainValue: string,
+  hashValue: string,
+): Promise<boolean> {
   return bcrypt.compare(plainValue, hashValue);
 }
 
-function generateJWTToken(payload: any, expiresIn: string): string {
+export function generateJWTToken(
+  payload: jwt.JwtPayload,
+  expiresIn: string,
+): string {
   return jwt.sign(payload, `${JWT_SECRET_KEY}`, {
     algorithm: JWT_ALGORITHMS.HS256,
     expiresIn,
   });
 }
 
-function generateReference() {
+export function generateReference(): string {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let reference = "";
@@ -54,11 +57,36 @@ function generateReference() {
   return reference;
 }
 
-export {
-  generateUniqueString,
-  toLowerCaseSetter,
-  encryptValue,
-  compareValues,
-  generateJWTToken,
-  generateReference,
-};
+/**
+ * Formats a phone number for storage in the database.
+ *
+ * This function takes a phone number string as input and returns a formatted version
+ * that is suitable for storage in the database. It removes all non-digit characters
+ * from the input, and ensures that the phone number is prefixed with "234" if it
+ * does not already start with "0" or "234".
+ *
+ * @param phoneNumber - The phone number to be formatted.
+ * @returns The formatted phone number.
+ */
+export function formatPhoneNumberforDB(phoneNumber: string): string {
+  // Remove all non-digit characters
+  const digitsOnly = phoneNumber.replace(/\D/g, "");
+
+  if (digitsOnly.startsWith("0")) {
+    return "234" + digitsOnly.slice(1);
+  } else if (digitsOnly.startsWith("234")) {
+    return digitsOnly;
+  } else {
+    return digitsOnly;
+  }
+}
+
+/**
+ * Capitalizes the first letter of each word in a string.
+ */
+export function capitalize(name: string): string {
+  return name
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}

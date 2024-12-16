@@ -1,5 +1,5 @@
 import axios from "axios";
-import { HandleException, generateReference } from "../../../utils";
+import { HandleException, Msg, generateReference } from "../../../utils";
 // import *as crypto from "crypto";
 import { createHmac } from "crypto";
 import { Request } from "express";
@@ -13,6 +13,7 @@ import { TransactionRepository } from "../repository/transaction.repo";
 import { cashoutTransferService } from "./cashoutTransfer.service";
 import { SocketServer } from "../../../services/socket/socket.services";
 import { ClientSession } from "mongoose";
+import { Events, HTTP_STATUS_CODES } from "../../../constants";
 
 /**
 Service for managing transactions and interacting with Paystack API.
@@ -53,12 +54,12 @@ class PaymentTransactionService {
         payload,
         {
           headers: this.headers,
-        }
+        },
       );
 
       console.log({ reponseData: response.data });
 
-      const createdHistory = this.createHistory({
+      this.createHistory({
         amount: initializeTransactionData.amount,
         reason: initializeTransactionData.metadata.reason,
         customer: initializeTransactionData.metadata.customerId,
@@ -66,19 +67,22 @@ class PaymentTransactionService {
         status: "pending",
       })
         .then((createdHistory) => console.log(createdHistory))
-        .catch((error: any) => {
+        .catch((error: unknown) => {
           console.error("Error creating transaction history: ", error);
         });
 
       console.log({});
 
       return response.data.data;
-    } catch (error: any) {
-      console.error({ error: error.response.data });
-      throw new HandleException(error.status, error.message);
+    } catch (error: unknown) {
+      if (error instanceof HandleException) {
+        throw new HandleException(error.status, error.message);
+      } else {
+        throw new HandleException(HTTP_STATUS_CODES.SERVER_ERROR,
+          Msg.ERROR_UNKNOWN_ERROR());
+      }
     }
   }
-
   /**
    * Processes incoming webhook events from Paystack and
    *  takes appropriate actions based on the event type,
@@ -86,42 +90,48 @@ class PaymentTransactionService {
    */
   webhook(req: Request) {
     const hash = createHmac("sha512", `${PAYSTACK_SECRET_KEY}`).update(
-      JSON.stringify(req.body)
+      JSON.stringify(req.body),
     );
     const digest = hash.digest("hex");
 
-    // if (digest === req.headers["x-paystack-signature"]) {
-    console.log(req.body);
-    const event = req.body;
-    const { reference, status, paid_at: paidAt } = event.data;
+    if (digest === req.headers["x-paystack-signature"]) {
+      console.log(req.body);
+      const event = req.body;
+      const { reference, status, paid_at: paidAt } = event.data;
 
-    switch (event.event) {
-      case "charge.success":
-        console.log({ metadata: event.data.metadata });
-        this.transactionRepo.updateStatus({ reference, status, paidAt });
-        const { purpose, orderId, vendorId } = event.data.metadata;
-        if (purpose === "product purchase") {
-          emitEvent.emit("notify-vendor-of-new-order", { orderId, vendorId });
+      switch (event.event) {
+        case "charge.success": {
+          console.log({ metadata: event.data.metadata });
+          this.transactionRepo.updateStatus({ reference, status, paidAt });
+          const { purpose, orderId, vendorId } = event.data.metadata;
+          if (purpose === "product purchase") {
+            emitEvent.emit(Events.NOTIFY_VENDOR_OF_ORDER, {
+              orderId,
+              vendorId,
+            });
+          }
+          break;
         }
-        break;
-      case "transfer.success":
-      case "transfer.failed":
-        console.log({ reference, status });
-        this.transactionRepo.updateStatus({ reference, status });
+        case "transfer.success":
+        case "transfer.failed":
+          console.log({ reference, status });
+          this.transactionRepo.updateStatus({ reference, status });
 
-        // Credit wallet on failed transfer
-        if (event.event === "transfer.failed") {
-          this.handleFailedCashoutTransaction(event);
-        }
-        break;
-      default:
-        console.warn(`Unknown event type: ${event.event}`);
+          // Credit wallet on failed transfer
+          if (event.event === "transfer.failed") {
+            this.handleFailedCashoutTransaction(event);
+          }
+          break;
+        default:
+          console.warn(`Unknown event type: ${event.event}`);
+      }
+    } else {
+      throw new HandleException(
+        HTTP_STATUS_CODES.BAD_REQUEST,
+        "Invalid signature",
+      );
     }
-    // } else {
-    // throw new HandleException(STATUS_CODES.BAD_REQUEST, "Invalid signature");
-    // }
   }
-
   /**
   @async
   Creates a new transaction history entry.
@@ -129,18 +139,18 @@ class PaymentTransactionService {
   */
   async createHistory(
     transactionHistoryData: ICreateTransactionHistoryData,
-    session?: ClientSession
+    session?: ClientSession,
   ) {
     return await this.transactionRepo.createHistory(
       transactionHistoryData,
-      session
+      session,
     );
   }
 
   async getTransactionByReference(reference: string, selectFields: string) {
     return this.transactionRepo.getTransactionByReference(
       reference,
-      selectFields
+      selectFields,
     );
   }
 
@@ -167,12 +177,12 @@ calling the cashoutTransferService.reverseDebit method
 
       const socketServer = SocketServer.getInstance();
       socketServer.emitEvent(
-        "wallet-balance",
+        Events.WALLET_BALANCE,
         {
           _id: wallet?._id,
           balance: wallet?.balance,
         },
-        wallet?.merchantId
+        wallet?.merchantId,
       );
     } catch (error) {
       console.error({ error });

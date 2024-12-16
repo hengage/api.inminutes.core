@@ -3,12 +3,19 @@ import {
   IInitializeTransaction,
   InitializeCashoutTransferData,
 } from "../transactions.interface";
-import { HandleException, PAYMENT_PURPOSE, STATUS_CODES } from "../../../utils";
+import { HandleException } from "../../../utils";
+import { HTTP_STATUS_CODES, PAYMENT_PURPOSE } from "../../../constants";
 
 class ValidateTransactions {
   initializeTransaction = async (payload: IInitializeTransaction) => {
     const schema = Joi.object().keys({
-      email: Joi.string().email().required(),
+      email: Joi.string()
+        .email()
+        .required()
+        .pattern(
+          /^[a-zA-Z0-9.!#$%&’*+/=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+        )
+        .message("Invalid email format"),
       amount: Joi.string().required(),
       metadata: Joi.object()
         .keys({
@@ -17,7 +24,7 @@ class ValidateTransactions {
             .required()
             .valid(
               PAYMENT_PURPOSE.PRODUCT_PURCHASE,
-              PAYMENT_PURPOSE.PACKAGE_DELIVERY
+              PAYMENT_PURPOSE.PACKAGE_DELIVERY,
             ),
           orderId: Joi.string().required(),
           vendorId: Joi.string().when("reason", {
@@ -25,7 +32,7 @@ class ValidateTransactions {
             then: Joi.string().required(),
             otherwise: Joi.forbidden().messages({
               "any.unknown":
-              "vendorId is forbidden when reason for payment is not for product purchase",
+                "vendorId is forbidden when reason for payment is not for product purchase",
             }),
           }),
         })
@@ -38,13 +45,13 @@ class ValidateTransactions {
     });
 
     if (error) {
-      throw new HandleException(STATUS_CODES.BAD_REQUEST, error.message);
+      throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
     }
     return;
   };
 
   cashoutTransfer = async (
-    cashoutTransferData: InitializeCashoutTransferData
+    cashoutTransferData: InitializeCashoutTransferData,
   ) => {
     const schema = Joi.object({
       amount: Joi.number().label("Amount").required().messages({
@@ -78,7 +85,7 @@ class ValidateTransactions {
     });
 
     if (error) {
-      throw new HandleException(STATUS_CODES.BAD_REQUEST, error.message);
+      throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
     }
     return;
   };

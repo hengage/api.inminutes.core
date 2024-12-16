@@ -1,25 +1,39 @@
-import jwt, { decode } from "jsonwebtoken";
-import { HandleException, STATUS_CODES, generateJWTToken } from "../../../utils";
+import jwt from "jsonwebtoken";
+import { HandleException, Msg, generateJWTToken } from "../../../utils";
 import { JWT_SECRET_KEY } from "../../../config";
+import { HTTP_STATUS_CODES, JWTConfig } from "../../../constants";
 
 class AuthService {
   public async refreshAccessToken(refreshToken: string) {
-    console.log({ refreshToken });
     try {
       if (!refreshToken) {
-        throw new HandleException(STATUS_CODES.FORBIDDEN, "Unauthorized");
+        throw new HandleException(HTTP_STATUS_CODES.FORBIDDEN, "Unauthorized");
       }
-      const decoded: any =  jwt.verify(refreshToken, `${JWT_SECRET_KEY}`);
+      const decoded = jwt.verify(
+        refreshToken,
+        `${JWT_SECRET_KEY}`,
+      ) as jwt.JwtPayload;
       console.log({ decoded });
       const accessToken = generateJWTToken(
         { phoneNumber: decoded.phoneNumber, _id: decoded._id },
-        "5m"
+        JWTConfig.ACCESS_TOKEN_EXPIRES_IN,
       );
       return accessToken;
-    } catch (error: any) {
-      throw new HandleException(error.status, error.message);
+    } catch (error: unknown) {
+      if (error instanceof HandleException) {
+        throw error;
+      }
+      if (error instanceof jwt.JsonWebTokenError) {
+        throw new HandleException(
+          HTTP_STATUS_CODES.UNAUTHORIZED,
+          error.message,
+        );
+      }
+      throw new HandleException(
+        HTTP_STATUS_CODES.SERVER_ERROR,
+        Msg.ERROR_UNKNOWN_ERROR(),
+      );
     }
   }
 }
-
 export const authService = new AuthService();

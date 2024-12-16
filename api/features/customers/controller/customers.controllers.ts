@@ -1,14 +1,12 @@
-import { Request, Response, response } from "express";
+import { Request, Response } from "express";
 import { CustomersRepository } from "../repository/customers.repo";
-import {
-  STATUS_CODES,
-  generateJWTToken,
-  handleErrorResponse,
-} from "../../../utils";
+import { generateJWTToken, handleErrorResponse } from "../../../utils";
 import { ValidateCustomer } from "../validators/customers.validator";
 import { CustomersService } from "../services/customers.services";
 import { CustomersAuthentication } from "../auth/customers.auth";
 import { ProductsRepository } from "../../products";
+import { handleSuccessResponse } from "../../../utils/response.utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 export class CustomersController {
   private validateCustomer: ValidateCustomer;
@@ -30,13 +28,21 @@ export class CustomersController {
 
     try {
       await this.customersAuthentication.sendVerificationCode(
-        recipientPhoneNumber
+        recipientPhoneNumber,
       );
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "OTP sent",
       });
+      return handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        null,
+        'OTP sent"',
+      );
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      console.error("Error sending code: ", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 
@@ -51,16 +57,17 @@ export class CustomersController {
 
       const accessToken = generateJWTToken(jwtPayload, "1h");
       const refreshToken = generateJWTToken(jwtPayload, "14d");
-      res.status(STATUS_CODES.CREATED).json({
-        message: "Success",
-        data: {
-          customer: { _id: customer._id },
-          accessToken,
-          refreshToken,
-        },
-      });
-    } catch (error: any) {
-      handleErrorResponse(res, error);
+
+      return handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.CREATED,
+        { customer: { _id: customer._id }, accessToken, refreshToken },
+        "Created customer account",
+      );
+    } catch (error: unknown) {
+      console.error("Error creating customer account: ", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 
@@ -68,15 +75,12 @@ export class CustomersController {
     const _id = (req as any).user._id;
     try {
       const customer = await this.customersRepo.getProfile(_id);
-      res.status(STATUS_CODES.OK).json({
-        message: "Fetched customer profile",
-        data: { customer },
-      });
-    } catch (error: any) {
-      res.status(error.status || STATUS_CODES.SERVER_ERROR).json({
-        message: "Error getting profile",
-        error: error.message || "Server error",
-      });
+
+      return handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { customer });
+    } catch (error: unknown) {
+      console.error("Error getting profile: ", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 
@@ -87,14 +91,20 @@ export class CustomersController {
       await this.validateCustomer.updateProfile(req.body);
       const profile = await this.customersRepo.updateProfile(
         customer,
-        req.body
+        req.body,
       );
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "Success",
         data: { profile },
       });
-    } catch (error: any) {
-      handleErrorResponse(res, error);
+
+      return handleSuccessResponse(res, HTTP_STATUS_CODES.OK, {
+        customer: profile,
+      });
+    } catch (error: unknown) {
+      console.log("Error updating customer profile: ", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 
@@ -107,12 +117,17 @@ export class CustomersController {
         customerId,
         image,
       });
-      res.status(200).json({
-        message: "Success",
-        data: { customer },
-      });
-    } catch (error: any) {
-      handleErrorResponse(res, error);
+
+      return handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        { customer },
+        "Display photo changed",
+      );
+    } catch (error: unknown) {
+      console.error("Error updating customer photo: ", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 
@@ -127,12 +142,16 @@ export class CustomersController {
         coordinates,
       });
 
-      return res.status(200).json({
-        message: "success",
-        data: { customer },
-      });
+      return handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        { customer },
+        "Delivery addressed updated",
+      );
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      console.error("Error updating delivery address", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 
@@ -141,27 +160,26 @@ export class CustomersController {
 
     try {
       await this.customersRepo.deleteAccount(customer);
-      res.status(STATUS_CODES.OK).json({
-        message: "Success",
-      });
-    } catch (error: any) {
-      handleErrorResponse(res, error);
+
+      return handleSuccessResponse(res, HTTP_STATUS_CODES.NO_CONTENT, null);
+    } catch (error: unknown) {
+      console.error("Error deleting customer account", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 
   getWishList = async (req: Request, res: Response) => {
     const customerId = (req as any).user._id;
     try {
-      const wishList = await this.productsRepo.getWishListForCustomer(
-        customerId
-      );
-      console.log({ wishList });
-      res.status(STATUS_CODES.OK).json({
-        message: "success",
-        data: { wishList },
-      });
-    } catch (error: any) {
-      handleErrorResponse(res, error);
+      const wishList =
+        await this.productsRepo.getWishListForCustomer(customerId);
+
+      return handleSuccessResponse(res, HTTP_STATUS_CODES.OK, wishList);
+    } catch (error: unknown) {
+      console.error("Error getting wishlist: ", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 }

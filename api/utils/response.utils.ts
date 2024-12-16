@@ -1,23 +1,81 @@
 import { Response } from "express";
-import { STATUS_CODES } from "./constants.utils";
+import { HTTP_STATUS_CODES } from "../constants";
+import { ApiError, ApiSuccessResponse, ErrorCode, JSONValue } from "../types";
+import { HandleException } from "./handleException.utils";
 
-function handleErrorResponse(
-  res: Response,
-  error: any,
-  message: string = "Failed"
-) {
-  console.log({ error: { status: error.status, message: error.message } });
-  console.log({ error});
-
-  const errorMessage =
-    (error.status && error.status >= 500) || error.status === undefined
-      ? "Server error"
-      : error.message;
-
-  res.status(error.status || STATUS_CODES.SERVER_ERROR).json({
-    message,
-    error: errorMessage,
-  });
+// Utility function to create an error response
+export function createErrorResponse(
+  code: ErrorCode,
+  message: string,
+  details?: Record<string, unknown>,
+): ApiError {
+  return {
+    status: "error",
+    error: {
+      code,
+      message,
+      ...(details && { details }),
+    },
+  };
 }
 
-export { handleErrorResponse };
+// Function to handle errors and generate appropriate responses
+export function handleErrorResponse(err: unknown): {
+  statusCode: number;
+  errorJSON: ApiError;
+} {
+  if (err instanceof HandleException) {
+    const errorCode = Object.entries(HTTP_STATUS_CODES).find(
+      ([, code]) => code === err.status,
+    )?.[0] as ErrorCode;
+
+    return {
+      statusCode: err.status,
+      errorJSON: createErrorResponse(
+        errorCode || "INTERNAL_SERVER_ERROR",
+        err.message,
+      ),
+    };
+  } else if (err instanceof Error) {
+    // Handle generic Error objects
+    return {
+      statusCode: HTTP_STATUS_CODES.SERVER_ERROR,
+      errorJSON: createErrorResponse(
+        "SERVER_ERROR",
+        "An unexpected error occurred",
+      ),
+    };
+  } else {
+    // Handle unknown error types
+    return {
+      statusCode: HTTP_STATUS_CODES.SERVER_ERROR,
+      errorJSON: createErrorResponse(
+        "SERVER_ERROR",
+        "An unknown error occurred",
+      ),
+    };
+  }
+}
+
+export function createSuccessResponse<T = JSONValue | null>(
+  data: T,
+  message?: string,
+): ApiSuccessResponse<T> {
+  return {
+    status: "success",
+    data,
+    ...(message && { message }),
+  };
+}
+export function handleSuccessResponse<T = JSONValue | null>(
+  res: Response,
+  statusCode: number,
+  data: T,
+  message?: string,
+) {
+  const successResponse: ApiSuccessResponse<T> = createSuccessResponse(
+    data,
+    message,
+  );
+  res.status(statusCode).json(successResponse);
+}

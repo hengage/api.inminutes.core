@@ -1,11 +1,12 @@
 import { ClientSession } from "mongoose";
-import { HandleException, STATUS_CODES } from "../../../utils";
+import { HandleException } from "../../../utils";
 import { TransactionHistory } from "../models/transaction.model";
 import {
   ITransactionHistoryDocument,
   ICreateTransactionHistoryData,
   IUpdateTransactionHistoryData,
 } from "../transactions.interface";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 /**
 Repository class for managing transactions and related data.
@@ -21,10 +22,10 @@ export class TransactionRepository {
   */
   async createHistory(
     createTransactionHistoryData: ICreateTransactionHistoryData,
-    session?: ClientSession
+    session?: ClientSession,
   ): Promise<ITransactionHistoryDocument> {
     const transactionHistory = new this.TransactionHistoryModel(
-      createTransactionHistoryData
+      createTransactionHistoryData,
     );
     await transactionHistory.save({ session });
     return transactionHistory.toObject();
@@ -38,16 +39,14 @@ export class TransactionRepository {
   @param {string} updateTransactionData.status - The new status of the transaction.
   */
   async updateStatus(
-    updateTransactionData: IUpdateTransactionHistoryData
+    updateTransactionData: IUpdateTransactionHistoryData,
   ): Promise<void> {
     const { reference, ...updateFields } = updateTransactionData;
     await this.TransactionHistoryModel.findOneAndUpdate(
       { reference },
-      { $set: updateFields }
+      { $set: updateFields },
     );
-    console.log(
-      `Updated transaction with reference:  ${reference}`
-    );
+    console.log(`Updated transaction with reference:  ${reference}`);
   }
 
   async getTransactionByReference(reference: string, selectFields: string) {
@@ -58,8 +57,8 @@ export class TransactionRepository {
 
     if (!transaction) {
       throw new HandleException(
-        STATUS_CODES.NOT_FOUND,
-        "Transaction now found"
+        HTTP_STATUS_CODES.NOT_FOUND,
+        "Transaction now found",
       );
     }
 

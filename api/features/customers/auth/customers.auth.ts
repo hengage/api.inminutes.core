@@ -1,19 +1,22 @@
+import { NextFunction, Request, Response } from "express";
 import passport from "passport";
-import { Request, Response, NextFunction } from "express";
-import {
-  STATUS_CODES,
-  generateJWTToken,
-  handleErrorResponse,
-} from "../../../utils";
-import { ICustomerDocument } from "../customers.interface";
-import { ValidateCustomer } from "../validators/customers.validator";
 import { Twilio } from "twilio";
 import {
   TWILIO_ACCOUNT_SID,
   TWILIO_AUTH_TOKEN,
   TWILIO_VERIFY_SID,
 } from "../../../config";
+import { HTTP_STATUS_CODES } from "../../../constants";
+import { JSONValue } from "../../../types";
+import {
+  HandleException,
+  generateJWTToken,
+  handleErrorResponse,
+} from "../../../utils";
+import { handleSuccessResponse } from "../../../utils/response.utils";
+import { ICustomerDocument } from "../customers.interface";
 import { CustomersRepository } from "../repository/customers.repo";
+import { ValidateCustomer } from "../validators/customers.validator";
 
 export class CustomersAuthentication {
   private twilioClient: Twilio;
@@ -37,23 +40,34 @@ export class CustomersAuthentication {
    * @param res res - The response object.
    * @param next  - The next function in the middleware chain.
    */
-  public  login = async (req: Request,res: Response,next: NextFunction): Promise<void> => {
+  public login = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
       await this.validateCustomer.login(req.body);
 
       passport.authenticate(
         "local",
         { session: false },
-        async (err: any, user: ICustomerDocument, info: any) => {
+        async (
+          err: unknown,
+          user: ICustomerDocument,
+          info: Record<string, JSONValue>,
+        ) => {
           if (err) {
             return next(err);
           }
 
           if (!user) {
-            return handleErrorResponse(res, {
-              status: STATUS_CODES.UNAUTHORIZED,
-              message: info.message,
-            });
+            const error = handleErrorResponse(
+              new HandleException(
+                HTTP_STATUS_CODES.UNAUTHORIZED,
+                info.message as string,
+              ),
+            );
+            return res.status(error.statusCode).json(error.errorJSON);
           }
 
           const jwtPayload = {
@@ -64,20 +78,28 @@ export class CustomersAuthentication {
           const accessToken = generateJWTToken(jwtPayload, "1h");
           const refreshToken = generateJWTToken(jwtPayload, "14d");
 
-          res.status(STATUS_CODES.OK).json({
-            message: "Successful",
-            data: { customer: { _id: user._id }, accessToken, refreshToken },
-          });
-        }
+          return handleSuccessResponse(
+            res,
+            HTTP_STATUS_CODES.OK,
+            {
+              customer: { _id: user._id },
+              accessToken: accessToken,
+              refreshToken,
+            },
+            "Login successful",
+          );
+        },
       )(req, res, next);
-    } catch (error: any) {
-      return handleErrorResponse(res, error);
+    } catch (error: unknown) {
+      console.log("Error logging in customer: ", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
-  }
+  };
 
   /**
    * @async
-   * Sends a verification code to a recipient's phone number. 
+   * Sends a verification code to a recipient's phone number.
    * @param recipientPhoneNumber - The phone number to send the verification code to.
    */
   sendVerificationCode = async (recipientPhoneNumber: string) => {

@@ -1,5 +1,6 @@
 import { redisClient, UsersService } from "../../../services";
-import { HandleException, STATUS_CODES, compareValues } from "../../../utils";
+import { HandleException, Msg, compareValues } from "../../../utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 class PasswordService {
   private usersService: UsersService;
@@ -18,57 +19,67 @@ class PasswordService {
     const AccountModel = await this.usersService.getUserAccountModel(
       accountType
     );
-    const account = await (AccountModel as any)
+    const account = await (AccountModel as unknown as typeof AccountModel.prototype)
       .findOne({ phoneNumber })
       .select("phoneNumber password");
     if (!account) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, "User not found");
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        Msg.ERROR_NO_USER_FOUND_WITH_PHONE_NUMBER(phoneNumber),
+      );
     }
 
     const uuidToken = await redisClient.get(`password-reset:${phoneNumber}`);
 
-    if(uuidToken !== token) {
-      throw new HandleException(STATUS_CODES.BAD_REQUEST, 'Unauthorized operation');
+    if (uuidToken !== token) {
+      throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, 'Unauthorized operation');
     }
 
     account.password = newPassword;
-    account.save();
+
+    await account.save();
   }
 
   public async changePassword(
     accountId: string,
     currentPassword: string,
     newPassword: string,
-    accountType: string
+    accountType: string,
   ) {
     try {
       const AccountModel = await this.usersService.getUserAccountModel(
         accountType
       );
-      const account = await (AccountModel as any)
+      const account = await (AccountModel as unknown as typeof AccountModel.prototype)
         .findById(accountId)
         .select("password");
 
       if (!account) {
-        throw new HandleException(STATUS_CODES.NOT_FOUND, "User not found");
+        throw new HandleException(
+          HTTP_STATUS_CODES.NOT_FOUND,
+          Msg.ERROR_NO_USER_FOUND(accountId),
+        );
       }
 
       const currentPasswordMatch = await compareValues(
         currentPassword,
-        account.password
+        account.password,
       );
 
       if (!currentPasswordMatch) {
         throw new HandleException(
-          STATUS_CODES.BAD_REQUEST,
-          "Your current password is incorrect"
+          HTTP_STATUS_CODES.BAD_REQUEST,
+          "Invalid current password",
         );
       }
       account.password = newPassword;
-      account.save();
+      await account.save();
       return;
-    } catch (error: any) {
-      throw new HandleException(error.status, error.message);
+    } catch (error: unknown) {
+      if (error instanceof HandleException) {
+        throw error;
+      }
+      throw new HandleException(HTTP_STATUS_CODES.SERVER_ERROR, Msg.ERROR_UNKNOWN_ERROR());
     }
   }
 }

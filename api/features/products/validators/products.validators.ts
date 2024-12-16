@@ -1,5 +1,6 @@
 import Joi from "joi";
-import { HandleException, STATUS_CODES } from "../../../utils";
+import { HandleException } from "../../../utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 class ValidateProducts {
   addProduct = async (payload: any) => {
@@ -20,7 +21,7 @@ class ValidateProducts {
     });
 
     if (error) {
-      throw new HandleException(STATUS_CODES.BAD_REQUEST, error.message);
+      throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
     }
     return;
   };
@@ -36,7 +37,7 @@ class ValidateProducts {
     });
 
     if (error) {
-      throw new HandleException(STATUS_CODES.BAD_REQUEST, error.message);
+      throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
     }
     return;
   }

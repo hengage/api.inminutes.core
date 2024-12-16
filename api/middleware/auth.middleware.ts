@@ -1,11 +1,18 @@
 import { NextFunction, Request, Response } from "express";
 import { Socket } from "socket.io";
 
+import { rateLimit } from "express-rate-limit";
 import jwt from "jsonwebtoken";
 
-import { STATUS_CODES } from "../utils";
 import { JWT_SECRET_KEY } from "../config";
 import { JWT_ALGORITHMS } from "../config/secrets.config";
+import {
+  HTTP_STATUS_CODES,
+  RATE_LIMIT_WINDOW_MS,
+  USER_TYPE,
+} from "../constants";
+import { Msg } from "../utils";
+import { createErrorResponse } from "../utils/response.utils";
 
 /**
   Verifies the authentication token for a request.
@@ -16,24 +23,21 @@ import { JWT_ALGORITHMS } from "../config/secrets.config";
 const verifyAuthTokenMiddleware = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const token = req.headers.authorization?.split(" ")[1] || req.body.token;
 
-  if (!token) {
-    return res
-      .status(STATUS_CODES.BAD_REQUEST)
-      .json({ message: "Token not provided" });
-  }
-
   try {
-    const decoded = jwt.verify(token, `${JWT_SECRET_KEY}`, {
-      algorithms: [JWT_ALGORITHMS.HS256],
-    });
-    (req as any).user = decoded;
+    const decoded = verifyToken(token);
+    req.user = decoded;
     next();
-  } catch (error: any) {
-    return res.status(401).json({ message: "Invalid or expired token" });
+  } catch (error: unknown) {
+    console.error("Authentication error:", error);
+    res
+      .status(HTTP_STATUS_CODES.UNAUTHORIZED)
+      .json(
+        createErrorResponse("UNAUTHORIZED", Msg.ERROR_AUNAUTHORIZED_USER()),
+      );
   }
 };
 
@@ -52,42 +56,73 @@ const socketGuard = (event: any, next: (err?: Error | undefined) => void) => {
     console.error("Authentication error: Token not provided");
     return next(new Error("Authentication error: Token not provided"));
   }
-  console.log({ tokenFromSocket: token });
 
   try {
-    const decoded = jwt.verify(token, `${JWT_SECRET_KEY}`);
+    const decoded = verifyToken(token);
     socket.data.user = decoded;
     next();
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.log({ error });
-    return next(new Error("Authentication error: " + error.message));
+    if (error instanceof Error) {
+      return next(new Error("Authentication error: " + error.message));
+    } else {
+      return next(new Error("An Unknown error occured"));
+    }
   }
 };
-
 const errandHistoryMiddleware = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
-  const userType = req.query.usertype as "customer" | "rider";
+  const userType = req.query.usertype as USER_TYPE.CUSTOMER | USER_TYPE.RIDER;
   console.log({ userType });
-  if (!userType) {
-    return res.status(STATUS_CODES.BAD_REQUEST).json("User type is required");
-  }
 
-  if (userType !== "customer" && userType != "rider") {
-    return res.status(STATUS_CODES.BAD_REQUEST).json({
-      message: "Invalid user type",
-    });
-  }
-
-  if (typeof userType !== "string") {
-    return res.status(STATUS_CODES.BAD_REQUEST).json({
-      message: "Invalid user type",
-    });
+  if (userType !== USER_TYPE.CUSTOMER && userType != USER_TYPE.RIDER) {
+    return res
+      .status(HTTP_STATUS_CODES.BAD_REQUEST)
+      .json(
+        createErrorResponse(
+          "BAD_REQUEST",
+          Msg.ERROR_INVALID_USER_TYPE(userType),
+        ),
+      );
   }
 
   return next();
 };
 
-export { verifyAuthTokenMiddleware, socketGuard, errandHistoryMiddleware };
+// Todo: use 'rate-limit-redis' for persistent storage https://www.npmjs.com/package/rate-limit-redis
+
+const createRateLimiter = (limit: number, windowMs: number) =>
+  rateLimit({
+    windowMs,
+    limit,
+    standardHeaders: "draft-7",
+    legacyHeaders: false,
+    message: createErrorResponse(
+      "BAD_REQUEST",
+      "Too many attempts, try again later",
+    ),
+  });
+
+const otpLimiter = createRateLimiter(5, RATE_LIMIT_WINDOW_MS.DEFAULT);
+
+const authLimiter = createRateLimiter(6, RATE_LIMIT_WINDOW_MS.DEFAULT);
+
+const cashoutLimiter = createRateLimiter(5, RATE_LIMIT_WINDOW_MS.CASHOUT_LIMIT);
+
+const verifyToken = (token: string): jwt.JwtPayload | string => {
+  return jwt.verify(token, `${JWT_SECRET_KEY}`, {
+    algorithms: [JWT_ALGORITHMS.HS256],
+  });
+};
+
+export {
+  authLimiter,
+  cashoutLimiter,
+  errandHistoryMiddleware,
+  otpLimiter,
+  socketGuard,
+  verifyAuthTokenMiddleware,
+};

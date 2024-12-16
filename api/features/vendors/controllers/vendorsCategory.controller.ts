@@ -1,32 +1,33 @@
 import { Request, Response } from "express";
-import { STATUS_CODES, handleErrorResponse } from "../../../utils";
+import { handleErrorResponse } from "../../../utils";
+import { handleSuccessResponse } from "../../../utils/response.utils";
 import { vendorsCategoryRepo } from "../repository/vendorsCategory.repo";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 class VendorsCategoryController {
   async getCategories(req: Request, res: Response) {
     try {
-      const catgories = await vendorsCategoryRepo.getCategories();
-      res.status(STATUS_CODES.OK).json({
-        message: "Successful",
-        data: { catgories },
-      });
-    } catch (error: any) {
-      return handleErrorResponse(res, error);
+      const categories = await vendorsCategoryRepo.getCategories();
+
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { categories });
+    } catch (error: unknown) {
+      console.error("Error fetching categories:", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 
   async getSubCategoriesByCategory(req: Request, res: Response) {
     try {
-      const subCatgories =
-        await vendorsCategoryRepo.getSubCategoriesByCategory(
-          req.params.categoryId
-        );
-      res.status(STATUS_CODES.OK).json({
-        message: "Successful",
-        data: { subCatgories },
-      });
-    } catch (error: any) {
-      return handleErrorResponse(res, error);
+      const subCatgories = await vendorsCategoryRepo.getSubCategoriesByCategory(
+        req.params.categoryId,
+      );
+
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { subCatgories });
+    } catch (error: unknown) {
+      console.error("Error fetching subcategories:", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 
@@ -34,12 +35,12 @@ class VendorsCategoryController {
     try {
       const subCatgories =
         await vendorsCategoryRepo.getLocalMarketSubcategories();
-      res.status(STATUS_CODES.OK).json({
-        success: true,
-        message: subCatgories,
-      });
+
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { subCatgories });
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      console.error("Error fetching local market subcategory:", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 }

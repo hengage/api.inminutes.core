@@ -1,4 +1,4 @@
-import { HandleException, STATUS_CODES } from "../../../utils";
+import { FileArray, UploadedFile } from "express-fileupload";
 import { MediaService } from "../../media";
 import { ICreateCustomerData } from "../customers.interface";
 import { CustomersRepository } from "../repository/customers.repo";
@@ -16,6 +16,7 @@ export class CustomersService {
     await Promise.all([
       this.customersRepo.checkEmailIstaken(customerData.email),
       this.customersRepo.checkPhoneNumberIstaken(customerData.phoneNumber),
+      // Todo: check or username exists
     ]);
 
     return await this.customersRepo.signup(customerData);
@@ -23,25 +24,16 @@ export class CustomersService {
 
   updateProfilePhoto = async (params: {
     customerId: string;
-    image: Record<string, any>;
+    image: Record<string, FileArray | UploadedFile>;
   }) => {
     const { customerId, image } = params;
-    const displayPhotoUrl = await this.mediaService.uploadToCloudinary(
+
+    const result = await this.mediaService.uploadToCloudinary(
       image,
-      "display-photo"
-    );
-    console.log({ displayPhotoUrl });
-
-    const updatedCustomer = await Promise.all(
-      Object.values(displayPhotoUrl).map(async (url) => {
-        const customer = await this.customersRepo.updateDIsplayPhoto(
-          customerId,
-          url
-        );
-        return customer;
-      })
+      "display-photo",
     );
 
-    return updatedCustomer;
+    const resultUrl = Object.values(result)[0];
+    return await this.customersRepo.updateDIsplayPhoto(customerId, resultUrl);
   };
 }

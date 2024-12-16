@@ -7,6 +7,7 @@ import {
 } from "../../../middleware";
 import { CustomersOrdersController } from "../controller/customersOrders.controller";
 import { CustomerErrandController } from "../controller/customersErrand.controller";
+import { authLimiter, otpLimiter } from "../../../middleware/auth.middleware";
 
 class CustomersRoutes {
   private customersController: CustomersController;
@@ -28,9 +29,10 @@ class CustomersRoutes {
   public initializeRoutes() {
     this.router.post(
       "/send-otp",
-      this.customersController.signupVerificationCode
+      otpLimiter,
+      this.customersController.signupVerificationCode,
     );
-    this.router.post(`/signup`, this.customersController.signup);
+    this.router.post(`/signup`, authLimiter, this.customersController.signup);
     this.router.post("/login", this.customersAuthentication.login);
 
     this.router.use(verifyAuthTokenMiddleware);

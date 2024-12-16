@@ -1,4 +1,5 @@
-import { HandleException, STATUS_CODES } from "../../../utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
+import { HandleException } from "../../../utils";
 import { Product } from "../../products";
 import { Vendor } from "../models/vendors.model";
 
@@ -10,8 +11,8 @@ class VendorsService {
 
     if (vendor) {
       throw new HandleException(
-        STATUS_CODES.CONFLICT,
-        "Business name already taken. Contact admin if this is your business name"
+        HTTP_STATUS_CODES.CONFLICT,
+        "Business name already taken. Contact admin if this is your business name",
       );
     }
 
@@ -22,7 +23,10 @@ class VendorsService {
     const vendor = await Vendor.findOne({ email }).select("email").lean();
 
     if (vendor) {
-      throw new HandleException(STATUS_CODES.CONFLICT, "Email already taken");
+      throw new HandleException(
+        HTTP_STATUS_CODES.CONFLICT,
+        "Email already taken",
+      );
     }
 
     return;
@@ -35,8 +39,8 @@ class VendorsService {
 
     if (vendor) {
       throw new HandleException(
-        STATUS_CODES.CONFLICT,
-        "Phone number is already taken"
+        HTTP_STATUS_CODES.CONFLICT,
+        "Phone number is already taken",
       );
     }
 

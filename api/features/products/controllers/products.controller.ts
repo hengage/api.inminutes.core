@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
 
-import { STATUS_CODES, handleErrorResponse } from "../../../utils";
+import { handleErrorResponse } from "../../../utils";
 import { ProductsRepository } from "../repository/products.repo";
 import { validateProducts } from "../validators/products.validators";
 import { productsService } from "../services/products.service";
+import { handleSuccessResponse } from "../../../utils/response.utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 export class ProductsController {
   private productsRepo: ProductsRepository;
@@ -12,58 +14,68 @@ export class ProductsController {
     this.productsRepo = new ProductsRepository();
   }
 
-  getCategories = async (req: Request, res: Response) => {
+  getCategories = async (req: Request, res: Response): Promise<void> => {
     try {
       const categories = await this.productsRepo.getCategories();
-      res.status(STATUS_CODES.OK).json({
-        message: "success",
-        data: { categories },
-      });
-    } catch (error: any) {
-      handleErrorResponse(res, error);
+
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { categories });
+    } catch (error: unknown) {
+      console.log("Error getting categories: ", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 
-  addProduct = async (req: Request, res: Response) => {
+  addProduct = async (req: Request, res: Response): Promise<void> => {
     try {
       await validateProducts.addProduct(req.body);
       const vendor = (req as any).user._id;
       const product = await this.productsRepo.addProduct(req.body, vendor);
-      res.status(STATUS_CODES.CREATED).json({
+
+      res.status(HTTP_STATUS_CODES.CREATED).json({
         message: "Success",
         data: { product },
       });
-    } catch (error: any) {
-      handleErrorResponse(res, error);
+
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.CREATED,
+        { product },
+        "Product added",
+      );
+    } catch (error: unknown) {
+      console.log("Error adding product: ", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 
-  details = async (req: Request, res: Response) => {
+  details = async (req: Request, res: Response): Promise<void> => {
     try {
       const product = await productsService.details(req.params.productId);
-      res.status(STATUS_CODES.CREATED).json({
-        message: "Success",
-        data: { product },
-      });
-    } catch (error: any) {
-      handleErrorResponse(res, error);
+
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { product });
+    } catch (error: unknown) {
+      console.log("Error getting product details: ", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 
-  async deleteProduct(req: Request, res: Response) {
+  async deleteProduct(req: Request, res: Response): Promise<void> {
     try {
       const vendor = (req as any).user;
-      console.log(vendor);
       await this.productsRepo.deleteProduct(req.params.productId, vendor._id);
-      res.status(STATUS_CODES.OK).json({
-        message: "success",
-      });
+
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, null, "Product deleted");
     } catch (error: any) {
-      handleErrorResponse(res, error);
+      console.log("Error deleting product: ", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 
-  searchProducts = async (req: Request, res: Response) => {
+  searchProducts = async (req: Request, res: Response): Promise<void> => {
     const page = parseInt(req.query.page as string);
 
     try {
@@ -72,16 +84,19 @@ export class ProductsController {
         page,
         term: req.body.term,
       });
-      res.status(STATUS_CODES.OK).json({
-        message: "success",
-        data: { products },
-      });
-    } catch (error: any) {
-      handleErrorResponse(res, error);
+
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { products });
+    } catch (error: unknown) {
+      console.error("Error querying for products:", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 
-  getProductsByCategory = async (req: Request, res: Response) => {
+  getProductsByCategory = async (
+    req: Request,
+    res: Response,
+  ): Promise<void> => {
     const page = parseInt(req.query.page as string) || 1;
     try {
       const products = await this.productsRepo.getProductsByCategory({
@@ -89,13 +104,11 @@ export class ProductsController {
         page,
       });
 
-      console.log({ products });
-      res.status(STATUS_CODES.OK).json({
-        message: "success",
-        data: { products },
-      });
-    } catch (error: any) {
-      handleErrorResponse(res, error);
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { products });
+    } catch (error: unknown) {
+      console.error("Error getting products by category:", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 }

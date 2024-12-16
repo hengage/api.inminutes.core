@@ -1,15 +1,29 @@
 import joi from "joi";
-import { HandleException, STATUS_CODES } from "../../../utils";
+import { HandleException, Msg } from "../../../utils";
 import { ICustomerDocument } from "../customers.interface";
-import { Response } from "express";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 export class ValidateCustomer {
   signUp = async (payload: ICustomerDocument) => {
     const signUpSchema = joi.object({
       fullName: joi.string().required(),
       displayName: joi.string().label("Display name").required(),
-      phoneNumber: joi.string().label("Phone number").required(),
-      email: joi.string().label("Email").required(),
+      phoneNumber: joi
+        .string()
+        .label("Phone number")
+        .required()
+        .pattern(
+          /^([0]{1}|\+?[2][3][4])([7-9]{1})([0|1]{1})([\d]{1})([\d]{7})$/,
+        )
+        .message(Msg.ERROR_INVALID_PHONE_FORMAT()),
+      email: joi
+        .string()
+        .label("Email")
+        .required()
+        .pattern(
+          /^[a-zA-Z0-9.!#$%&’*+/=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+        )
+        .message(Msg.ERROR_INVALID_EMAIL_FORMAT()),
       dateOfBirth: joi.string().label("Date of birth").required(),
       address: joi.string().label("Address").required(),
       password: joi.string().label("Password").required(),
@@ -22,7 +36,7 @@ export class ValidateCustomer {
     });
 
     if (error) {
-      throw new HandleException(STATUS_CODES.BAD_REQUEST, error.message);
+      throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
     }
     return;
   };
@@ -40,7 +54,7 @@ export class ValidateCustomer {
     });
 
     if (error) {
-      throw new HandleException(STATUS_CODES.BAD_REQUEST, error.message);
+      throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
     }
     return;
   };
@@ -59,7 +73,7 @@ export class ValidateCustomer {
     });
 
     if (error) {
-      throw new HandleException(STATUS_CODES.BAD_REQUEST, error.message);
+      throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
     }
     return;
   };

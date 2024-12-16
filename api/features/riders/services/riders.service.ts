@@ -4,6 +4,8 @@ import { RidersRepository } from "../repository/riders.repo";
 import { UsersService } from "../../../services/users.services";
 import { IOrdersDocument } from "../../orders/orders.interface";
 import { IErrandDocument } from "../../errand";
+import { DISPATCH_TYPE } from "../../../constants";
+import { IRiderDocument } from "../riders.interface";
 
 class RidersService {
   private notificationService: NotificationService;
@@ -48,7 +50,7 @@ class RidersService {
   async notifyRidersForDispatchJob(params: {
     coordinates: [number, number];
     distanceInKM: number;
-    dispatchType: "order" | "errand";
+    dispatchType: DISPATCH_TYPE.ORDER | DISPATCH_TYPE.ERRAND;
     dispatchId: IOrdersDocument["_id"] | IErrandDocument["_id"];
   }) {
     const { coordinates, distanceInKM, dispatchType, dispatchId } = params;
@@ -57,7 +59,7 @@ class RidersService {
       distanceInKM,
     });
 
-    riders.forEach((rider: any) => {
+    riders.forEach((rider: IRiderDocument) => {
       this.notificationService.createNotification({
         headings: { en: "New Dispatch Available" },
         contents: {
@@ -92,7 +94,7 @@ class RidersService {
 
   async updateRating(
     ratingData: { riderId: string; rating: number },
-    session: ClientSession
+    session: ClientSession,
   ) {
     return this.ridersRepo.updateRating(ratingData, session);
   }

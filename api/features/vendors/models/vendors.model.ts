@@ -5,8 +5,11 @@ import paginate from "mongoose-paginate-v2";
 import { IVendorDocument } from "../vendors.interface";
 import {
   ACCOUNT_STATUS,
+  DB_SCHEMA,
+  GEOLOCATION,
   PAYMENT_OPTIONS,
-} from "../../../utils/constants.utils";
+  USER_APPROVAL_STATUS,
+} from "../../../constants";
 
 import {
   encryptValue,
@@ -27,6 +30,7 @@ const vendorSchema = new Schema<IVendorDocument>(
       set: function (value: string) {
         return toLowerCaseSetter(value);
       },
+      index: true,
     },
     businessLogo: { type: String, required: true },
     email: {
@@ -36,6 +40,7 @@ const vendorSchema = new Schema<IVendorDocument>(
       set: function (value: string) {
         return toLowerCaseSetter(value);
       },
+      index: true,
     },
     phoneNumber: { type: String, required: true, unique: true },
     password: { type: String, required: true },
@@ -43,16 +48,15 @@ const vendorSchema = new Schema<IVendorDocument>(
     location: {
       type: {
         type: String,
-        default: "Point",
+        default: GEOLOCATION.POINT,
       },
       coordinates: {
         type: [Number, Number],
       },
     },
-    // h3Index: { type: String, index: true },
     residentialAddress: { type: String, required: true },
-    category: { type: String, required: true, ref: "VendorCategory" },
-    subCategory: { type: String, ref: "VendorSubCategory" },
+    category: { type: String, required: true, ref: DB_SCHEMA.VENDOR_CATEGORY },
+    subCategory: { type: String, ref: DB_SCHEMA.VENDOR_SUB_CATEGORY },
     paymentOptions: [
       {
         type: String,
@@ -64,30 +68,33 @@ const vendorSchema = new Schema<IVendorDocument>(
       default: ACCOUNT_STATUS.ACTIVE,
       enum: Object.values(ACCOUNT_STATUS),
     },
-    approved: { type: Boolean, default: false },
+    approvalStatus: {
+      type: String,
+      default: USER_APPROVAL_STATUS.PENDING,
+    },
     rating: {
       totalRatingSum: { type: Number, default: 0 },
       ratingCount: { type: Number, default: 0 },
       averageRating: { type: Number, default: 0 },
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 vendorSchema.plugin(paginate);
-vendorSchema.index({ location: "2dsphere" });
+vendorSchema.index({ location: GEOLOCATION.LOCATION_INDEX });
 
 vendorSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
     try {
       this.password = await encryptValue(this.password);
-    } catch (error: any) {
-      return next(error);
+    } catch (error) {
+      return next(error instanceof Error ? error : new Error(String(error)));
     }
   }
 });
 
 export const Vendor = model<IVendorDocument, PaginateModel<IVendorDocument>>(
-  "Vendor",
-  vendorSchema
+  DB_SCHEMA.VENDOR,
+  vendorSchema,
 );

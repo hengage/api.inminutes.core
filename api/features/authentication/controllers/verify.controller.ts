@@ -1,17 +1,20 @@
 import { Request, Response } from "express";
-import { STATUS_CODES, handleErrorResponse } from "../../../utils";
+import { handleErrorResponse } from "../../../utils";
 import { verifyService } from "../services/verify.service";
+import { handleSuccessResponse } from "../../../utils/response.utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 class VerifyController {
   sendVerificationCode = async (req: Request, res: Response) => {
     const { recipientPhoneNumber } = req.body;
     try {
       await verifyService.sendVerificationCode(recipientPhoneNumber);
-      res.status(STATUS_CODES.OK).json({
-        message: "OTP sent",
-      });
-    } catch (error: any) {
-      handleErrorResponse(res, error, "Failed to send otp");
+
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, null, "OTP sent");
+    } catch (error: unknown) {
+      console.error("Error sending verification code: ", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 
@@ -19,11 +22,12 @@ class VerifyController {
     const { recipientPhoneNumber, otpCode } = req.body;
     try {
       await verifyService.checkVerificationCode(recipientPhoneNumber, otpCode);
-      res.status(STATUS_CODES.OK).json({
-        message: "Verification successful",
-      });
-    } catch (error: any) {
-      handleErrorResponse(res, error);
+
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, null, "OTP verified");
+    } catch (error: unknown) {
+      console.error("Error checking verification code: ", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 }

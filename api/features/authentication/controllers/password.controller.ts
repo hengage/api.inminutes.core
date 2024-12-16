@@ -1,15 +1,17 @@
 import { Request, Response } from "express";
-import { STATUS_CODES, handleErrorResponse } from "../../../utils";
+import { HandleException, Msg, handleErrorResponse } from "../../../utils";
 import { passwordService } from "../services/password.service";
+import { handleSuccessResponse } from "../../../utils/response.utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 class PasswordController {
   public async resetPassword(req: Request, res: Response) {
     const accountType = req.query.accountType as string;
     if (!accountType) {
-      return res.status(STATUS_CODES.BAD_REQUEST).json({
-        message: "Password reset failed",
-        error: "Provide account type",
-      });
+      throw new HandleException(
+        HTTP_STATUS_CODES.BAD_REQUEST,
+        Msg.ERROR_USER_TYPE_MISSING(),
+      );
     }
 
     try {
@@ -19,35 +21,52 @@ class PasswordController {
         token: req.body.token,
         accountType: accountType.toLowerCase(),
       });
-      res
-        .status(STATUS_CODES.OK)
-        .json({ message: "Password reset successful" });
-    } catch (error: any) {
-      handleErrorResponse(res, error, "Password reset failed");
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        null,
+        "Password reset successful",
+      );
+
+    } catch (error: unknown) {
+      console.error(res, error, "Password reset failed", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 
   public async changePassword(req: Request, res: Response) {
     const accountType = req.query.accountType as string;
     if (!accountType) {
-      return res.status(STATUS_CODES.BAD_REQUEST).json({
-        message: "Password change failed",
-        error: "Provide account type",
-      });
+      throw new HandleException(
+        HTTP_STATUS_CODES.BAD_REQUEST,
+        Msg.ERROR_USER_TYPE_MISSING(),
+      );
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const userId = (req as any).user._id;
     try {
       await passwordService.changePassword(
         userId,
         req.body.currentPassword,
         req.body.newPassword,
-        accountType.toLowerCase()
+        accountType.toLowerCase(),
       );
-      res.status(STATUS_CODES.OK).json({
+
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "Password changed",
       });
-    } catch (error: any) {
-      handleErrorResponse(res, error, "Password change failed");
+
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        null,
+        "Password changed",
+      );
+    } catch (error: unknown) {
+      console.error("Password change failed: ", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 }

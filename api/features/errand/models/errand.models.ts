@@ -6,7 +6,7 @@ import {
   IErrandDocument,
   IErrandPackageTypeDocument,
 } from "../errand.interface";
-import { ErrandStatus } from "../../../utils/constants.utils";
+import { DB_SCHEMA, ErrandStatus, GEOLOCATION } from "../../../constants";
 
 const errandSchema = new Schema<IErrandDocument>(
   {
@@ -17,25 +17,25 @@ const errandSchema = new Schema<IErrandDocument>(
     packageType: [
       {
         type: String,
-        ref: "ErrandPackageType",
+        ref: DB_SCHEMA.ERRAND_PACKAGE_TYPE,
         required: true,
       },
     ],
     description: { type: String, maxlength: 50 },
-    customer: { type: String, ref: "Customer" },
+    customer: { type: String, ref: DB_SCHEMA.CUSTOMER, required: true },
     receiver: {
       name: { type: String, required: true, maxlength: 50 },
       phoneNumber: { type: String, required: true, maxlength: 50 },
     },
-    rider: { type: String, ref: "Rider" },
+    rider: { type: String, ref: DB_SCHEMA.RIDER },
     pickupAddress: { type: String, required: true },
     pickupCoordinates: {
-      type: { type: String, default: "Point" },
+      type: { type: String, default: GEOLOCATION.POINT },
       coordinates: { type: [Number, Number], required: true },
     },
     dropoffAddress: { type: String, required: true },
     dropoffCoordinates: {
-      type: { type: String, default: "Point" },
+      type: { type: String, default: GEOLOCATION.POINT },
       coordinates: { type: [Number, Number], required: true },
     },
     dispatchFee: { type: String, required: true },
@@ -47,7 +47,7 @@ const errandSchema = new Schema<IErrandDocument>(
       default: ErrandStatus.PENDING,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const errandPackageTypeSchema = new Schema<IErrandPackageTypeDocument>(
@@ -67,17 +67,17 @@ const errandPackageTypeSchema = new Schema<IErrandPackageTypeDocument>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 errandSchema.plugin(paginate);
 
 export const Errand = model<IErrandDocument, PaginateModel<IErrandDocument>>(
-  "Errand",
-  errandSchema
+  DB_SCHEMA.ERRAND,
+  errandSchema,
 );
 
 export const ErrandPackageType = model<IErrandPackageTypeDocument>(
-  "ErrandPackageType",
-  errandPackageTypeSchema
+  DB_SCHEMA.ERRAND_PACKAGE_TYPE,
+  errandPackageTypeSchema,
 );

@@ -4,9 +4,8 @@ import { NotificationService } from "../features/notifications";
 import { SocketServer } from "./socket/socket.services";
 import { ordersService } from "../features/orders";
 import { startSession } from "mongoose";
-
-console.log({ SocketServer });
-// const socketServer = SocketServer.getInstance()
+import { Events } from "../constants";
+import { Msg } from "../utils";
 
 class EventEmit {
   private eventEmitter: EventEmitter;
@@ -18,18 +17,18 @@ class EventEmit {
 
     this.listenToEvents();
 
-    this.eventEmitter.on("create-wallet", async (data) => {
+    this.eventEmitter.on(Events.CREATE_WALLET, async (data) => {
       console.log({ eventData: data });
 
       try {
         const wallet = await walletRepo.create(data);
         console.log("Created wallet", wallet);
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.log({ error });
       }
     });
 
-    this.eventEmitter.on("notify-vendor-of-new-order", async (data) => {
+    this.eventEmitter.on(Events.NOTIFY_VENDOR_OF_ORDER, async (data) => {
       const { orderId, vendorId } = data;
 
       try {
@@ -43,12 +42,12 @@ class EventEmit {
           data: { order: orderId },
           userId: vendorId,
         });
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error({ error });
       }
     });
 
-    this.eventEmitter.on("credit-vendor", async (data) => {
+    this.eventEmitter.on(Events.CREDIT_VENDOR, async (data) => {
       console.log({ data });
       const { vendorId: merchantId, amount } = data;
 
@@ -66,30 +65,28 @@ class EventEmit {
             walletId: wallet?._id,
             amount,
           },
-          session
+          session,
         );
 
         await session.commitTransaction();
 
         const socketServer = SocketServer.getInstance();
         socketServer.emitEvent(
-          "wallet-balance",
+          Events.WALLET_BALANCE,
           {
             _id: updatedWallet._id,
             balance: updatedWallet.balance,
           },
-          merchantId
+          merchantId,
         );
         await this.notificationService.createNotification({
           headings: { en: "Your Earnings Are In!" },
           contents: {
-            en:
-              `${amount} has been successfully credited to your wallet. ` +
-              `Head to your dashboard to see your new balance`,
+            en: Msg.WALLET_CREDITED(amount),
           },
           userId: wallet.merchantId,
         });
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error({ error });
         await session.abortTransaction();
       } finally {
@@ -97,7 +94,7 @@ class EventEmit {
       }
     });
 
-    this.eventEmitter.on("credit-rider", async (data) => {
+    this.eventEmitter.on(Events.CREDIT_RIDER, async (data) => {
       const { riderId: merchantId, amount } = data;
 
       const session = await startSession();
@@ -113,30 +110,28 @@ class EventEmit {
             walletId: wallet?._id,
             amount,
           },
-          session
+          session,
         );
 
         await session.commitTransaction();
 
         const socketServer = SocketServer.getInstance();
         socketServer.emitEvent(
-          "wallet-balance",
+          Events.WALLET_BALANCE,
           {
             _id: updatedWallet._id,
             balance: updatedWallet.balance,
           },
-          merchantId
+          merchantId,
         );
         await this.notificationService.createNotification({
           headings: { en: "Your Earnings Are In!" },
           contents: {
-            en:
-              `${amount} has been successfully credited to your wallet. ` +
-              `Head to your dashboard to see your new balance`,
+            en: Msg.WALLET_CREDITED(amount),
           },
           userId: wallet.merchantId,
         });
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error({ error });
         await session.abortTransaction();
       } finally {
@@ -146,18 +141,18 @@ class EventEmit {
   }
 
   private listenToEvents = () => {
-    this.eventEmitter.on("vendor-new-orders", async (data) => {
+    this.eventEmitter.on(Events.VENDOR_UNFULLFILED_ORDERS, async (data) => {
       console.log({ eventData: data });
       const vendorNewOrders = await ordersService.getNewOrdersForVendors(
-        data.vendorId
+        data.vendorId,
       );
       const socketServer = SocketServer.getInstance();
 
-      socketServer.emitEvent("vendor-new-orders", vendorNewOrders);
+      socketServer.emitEvent(Events.VENDOR_UNFULLFILED_ORDERS, vendorNewOrders);
     });
   };
 
-  emit(eventName: string, message: any) {
+  emit(eventName: string, message: Record<string, unknown>) {
     console.log({ eventMessage: message });
     this.eventEmitter.emit(eventName, message);
   }

@@ -1,4 +1,7 @@
-import { Document } from "mongoose";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { ICustomerDocument } from "./features/customers";
+import { IRiderDocument } from "./features/riders";
+import { ACCOUNT_STATUS } from "./utils";
 
 /**
  * Represents the result of a paginated query, including the requested page of documents, as well as metadata about the pagination.
@@ -15,18 +18,25 @@ import { Document } from "mongoose";
  * @property {number | null} prevPage - The page number of the previous page, or `null` if there is no previous page.
  * @property {number | null} nextPage - The page number of the next page, or `null` if there is no next page.
  */
-type PaginatedQueryResult<T extends Document> = {
-  docs: T[];
-  totalDocs: number;
-  limit: number;
-  totalPages: number;
-  page: number;
-  pagingCounter: number;
-  hasPrevPage: boolean;
-  hasNextPage: boolean;
-  prevPage: number | null;
-  nextPage: number | null;
-};
+// type PaginatedQueryResult<T extends Document> = {
+//   docs: T[];
+//   totalDocs: number;
+//   limit: number;
+//   totalPages: number;
+//   page: number;
+//   pagingCounter: number;
+//   hasPrevPage: boolean;
+//   hasNextPage: boolean;
+//   prevPage: number | null;
+//   nextPage: number | null;
+// };
+
+/**
+ * Redundant.
+ * Use mongose 'PaginateResult' type instead
+ */
+type PaginatedQueryResult = Record<[key: string], JSONValue>;
+// Todo: make redundant. Use mongoose PaginateResult type
 
 type PaginateQueryOptions = {
   page: number;
@@ -37,3 +47,49 @@ type PaginateQueryOptions = {
   lean?: boolean;
   leanWithId?: boolean;
 };
+
+type Coordinates = [lng: number, lat: number];
+
+type DynamicObject = Record<any, JSONObject>;
+
+type ErrorCode =
+  | "BAD_REQUEST"
+  | "UNAUTHORIZED"
+  | "FORBIDDEN"
+  | "NOT_FOUND"
+  | "CONFLICT"
+  | "SERVER_ERROR"
+  | "UNPROCESSABLE_ENTITY";
+
+type SuccessCode = "OK" | "CREATED" | "NO_CONTENT";
+
+type JSONValue =
+  | (null | undefined)
+  | string
+  | number
+  | boolean
+  | JSONObject
+  | Array<JSONValue>;
+
+type JSONObject = { [key: string]: JSONValue };
+
+type ApiError = {
+  status: "error";
+  error: {
+    code: ErrorCode;
+    message: string;
+    details?: Record<string, unknown>;
+  };
+};
+interface ApiSuccessResponse<T = JSONValue | null> {
+  status: "success";
+  data: T;
+  message?: string;
+}
+
+type UserId =
+  | IVendorDocument["_id"]
+  | IRiderDocument["_id"]
+  | ICustomerDocument["_id"];
+
+type AccountStatus = ACCOUNT_STATUS;

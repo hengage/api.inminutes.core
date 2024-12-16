@@ -1,10 +1,12 @@
-import { Schema, model } from "mongoose";
-import { IRiderDocument } from "../riders.interface";
+import { PaginateModel, Schema, model } from "mongoose";
+import paginate from "mongoose-paginate-v2";
 import {
   encryptValue,
   generateUniqueString,
   toLowerCaseSetter,
 } from "../../../utils";
+import { IRiderDocument } from "../riders.interface";
+import { ACCOUNT_STATUS, USER_APPROVAL_STATUS } from "../../../constants";
 
 const riderSchema = new Schema<IRiderDocument>(
   {
@@ -12,15 +14,18 @@ const riderSchema = new Schema<IRiderDocument>(
       type: String,
       default: () => generateUniqueString(5),
     },
-    fullName: { type: String, required: true, 
-      set: function(value: string) {
+    fullName: {
+      type: String,
+      required: true,
+      set: function (value: string) {
         return toLowerCaseSetter(value);
-      } },
+      },
+    },
     displayName: {
       type: String,
       required: true,
       unique: true,
-      set: function(value: string) {
+      set: function (value: string) {
         return toLowerCaseSetter(value);
       },
     },
@@ -28,7 +33,7 @@ const riderSchema = new Schema<IRiderDocument>(
       type: String,
       required: true,
       unique: true,
-      set: function(value: string) {
+      set: function (value: string) {
         return toLowerCaseSetter(value);
       },
     },
@@ -44,29 +49,41 @@ const riderSchema = new Schema<IRiderDocument>(
         default: [0, 0],
       },
     },
-    h3Index: { type: String, index: true },
     dateOfBirth: { type: Date, required: true },
     residentialAddress: { type: String, required: true },
     currentlyWorking: { type: Boolean, default: false },
+    accountStatus: {
+      type: String,
+      default: ACCOUNT_STATUS.ACTIVE,
+      enum: Object.values(ACCOUNT_STATUS),
+    },
+    approvalStatus: {
+      type: String,
+      default: USER_APPROVAL_STATUS.PENDING,
+    },
     rating: {
       totalRatingSum: { type: Number, default: 0 },
       ratingCount: { type: Number, default: 0 },
       averageRating: { type: Number, default: 0 },
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 riderSchema.index({ location: "2dsphere" });
+riderSchema.plugin(paginate);
 
 riderSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
     try {
       this.password = await encryptValue(this.password);
-    } catch (error: any) {
-      return next(error);
+    } catch (error) {
+      return next(error instanceof Error ? error : new Error(String(error)));
     }
   }
 });
 
-export const Rider = model<IRiderDocument>("Rider", riderSchema);
+export const Rider = model<IRiderDocument, PaginateModel<IRiderDocument>>(
+  "Rider",
+  riderSchema,
+);

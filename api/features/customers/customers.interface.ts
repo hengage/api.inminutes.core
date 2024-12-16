@@ -1,34 +1,59 @@
 import { Document } from "mongoose";
+import { Coordinates } from "../../types";
 
-export interface ICustomerDocument extends Document {
+// type BasicCustomerInfo = Record<
+//   | "fullName"
+//   | "displayName"
+//   | "phoneNumber"
+//   | "email"
+//   | "password"
+//   | "deliveryAddress"
+//   | "displayPhoto",
+//   string
+// >;
+
+enum BasicUserData {
+  fullName = "fullName",
+  displayName = "displayName",
+  phoneNumber = "phoneNumber",
+  email = "email",
+  password = "password",
+  deliveryAddress = "deliveryAddress",
+  displayPhoto = "displayPhoto",
+}
+
+type BasicCustomerInfo = Record<BasicUserData, string>;
+export interface ICustomerDocument extends Document, BasicCustomerInfo {
   _id: string;
-  fullName: string;
-  displayName: string;
-  phoneNumber: string;
-  email: string;
-  password: string;
   dateOfBirth: Date;
-  deliveryAddress: string;
   deliveryAddressCoords: {
     type: string;
-    coordinates: [number, number];
+    coordinates: Coordinates;
   };
-  displayPhoto: string;
 }
 
-export interface IUpdateCustomerProfile {
-  fullName: string;
-  email: string;
+export interface ICustomerDocument extends Document, BasicCustomerInfo {
+  _id: string;
   dateOfBirth: Date;
-  address: string;
+  deliveryAddressCoords: {
+    type: string;
+    coordinates: Coordinates;
+  };
 }
+export interface IUpdateCustomerProfile
+  extends Partial<
+    Pick<
+      ICustomerDocument,
+      BasicUserData.fullName | BasicUserData.displayPhoto | "dateOfBirth"
+    >
+  > {}
 
-export interface ICreateCustomerData {
-  fullName: string;
-  displayName: string;
-  phoneNumber: string;
-  email: string;
-  password: string;
+// export interface IUpdateCustomerProfile
+//   extends Partial<
+//     Pick<ICustomerDocument, "fullName" | "email" | "dateOfBirth">
+//   > {}
+
+export interface ICreateCustomerData
+  extends Omit<BasicCustomerInfo, "displayPhoto"> {
   dateOfBirth: string;
-  deliveryAddress: string;
 }

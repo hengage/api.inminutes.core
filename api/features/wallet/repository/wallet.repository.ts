@@ -1,4 +1,5 @@
-import { HandleException, STATUS_CODES } from "../../../utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
+import { HandleException, Msg } from "../../../utils";
 import { Wallet } from "../models/wallet.model";
 import { ICashoutAccount } from "../wallet.interface";
 
@@ -28,7 +29,10 @@ class WalletRepository {
       const wallet = await Wallet.findById(walletId).select("cashoutAccounts");
 
       if (!wallet) {
-        throw new HandleException(STATUS_CODES.NOT_FOUND, "Wallet not found");
+        throw new HandleException(
+          HTTP_STATUS_CODES.NOT_FOUND,
+          Msg.ERROR_NO_WALLET_FOUND(walletId),
+        );
       }
 
       wallet.cashoutAccounts.push(cashoutAccount);
@@ -36,7 +40,7 @@ class WalletRepository {
 
       return updatedWallet;
     } catch (error: any) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, error.message);
+      throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, error.message);
     }
   }
 
@@ -54,7 +58,6 @@ class WalletRepository {
     return cashoutAccounts;
   }
 
- 
   /**
    @async
     Retrieves the balance of a wallet.
@@ -67,11 +70,11 @@ class WalletRepository {
       .exec();
   }
 
-   /**
-    Retrieves a wallet by merchant ID with specified fields.
-    @param {string} data.merchantId - The ID of the merchant.
-    @param {string} data.selectFields - The fields to select.
-  */
+  /**
+   Retrieves a wallet by merchant ID with specified fields.
+   @param {string} data.merchantId - The ID of the merchant.
+   @param {string} data.selectFields - The fields to select.
+ */
   async getWalletByMerchantId(data: {
     merchantId: string;
     selectFields: string;

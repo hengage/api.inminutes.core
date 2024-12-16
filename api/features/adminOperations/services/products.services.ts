@@ -1,14 +1,17 @@
-import { HandleException, PRODUCT_STATUS, STATUS_CODES } from "../../../utils";
+import { HTTP_STATUS_CODES, PRODUCT_STATUS } from "../../../constants";
+import { HandleException, capitalize } from "../../../utils";
 import { Product, ProductCategory } from "../../products";
+import { IProductCategoryDocument } from "../../products/products.interface";
 
 export class AdminOpsForProductsService {
   private productCategoryModel = ProductCategory;
-  private productModel = Product
+  private productModel = Product;
 
-  constructor() {
-  }
+  constructor() {}
 
-  async createCategory(payload: any) {
+  async createCategory(payload: {
+    name: string;
+  }): Promise<Pick<IProductCategoryDocument, "_id" | "name">> {
     const categoryExists = await this.productCategoryModel
       .findOne({ name: payload.name })
       .select("name")
@@ -17,8 +20,8 @@ export class AdminOpsForProductsService {
 
     if (categoryExists) {
       throw new HandleException(
-        STATUS_CODES.CONFLICT,
-        "The category name already exists"
+        HTTP_STATUS_CODES.CONFLICT,
+        `${capitalize(payload.name)} is an existing product category`,
       );
     }
 
@@ -38,7 +41,7 @@ export class AdminOpsForProductsService {
       {
         $set: { status: PRODUCT_STATUS.APPROVED },
       },
-      { new: true }
+      { new: true },
     );
   }
 
@@ -48,7 +51,7 @@ export class AdminOpsForProductsService {
       {
         $set: { status: PRODUCT_STATUS.REJECTED },
       },
-      { new: true }
+      { new: true },
     );
   }
 }

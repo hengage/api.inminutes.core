@@ -1,8 +1,8 @@
 import { Document } from "mongoose";
 
-import { ORDER_STATUS } from "../../utils";
 import { IVendorDocument } from "../vendors";
 import { IRiderDocument } from "../riders";
+import { ORDER_STATUS } from "../../constants";
 
 export interface IAddOn {
   item: string;
@@ -55,6 +55,15 @@ export interface ICreateOrderData {
   instruction: string;
   type: "instant" | "scheduled";
   scheduledDeliveryTime: Date;
+}
+
+export interface IOrderFeedbackDocument {
+  _id: string;
+  order: IOrdersDocument;
+  remarkOnRider: string;
+  riderRating: number;
+  remarkOnVendor: string;
+  vendorRating: number;
 }
 
 export interface IOrderRatingAndRemarkData {

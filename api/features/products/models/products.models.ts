@@ -2,7 +2,7 @@ import { PaginateModel, Schema, model } from "mongoose";
 
 import paginate from "mongoose-paginate-v2";
 
-import { PRODUCT_STATUS,  } from "../../../utils/constants.utils";
+import { DB_SCHEMA, PRODUCT_STATUS } from "../../../constants";
 import { generateUniqueString } from "../../../utils";
 import {
   IProductCategoryDocument,
@@ -22,7 +22,7 @@ const productCategorySchema = new Schema<IProductCategoryDocument>(
       unique: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const productSchema = new Schema<IProductDocument>(
@@ -44,15 +44,15 @@ const productSchema = new Schema<IProductDocument>(
         _id: false,
       },
     ],
-    category: { type: String, required: true, ref: "ProductCategory" },
-    vendor: { type: String, required: true, ref: "Vendor" },
+    category: { type: String, required: true, ref: DB_SCHEMA.PRODUCT_CATEGORY },
+    vendor: { type: String, required: true, ref: DB_SCHEMA.VENDOR },
     status: {
       type: String,
       default: PRODUCT_STATUS.PENDING,
       enum: Object.values(PRODUCT_STATUS),
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 productSchema.plugin(paginate);
@@ -62,17 +62,20 @@ const wishListSchema = new Schema<IWishListDocument>({
     type: String,
     default: () => generateUniqueString(5),
   },
-  customer: { type: String, ref: "Customer", required: true },
-  products: [{ type: String, ref: "Product" }],
+  customer: { type: String, ref: DB_SCHEMA.CUSTOMER, required: true },
+  products: [{ type: String, ref: DB_SCHEMA.PRODUCT }],
 });
 
 export const ProductCategory = model<IProductCategoryDocument>(
-  "ProductCategory",
-  productCategorySchema
+  DB_SCHEMA.PRODUCT_CATEGORY,
+  productCategorySchema,
 );
 export const Product = model<IProductDocument, PaginateModel<IProductDocument>>(
-  "Product",
-  productSchema
+  DB_SCHEMA.PRODUCT,
+  productSchema,
 );
 
-export const WishList = model<IWishListDocument>("WishList", wishListSchema);
+export const WishList = model<IWishListDocument>(
+  DB_SCHEMA.WISHLIST,
+  wishListSchema,
+);

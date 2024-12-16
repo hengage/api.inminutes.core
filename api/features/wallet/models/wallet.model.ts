@@ -1,17 +1,16 @@
-import { ClientSession, Schema, model } from "mongoose";
+import { ClientSession, model, Schema } from "mongoose";
 
 import Big from "big.js";
 
-import { IWalletDocument, IWalletMethodsDocument } from "../wallet.interface";
 import {
-  // CASHOUT_CHANNEL,
-  // CASHOUT_CHANNEL,
-  HandleException,
-  STATUS_CODES,
-  // WALLET_STATUS,
-  generateUniqueString,
-} from "../../../utils";
-import { CASHOUT_CHANNEL, WALLET_STATUS } from "../../../utils/constants.utils";
+  CASHOUT_CHANNEL,
+  Currency,
+  HTTP_STATUS_CODES,
+  USER_TYPE,
+  WALLET_STATUS,
+} from "../../../constants";
+import { generateUniqueString, HandleException, Msg } from "../../../utils";
+import { IWalletDocument, IWalletMethodsDocument } from "../wallet.interface";
 
 const walletSchema = new Schema<IWalletDocument>(
   {
@@ -26,14 +25,14 @@ const walletSchema = new Schema<IWalletDocument>(
     merchantType: {
       type: String,
       required: true,
-      enum: ["rider", "vendor"],
+      enum: [USER_TYPE.RIDER, USER_TYPE.VENDOR],
     },
     balance: { type: String, default: "0" },
     transactionCount: { type: Number, default: 0 },
     totalEarnings: { type: String, default: "0" },
     currency: {
       type: String,
-      default: "NGN",
+      default: Currency.NGN,
     },
     cashoutAccounts: {
       type: [
@@ -46,7 +45,7 @@ const walletSchema = new Schema<IWalletDocument>(
           bankCode: String,
           accountName: String,
           accountNumber: String,
-          currency: { type: String, default: "NGN" },
+          currency: { type: String, default: Currency.NGN },
           recipientType: { type: String, default: "nuban" },
           recipientCode: String,
           _id: false,
@@ -61,7 +60,7 @@ const walletSchema = new Schema<IWalletDocument>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 walletSchema.pre("validate", function (next) {
@@ -77,28 +76,31 @@ walletSchema.statics.creditWallet = async function (
     amount: string;
     walletId: string;
   },
-  session: ClientSession
+  session: ClientSession,
 ) {
   const { amount, walletId } = creditData;
 
-  const wallet = await this.findById(walletId).select(
-    "balance merchantId transactionCount totalEarnings"
-  ).session(session);
+  const wallet = await this.findById(walletId)
+    .select("balance merchantId transactionCount totalEarnings")
+    .session(session);
 
   if (!wallet) {
-    throw new HandleException(STATUS_CODES.NOT_FOUND, "wallet not found");
+    throw new HandleException(
+      HTTP_STATUS_CODES.NOT_FOUND,
+      Msg.ERROR_NO_WALLET_FOUND(walletId),
+    );
   }
 
   wallet.balance = Big(wallet.balance).plus(amount).toFixed(2);
   wallet.totalEarnings = Big(wallet.totalEarnings).plus(amount).toFixed(2);
   wallet.transactionCount++;
-  await wallet.save({session});
+  await wallet.save({ session });
   return wallet;
 };
 
 walletSchema.statics.debitWallet = async function (
   debitData: { amount: string; walletId: string },
-  session: ClientSession
+  session: ClientSession,
 ) {
   const { amount, walletId } = debitData;
 
@@ -107,13 +109,16 @@ walletSchema.statics.debitWallet = async function (
     .session(session);
 
   if (!wallet) {
-    throw new HandleException(STATUS_CODES.NOT_FOUND, "wallet not found");
+    throw new HandleException(
+      HTTP_STATUS_CODES.NOT_FOUND,
+      Msg.ERROR_NO_WALLET_FOUND(walletId),
+    );
   }
 
   if (Big(wallet.balance).lt(Big(amount))) {
     throw new HandleException(
-      STATUS_CODES.UNPROCESSABLE_ENTITY,
-      "Insufficient balance"
+      HTTP_STATUS_CODES.UNPROCESSABLE_ENTITY,
+      "Insufficient balance",
     );
   }
   wallet.balance = Big(wallet.balance).minus(amount).toFixed(2);
@@ -124,5 +129,5 @@ walletSchema.statics.debitWallet = async function (
 
 export const Wallet = model<IWalletDocument, IWalletMethodsDocument>(
   "Wallet",
-  walletSchema
+  walletSchema,
 );

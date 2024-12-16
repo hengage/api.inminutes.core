@@ -1,20 +1,26 @@
-import { HandleException, STATUS_CODES } from "../../../utils";
-import { ErrandStatus } from "../../../utils/constants.utils";
+import { formatPhoneNumberforDB, HandleException } from "../../../utils";
+import { ErrandStatus, HTTP_STATUS_CODES } from "../../../constants";
 import { ICreateErrandData, IErrandDocument } from "../errand.interface";
 import { Errand } from "../models/errand.models";
 import { PaginatedQueryResult, PaginateQueryOptions } from "../../../types";
 
 export class ErrandRepository {
   create = async (
-    createErranddata: ICreateErrandData
+    createErrandData: ICreateErrandData,
   ): Promise<IErrandDocument> => {
     const data = {
-      ...createErranddata,
+      ...createErrandData,
       pickupCoordinates: {
-        coordinates: createErranddata.pickupCoordinates,
+        coordinates: createErrandData.pickupCoordinates,
       },
       dropoffCoordinates: {
-        coordinates: createErranddata.dropoffCoordinates,
+        coordinates: createErrandData.dropoffCoordinates,
+      },
+      receiver: {
+        name: createErrandData.receiver.name,
+        phoneNumber: formatPhoneNumberforDB(
+          createErrandData.receiver.phoneNumber,
+        ),
       },
     };
 
@@ -41,8 +47,8 @@ export class ErrandRepository {
 
     if (errand?.rider) {
       throw new HandleException(
-        STATUS_CODES.CONFLICT,
-        "A rider is already asssigned to this errand"
+        HTTP_STATUS_CODES.CONFLICT,
+        "A rider is already asssigned to this errand",
       );
     }
     return;
@@ -56,7 +62,7 @@ export class ErrandRepository {
     const errand = await Errand.findByIdAndUpdate(
       errandId,
       { $set: { rider: riderId, status: ErrandStatus.RIDER_ASSIGNED } },
-      { new: true }
+      { new: true },
     )
       .select("status rider")
       .exec();
@@ -72,7 +78,7 @@ export class ErrandRepository {
     const errand = await Errand.findByIdAndUpdate(
       errandId,
       { $set: { status } },
-      { new: true }
+      { new: true },
     )
       .select("-__v -updatedAt")
       .exec();
@@ -98,7 +104,7 @@ export class ErrandRepository {
     userId: string;
     page?: number;
     limit?: number;
-  }): Promise<PaginatedQueryResult<IErrandDocument>> => {
+  }): Promise<PaginatedQueryResult> => {
     const query = {
       [userType === "rider" ? "rider" : "customer"]: userId,
     };
@@ -120,8 +126,8 @@ export class ErrandRepository {
     };
     const errands = (await Errand.paginate(
       query,
-      options
-    )) as PaginatedQueryResult<IErrandDocument>;
+      options,
+    )) as PaginatedQueryResult;
 
     return errands;
   };

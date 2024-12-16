@@ -1,4 +1,5 @@
-import { HandleException, STATUS_CODES } from "../../../utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
+import { formatPhoneNumberforDB, HandleException } from "../../../utils";
 import {
   ICreateCustomerData,
   ICustomerDocument,
@@ -15,7 +16,10 @@ export class CustomersRepository {
     const customer = await Customer.findOne({ email }).select("email").lean();
 
     if (customer) {
-      throw new HandleException(STATUS_CODES.CONFLICT, "Email already taken");
+      throw new HandleException(
+        HTTP_STATUS_CODES.CONFLICT,
+        "Email already taken",
+      );
     }
 
     return;
@@ -28,9 +32,9 @@ export class CustomersRepository {
 
     if (customer) {
       throw new HandleException(
-        STATUS_CODES.CONFLICT,
+        HTTP_STATUS_CODES.CONFLICT,
         `Looks like you already have a customer account, ` +
-          `please try to login instead`
+          `please try to login instead`,
       );
     }
 
@@ -43,9 +47,15 @@ export class CustomersRepository {
     @param {ICreateCustomerData} createCustomerData - The data to create a new customer.
   **/
   async signup(
-    createCustomerData: ICreateCustomerData
+    createCustomerData: ICreateCustomerData,
   ): Promise<Partial<ICustomerDocument>> {
-    const customer = new Customer(createCustomerData);
+    const formattedPhoneNumber = formatPhoneNumberforDB(
+      createCustomerData.phoneNumber,
+    );
+    const customer = new Customer({
+      ...createCustomerData,
+      phoneNumber: formattedPhoneNumber,
+    });
 
     await customer.save();
 
@@ -66,7 +76,10 @@ export class CustomersRepository {
       .lean()
       .exec();
     if (!customer) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, "Customer not found");
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        "Customer not found",
+      );
     }
 
     return customer;
@@ -80,22 +93,21 @@ export class CustomersRepository {
    */
   async updateProfile(
     customerId: string,
-    customerData: IUpdateCustomerProfile
+    customerData: IUpdateCustomerProfile,
   ): Promise<Partial<ICustomerDocument>> {
-    // Create an array of fields to select from the customer document
-    // Populate the array with the keys from the customerData object
-    const select = Object.keys(customerData);
-    // Add "-_id" to the array to exclude the _id field from the selection
-    select.push("-_id");
+    const select = [...Object.keys(customerData), "-_id"];
 
     const customer = await Customer.findByIdAndUpdate(
       customerId,
       { $set: customerData },
-      { new: true }
-    ).select(select);
+      { new: true, select },
+    );
 
     if (!customer) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, "Customer not found");
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        "Customer not found",
+      );
     }
     return customer;
   }
@@ -107,13 +119,11 @@ export class CustomersRepository {
    * @param displayPhoto - The new display photo URL.
    */
   async updateDIsplayPhoto(customerId: string, displayPhoto: string) {
-    const customer = Customer.findByIdAndUpdate(
+    return Customer.findByIdAndUpdate(
       customerId,
       { $set: { displayPhoto } },
-      { new: true }
-    ).select("displayPhoto");
-
-    return customer;
+      { new: true, select: "displayPhoto" },
+    );
   }
 
   /**
@@ -141,11 +151,14 @@ export class CustomersRepository {
       {
         new: true,
         fields: ["deliveryAddress", "deliveryAddressCoords.coordinates"],
-      }
+      },
     );
 
     if (!customer) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, "Customer not found");
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        "Customer not found",
+      );
     }
     return customer;
   }
@@ -158,7 +171,10 @@ export class CustomersRepository {
     const result = await Customer.deleteOne({ _id: customerId });
 
     if (result.deletedCount === 0) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, "Customer not found");
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        "Customer not found",
+      );
     }
 
     console.log("Customer deleted successfully", customerId);

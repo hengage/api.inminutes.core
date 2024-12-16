@@ -1,6 +1,6 @@
 import { startSession } from "mongoose";
 
-import { deliveryService, HandleException, ORDER_STATUS } from "../../../utils";
+import { deliveryService, HandleException } from "../../../utils";
 import { NotificationService } from "../../notifications";
 import { Order } from "../models/orders.model";
 import { OrdersRepository } from "../repository/orders.repo";
@@ -11,7 +11,9 @@ import { ridersService } from "../../riders/";
 import {
   ICreateOrderData,
   IOrderAndMerchantsRatingData,
+  IOrdersDocument,
 } from "../orders.interface";
+import { Events, ORDER_STATUS } from "../../../constants";
 
 /**
 CustomersOrdersService
@@ -30,13 +32,13 @@ class OrdersService {
   }
 
   create = async (params: {
-    orderData: ICreateOrderData;
+    createOrderData: ICreateOrderData;
     customer: string;
   }) => {
-    const { orderData, customer } = params;
-    await this.validateOrders.create(orderData);
+    const { createOrderData, customer } = params;
+    await this.validateOrders.create(createOrderData);
 
-    const order = await this.ordersRepo.create({ orderData, customer });
+    const order = await this.ordersRepo.create({ createOrderData, customer });
     const newOrder = await Order.findById(order.id)
       .select({
         deliveryAddress: 1,
@@ -58,7 +60,7 @@ class OrdersService {
     return newOrder;
   };
 
-  async details(orderId: string) {
+  async details(orderId: string): Promise<IOrdersDocument> {
     const cacheKey = `order:${orderId}`;
     const cachedOrder = await redisClient.get(cacheKey);
     if (cachedOrder) {
@@ -256,12 +258,12 @@ class OrdersService {
       userId: order.customer,
     });
 
-    emitEvent.emit("credit-vendor", {
+    emitEvent.emit(Events.CREDIT_VENDOR, {
       vendorId: order.vendor._id,
       amount: order.totalProductsCost,
     });
 
-    emitEvent.emit("credit-rider", {
+    emitEvent.emit(Events.CREDIT_RIDER, {
       riderId: order.rider,
       amount: order.deliveryFee,
     });
@@ -309,7 +311,6 @@ class OrdersService {
     session.startTransaction();
 
     try {
-
       const riderRatingPromise = riderRating
         ? ridersService.updateRating({ riderId, rating: riderRating }, session)
         : Promise.resolve(); // Resolve to empty if no rider rating
@@ -323,7 +324,7 @@ class OrdersService {
         vendorRatingPromise,
         this.ordersRepo.createRemarkAndRating(
           { orderId, vendorRating, riderRating, remarkOnVendor, remarkOnRider },
-          session
+          session,
         ),
       ]);
 

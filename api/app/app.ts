@@ -2,7 +2,7 @@ import express, { Express, Request, Response, Router } from "express";
 import { Server } from "http";
 import fileUpload from "express-fileupload";
 import passport from "passport";
-import session from "express-session"
+import session from "express-session";
 
 import { DBConfig, passportStrategySetup, serializeUser } from "../config";
 import { centralErrorHandler } from "../middleware";
@@ -12,29 +12,29 @@ import { redisClient } from "../services";
 class App {
   public app: Express;
   public router: Router;
-  public apiRoutes
-  private dbConfig: DBConfig
+  public apiRoutes;
+  private dbConfig: DBConfig;
 
   constructor() {
     this.app = express();
     this.router = Router();
-    this.apiRoutes = new Routes
+    this.apiRoutes = new Routes();
 
-    this.dbConfig = new DBConfig
+    this.dbConfig = new DBConfig();
     this.connectDb();
     this.initializeMiddleware();
     this.initializePassport();
     this.initializeRoutes();
     this.initializeCentralErrorMiddleware();
-    this.connectRedis()
+    this.connectRedis();
   }
 
   private async connectDb() {
     try {
       await this.dbConfig.connect();
       console.log("Connected to database");
-    } catch (error: any) {
-      console.error(error.message);
+    } catch (error: unknown) {
+      console.error(error);
     }
   }
 
@@ -48,7 +48,7 @@ class App {
           secure: false,
           maxAge: 24 * 60 * 60 * 1000,
         },
-      })
+      }),
     );
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
@@ -73,7 +73,7 @@ class App {
   private initializeCentralErrorMiddleware() {
     this.app.use(
       centralErrorHandler.handle404Error,
-      centralErrorHandler.handle404OrServerError
+      centralErrorHandler.handle404OrServerError,
     );
   }
 

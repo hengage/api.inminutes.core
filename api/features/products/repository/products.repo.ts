@@ -1,4 +1,5 @@
-import { HandleException, STATUS_CODES } from "../../../utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
+import { HandleException, Msg } from "../../../utils";
 import { Product, ProductCategory, WishList } from "../models/products.models";
 import { IAddProductData } from "../products.interface";
 
@@ -59,7 +60,10 @@ export class ProductsRepository {
   async decreaseproductQuantity(productId: string, quantity: number) {
     const product = await Product.findById(productId);
     if (!product) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, "Product not found");
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        Msg.ERROR_PRODUCT_NOT_FOUND(productId),
+      );
     }
     product.quantity -= quantity;
     await product.save();
@@ -97,7 +101,10 @@ export class ProductsRepository {
     });
 
     if (result.deletedCount === 0) {
-      throw new HandleException(STATUS_CODES.NOT_FOUND, "Product not found");
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        Msg.ERROR_PRODUCT_NOT_FOUND(productId),
+      );
     }
 
     console.log(" Deleted product", productId);
@@ -159,7 +166,7 @@ export class ProductsRepository {
     const wishList = await WishList.findOneAndUpdate(
       { customer: customerId },
       { $addToSet: { products: productId } },
-      { upsert: true, new: true }
+      { upsert: true, new: true },
     );
 
     return wishList;
@@ -175,7 +182,7 @@ export class ProductsRepository {
     const wishList = await WishList.findOneAndUpdate(
       { customer: customerId },
       { $pull: { products: productId } },
-      { new: true }
+      { new: true },
     );
 
     return wishList;

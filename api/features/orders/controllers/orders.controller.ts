@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
 
-import { STATUS_CODES, handleErrorResponse } from "../../../utils";
+import { handleErrorResponse } from "../../../utils";
 import { OrdersRepository } from "../repository/orders.repo";
 import { ordersService } from "../services/orders.service";
 import { ValidateOrders } from "../validation/orders.validation";
+import { handleSuccessResponse } from "../../../utils/response.utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 export class OrdersController {
   private ordersRepo: OrdersRepository;
@@ -18,27 +20,33 @@ export class OrdersController {
 
     try {
       const order = await ordersService.create({
-        orderData: req.body,
+        createOrderData: req.body,
         customer,
       });
-      res.status(STATUS_CODES.CREATED).json({
+      res.status(HTTP_STATUS_CODES.CREATED).json({
         message: "success",
         data: { order },
       });
-    } catch (error: any) {
-      handleErrorResponse(res, error);
+      handleSuccessResponse(res, HTTP_STATUS_CODES.CREATED, { order });
+    } catch (error: unknown) {
+      console.error("Error creating order:", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
-
   orderDetails = async (req: Request, res: Response) => {
     try {
       const order = await ordersService.details(req.params.orderId);
-      res.status(STATUS_CODES.OK).json({
+      res.status(HTTP_STATUS_CODES.OK).json({
         message: "success",
         data: { order },
       });
-    } catch (error: any) {
-      handleErrorResponse(res, error);
+
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { order });
+    } catch (error: unknown) {
+      console.error("Error fetching order details:", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 
@@ -63,11 +71,17 @@ export class OrdersController {
         remarkOnVendor,
         remarkOnRider,
       });
-      res.status(200).json({
-        message: "Success",
-      });
-    } catch (error: any) {
-      handleErrorResponse(res, error);
+
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        null,
+        "Order feedback submitted",
+      );
+    } catch (error: unknown) {
+      console.error("Error submitting order feedback:", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   };
 }
