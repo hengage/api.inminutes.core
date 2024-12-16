@@ -3,6 +3,7 @@ import { HandleException, Msg, handleErrorResponse } from "../../../utils";
 import { passwordService } from "../services/password.service";
 import { handleSuccessResponse } from "../../../utils/response.utils";
 import { HTTP_STATUS_CODES } from "../../../constants";
+import { AuthenticatedUser } from "../../../types";
 
 class PasswordController {
   public async resetPassword(req: Request, res: Response) {
@@ -42,7 +43,7 @@ class PasswordController {
         Msg.ERROR_USER_TYPE_MISSING(),
       );
     }
-    const userId = (req as any).user._id;
+    const userId = (req.user as AuthenticatedUser)._id;
     try {
       await passwordService.changePassword(
         userId,

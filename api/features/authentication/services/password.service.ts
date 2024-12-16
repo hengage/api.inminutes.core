@@ -1,5 +1,6 @@
 import { HTTP_STATUS_CODES } from "../../../constants";
 import { UsersService } from "../../../services";
+import { AccountModelType } from "../../../types";
 import { HandleException, compareValues, Msg } from "../../../utils";
 
 class PasswordService {
@@ -15,7 +16,7 @@ class PasswordService {
   ) {
     const AccountModel =
       await this.usersService.getUserAccountModel(accountType);
-    const account = await (AccountModel as any)
+    const account = await (AccountModel as unknown as AccountModelType)
       .findOne({ phoneNumber })
       .select("phoneNumber password");
     if (!account) {
@@ -38,7 +39,7 @@ class PasswordService {
     try {
       const AccountModel =
         await this.usersService.getUserAccountModel(accountType);
-      const account = await (AccountModel as any)
+      const account = await (AccountModel as unknown as AccountModelType)
         .findById(accountId)
         .select("password");
 
@@ -63,8 +64,14 @@ class PasswordService {
       account.password = newPassword;
       account.save();
       return;
-    } catch (error: any) {
-      throw new HandleException(error.status, error.message);
+    } catch (error: unknown) {
+      if (error instanceof HandleException) {
+        throw error;
+      }
+      throw new HandleException(
+        HTTP_STATUS_CODES.SERVER_ERROR,
+        Msg.ERROR_UNKNOWN_ERROR()
+      );
     }
   }
 }
