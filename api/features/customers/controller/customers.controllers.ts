@@ -7,6 +7,8 @@ import { CustomersAuthentication } from "../auth/customers.auth";
 import { ProductsRepository } from "../../products";
 import { handleSuccessResponse } from "../../../utils/response.utils";
 import { HTTP_STATUS_CODES } from "../../../constants";
+import { FileArray, UploadedFile } from "express-fileupload";
+import { AuthenticatedUser } from "../../../types";
 
 export class CustomersController {
   private validateCustomer: ValidateCustomer;
@@ -39,7 +41,7 @@ export class CustomersController {
         null,
         'OTP sent"',
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error sending code: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
@@ -72,7 +74,7 @@ export class CustomersController {
   };
 
   getProfile = async (req: Request, res: Response) => {
-    const _id = (req as any).user._id;
+    const _id = (req.user as AuthenticatedUser)._id;
     try {
       const customer = await this.customersRepo.getProfile(_id);
 
@@ -85,7 +87,7 @@ export class CustomersController {
   };
 
   updateProfile = async (req: Request, res: Response) => {
-    const customer = (req as any).user._id;
+    const customer = (req.user as AuthenticatedUser)._id;
 
     try {
       await this.validateCustomer.updateProfile(req.body);
@@ -108,9 +110,9 @@ export class CustomersController {
     }
   };
 
-  updateDIsplayPhoto = async (req: Request, res: Response) => {
-    const customerId = (req as any).user._id;
-    const image = req.files as Record<string, any>;
+  updateDisplayPhoto = async (req: Request, res: Response) => {
+    const customerId = (req.user as AuthenticatedUser)._id;
+    const image = req.files as Record<string, FileArray | UploadedFile>;
 
     try {
       const customer = await this.customersService.updateProfilePhoto({
@@ -129,10 +131,8 @@ export class CustomersController {
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
-  };
-
-  updateDeliveryAddress = async (req: Request, res: Response) => {
-    const customerId = (req as any).user._id;
+  }; updateDeliveryAddress = async (req: Request, res: Response) => {
+    const customerId = (req.user as AuthenticatedUser)._id;
     const { address, coordinates } = req.body;
 
     try {
@@ -148,7 +148,7 @@ export class CustomersController {
         { customer },
         "Delivery addressed updated",
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error updating delivery address", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
@@ -156,7 +156,7 @@ export class CustomersController {
   };
 
   deleteAccount = async (req: Request, res: Response) => {
-    const customer = (req as any).user._id;
+    const customer = (req.user as AuthenticatedUser)._id;
 
     try {
       await this.customersRepo.deleteAccount(customer);
@@ -170,7 +170,7 @@ export class CustomersController {
   };
 
   getWishList = async (req: Request, res: Response) => {
-    const customerId = (req as any).user._id;
+    const customerId = (req.user as AuthenticatedUser)._id;
     try {
       const wishList =
         await this.productsRepo.getWishListForCustomer(customerId);

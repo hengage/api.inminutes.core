@@ -6,6 +6,7 @@ import { ordersService } from "../services/orders.service";
 import { ValidateOrders } from "../validation/orders.validation";
 import { handleSuccessResponse } from "../../../utils/response.utils";
 import { HTTP_STATUS_CODES } from "../../../constants";
+import { AuthenticatedUser } from "../../../types";
 
 export class OrdersController {
   private ordersRepo: OrdersRepository;
@@ -16,7 +17,7 @@ export class OrdersController {
     this.validateOrders = new ValidateOrders();
   }
   create = async (req: Request, res: Response) => {
-    const customer = (req as any).user._id;
+    const customer = (req.user as AuthenticatedUser)._id;
 
     try {
       const order = await ordersService.create({
