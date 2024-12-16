@@ -3,6 +3,7 @@ import { handleErrorResponse } from "../../../utils";
 import { CustomersOrdersService } from "../services/customerOrders.service";
 import { handleSuccessResponse } from "../../../utils/response.utils";
 import { HTTP_STATUS_CODES } from "../../../constants";
+import { AuthenticatedUser } from "../../../types";
 
 export class CustomersOrdersController {
   private customersOrdersService: CustomersOrdersService;
@@ -12,13 +13,13 @@ export class CustomersOrdersController {
   }
 
   orderMetrics = async (req: Request, res: Response) => {
-    const customerId = (req as any).user._id;
+    const customerId = (req.user as AuthenticatedUser)._id;
     try {
       const orderMetrics =
         await this.customersOrdersService.orderMetrics(customerId);
 
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { orderMetrics });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error fetching order metrics:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
@@ -27,7 +28,7 @@ export class CustomersOrdersController {
 
   orders = async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 1;
-    const customerId = (req as any).user._id;
+    const customerId = (req.user as AuthenticatedUser)._id;
     try {
       const orders = await this.customersOrdersService.orders({
         customerId,
@@ -35,7 +36,7 @@ export class CustomersOrdersController {
       });
 
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { orders });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error fetching orders for customer:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);

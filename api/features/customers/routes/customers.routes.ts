@@ -40,7 +40,7 @@ class CustomersRoutes {
     this.router.route("/").patch(this.customersController.updateProfile);
     this.router
       .route("/update-photo")
-      .patch(this.customersController.updateDIsplayPhoto);
+      .patch(this.customersController.updateDisplayPhoto);
     this.router
       .route("/delivery-address")
       .patch(this.customersController.updateDeliveryAddress);

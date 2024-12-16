@@ -1,4 +1,3 @@
-import jwt, { JwtPayload } from "jsonwebtoken";
 import { ICustomerDocument } from "./features/customers";
 import { IRiderDocument } from "./features/riders";
 import { ACCOUNT_STATUS } from "./utils";
@@ -50,7 +49,7 @@ type PaginateQueryOptions = {
 
 type Coordinates = [lng: number, lat: number];
 
-type DynamicObject = Record<any, JSONObject>;
+type DynamicObject = Record<unknown, JSONObject>;
 
 type ErrorCode =
   | "BAD_REQUEST"
@@ -93,3 +92,9 @@ type UserId =
   | ICustomerDocument["_id"];
 
 type AccountStatus = ACCOUNT_STATUS;
+
+type AuthenticatedUser = {
+  _id: string;
+};
+
+type AccountModelType = typeof AccountModel.prototype

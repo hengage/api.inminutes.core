@@ -1,6 +1,7 @@
 import { redisClient, UsersService } from "../../../services";
 import { HandleException, Msg, compareValues } from "../../../utils";
 import { HTTP_STATUS_CODES } from "../../../constants";
+import { AccountModelType } from "../../../types";
 
 class PasswordService {
   private usersService: UsersService;
@@ -16,10 +17,9 @@ class PasswordService {
   }) {
     const { phoneNumber, newPassword, token, accountType } = passwordResetData;
 
-    const AccountModel = await this.usersService.getUserAccountModel(
-      accountType
-    );
-    const account = await (AccountModel as unknown as typeof AccountModel.prototype)
+    const AccountModel =
+      await this.usersService.getUserAccountModel(accountType);
+    const account = await (AccountModel as AccountModelType)
       .findOne({ phoneNumber })
       .select("phoneNumber password");
     if (!account) {
@@ -47,10 +47,9 @@ class PasswordService {
     accountType: string,
   ) {
     try {
-      const AccountModel = await this.usersService.getUserAccountModel(
-        accountType
-      );
-      const account = await (AccountModel as unknown as typeof AccountModel.prototype)
+      const AccountModel =
+        await this.usersService.getUserAccountModel(accountType);
+      const account = await (AccountModel as AccountModelType)
         .findById(accountId)
         .select("password");
 
@@ -79,7 +78,10 @@ class PasswordService {
       if (error instanceof HandleException) {
         throw error;
       }
-      throw new HandleException(HTTP_STATUS_CODES.SERVER_ERROR, Msg.ERROR_UNKNOWN_ERROR());
+      throw new HandleException(
+        HTTP_STATUS_CODES.SERVER_ERROR,
+        Msg.ERROR_UNKNOWN_ERROR()
+      );
     }
   }
 }
