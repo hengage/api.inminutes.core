@@ -4,6 +4,7 @@ import { handleErrorResponse } from "../../../utils";
 import { ValidateErrand } from "../validation/errand.validation";
 import { handleSuccessResponse } from "../../../utils/response.utils";
 import { HTTP_STATUS_CODES } from "../../../constants";
+import { AuthenticatedUser } from "../../../types";
 
 export class ErrandController {
   // private errandService: ErrandService;
@@ -15,7 +16,7 @@ export class ErrandController {
   }
 
   create = async (req: Request, res: Response) => {
-    const customer = (req as any).user._id;
+    const customer = (req.user as AuthenticatedUser)._id;
     const data = {
       customer: customer,
       ...req.body,
