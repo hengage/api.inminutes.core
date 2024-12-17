@@ -9,6 +9,7 @@ export const adminOpsTransactionsService = {
             sort: { createdAt: -1 },
             page,
             limit: QUERY_LIMIT,
+            select: "amount reason status _id reference createdAt",
             lean: true,
             leanWithId: false,
         };
