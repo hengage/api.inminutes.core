@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { DateTime } from "luxon";
 import { FilterQuery } from "mongoose";
 
 /**
@@ -37,4 +39,57 @@ export function buildFilterQuery<T>(
   }
 
   return filterQuery;
+}
+
+
+/**
+ * Adds amount range filters to a MongoDB filter query
+ * @param filterQuery - The filter query to modify
+ * @param lowestAmount - Optional minimum amount
+ * @param highestAmount - Optional maximum amount
+ */
+export function addAmountRangeFilter<T>(
+  filterQuery: FilterQuery<T>,
+  lowestAmount?: string,
+  highestAmount?: string
+): void {
+  if (lowestAmount || highestAmount) {
+    (filterQuery as any).$expr = {
+      $and: []
+    };
+    if (lowestAmount) {
+      (filterQuery as any).$expr.$and.push({
+        $gte: [{ $convert: { input: "$amount", to: "double" } }, parseFloat(lowestAmount)]
+      });
+    }
+    if (highestAmount) {
+      (filterQuery as any).$expr.$and.push({
+        $lte: [{ $convert: { input: "$amount", to: "double" } }, parseFloat(highestAmount)]
+      });
+    }
+  }
+}
+
+/**
+ * Adds date range filters to a MongoDB filter query
+ * @param filterQuery - The filter query to modify
+ * @param fromDate - Optional start date in ISO format
+ * @param toDate - Optional end date in ISO format
+ * @param dateField - The field name to filter on (defaults to 'createdAt')
+ */
+export function addDateRangeFilter<T>(
+  filterQuery: FilterQuery<T>,
+  fromDate?: string,
+  toDate?: string,
+  dateField: string = 'createdAt'
+): void {
+  if (fromDate || toDate) {
+    (filterQuery as any)[dateField] = {};
+    if (fromDate) {
+      (filterQuery as any)[dateField].$gte = DateTime.fromISO(fromDate).startOf('day').toJSDate();
+    }
+    if (toDate) {
+      (filterQuery as any)[dateField].$lte = DateTime.fromISO(toDate).endOf('day').toJSDate();
+    }
+  }
 }
