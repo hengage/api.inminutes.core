@@ -7,11 +7,11 @@ import { AdminOpsWorkAreaRoutes } from "./workArea.routes";
 
 export class AdminOpsRoutes {
   public router: Router;
-  public adminOpsVendorsRoutes: AdminOpsVendorsRoutes;
-  public adminOpsProductsRoutes: AdminOpsProductsRoutes;
-  public adminOpsRidersRoutes: AdminOpsRidersRoutes;
-  public adminOpsWalletRoutes: AdminOpsWalletRoutes;
-  public adminOpsWorkAreaRoutes: AdminOpsWorkAreaRoutes;
+  private adminOpsVendorsRoutes: AdminOpsVendorsRoutes;
+  private adminOpsProductsRoutes: AdminOpsProductsRoutes;
+  private adminOpsRidersRoutes: AdminOpsRidersRoutes;
+  private adminOpsWalletRoutes: AdminOpsWalletRoutes;
+  private adminOpsWorkAreaRoutes: AdminOpsWorkAreaRoutes;
 
   constructor() {
     this.adminOpsVendorsRoutes = new AdminOpsVendorsRoutes();
