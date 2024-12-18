@@ -22,7 +22,7 @@ export interface ICreateTransferRecipient {
   };
 }
 
-export interface ITransactionHistoryDocument extends Document {
+export interface ITransactionDocument extends Document {
   _id: string;
   wallet: IWalletDocument["_id"];
   amount: string;
@@ -41,7 +41,7 @@ export interface ITransactionHistoryDocument extends Document {
   currency: string;
 }
 
-export interface ICreateTransactionHistoryData {
+export interface ICreateTransactionData {
   amount: string;
   wallet?: string;
   reference: string;
@@ -56,7 +56,7 @@ export interface ICreateTransactionHistoryData {
   reason: string;
 }
 
-export interface IUpdateTransactionHistoryData {
+export interface IUpdateTransactionData {
   reference: string;
   status: string;
   paidAt?: Date;

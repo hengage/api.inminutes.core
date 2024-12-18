@@ -1,12 +1,12 @@
 import { PaginateResult } from "mongoose";
-import { ITransactionHistoryDocument } from "../../transactions/transactions.interface";
-import { TransactionHistory } from "../../transactions/models/transaction.model";
+import { ITransactionDocument } from "../../transactions/transactions.interface";
+import { Transaction } from "../../transactions/models/transaction.model";
 import { QUERY_LIMIT } from "../../../constants";
 import { FilterQuery } from "mongoose";
 import { addAmountRangeFilter, addDateRangeFilter, buildFilterQuery } from "../../../utils";
 
 export const adminOpsTransactionsService = {
-    async getTransactions(page = 1, filter: GetTransactionsFilter): Promise<PaginateResult<ITransactionHistoryDocument>> {
+    async getTransactions(page = 1, filter: GetTransactionsFilter): Promise<PaginateResult<ITransactionDocument>> {
         const options = {
             sort: { createdAt: -1 },
             page,
@@ -16,7 +16,7 @@ export const adminOpsTransactionsService = {
             leanWithId: false,
         };
 
-        const filterQuery: FilterQuery<ITransactionHistoryDocument> = {};
+        const filterQuery: FilterQuery<ITransactionDocument> = {};
         if (filter) {
             const { lowestAmount, highestAmount, fromDate, toDate, ...otherFilters } = filter;
 
@@ -35,7 +35,7 @@ export const adminOpsTransactionsService = {
             buildFilterQuery(recordFilter, filterQuery, searchFields);
         }
 
-        const transactions = await TransactionHistory.paginate(filterQuery, options);
+        const transactions = await Transaction.paginate(filterQuery, options);
         return transactions;
     }
 }

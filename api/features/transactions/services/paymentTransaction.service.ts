@@ -7,7 +7,7 @@ import { PAYSTACK_SECRET_KEY } from "../../../config";
 import { emitEvent } from "../../../services";
 import {
   IInitializeTransaction,
-  ICreateTransactionHistoryData,
+  ICreateTransactionData,
 } from "../transactions.interface";
 import { TransactionRepository } from "../repository/transaction.repo";
 import { cashoutTransferService } from "./cashoutTransfer.service";
@@ -138,11 +138,11 @@ class PaymentTransactionService {
   @param {object} transactionHistoryData - The data to create the transaction history entry.
   */
   async createHistory(
-    transactionHistoryData: ICreateTransactionHistoryData,
+    createTransactionData: ICreateTransactionData,
     session?: ClientSession,
   ) {
     return await this.transactionRepo.createHistory(
-      transactionHistoryData,
+      createTransactionData,
       session,
     );
   }
