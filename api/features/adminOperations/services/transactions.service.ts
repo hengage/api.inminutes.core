@@ -4,6 +4,7 @@ import { TransactionHistory } from "../../transactions/models/transaction.model"
 import { QUERY_LIMIT } from "../../../constants";
 import { FilterQuery } from "mongoose";
 import { buildFilterQuery } from "../../../utils/db.utils";
+import { DateTime } from "luxon";
 
 export const adminOpsTransactionsService = {
     async getTransactions(page = 1, filter: GetTransactionsFilter): Promise<PaginateResult<ITransactionHistoryDocument>> {
@@ -36,20 +37,22 @@ export const adminOpsTransactionsService = {
                     });
                 }
             }
-
             // Handle date range
             if (fromDate || toDate) {
                 filterQuery.createdAt = {};
-                if (fromDate) filterQuery.createdAt.$gte = new Date(fromDate);
-                if (toDate) filterQuery.createdAt.$lte = new Date(toDate);
+                if (fromDate) {
+                    filterQuery.createdAt.$gte = DateTime.fromISO(fromDate).startOf('day').toJSDate();
+                }
+                if (toDate) {
+                    filterQuery.createdAt.$lte = DateTime.fromISO(toDate).endOf('day').toJSDate();
+                }
             }
-
             // Handle other filters
             const recordFilter: Record<string, string> = Object.fromEntries(
                 Object.entries(otherFilters).filter(([_, v]) => v !== undefined),
             );
 
-            const searchFields = ["reference", "transferCode",];
+            const searchFields = ["reference", "transferCode"];
             console.log(filterQuery);
 
             buildFilterQuery(recordFilter, filterQuery, searchFields);
