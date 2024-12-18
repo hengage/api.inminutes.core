@@ -168,3 +168,6 @@ export enum WORK_SLOT_SESSIONS {
   THIRD = "3pm-6pm",
   FOURTH = "6pm-9pm",
 }
+
+
+export const QUERY_LIMIT = 30
