@@ -18,20 +18,48 @@ export const adminOpsTransactionsService = {
 
         const filterQuery: FilterQuery<ITransactionHistoryDocument> = {};
         if (filter) {
+            const { lowestAmount, highestAmount, fromDate, toDate, ...otherFilters } = filter;
+
+            // Handle amount range
+            if (lowestAmount || highestAmount) {
+                filterQuery.$expr = {
+                    $and: []
+                };
+                if (lowestAmount) {
+                    filterQuery.$expr.$and.push({
+                        $gte: [{ $convert: { input: "$amount", to: "double" } }, parseFloat(lowestAmount)]
+                    });
+                }
+                if (highestAmount) {
+                    filterQuery.$expr.$and.push({
+                        $lte: [{ $convert: { input: "$amount", to: "double" } }, parseFloat(highestAmount)]
+                    });
+                }
+            }
+
+            // Handle date range
+            if (fromDate || toDate) {
+                filterQuery.createdAt = {};
+                if (fromDate) filterQuery.createdAt.$gte = new Date(fromDate);
+                if (toDate) filterQuery.createdAt.$lte = new Date(toDate);
+            }
+
+            // Handle other filters
             const recordFilter: Record<string, string> = Object.fromEntries(
-                Object.entries(filter).filter(([_, v]) => v !== undefined),
+                Object.entries(otherFilters).filter(([_, v]) => v !== undefined),
             );
 
             const searchFields = ["reference", "transferCode",];
+            console.log(filterQuery);
+
             buildFilterQuery(recordFilter, filterQuery, searchFields);
         }
+        console.log(filterQuery);
 
         const transactions = await TransactionHistory.paginate(filterQuery, options);
-
         return transactions;
     }
 }
-
 interface GetTransactionsFilter {
     searchQuery?: string;
     status?: string;
