@@ -3,10 +3,10 @@ import { PaginateModel, Schema, model } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 
 import { generateUniqueString } from "../../../utils";
-import { ITransactionHistoryDocument } from "../transactions.interface";
+import { ITransactionDocument } from "../transactions.interface";
 import { Currency, DB_SCHEMA, TRANSACTION_TYPE } from "../../../constants";
 
-const transactionHistorySchema = new Schema<ITransactionHistoryDocument>(
+const transactionSchema = new Schema<ITransactionDocument>(
   {
     _id: {
       type: String,
@@ -34,10 +34,9 @@ const transactionHistorySchema = new Schema<ITransactionHistoryDocument>(
   { timestamps: true },
 );
 
-transactionHistorySchema.plugin(paginate);
+transactionSchema.plugin(paginate);
 
-export const TransactionHistory = model<
-  ITransactionHistoryDocument,
-  PaginateModel<ITransactionHistoryDocument>
->("TransactionHistory", transactionHistorySchema);
-// Todo: use Transaction as Model name instead of TransactionHistory
+export const Transaction = model<
+  ITransactionDocument,
+  PaginateModel<ITransactionDocument>
+>("Transaction", transactionSchema);
