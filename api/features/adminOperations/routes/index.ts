@@ -8,12 +8,13 @@ import { AdminOpsTransactionsRoutes } from "./transanctions.routes";
 
 export class AdminOpsRoutes {
   public router: Router;
-  public adminOpsVendorsRoutes: AdminOpsVendorsRoutes;
-  public adminOpsProductsRoutes: AdminOpsProductsRoutes;
-  public adminOpsRidersRoutes: AdminOpsRidersRoutes;
-  public adminOpsWalletRoutes: AdminOpsWalletRoutes;
-  public adminOpsWorkAreaRoutes: AdminOpsWorkAreaRoutes;
-  public adminOpsTransactionsRoutes: AdminOpsTransactionsRoutes;
+
+  private adminOpsVendorsRoutes: AdminOpsVendorsRoutes;
+  private adminOpsProductsRoutes: AdminOpsProductsRoutes;
+  private adminOpsRidersRoutes: AdminOpsRidersRoutes;
+  private adminOpsWalletRoutes: AdminOpsWalletRoutes;
+  private adminOpsWorkAreaRoutes: AdminOpsWorkAreaRoutes;
+  private adminOpsTransactionsRoutes: AdminOpsTransactionsRoutes;
 
   constructor() {
     this.adminOpsVendorsRoutes = new AdminOpsVendorsRoutes();
