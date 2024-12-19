@@ -49,7 +49,7 @@ type PaginateQueryOptions = {
 
 type Coordinates = [lng: number, lat: number];
 
-type DynamicObject = Record<unknown, JSONObject>;
+type DynamicObject = Record<string | number | symbol, JSONObject>;
 
 type ErrorCode =
   | "BAD_REQUEST"

@@ -47,6 +47,12 @@ export enum CASHOUT_CHANNEL {
   MOBILE_MONEY = "mobile money",
 }
 
+export enum PAYMENT_CHANNELS {
+  CARD = "card",
+  USSD = "ussd",
+  BANK_TRANSFER = "bank_transfer",
+}
+
 export enum ORDER_STATUS {
   PENDING = "pending",
   REQUEST_CONFIRMED = "request confirmed",
@@ -72,8 +78,8 @@ export enum RIDER_WORK_SLOT_STATUS {
 }
 
 export enum PAYMENT_PURPOSE {
-  PRODUCT_PURCHASE = "product purchase",
-  PACKAGE_DELIVERY = "package delivery",
+  ORDER = "order",
+  ERRAND = "errand",
 }
 
 export enum ErrandStatus {
