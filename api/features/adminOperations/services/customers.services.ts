@@ -1,7 +1,8 @@
 import { PaginateResult } from "mongoose"
 import { Customer, ICustomerDocument } from "../../customers"
 import { FilterQuery } from "mongoose";
-import { addDateRangeFilter, buildFilterQuery } from "../../../utils";
+import { addDateRangeFilter, buildFilterQuery, HandleException } from "../../../utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 export const AdminOpsForCustomersService = {
     async getList(page = 1, filter: GetCustomersFilter): Promise<PaginateResult<ICustomerDocument>> {
@@ -33,7 +34,18 @@ export const AdminOpsForCustomersService = {
 
         const transactions = await Customer.paginate(filterQuery, options);
         return transactions;
+    },
 
+    async customerDetails(customerId: string): Promise<ICustomerDocument> {
+        const customer = await Customer.findById(customerId)
+            .select('-__v -password -deliveryAddressCoords')
+            .lean()
+            .exec()
+
+        if (!customer) {
+            throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "Customer not found");
+        }
+        return customer
     }
 }
 
