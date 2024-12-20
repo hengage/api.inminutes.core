@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { PaginateModel, Schema, model } from "mongoose";
 import { ICustomerDocument } from "../customers.interface";
 import {
   encryptValue,
@@ -6,6 +6,7 @@ import {
   toLowerCaseSetter,
 } from "../../../utils";
 import { DB_SCHEMA, GEOLOCATION } from "../../../constants";
+import paginate from "mongoose-paginate-v2";
 
 const customerSchema = new Schema<ICustomerDocument>(
   {
@@ -51,6 +52,8 @@ const customerSchema = new Schema<ICustomerDocument>(
   },
 );
 
+customerSchema.plugin(paginate);
+
 customerSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
     try {
@@ -61,7 +64,7 @@ customerSchema.pre("save", async function (next) {
   }
 });
 
-export const Customer = model<ICustomerDocument>(
+export const Customer = model<ICustomerDocument, PaginateModel<ICustomerDocument>>(
   DB_SCHEMA.CUSTOMER,
   customerSchema,
 );
