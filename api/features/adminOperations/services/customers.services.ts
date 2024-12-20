@@ -8,7 +8,7 @@ export const AdminOpsForCustomersService = {
         const options = {
             page,
             limit: 30,
-            select: "_id fullName email phoneNumber createdAt",
+            select: "_id fullName email phoneNumber",
             lean: true,
             leanWithId: false
         }
