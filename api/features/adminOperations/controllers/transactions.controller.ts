@@ -20,7 +20,7 @@ export const adminOpsTransactionsController = {
                 }
             )
 
-            handleSuccessResponse(res, HTTP_STATUS_CODES.OK, transactions)
+            handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { transactions })
         } catch (error: unknown) {
             console.error("Error getting transactions: ", error);
             const { statusCode, errorJSON } = handleErrorResponse(error);
@@ -31,7 +31,7 @@ export const adminOpsTransactionsController = {
     async getDetails(req: Request, res: Response) {
         try {
             const transaction = await adminOpsTransactionsService.getDetails(req.params.transactionId)
-            handleSuccessResponse(res, HTTP_STATUS_CODES.OK, transaction)
+            handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { transaction })
 
         } catch (error: unknown) {
             console.error("Error getting transaction details: ", error);

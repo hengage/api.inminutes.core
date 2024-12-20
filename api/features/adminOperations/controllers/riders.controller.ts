@@ -16,7 +16,7 @@ export const adminOpsRidersController: AdminOpsRidersController = {
           accountStatus: req.query.accountStatus as ACCOUNT_STATUS,
         },
       );
-      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, riders);
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { riders });
     } catch (error) {
       console.error("Error getting riders: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
@@ -29,7 +29,7 @@ export const adminOpsRidersController: AdminOpsRidersController = {
       const rider = await adminOpsRidersService.riderDetails(
         req.params.riderId,
       );
-      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, rider);
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { rider });
     } catch (error) {
       console.error("Error getting rider details: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);

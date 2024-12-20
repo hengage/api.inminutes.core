@@ -12,7 +12,7 @@ export class AdminOpsWalletController {
       const wallet = await this.walletService.getWalletForMerchant(
         req.params.merchantId,
       );
-      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, wallet);
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { wallet });
     } catch (error) {
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
