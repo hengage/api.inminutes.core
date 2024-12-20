@@ -32,14 +32,4 @@ export const AdminOpsForCustomersController = {
             res.status(statusCode).json(errorJSON);
         }
     },
-
-    async customerDetails(req: Request, res: Response) {
-        try {
-            const customer = await AdminOpsForCustomersService.customerDetails(req.params.customerId)
-            handleSuccessResponse(res, HTTP_STATUS_CODES.OK, customer);
-        } catch (error) {
-            const { statusCode, errorJSON } = handleErrorResponse(error);
-            res.status(statusCode).json(errorJSON);
-        }
-    }
 }
