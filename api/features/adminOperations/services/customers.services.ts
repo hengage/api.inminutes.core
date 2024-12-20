@@ -6,7 +6,7 @@ import { addDateRangeFilter, buildFilterQuery } from "../../../utils";
 export const AdminOpsForCustomersService = {
     async getList(page = 1, filter: GetCustomersFilter): Promise<PaginateResult<ICustomerDocument>> {
         const options = {
-            page: page,
+            page,
             limit: 30,
             select: "_id fullName email phoneNumber createdAt",
             lean: true,
