@@ -42,6 +42,9 @@ export const Msg = {
   ERROR_ORDER_NOT_FOUND(id: string) {
     return `No order with id '${id}' found`;
   },
+  ERROR_TRANSACTION_NOT_FOUND(id: string) {
+    return `No transaction with id - ${id}`
+  },
   ERROR_INVALID_USER_TYPE(userType: string) {
     return `Invalid user type '${userType}'`;
   },

@@ -14,5 +14,8 @@ export class AdminOpsTransactionsRoutes {
 
     async initializeRoutes() {
         this.router.route("/").get(this.adminOpsForTransactionsController.getTransactions);
+        this.router
+            .route("/:transactionId")
+            .get(this.adminOpsForTransactionsController.getDetails);
     }
 }
