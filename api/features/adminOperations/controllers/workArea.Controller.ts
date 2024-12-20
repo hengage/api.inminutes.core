@@ -48,7 +48,7 @@ export const AdminOpsworkAreaController = {
           req.params.workAreaId,
           req.query.date as unknown as Date,
         );
-      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, timeSlots);
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { timeSlots });
     } catch (error: unknown) {
       console.log("Error getting time slots: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
@@ -62,7 +62,7 @@ export const AdminOpsworkAreaController = {
         await adminOpsWorkAreaService.getBookedRidersForSession(
           req.params.workSessionId,
         );
-      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, bookedRiders);
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { bookedRiders });
     } catch (error: unknown) {
       console.log("Error getting booked riders: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);

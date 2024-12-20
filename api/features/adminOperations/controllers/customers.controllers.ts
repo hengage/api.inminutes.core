@@ -16,7 +16,7 @@ export const AdminOpsForCustomersController = {
             };
 
             const customers = await AdminOpsForCustomersService.getList(page, filter);
-            return res.status(200).json(customers);
+            handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { customers });
         } catch (error) {
             const { statusCode, errorJSON } = handleErrorResponse(error);
             res.status(statusCode).json(errorJSON);
@@ -26,7 +26,7 @@ export const AdminOpsForCustomersController = {
     async customerDetails(req: Request, res: Response) {
         try {
             const customer = await AdminOpsForCustomersService.customerDetails(req.params.customerId)
-            handleSuccessResponse(res, HTTP_STATUS_CODES.OK, customer);
+            handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { customer });
         } catch (error) {
             const { statusCode, errorJSON } = handleErrorResponse(error);
             res.status(statusCode).json(errorJSON);

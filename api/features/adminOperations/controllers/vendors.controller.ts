@@ -22,7 +22,7 @@ export class AdminOpsVendorsController {
           searchQuery: req.query.searchQuery as string,
         },
       );
-      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, vendors);
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { vendors });
     } catch (error) {
       console.error("Error getting vendors: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
@@ -33,7 +33,7 @@ export class AdminOpsVendorsController {
   getVendor = async (req: Request, res: Response): Promise<void> => {
     try {
       const vendor = await this.vendorsService.getVendor(req.params.vendorId);
-      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, vendor);
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { vendor });
     } catch (error) {
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
@@ -87,7 +87,7 @@ export class AdminOpsVendorsController {
       const metrics = await this.vendorsService.productMetrics(
         req.params.vendorId,
       );
-      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, metrics);
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { metrics });
     } catch (error) {
       console.error("Error getting product metrics: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);

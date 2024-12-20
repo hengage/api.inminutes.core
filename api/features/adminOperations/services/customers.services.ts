@@ -28,7 +28,7 @@ export const AdminOpsForCustomersService = {
                 Object.entries(otherFilters).filter(([_, v]) => v !== undefined),
             );
 
-            const searchFields = [" fullname", "email", "phoneNumber"];
+            const searchFields = ["fullname", "email", "phoneNumber"];
             buildFilterQuery(recordFilter, filterQuery, searchFields);
         }
 
