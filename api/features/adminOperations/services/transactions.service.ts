@@ -1,9 +1,9 @@
 import { PaginateResult } from "mongoose";
 import { ITransactionDocument } from "../../transactions/transactions.interface";
 import { Transaction } from "../../transactions/models/transaction.model";
-import { QUERY_LIMIT } from "../../../constants";
+import { HTTP_STATUS_CODES, QUERY_LIMIT } from "../../../constants";
 import { FilterQuery } from "mongoose";
-import { addAmountRangeFilter, addDateRangeFilter, buildFilterQuery } from "../../../utils";
+import { addAmountRangeFilter, addDateRangeFilter, buildFilterQuery, HandleException, Msg } from "../../../utils";
 
 export const adminOpsTransactionsService = {
     async getTransactions(page = 1, filter: GetTransactionsFilter): Promise<PaginateResult<ITransactionDocument>> {
@@ -37,8 +37,26 @@ export const adminOpsTransactionsService = {
 
         const transactions = await Transaction.paginate(filterQuery, options);
         return transactions;
+    },
+
+    async getDetails(transactionId: string): Promise<ITransactionDocument> {
+        const transaction = await Transaction.findById(transactionId)
+            .select("-updatedAt -__v")
+            .lean()
+            .exec();
+
+        if (!transaction) {
+            throw new HandleException(
+                HTTP_STATUS_CODES.NOT_FOUND,
+                Msg.ERROR_TRANSACTION_NOT_FOUND(transactionId)
+            );
+        }
+
+        return transaction as ITransactionDocument;
     }
 }
+
+
 interface GetTransactionsFilter {
     searchQuery?: string;
     status?: string;
