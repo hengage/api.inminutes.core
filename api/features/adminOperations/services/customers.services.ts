@@ -34,7 +34,6 @@ export const AdminOpsForCustomersService = {
 
         const transactions = await Customer.paginate(filterQuery, options);
         return transactions;
-
     },
 
     async customerDetails(customerId: string): Promise<ICustomerDocument> {

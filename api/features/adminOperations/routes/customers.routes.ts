@@ -12,7 +12,6 @@ export class AdminOpsCustomersRoutes {
     initializeRoutes() {
         this.router.route("/").get(AdminOpsForCustomersController.getList);
         this.router.route("/:customerId").get(AdminOpsForCustomersController.customerDetails);
-
     }
 }
 
