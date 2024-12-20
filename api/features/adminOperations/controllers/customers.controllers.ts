@@ -2,6 +2,8 @@
 import { Request, Response } from "express";
 import { AdminOpsForCustomersService, GetCustomersFilter } from "../services/customers.services";
 import { handleErrorResponse } from "../../../utils";
+import { handleSuccessResponse } from "../../../utils/response.utils";
+import { HTTP_STATUS_CODES } from "../../../constants";
 
 export const AdminOpsForCustomersController = {
     async getList(req: Request, res: Response) {
@@ -15,6 +17,16 @@ export const AdminOpsForCustomersController = {
 
             const customers = await AdminOpsForCustomersService.getList(page, filter);
             return res.status(200).json(customers);
+        } catch (error) {
+            const { statusCode, errorJSON } = handleErrorResponse(error);
+            res.status(statusCode).json(errorJSON);
+        }
+    },
+
+    async customerDetails(req: Request, res: Response) {
+        try {
+            const customer = await AdminOpsForCustomersService.customerDetails(req.params.customerId)
+            handleSuccessResponse(res, HTTP_STATUS_CODES.OK, customer);
         } catch (error) {
             const { statusCode, errorJSON } = handleErrorResponse(error);
             res.status(statusCode).json(errorJSON);
