@@ -22,17 +22,14 @@ class ValidateTransactions {
           customerId: Joi.string().required(),
           reason: Joi.string()
             .required()
-            .valid(
-              PAYMENT_PURPOSE.PRODUCT_PURCHASE,
-              PAYMENT_PURPOSE.PACKAGE_DELIVERY,
-            ),
+            .valid(...Object.values(PAYMENT_PURPOSE)),
           orderId: Joi.string().required(),
           vendorId: Joi.string().when("reason", {
-            is: PAYMENT_PURPOSE.PRODUCT_PURCHASE,
+            is: PAYMENT_PURPOSE.ORDER,
             then: Joi.string().required(),
             otherwise: Joi.forbidden().messages({
               "any.unknown":
-                "vendorId is forbidden when reason for payment is not for product purchase",
+                "vendorId is forbidden when reason for payment is not for order",
             }),
           }),
         })

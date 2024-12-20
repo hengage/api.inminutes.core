@@ -1,10 +1,10 @@
 import { ClientSession } from "mongoose";
 import { HandleException } from "../../../utils";
-import { TransactionHistory } from "../models/transaction.model";
+import { Transaction } from "../models/transaction.model";
 import {
-  ITransactionHistoryDocument,
-  ICreateTransactionHistoryData,
-  IUpdateTransactionHistoryData,
+  ITransactionDocument,
+  ICreateTransactionData,
+  IUpdateTransactionData,
 } from "../transactions.interface";
 import { HTTP_STATUS_CODES } from "../../../constants";
 
@@ -13,7 +13,7 @@ Repository class for managing transactions and related data.
 @class
 */
 export class TransactionRepository {
-  private TransactionHistoryModel = TransactionHistory;
+  private TransactionModel = Transaction;
 
   /**
   @async
@@ -21,14 +21,14 @@ export class TransactionRepository {
   @param {object} createTransactionHistoryData - The data to create the transaction history entry.
   */
   async createHistory(
-    createTransactionHistoryData: ICreateTransactionHistoryData,
+    createTransactionData: ICreateTransactionData,
     session?: ClientSession,
-  ): Promise<ITransactionHistoryDocument> {
-    const transactionHistory = new this.TransactionHistoryModel(
-      createTransactionHistoryData,
+  ): Promise<ITransactionDocument> {
+    const transaction = new this.TransactionModel(
+      createTransactionData,
     );
-    await transactionHistory.save({ session });
-    return transactionHistory.toObject();
+    await transaction.save({ session });
+    return transaction.toObject();
   }
 
   /**
@@ -39,10 +39,10 @@ export class TransactionRepository {
   @param {string} updateTransactionData.status - The new status of the transaction.
   */
   async updateStatus(
-    updateTransactionData: IUpdateTransactionHistoryData,
+    updateTransactionData: IUpdateTransactionData,
   ): Promise<void> {
     const { reference, ...updateFields } = updateTransactionData;
-    await this.TransactionHistoryModel.findOneAndUpdate(
+    await this.TransactionModel.findOneAndUpdate(
       { reference },
       { $set: updateFields },
     );
@@ -50,7 +50,7 @@ export class TransactionRepository {
   }
 
   async getTransactionByReference(reference: string, selectFields: string) {
-    const transaction = await TransactionHistory.findOne({ reference })
+    const transaction = await Transaction.findOne({ reference })
       .select(selectFields)
       .lean()
       .exec();
@@ -92,11 +92,11 @@ export class TransactionRepository {
       leanWithId: false,
     };
 
-    return await this.TransactionHistoryModel.paginate(query, options);
+    return await this.TransactionModel.paginate(query, options);
   }
 
   async getDetails(transactionId: string) {
-    return this.TransactionHistoryModel.findById(transactionId)
+    return this.TransactionModel.findById(transactionId)
       .select({
         amount: 1,
         status: 1,

@@ -7,13 +7,13 @@ import { PAYSTACK_SECRET_KEY } from "../../../config";
 import { emitEvent } from "../../../services";
 import {
   IInitializeTransaction,
-  ICreateTransactionHistoryData,
+  ICreateTransactionData,
 } from "../transactions.interface";
 import { TransactionRepository } from "../repository/transaction.repo";
 import { cashoutTransferService } from "./cashoutTransfer.service";
 import { SocketServer } from "../../../services/socket/socket.services";
 import { ClientSession } from "mongoose";
-import { Events, HTTP_STATUS_CODES } from "../../../constants";
+import { Events, HTTP_STATUS_CODES, PAYMENT_CHANNELS, PAYMENT_PURPOSE } from "../../../constants";
 
 /**
 Service for managing transactions and interacting with Paystack API.
@@ -45,7 +45,7 @@ class PaymentTransactionService {
       email: initializeTransactionData.email,
       metadata: initializeTransactionData.metadata,
       reference: generateReference,
-      channels: ["card", "ussd", "bank_transfer"],
+      channels: Object.values(PAYMENT_CHANNELS),
     };
 
     try {
@@ -70,8 +70,6 @@ class PaymentTransactionService {
         .catch((error: unknown) => {
           console.error("Error creating transaction history: ", error);
         });
-
-      console.log({});
 
       return response.data.data;
     } catch (error: unknown) {
@@ -101,19 +99,19 @@ class PaymentTransactionService {
 
       switch (event.event) {
         case "charge.success":
-          console.log({ metadata: event.data.metadata });
-          this.transactionRepo.updateStatus({ reference, status, paidAt });
-          const { purpose, orderId, vendorId } = event.data.metadata;
-          if (purpose === "product purchase") {
-            emitEvent.emit(Events.NOTIFY_VENDOR_OF_ORDER, {
-              orderId,
-              vendorId,
-            });
+          {
+            this.transactionRepo.updateStatus({ reference, status, paidAt });
+            const { purpose, orderId, vendorId } = event.data.metadata;
+            if (purpose === PAYMENT_PURPOSE.ORDER) {
+              emitEvent.emit(Events.NOTIFY_VENDOR_OF_ORDER, {
+                orderId,
+                vendorId,
+              });
+            }
+            break;
           }
-          break;
         case "transfer.success":
         case "transfer.failed":
-          console.log({ reference, status });
           this.transactionRepo.updateStatus({ reference, status });
 
           // Credit wallet on failed transfer
@@ -138,11 +136,11 @@ class PaymentTransactionService {
   @param {object} transactionHistoryData - The data to create the transaction history entry.
   */
   async createHistory(
-    transactionHistoryData: ICreateTransactionHistoryData,
+    createTransactionData: ICreateTransactionData,
     session?: ClientSession,
   ) {
     return await this.transactionRepo.createHistory(
-      transactionHistoryData,
+      createTransactionData,
       session,
     );
   }
@@ -160,11 +158,11 @@ calling the cashoutTransferService.reverseDebit method
 
 @param {object} event - The event object containing the transaction data.
 */
-  async handleFailedCashoutTransaction(event: any) {
+  async handleFailedCashoutTransaction(event: PaystackTransferEvent) {
     let { amount } = event.data;
     const { reference, status, transfer_code: transferCode } = event.data;
     const { recipient_code: recipientCode } = event.data.recipient;
-    amount = parseFloat(amount) / 100;
+    amount = (parseFloat(amount) / 100).toString();
 
     try {
       const wallet = await cashoutTransferService.reverseDebit({
@@ -188,7 +186,6 @@ calling the cashoutTransferService.reverseDebit method
       console.error({ error });
     }
   }
-
   async getHistory(params: {
     walletId: string;
     page: number;
@@ -210,3 +207,15 @@ calling the cashoutTransferService.reverseDebit method
 }
 
 export const paymentTransactionService = new PaymentTransactionService();
+
+interface PaystackTransferEvent {
+  data: {
+    reference: string;
+    status: string;
+    transfer_code: string;
+    amount: string;
+    recipient: {
+      recipient_code: string;
+    };
+  };
+};
