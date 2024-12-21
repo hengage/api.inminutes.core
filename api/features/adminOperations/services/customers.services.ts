@@ -1,7 +1,7 @@
 import { PaginateResult } from "mongoose"
 import { Customer, ICustomerDocument } from "../../customers"
 import { FilterQuery } from "mongoose";
-import { addDateRangeFilter, buildFilterQuery, HandleException } from "../../../utils";
+import { addDateRangeFilter, buildFilterQuery, HandleException, Msg } from "../../../utils";
 import { HTTP_STATUS_CODES } from "../../../constants";
 
 export const AdminOpsForCustomersService = {
@@ -43,7 +43,10 @@ export const AdminOpsForCustomersService = {
             .exec()
 
         if (!customer) {
-            throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, "Customer not found");
+            throw new HandleException(
+                HTTP_STATUS_CODES.NOT_FOUND,
+                Msg.ERROR_NOT_FOUND('customer', customerId
+                ));
         }
         return customer
     }

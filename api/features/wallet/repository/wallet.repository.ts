@@ -31,7 +31,7 @@ class WalletRepository {
       if (!wallet) {
         throw new HandleException(
           HTTP_STATUS_CODES.NOT_FOUND,
-          Msg.ERROR_NO_WALLET_FOUND(walletId),
+          Msg.ERROR_NOT_FOUND('wallet', walletId),
         );
       }
 

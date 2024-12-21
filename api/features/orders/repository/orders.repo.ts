@@ -67,7 +67,7 @@ export class OrdersRepository {
     if (!order) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_ORDER_NOT_FOUND(orderId),
+        Msg.ERROR_NOT_FOUND('order', orderId),
       );
     }
 
@@ -110,7 +110,7 @@ export class OrdersRepository {
     if (!order) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_ORDER_NOT_FOUND(orderId),
+        Msg.ERROR_NOT_FOUND('order', orderId),
       );
     }
 
@@ -134,7 +134,7 @@ export class OrdersRepository {
     if (!order) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_ORDER_NOT_FOUND(params.orderId),
+        Msg.ERROR_NOT_FOUND('order', params.orderId),
       );
     }
     if (order.status === ORDER_STATUS.CANCELLED) {
@@ -166,7 +166,7 @@ export class OrdersRepository {
     if (!order) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_ORDER_NOT_FOUND(orderId),
+        Msg.ERROR_NOT_FOUND('order', orderId),
       );
     }
 

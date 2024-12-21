@@ -12,7 +12,7 @@ export class ProductsRepository {
   private productCategoryModel = ProductCategory;
   private wishListModel = WishList;
 
-  constructor() {}
+  constructor() { }
 
   /**
   @async
@@ -62,7 +62,7 @@ export class ProductsRepository {
     if (!product) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_PRODUCT_NOT_FOUND(productId),
+        Msg.ERROR_NOT_FOUND('product', productId),
       );
     }
     product.quantity -= quantity;
@@ -103,7 +103,7 @@ export class ProductsRepository {
     if (result.deletedCount === 0) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_PRODUCT_NOT_FOUND(productId),
+        Msg.ERROR_NOT_FOUND('product', productId),
       );
     }
 

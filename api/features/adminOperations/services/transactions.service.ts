@@ -48,7 +48,7 @@ export const adminOpsTransactionsService = {
         if (!transaction) {
             throw new HandleException(
                 HTTP_STATUS_CODES.NOT_FOUND,
-                Msg.ERROR_TRANSACTION_NOT_FOUND(transactionId)
+                Msg.ERROR_NOT_FOUND('transaction', transactionId)
             );
         }
 
