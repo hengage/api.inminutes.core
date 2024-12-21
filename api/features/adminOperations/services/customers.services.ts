@@ -2,7 +2,7 @@ import { PaginateResult } from "mongoose"
 import { Customer, ICustomerDocument } from "../../customers"
 import { FilterQuery } from "mongoose";
 import { addDateRangeFilter, buildFilterQuery, HandleException, Msg } from "../../../utils";
-import { HTTP_STATUS_CODES } from "../../../constants";
+import { ACCOUNT_STATUS, HTTP_STATUS_CODES } from "../../../constants";
 
 export const AdminOpsForCustomersService = {
     async getList(page = 1, filter: GetCustomersFilter): Promise<PaginateResult<ICustomerDocument>> {
@@ -49,6 +49,28 @@ export const AdminOpsForCustomersService = {
                 ));
         }
         return customer
+    },
+
+    /**
+ * Updates customer account status
+ * @param customerId - The vendor's ID
+ * @param status - New account status
+ */
+    async setAccountStatus(
+        customerId: ICustomerDocument["_id"],
+        status: ACCOUNT_STATUS,
+    ): Promise<void> {
+        const customer = await Customer
+            .findById(customerId)
+            .select("_id accountStatus");
+        if (!customer) {
+            throw new HandleException(
+                HTTP_STATUS_CODES.NOT_FOUND,
+                Msg.ERROR_NOT_FOUND('customer', customerId),
+            );
+        }
+        customer.accountStatus = status;
+        await customer.save();
     }
 }
 

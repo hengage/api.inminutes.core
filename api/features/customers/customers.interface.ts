@@ -20,6 +20,7 @@ enum BasicUserData {
   password = "password",
   deliveryAddress = "deliveryAddress",
   displayPhoto = "displayPhoto",
+  accountStatus = "accountStatus",
 }
 
 type BasicCustomerInfo = Record<BasicUserData, string>;
@@ -46,7 +47,7 @@ export interface IUpdateCustomerProfile
       ICustomerDocument,
       BasicUserData.fullName | BasicUserData.displayPhoto | "dateOfBirth"
     >
-  > {}
+  > { }
 
 // export interface IUpdateCustomerProfile
 //   extends Partial<
