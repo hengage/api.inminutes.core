@@ -1,18 +1,16 @@
 import { PaginateResult } from "mongoose"
 import { Customer, ICustomerDocument } from "../../customers"
 import { FilterQuery } from "mongoose";
-import { addDateRangeFilter, buildFilterQuery, HandleException, Msg } from "../../../utils";
+import { addDateRangeFilter, buildFilterQuery, createPaginationOptions, HandleException, Msg } from "../../../utils";
 import { ACCOUNT_STATUS, HTTP_STATUS_CODES } from "../../../constants";
 
 export const AdminOpsForCustomersService = {
     async getList(page = 1, filter: GetCustomersFilter): Promise<PaginateResult<ICustomerDocument>> {
-        const options = {
+
+        const options = createPaginationOptions(
             page,
-            limit: 30,
-            select: "_id fullName email phoneNumber",
-            lean: true,
-            leanWithId: false
-        }
+            { select: "_id fullName email phoneNumber" }
+        );
 
         const filterQuery: FilterQuery<ICustomerDocument> = {};
         if (filter) {

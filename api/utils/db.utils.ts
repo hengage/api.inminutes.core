@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { DateTime } from "luxon";
 import { FilterQuery } from "mongoose";
+import { QUERY_LIMIT } from "../constants";
+import { PaginateQueryOptions } from "../types";
 
 /**
  * Builds a MongoDB filter query based on the provided filter object.
@@ -92,4 +94,19 @@ export function addDateRangeFilter<T>(
       (filterQuery as any)[dateField].$lte = DateTime.fromISO(toDate).endOf('day').toJSDate();
     }
   }
+}
+
+export function createPaginationOptions(
+  page: number,
+  customOptions: Record<string, any> = {}
+): Record<string, any> {
+  const defaultOptions: PaginateQueryOptions = {
+    page,
+    limit: QUERY_LIMIT,
+    select: "",
+    lean: true,
+    leanWithId: false,
+    sort: { createdAt: -1 },
+  };
+  return { ...defaultOptions, ...customOptions };
 }

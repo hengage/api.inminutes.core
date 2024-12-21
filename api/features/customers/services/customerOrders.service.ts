@@ -1,4 +1,5 @@
 import { ORDER_STATUS } from "../../../constants";
+import { createPaginationOptions } from "../../../utils";
 import { Order } from "../../orders";
 
 /**
@@ -49,15 +50,13 @@ export class CustomersOrdersService {
     const { customerId, page } = params;
     const query: { customer: typeof customerId } = { customer: customerId };
 
-    const options = {
+    const options = createPaginationOptions(
       page,
-      limit: 16,
-      select: "deliveryAddress status",
-      populate: [{ path: "vendor", select: "businessName" }],
-      lean: true,
-      leanWithId: false,
-      sort: { createdAt: -1 },
-    };
+      {
+        select: "deliveryAddress status",
+        populate: [{ path: "vendor", select: "businessName" }]
+      }
+    );
 
     const orders = await this.orderModel.paginate(query, options);
     return orders;

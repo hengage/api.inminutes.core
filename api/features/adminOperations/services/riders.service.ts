@@ -1,6 +1,6 @@
 import { PaginateResult } from "mongoose";
 import { IRiderDocument, Rider } from "../../riders";
-import { buildFilterQuery } from "../../../utils/db.utils";
+import { buildFilterQuery, createPaginationOptions } from "../../../utils/db.utils";
 import { FilterQuery } from "mongoose";
 import {
   ACCOUNT_STATUS,
@@ -14,13 +14,8 @@ export const adminOpsRidersService = {
     page = 1,
     filter: GetRidersFilter,
   ): Promise<PaginateResult<IRiderDocument>> {
-    const options = {
-      page: page,
-      limit: 26,
-      select: "_id fullName phoneNumber photo",
-      lean: true,
-      leanWithId: false,
-    };
+
+    const options = createPaginationOptions(page, { select: "_id fullName phoneNumber photo" });
 
     const filterQuery: FilterQuery<IRiderDocument> = {};
     if (filter) {

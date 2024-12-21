@@ -1,5 +1,5 @@
 import { HTTP_STATUS_CODES } from "../../../constants";
-import { HandleException } from "../../../utils";
+import { createPaginationOptions, HandleException } from "../../../utils";
 import { Product } from "../../products";
 import { Vendor } from "../models/vendors.model";
 
@@ -50,13 +50,9 @@ class VendorsService {
   async getProducts(vendorId: string, page: number) {
     const query = { vendor: vendorId };
 
-    const options = {
-      page,
-      limit: 20,
+    const options = createPaginationOptions(page, {
       select: "name image cost",
-      leanWithId: false,
-      lean: true,
-    };
+    });
 
     const products = await Product.paginate(query, options);
     return products;

@@ -1,8 +1,8 @@
-import { formatPhoneNumberforDB, HandleException } from "../../../utils";
+import { createPaginationOptions, formatPhoneNumberforDB, HandleException } from "../../../utils";
 import { ErrandStatus, HTTP_STATUS_CODES } from "../../../constants";
 import { ICreateErrandData, IErrandDocument } from "../errand.interface";
 import { Errand } from "../models/errand.models";
-import { PaginatedQueryResult, PaginateQueryOptions } from "../../../types";
+import { PaginatedQueryResult } from "../../../types";
 
 export class ErrandRepository {
   create = async (
@@ -97,8 +97,7 @@ export class ErrandRepository {
   getHistoryForUser = async ({
     userType,
     userId,
-    limit,
-    page,
+    page = 1,
   }: {
     userType: "customer" | "rider";
     userId: string;
@@ -109,21 +108,17 @@ export class ErrandRepository {
       [userType === "rider" ? "rider" : "customer"]: userId,
     };
 
-    console.log({ limit, page });
+    const options = createPaginationOptions(
+      page,
+      {
+        select: "-updatedAt -dropoffCoordinates -scheduledPickupTime -pickupCoordinates",
+        populate: [
+          { path: "customer", select: "fullName phoneNumber" },
+          { path: "rider", select: "fullName phoneNumber" },
+        ],
+      }
 
-    const options: PaginateQueryOptions = {
-      page: page || 1,
-      limit: limit || 20,
-      select:
-        "-__v -updatedAt -dropoffCoordinates -scheduledPickupTime -pickupCoordinates",
-      populate: [
-        { path: "customer", select: "fullName phoneNumber" },
-        { path: "rider", select: "fullName phoneNumber" },
-      ],
-      sort: { createdAt: -1 },
-      lean: true,
-      leanWithId: false,
-    };
+    );
     const errands = (await Errand.paginate(
       query,
       options,
