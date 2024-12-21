@@ -2,7 +2,7 @@ import { createPaginationOptions, formatPhoneNumberforDB, HandleException } from
 import { ErrandStatus, HTTP_STATUS_CODES } from "../../../constants";
 import { ICreateErrandData, IErrandDocument } from "../errand.interface";
 import { Errand } from "../models/errand.models";
-import { PaginatedQueryResult, PaginateQueryOptions } from "../../../types";
+import { PaginatedQueryResult } from "../../../types";
 
 export class ErrandRepository {
   create = async (
@@ -97,7 +97,6 @@ export class ErrandRepository {
   getHistoryForUser = async ({
     userType,
     userId,
-    limit,
     page = 1,
   }: {
     userType: "customer" | "rider";
