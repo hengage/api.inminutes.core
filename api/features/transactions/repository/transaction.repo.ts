@@ -72,7 +72,7 @@ export class TransactionRepository {
     endDate?: Date | string;
   }) {
     const { walletId, page, startDate, endDate } = params;
-    const query: { wallet: string; createdAt?: {} } = {
+    const query: { wallet: string; createdAt?: object } = {
       wallet: walletId,
     };
 
@@ -83,7 +83,7 @@ export class TransactionRepository {
       };
     }
 
-    const options = createPaginationOptions(page, {
+    const options = createPaginationOptions(page || 1, {
       select: "createdAt amount status reason",
       limit: 20
     });
