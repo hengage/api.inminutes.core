@@ -7,7 +7,10 @@ export class ValidateAdminOpsCustomers {
     static setAccountStatus = async (setAccountStatusData: { status: string }) => {
         const schema = joi.object({
             status: joi.string().valid(...Object.values(ACCOUNT_STATUS))
-                .required().label("Status"),
+                .required().label("Status")
+                .messages({
+                    "any.only": `Status must be one of: ${Object.values(ACCOUNT_STATUS).join(", ")}`,
+                }),
         });
 
         const { error } = schema.validate(setAccountStatusData, {
