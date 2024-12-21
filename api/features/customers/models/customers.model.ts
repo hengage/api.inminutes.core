@@ -5,7 +5,7 @@ import {
   generateUniqueString,
   toLowerCaseSetter,
 } from "../../../utils";
-import { DB_SCHEMA, GEOLOCATION } from "../../../constants";
+import { ACCOUNT_STATUS, DB_SCHEMA, GEOLOCATION } from "../../../constants";
 import paginate from "mongoose-paginate-v2";
 
 const customerSchema = new Schema<ICustomerDocument>(
@@ -44,6 +44,11 @@ const customerSchema = new Schema<ICustomerDocument>(
     deliveryAddressCoords: {
       type: { type: String, default: GEOLOCATION.POINT },
       coordinates: { type: [Number, Number] },
+    },
+    accountStatus: {
+      type: String,
+      default: ACCOUNT_STATUS.ACTIVE,
+      enum: Object.values(ACCOUNT_STATUS),
     },
     displayPhoto: { type: String },
   },
