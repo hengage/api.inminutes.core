@@ -1,5 +1,5 @@
 import { ClientSession } from "mongoose";
-import { HandleException } from "../../../utils";
+import { createPaginationOptions, HandleException } from "../../../utils";
 import { Transaction } from "../models/transaction.model";
 import {
   ITransactionDocument,
@@ -83,14 +83,10 @@ export class TransactionRepository {
       };
     }
 
-    const options = {
-      page,
-      limit: 10,
+    const options = createPaginationOptions(page, {
       select: "createdAt amount status reason",
-      lean: true,
-      sort: { createdAt: -1 },
-      leanWithId: false,
-    };
+      limit: 20
+    });
 
     return await this.TransactionModel.paginate(query, options);
   }

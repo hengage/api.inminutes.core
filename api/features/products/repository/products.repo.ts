@@ -1,5 +1,5 @@
 import { HTTP_STATUS_CODES } from "../../../constants";
-import { HandleException, Msg } from "../../../utils";
+import { createPaginationOptions, HandleException, Msg } from "../../../utils";
 import { Product, ProductCategory, WishList } from "../models/products.models";
 import { IAddProductData } from "../products.interface";
 
@@ -120,14 +120,13 @@ export class ProductsRepository {
   async searchProducts(params: { term: string; page: number }) {
     const query = { name: { $regex: params.term, $options: "i" } };
 
-    const options = {
-      page: params.page || 1,
-      limit: 20,
-      select: "name cost image",
-      populate: [{ path: "vendor", select: "businessName" }],
-      lean: true,
-      leanWithId: false,
-    };
+    const options = createPaginationOptions(
+      params.page,
+      {
+        select: "name cost image",
+        populate: [{ path: "vendor", select: "businessName" }]
+      }
+    );
 
     const products = await this.productModel.paginate(query, options);
     return products;
@@ -141,16 +140,10 @@ export class ProductsRepository {
   async getProductsByCategory(params: { categoryId: string; page: number }) {
     const query = { category: params.categoryId };
 
-    const options = {
-      page: params.page || 1,
-      limit: 20,
+    const options = createPaginationOptions(params.page, {
       select: "name cost image",
-      populate: [
-        { path: "vendor", select: "businessName location.coordinates" },
-      ],
-      lean: true,
-      leanWithId: false,
-    };
+      populate: [{ path: "vendor", select: "businessName location.coordinates" }]
+    });
 
     const products = await Product.paginate(query, options);
     return products;

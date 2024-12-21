@@ -1,4 +1,4 @@
-export { addAmountRangeFilter, addDateRangeFilter, buildFilterQuery } from "./db.utils";
+export { addAmountRangeFilter, addDateRangeFilter, buildFilterQuery, createPaginationOptions } from "./db.utils";
 
 export { Msg } from "./messages.utils";
 

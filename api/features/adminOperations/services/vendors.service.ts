@@ -2,7 +2,7 @@ import { PaginateResult, FilterQuery } from "mongoose";
 import { IVendorDocument, Vendor } from "../../vendors";
 import { ACCOUNT_STATUS, HTTP_STATUS_CODES } from "../../../constants";
 import { HandleException, Msg } from "../../../utils";
-import { buildFilterQuery } from "../../../utils/db.utils";
+import { buildFilterQuery, createPaginationOptions } from "../../../utils/db.utils";
 import { Product } from "../../products";
 
 export class AdminOpsVendorsService {
@@ -13,13 +13,8 @@ export class AdminOpsVendorsService {
     page = 1,
     filter: GetVendorsFilter,
   ): Promise<PaginateResult<IVendorDocument>> {
-    const options = {
-      page: page,
-      limit: 26,
-      select: "_id businessName businessLogo",
-      lean: true,
-      leanWithId: false,
-    };
+
+    const options = createPaginationOptions(page, { select: "_id businessName businessLogo" });
 
     const filterQuery: FilterQuery<IVendorDocument> = {};
     if (filter) {

@@ -3,18 +3,15 @@ import { ITransactionDocument } from "../../transactions/transactions.interface"
 import { Transaction } from "../../transactions/models/transaction.model";
 import { HTTP_STATUS_CODES, QUERY_LIMIT } from "../../../constants";
 import { FilterQuery } from "mongoose";
-import { addAmountRangeFilter, addDateRangeFilter, buildFilterQuery, HandleException, Msg } from "../../../utils";
+import { addAmountRangeFilter, addDateRangeFilter, buildFilterQuery, createPaginationOptions, HandleException, Msg } from "../../../utils";
 
 export const adminOpsTransactionsService = {
     async getTransactions(page = 1, filter: GetTransactionsFilter): Promise<PaginateResult<ITransactionDocument>> {
-        const options = {
-            sort: { createdAt: -1 },
+
+        const options = createPaginationOptions(
             page,
-            limit: QUERY_LIMIT,
-            select: "amount reason status _id reference createdAt",
-            lean: true,
-            leanWithId: false,
-        };
+            { select: "amount reason status _id reference createdAt" }
+        );
 
         const filterQuery: FilterQuery<ITransactionDocument> = {};
         if (filter) {
