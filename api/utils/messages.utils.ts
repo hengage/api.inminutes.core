@@ -58,6 +58,9 @@ export const Msg = {
   ERROR_UNKNOWN_ERROR() {
     return "An unknown error occurred";
   },
+  ERROR_INVALID_ACCOUNT_STATUS() {
+    return `Status must be one of: ${Object.values(ACCOUNT_STATUS).join(", ")}`;
+  },
   WALLET_CREDITED(amount: string) {
     return (
       `${amount} has been successfully credited to your wallet. ` +

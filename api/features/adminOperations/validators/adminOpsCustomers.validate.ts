@@ -1,6 +1,6 @@
 
 import joi from "joi";
-import { HandleException } from "../../../utils";
+import { HandleException, Msg } from "../../../utils";
 import { ACCOUNT_STATUS, HTTP_STATUS_CODES } from "../../../constants";
 
 export class ValidateAdminOpsCustomers {
@@ -9,7 +9,7 @@ export class ValidateAdminOpsCustomers {
             status: joi.string().valid(...Object.values(ACCOUNT_STATUS))
                 .required().label("Status")
                 .messages({
-                    "any.only": `Status must be one of: ${Object.values(ACCOUNT_STATUS).join(", ")}`,
+                    "any.only": Msg.ERROR_INVALID_ACCOUNT_STATUS()
                 }),
         });
 

@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { HandleException } from "../../../utils";
+import { HandleException, Msg } from "../../../utils";
 import { ACCOUNT_STATUS, HTTP_STATUS_CODES } from "../../../constants";
 import { ICreateCategory, ICreateSubCategory } from "../services/vendorsCategory.service";
 
@@ -42,7 +42,7 @@ export class ValidateAdminVendorsOps {
         .required()
         .valid(...Object.values(ACCOUNT_STATUS))
         .messages({
-          "any.only": `Invalid status. Options are: ${Object.values(ACCOUNT_STATUS).join(", ")}`,
+          "any.only": Msg.ERROR_INVALID_ACCOUNT_STATUS(),
         }),
     });
 
