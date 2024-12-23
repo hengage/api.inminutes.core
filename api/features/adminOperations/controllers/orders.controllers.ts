@@ -48,5 +48,19 @@ export const AdminOpsForOrdersController = {
             const { statusCode, errorJSON } = handleErrorResponse(error);
             res.status(statusCode).json(errorJSON);
         }
-    }
+    },
+
+    async updateStatus(req: Request, res: Response) {
+        try {
+            const order = await AdminOpsForOrdersService.updateStatus(
+                req.params.orderId,
+                req.body.status
+            );
+            handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { order });
+        } catch (error: unknown) {
+            console.log("Error updating order status: ", error);
+            const { statusCode, errorJSON } = handleErrorResponse(error);
+            res.status(statusCode).json(errorJSON);
+        }
+    },
 }

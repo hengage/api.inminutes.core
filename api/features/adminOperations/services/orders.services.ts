@@ -3,8 +3,9 @@ import { PaginateResult } from "mongoose"
 import { Order, IOrdersDocument } from "../../orders"
 import { FilterQuery } from "mongoose";
 import { addDateRangeFilter, buildFilterQuery, createPaginationOptions, HandleException, Msg } from "../../../utils";
-import { DB_SCHEMA, HTTP_STATUS_CODES } from "../../../constants";
+import { DB_SCHEMA, HTTP_STATUS_CODES, ORDER_STATUS } from "../../../constants";
 import { RidersRepository } from "../../riders";
+import { OrdersRepository } from "../../orders/repository/orders.repo";
 
 export const AdminOpsForOrdersService = {
     async getList(page = 1, filter: GetOrdersFilter): Promise<PaginateResult<IOrdersDocument>> {
@@ -84,6 +85,15 @@ export const AdminOpsForOrdersService = {
             .lean();
         return updatedOrder;
     },
+
+    async updateStatus(
+        orderId: IOrdersDocument["_id"],
+        status: ORDER_STATUS
+    ): Promise<IOrdersDocument | null> {
+        const ordersRepo = new OrdersRepository()
+        const order = await ordersRepo.updateStatus({ orderId, status });
+        return order
+    }
 }
 
 export interface GetOrdersFilter {

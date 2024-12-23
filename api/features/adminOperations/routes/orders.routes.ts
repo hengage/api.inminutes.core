@@ -17,7 +17,10 @@ export class AdminOpsOrdersRoutes {
             .route("/:orderId")
             .get(AdminOpsForOrdersController.getDetails)
         this.router
-            .route('/:orderId')
+            .route('/:orderId/assign-rider')
             .patch(AdminOpsForOrdersController.assignRider)
+        this.router
+            .route('/:orderId/status')
+            .patch(AdminOpsForOrdersController.updateStatus)
     }
 }
