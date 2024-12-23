@@ -9,7 +9,7 @@ import {
 } from "../../../utils";
 import { Rider } from "../models/riders.model";
 import { ICreateRiderData, IRiderDocument } from "../riders.interface";
-import { Events, HTTP_STATUS_CODES } from "../../../constants";
+import { ACCOUNT_STATUS, DB_SCHEMA, Events, HTTP_STATUS_CODES, USER_APPROVAL_STATUS } from "../../../constants";
 
 /**
 Repository for rider-related database operations.
@@ -133,6 +133,37 @@ export class RidersRepository {
 
     return rider;
   }
+
+  /**
+    @async
+    Finds an active and approved rider by ID.
+    @param {string} riderId - The rider ID to search for.
+    */
+  async findActiveRider(
+    riderId: IRiderDocument["_id"],
+    selectFields?: string[]
+  ): Promise<IRiderDocument | null> {
+    const query = Rider.findOne({
+      _id: riderId,
+      accountStatus: ACCOUNT_STATUS.ACTIVE,
+      approvalStatus: USER_APPROVAL_STATUS.APPROVED,
+    })
+
+    if (selectFields) {
+      query.select(selectFields);
+    }
+
+    const rider = await query.lean().exec();
+
+    if (!rider) {
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        Msg.ERROR_NOT_FOUND(DB_SCHEMA.RIDER, riderId)
+      );
+    }
+    return rider
+  }
+
 
   /**
   @async

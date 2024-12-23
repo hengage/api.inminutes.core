@@ -13,6 +13,9 @@ export const Msg = {
   ERROR_RIDER_NOT_FOUND(data: unknown) {
     return `No rider found at (${JSON.stringify(data)})`;
   },
+  ERROR_RIDER_NOT_WORKING() {
+    return `The rider is not currently working`;
+  },
 
   ERROR_VENDOR_NOT_FOUND(data: unknown) {
     return `No vendor found at (${JSON.stringify(data)})`;
