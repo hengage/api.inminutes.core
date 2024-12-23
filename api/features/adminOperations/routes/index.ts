@@ -6,6 +6,7 @@ import { AdminOpsWalletRoutes } from "./wallet.routes";
 import { AdminOpsWorkAreaRoutes } from "./workArea.routes";
 import { AdminOpsTransactionsRoutes } from "./transanctions.routes";
 import { AdminOpsCustomersRoutes } from "./customers.routes";
+import { AdminOpsOrdersRoutes } from "./orders.routes";
 
 export class AdminOpsRoutes {
   public router: Router;
@@ -17,6 +18,7 @@ export class AdminOpsRoutes {
   private adminOpsWorkAreaRoutes: AdminOpsWorkAreaRoutes;
   private adminOpsTransactionsRoutes: AdminOpsTransactionsRoutes;
   private adminOpsCustomersRoutes: AdminOpsCustomersRoutes;
+  private adminOpsOrdersRoutes: AdminOpsOrdersRoutes;
 
   constructor() {
     this.adminOpsVendorsRoutes = new AdminOpsVendorsRoutes();
@@ -27,6 +29,7 @@ export class AdminOpsRoutes {
     this.adminOpsWorkAreaRoutes = new AdminOpsWorkAreaRoutes();
     this.adminOpsTransactionsRoutes = new AdminOpsTransactionsRoutes();
     this.adminOpsCustomersRoutes = new AdminOpsCustomersRoutes();
+    this.adminOpsOrdersRoutes = new AdminOpsOrdersRoutes();
 
     this.router = Router();
     this.initializeRoutes();
@@ -41,5 +44,6 @@ export class AdminOpsRoutes {
     this.router.use("/work-areas", this.adminOpsWorkAreaRoutes.router);
     this.router.use("/transactions", this.adminOpsTransactionsRoutes.router);
     this.router.use("/customers", this.adminOpsCustomersRoutes.router);
+    this.router.use("/orders", this.adminOpsOrdersRoutes.router);
   }
 }
