@@ -18,6 +18,6 @@ export class AdminOpsOrdersRoutes {
             .get(AdminOpsForOrdersController.getDetails)
         this.router
             .route('/:orderId')
-            .patch(AdminOpsForOrdersController.asignRider)
+            .patch(AdminOpsForOrdersController.assignRider)
     }
 }

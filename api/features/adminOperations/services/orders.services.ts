@@ -55,7 +55,7 @@ export const AdminOpsForOrdersService = {
         return order;
     },
 
-    async asignRider(orderId: IOrdersDocument['_id'], riderId: string): Promise<IOrdersDocument | null> {
+    async assignRider(orderId: IOrdersDocument['_id'], riderId: string): Promise<IOrdersDocument | null> {
         const ridersRepo = new RidersRepository()
 
         const [order, rider] = await Promise.all([

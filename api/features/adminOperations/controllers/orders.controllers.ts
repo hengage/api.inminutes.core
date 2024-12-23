@@ -36,9 +36,9 @@ export const AdminOpsForOrdersController = {
         }
     },
 
-    async asignRider(req: Request, res: Response) {
+    async assignRider(req: Request, res: Response) {
         try {
-            const order = await AdminOpsForOrdersService.asignRider(
+            const order = await AdminOpsForOrdersService.assignRider(
                 req.params.orderId,
                 req.body.riderId
             );
