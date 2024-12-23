@@ -22,5 +22,17 @@ export const AdminOpsForOrdersController = {
             const { statusCode, errorJSON } = handleErrorResponse(error);
             res.status(statusCode).json(errorJSON);
         }
-    }
+    },
+    async getDetails(req: Request, res: Response) {
+        try {
+            const { orderId } = req.params;
+            const order = await AdminOpsForOrdersService.getDetails(orderId);
+
+            handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { order });
+        } catch (error: unknown) {
+            console.log('Error getting order: ', error)
+            const { statusCode, errorJSON } = handleErrorResponse(error);
+            res.status(statusCode).json(errorJSON);
+        }
+    },
 }

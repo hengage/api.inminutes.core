@@ -13,5 +13,8 @@ export class AdminOpsOrdersRoutes {
         this.router
             .route("/")
             .get(AdminOpsForOrdersController.getList)
+        this.router
+            .route("/:orderId")
+            .get(AdminOpsForOrdersController.getDetails)
     }
 }
