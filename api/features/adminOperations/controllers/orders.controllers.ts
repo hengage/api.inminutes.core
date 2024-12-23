@@ -35,4 +35,18 @@ export const AdminOpsForOrdersController = {
             res.status(statusCode).json(errorJSON);
         }
     },
+
+    async asignRider(req: Request, res: Response) {
+        try {
+            const order = await AdminOpsForOrdersService.asignRider(
+                req.params.orderId,
+                req.body.riderId
+            );
+            handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { order });
+        } catch (error: unknown) {
+            console.log("Error asigning rider: ", error);
+            const { statusCode, errorJSON } = handleErrorResponse(error);
+            res.status(statusCode).json(errorJSON);
+        }
+    }
 }

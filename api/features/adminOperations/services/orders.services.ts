@@ -4,6 +4,7 @@ import { Order, IOrdersDocument } from "../../orders"
 import { FilterQuery } from "mongoose";
 import { addDateRangeFilter, buildFilterQuery, createPaginationOptions, HandleException, Msg } from "../../../utils";
 import { DB_SCHEMA, HTTP_STATUS_CODES } from "../../../constants";
+import { RidersRepository } from "../../riders";
 
 export const AdminOpsForOrdersService = {
     async getList(page = 1, filter: GetOrdersFilter): Promise<PaginateResult<IOrdersDocument>> {
@@ -52,7 +53,37 @@ export const AdminOpsForOrdersService = {
             );
         }
         return order;
-    }
+    },
+
+    async asignRider(orderId: IOrdersDocument['_id'], riderId: string): Promise<IOrdersDocument | null> {
+        const ridersRepo = new RidersRepository()
+
+        const [order, rider] = await Promise.all([
+            Order.findById(orderId).select(DB_SCHEMA.RIDER.toLocaleLowerCase()).lean(),
+            ridersRepo.findActiveRider(riderId, ['_id', 'currentlyWorking'])
+        ]);
+
+        if (!order) {
+            throw new HandleException(
+                HTTP_STATUS_CODES.NOT_FOUND,
+                Msg.ERROR_NOT_FOUND(DB_SCHEMA.ORDER, orderId)
+            );
+        }
+
+        if (rider!.currentlyWorking !== true) {
+            throw new HandleException(
+                HTTP_STATUS_CODES.UNPROCESSABLE_ENTITY,
+                Msg.ERROR_RIDER_NOT_WORKING(),
+            )
+        }
+
+        const updatedOrder = await Order.findOneAndUpdate({ _id: orderId }, { rider: rider!._id }, { new: true })
+            .populate({ path: DB_SCHEMA.RIDER.toLowerCase(), select: "fullName", options: { lean: true } })
+            .populate({ path: DB_SCHEMA.CUSTOMER.toLowerCase(), select: "fullName", options: { lean: true } })
+            .populate({ path: DB_SCHEMA.VENDOR.toLowerCase(), select: "businessName businessLogo", options: { lean: true } })
+            .lean();
+        return updatedOrder;
+    },
 }
 
 export interface GetOrdersFilter {
