@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { AdminOpsForOrdersService } from "../services/orders.services";
 import { handleErrorResponse } from "../../../utils";
 import { handleSuccessResponse } from "../../../utils/response.utils";
-import { HTTP_STATUS_CODES } from "../../../constants";
+import { HTTP_STATUS_CODES, SORT_ORDER } from "../../../constants";
 import { ValidateAdminOpsOrders } from "../validators/adminOpsOrders.validate";
 
 export const AdminOpsForOrdersController = {
@@ -15,14 +15,14 @@ export const AdminOpsForOrdersController = {
                 searchQuery: searchQuery as string,
                 fromDate: fromDate as string,
                 toDate: toDate as string,
-                sort: sort as 'asc' | 'desc'
+                sort: sort as SORT_ORDER
             });
 
             const orders = await AdminOpsForOrdersService.getList(Number(page), {
                 searchQuery: searchQuery as string,
                 fromDate: fromDate as string,
                 toDate: toDate as string,
-                sort: sort as 'asc' | 'desc'
+                sort: sort as SORT_ORDER
             });
 
             handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { orders })

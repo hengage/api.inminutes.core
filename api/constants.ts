@@ -149,6 +149,11 @@ export enum DB_SCHEMA {
   RIDER_BOOKING = "RiderBooking",
 }
 
+export enum SORT_ORDER {
+  ASC = 'asc',
+  DESC = 'desc'
+}
+
 export enum AGENDA {
   START_WORK_SCHEDULE = "start-work-schedule",
   END_WORK_SCHEDULE = "end-work-schedule",

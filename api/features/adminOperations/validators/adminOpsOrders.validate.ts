@@ -1,6 +1,6 @@
 import joi from "joi";
 import { HandleException, Msg } from "../../../utils";
-import { ORDER_STATUS, HTTP_STATUS_CODES } from "../../../constants";
+import { ORDER_STATUS, HTTP_STATUS_CODES, SORT_ORDER } from "../../../constants";
 
 export class ValidateAdminOpsOrders {
     static getList = async (getListData: { page: number, searchQuery: string, fromDate: string, toDate: string, sort: 'asc' | 'desc' }) => {
@@ -9,9 +9,8 @@ export class ValidateAdminOpsOrders {
             searchQuery: joi.string().optional().allow('').label("Search Query"),
             fromDate: joi.string().optional().allow('').label("From Date"),
             toDate: joi.string().optional().allow('').label("To Date"),
-            sort: joi.string().valid("asc", "desc").label("Sort").messages({
-                "any.only": Msg.ERROR_INVALID_SORT_ORDER(),
-            }),
+            sort: joi.string().valid(...Object.values(SORT_ORDER)).label("Sort")
+                .messages({ "any.only": Msg.ERROR_INVALID_SORT_ORDER() }),
         });
 
         const { error } = schema.validate(getListData, {

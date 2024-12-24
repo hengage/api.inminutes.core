@@ -68,7 +68,7 @@ export const Msg = {
     return "Invalid order status";
   },
   ERROR_INVALID_SORT_ORDER() {
-    return "Invalid sort order. Must be  either 'asc' or 'desc'";;
+    return "Invalid sort order. Must be  either 'asc' or 'desc'";
   },
   WALLET_CREDITED(amount: string) {
     return (
