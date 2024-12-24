@@ -3,7 +3,7 @@ import { PaginateResult } from "mongoose"
 import { Order, IOrdersDocument } from "../../orders"
 import { FilterQuery } from "mongoose";
 import { addDateRangeFilter, buildFilterQuery, createPaginationOptions, HandleException, Msg } from "../../../utils";
-import { DB_SCHEMA, HTTP_STATUS_CODES, ORDER_STATUS, SORT_ORDER } from "../../../constants";
+import { DB_SCHEMA, HTTP_STATUS_CODES, ORDER_STATUS, ORDER_TYPE, SORT_ORDER } from "../../../constants";
 import { RidersRepository } from "../../riders";
 import { OrdersRepository } from "../../orders/repository/orders.repo";
 
@@ -27,7 +27,7 @@ export const AdminOpsForOrdersService = {
             // Handle other filters
             const recordFilter: Record<string, string> = Object.fromEntries(
                 Object.entries(otherFilters)
-                    .filter(([key, v]) => v !== undefined && key !== 'sort'),
+                    .filter(([key, v]) => v !== undefined && key !== 'sort' && key !== 'page'),
             );
 
             const searchFields = ["_id", "status"];
@@ -97,8 +97,12 @@ export const AdminOpsForOrdersService = {
 }
 
 export interface GetOrdersFilter {
-    searchQuery: string;
+    searchQuery?: string;
     fromDate?: string;
     toDate?: string;
-    sort: SORT_ORDER;
+    customer?: string;
+    rider?: string
+    vendor?: string
+    type?: ORDER_TYPE
+    sort?: SORT_ORDER;
 }
