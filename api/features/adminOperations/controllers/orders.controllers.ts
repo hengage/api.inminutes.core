@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { AdminOpsForOrdersService } from "../services/orders.services";
+import { AdminOpsForOrdersService, GetOrdersFilter } from "../services/orders.services";
 import { handleErrorResponse } from "../../../utils";
 import { handleSuccessResponse } from "../../../utils/response.utils";
-import { HTTP_STATUS_CODES, SORT_ORDER } from "../../../constants";
+import { HTTP_STATUS_CODES, ORDER_TYPE, SORT_ORDER } from "../../../constants";
 import { ValidateAdminOpsOrders } from "../validators/adminOpsOrders.validate";
 
 export const AdminOpsForOrdersController = {
@@ -11,19 +11,22 @@ export const AdminOpsForOrdersController = {
             const { page, searchQuery, fromDate, toDate, sort } = req.query;
 
             await ValidateAdminOpsOrders.getList({
-                page: Number(page),
+                page: req.query.page as unknown as number,
                 searchQuery: searchQuery as string,
                 fromDate: fromDate as string,
                 toDate: toDate as string,
-                sort: sort as SORT_ORDER
+                sort: sort as SORT_ORDER,
+                type: req.query.type as ORDER_TYPE,
+                rider: req.query.rider as string,
+                customer: req.query.customer as string,
+                vendor: req.query.vendor as string,
             });
 
-            const orders = await AdminOpsForOrdersService.getList(Number(page), {
-                searchQuery: searchQuery as string,
-                fromDate: fromDate as string,
-                toDate: toDate as string,
-                sort: sort as SORT_ORDER
-            });
+            const filter: GetOrdersFilter = req.query;
+            const orders = await AdminOpsForOrdersService.getList(
+                Number(page),
+                filter
+            );
 
             handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { orders })
         } catch (error: unknown) {
