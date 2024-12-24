@@ -64,6 +64,12 @@ export const Msg = {
   ERROR_INVALID_ACCOUNT_STATUS() {
     return `Status must be one of: ${Object.values(ACCOUNT_STATUS).join(", ")}`;
   },
+  ERROR_INVALID_ORDER_STATUS() {
+    return "Invalid order status";
+  },
+  ERROR_INVALID_SORT_ORDER() {
+    return "Invalid sort order. Must be  either 'asc' or 'desc'";;
+  },
   WALLET_CREDITED(amount: string) {
     return (
       `${amount} has been successfully credited to your wallet. ` +

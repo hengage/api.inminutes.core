@@ -1,14 +1,22 @@
-
 import { Request, Response } from "express";
 import { AdminOpsForOrdersService } from "../services/orders.services";
 import { handleErrorResponse } from "../../../utils";
 import { handleSuccessResponse } from "../../../utils/response.utils";
 import { HTTP_STATUS_CODES } from "../../../constants";
+import { ValidateAdminOpsOrders } from "../validators/adminOpsOrders.validate";
 
 export const AdminOpsForOrdersController = {
     async getList(req: Request, res: Response) {
         try {
-            const { page = 1, searchQuery, fromDate, toDate, sort } = req.query;
+            const { page, searchQuery, fromDate, toDate, sort } = req.query;
+
+            await ValidateAdminOpsOrders.getList({
+                page: Number(page),
+                searchQuery: searchQuery as string,
+                fromDate: fromDate as string,
+                toDate: toDate as string,
+                sort: sort as 'asc' | 'desc'
+            });
 
             const orders = await AdminOpsForOrdersService.getList(Number(page), {
                 searchQuery: searchQuery as string,
@@ -23,9 +31,13 @@ export const AdminOpsForOrdersController = {
             res.status(statusCode).json(errorJSON);
         }
     },
+
     async getDetails(req: Request, res: Response) {
         try {
             const { orderId } = req.params;
+
+            await ValidateAdminOpsOrders.getDetails({ orderId });
+
             const order = await AdminOpsForOrdersService.getDetails(orderId);
 
             handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { order });
@@ -38,6 +50,11 @@ export const AdminOpsForOrdersController = {
 
     async assignRider(req: Request, res: Response) {
         try {
+            await ValidateAdminOpsOrders.assignRider({
+                orderId: req.params.orderId,
+                riderId: req.body.riderId
+            });
+
             const order = await AdminOpsForOrdersService.assignRider(
                 req.params.orderId,
                 req.body.riderId
@@ -52,6 +69,11 @@ export const AdminOpsForOrdersController = {
 
     async updateStatus(req: Request, res: Response) {
         try {
+            await ValidateAdminOpsOrders.updateStatus({
+                orderId: req.params.orderId,
+                status: req.body.status
+            });
+
             const order = await AdminOpsForOrdersService.updateStatus(
                 req.params.orderId,
                 req.body.status
