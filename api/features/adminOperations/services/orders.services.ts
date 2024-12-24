@@ -3,7 +3,7 @@ import { PaginateResult } from "mongoose"
 import { Order, IOrdersDocument } from "../../orders"
 import { FilterQuery } from "mongoose";
 import { addDateRangeFilter, buildFilterQuery, createPaginationOptions, HandleException, Msg } from "../../../utils";
-import { DB_SCHEMA, HTTP_STATUS_CODES, ORDER_STATUS } from "../../../constants";
+import { DB_SCHEMA, HTTP_STATUS_CODES, ORDER_STATUS, SORT_ORDER } from "../../../constants";
 import { RidersRepository } from "../../riders";
 import { OrdersRepository } from "../../orders/repository/orders.repo";
 
@@ -13,7 +13,7 @@ export const AdminOpsForOrdersService = {
             page,
             {
                 select: "_id  totalCost status createdAt",
-                sort: { createdAt: filter.sort === 'asc' ? 1 : -1 }
+                sort: { createdAt: filter.sort === SORT_ORDER.ASC ? 1 : -1 }
             }
         );
 
@@ -50,7 +50,7 @@ export const AdminOpsForOrdersService = {
         if (!order) {
             throw new HandleException(
                 HTTP_STATUS_CODES.NOT_FOUND,
-                Msg.ERROR_NOT_FOUND('order', orderId)
+                Msg.ERROR_NOT_FOUND(DB_SCHEMA.ORDER, orderId)
             );
         }
         return order;
@@ -100,5 +100,5 @@ export interface GetOrdersFilter {
     searchQuery: string;
     fromDate?: string;
     toDate?: string;
-    sort: 'asc' | 'desc';
+    sort: SORT_ORDER;
 }
