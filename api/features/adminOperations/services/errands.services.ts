@@ -1,8 +1,9 @@
 import { FilterQuery, PaginateResult } from "mongoose";
 import { HTTP_STATUS_CODES, ORDER_TYPE, SORT_ORDER } from "../../../constants";
 import { addDateRangeFilter, buildFilterQuery, createPaginationOptions, HandleException, Msg } from "../../../utils";
-import { Errand } from "../../errand/models/errand.models";
+import { Errand, ErrandPackageType } from "../../errand/";
 import { IErrandDocument } from "../../errand";
+import { IErrandPackageTypeDocument } from "../../errand/errand.interface";
 
 export const AdminOpsForErrandsService = {
     async getList(page = 1, filter: GetErrandsFilter): Promise<PaginateResult<IErrandDocument>> {
@@ -48,7 +49,55 @@ export const AdminOpsForErrandsService = {
         }
 
         return errand;
-    }
+    },
+
+    async addPackageType(addPackageTypeData: Pick<IErrandPackageTypeDocument, 'packageType' | 'image'>): Promise<IErrandPackageTypeDocument> {
+        const { packageType } = addPackageTypeData
+        const existingPackageType = await ErrandPackageType.findOne({
+            packageType: packageType.toLowerCase().trim()
+        })
+            .select('packageType')
+            .lean();
+        if (existingPackageType) {
+            throw new HandleException(
+                HTTP_STATUS_CODES.CONFLICT,
+                `${packageType.toLowerCase().trim()}` +
+                ` already exists as a package type`
+            );
+        }
+
+        return await ErrandPackageType.create(addPackageTypeData);
+    },
+
+    async updatePackageType(
+        packageTypeId: string,
+        updateData: Partial<Pick<IErrandPackageTypeDocument, 'packageType' | 'image'>>
+    ): Promise<IErrandPackageTypeDocument> {
+        const packageType = await ErrandPackageType.findByIdAndUpdate(
+            packageTypeId,
+            { $set: updateData },
+            { new: true }
+        )
+
+        if (!packageType) {
+            throw new HandleException(
+                HTTP_STATUS_CODES.NOT_FOUND,
+                Msg.ERROR_NOT_FOUND("package type", packageTypeId)
+            );
+        }
+
+        return packageType;
+    },
+
+    async deletePackageType(packageTypeId: string): Promise<void> {
+        const existingPackageType = await ErrandPackageType.findByIdAndDelete(packageTypeId);
+        if (!existingPackageType) {
+            throw new HandleException(
+                HTTP_STATUS_CODES.NOT_FOUND,
+                Msg.ERROR_NOT_FOUND("package type", packageTypeId)
+            );
+        }
+    },
 }
 
 export interface GetErrandsFilter {

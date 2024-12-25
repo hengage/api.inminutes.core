@@ -86,4 +86,7 @@ export const Msg = {
   DISAPPROVED(type: string, id: string) {
     return `${type} ${id} has been disapproved`;
   },
+  DELETE_SUCCESS(doc: string) {
+    return `Successfully deleted ${doc}`;
+  }
 };

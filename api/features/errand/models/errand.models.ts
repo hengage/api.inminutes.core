@@ -59,6 +59,9 @@ const errandPackageTypeSchema = new Schema<IErrandPackageTypeDocument>(
     packageType: {
       type: String,
       required: true,
+      set: function (value: string) {
+        return value.toLowerCase().trim();
+      },
     },
     image: {
       type: String,

@@ -17,5 +17,15 @@ export class AdminOpsErrandsRoutes {
         this.router
             .route("/:errandId")
             .get(AdminOpsForErrandsController.getDetails);
+
+        this.router
+            .route("/package-types")
+            .post(AdminOpsForErrandsController.addPackageType);
+        this.router
+            .route("/package-types/:packageTypeId")
+            .patch(AdminOpsForErrandsController.updatePackageType);
+        this.router
+            .route("/package-types/:packageTypeId")
+            .delete(AdminOpsForErrandsController.deletePackageType);
     }
 }
