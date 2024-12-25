@@ -1,6 +1,6 @@
 import { FilterQuery, PaginateResult } from "mongoose";
-import { ORDER_TYPE, SORT_ORDER } from "../../../constants";
-import { addDateRangeFilter, buildFilterQuery, createPaginationOptions } from "../../../utils";
+import { HTTP_STATUS_CODES, ORDER_TYPE, SORT_ORDER } from "../../../constants";
+import { addDateRangeFilter, buildFilterQuery, createPaginationOptions, HandleException, Msg } from "../../../utils";
 import { Errand } from "../../errand/models/errand.models";
 import { IErrandDocument } from "../../errand";
 
@@ -31,6 +31,23 @@ export const AdminOpsForErrandsService = {
 
         const errands = await Errand.paginate(filterQuery, options);
         return errands;
+    },
+
+    async getDetails(errandId: IErrandDocument['_id']): Promise<IErrandDocument> {
+        const errand = await Errand.findById(errandId)
+            .select('-__v -pickUpCoordinates.type -dropoffCoordinates.type')
+            .populate({ path: 'customer', select: "fullName" })
+            .populate({ path: 'rider', select: "fullName" })
+            .lean()
+            .exec();
+
+        if (!errand) {
+            throw new HandleException(
+                HTTP_STATUS_CODES.NOT_FOUND,
+                Msg.ERROR_NOT_FOUND('errand', errandId));
+        }
+
+        return errand;
     }
 }
 

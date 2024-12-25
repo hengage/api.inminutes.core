@@ -13,5 +13,9 @@ export class AdminOpsErrandsRoutes {
         this.router
             .route("/")
             .get(AdminOpsForErrandsController.getList)
+
+        this.router
+            .route("/:errandId")
+            .get(AdminOpsForErrandsController.getDetails);
     }
 }

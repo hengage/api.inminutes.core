@@ -17,6 +17,17 @@ export const AdminOpsForErrandsController = {
             const { statusCode, errorJSON } = handleErrorResponse(error);
             res.status(statusCode).json(errorJSON);
         }
-    }
+    },
+
+    async getDetails(req: Request, res: Response) {
+        try {
+            const { errandId } = req.params;
+            const errand = await AdminOpsForErrandsService.getDetails(errandId);
+            handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { errand });
+        } catch (error) {
+            const { statusCode, errorJSON } = handleErrorResponse(error);
+            res.status(statusCode).json(errorJSON);
+        }
+    },
 }
 
