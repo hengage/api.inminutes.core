@@ -7,6 +7,7 @@ import { AdminOpsWorkAreaRoutes } from "./workArea.routes";
 import { AdminOpsTransactionsRoutes } from "./transanctions.routes";
 import { AdminOpsCustomersRoutes } from "./customers.routes";
 import { AdminOpsOrdersRoutes } from "./orders.routes";
+import { AdminOpsErrandsRoutes } from "./errands.routes";
 
 export class AdminOpsRoutes {
   public router: Router;
@@ -19,6 +20,7 @@ export class AdminOpsRoutes {
   private adminOpsTransactionsRoutes: AdminOpsTransactionsRoutes;
   private adminOpsCustomersRoutes: AdminOpsCustomersRoutes;
   private adminOpsOrdersRoutes: AdminOpsOrdersRoutes;
+  private adminOpsErrandsRoutes: AdminOpsErrandsRoutes;
 
   constructor() {
     this.adminOpsVendorsRoutes = new AdminOpsVendorsRoutes();
@@ -30,6 +32,7 @@ export class AdminOpsRoutes {
     this.adminOpsTransactionsRoutes = new AdminOpsTransactionsRoutes();
     this.adminOpsCustomersRoutes = new AdminOpsCustomersRoutes();
     this.adminOpsOrdersRoutes = new AdminOpsOrdersRoutes();
+    this.adminOpsErrandsRoutes = new AdminOpsErrandsRoutes();
 
     this.router = Router();
     this.initializeRoutes();
@@ -45,5 +48,6 @@ export class AdminOpsRoutes {
     this.router.use("/transactions", this.adminOpsTransactionsRoutes.router);
     this.router.use("/customers", this.adminOpsCustomersRoutes.router);
     this.router.use("/orders", this.adminOpsOrdersRoutes.router);
+    this.router.use("/errands", this.adminOpsErrandsRoutes.router);
   }
 }
