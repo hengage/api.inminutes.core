@@ -1,13 +1,15 @@
-import { HTTP_STATUS_CODES, PRODUCT_STATUS } from "../../../constants";
-import { HandleException, capitalize } from "../../../utils";
+import { FilterQuery } from "mongoose";
+import { HTTP_STATUS_CODES, PRODUCT_STATUS, SORT_ORDER } from "../../../constants";
+import { HandleException, Msg, addDateRangeFilter, buildFilterQuery, capitalize, createPaginationOptions } from "../../../utils";
 import { Product, ProductCategory } from "../../products";
-import { IProductCategoryDocument } from "../../products/products.interface";
+import { IProductCategoryDocument, IProductDocument } from "../../products/products.interface";
+import { PaginateResult } from "mongoose";
 
 export class AdminOpsForProductsService {
   private productCategoryModel = ProductCategory;
   private productModel = Product;
 
-  constructor() {}
+  constructor() { }
 
   async createCategory(payload: {
     name: string;
@@ -54,4 +56,58 @@ export class AdminOpsForProductsService {
       { new: true },
     );
   }
+
+  async getList(page = 1, filter: GetProductsFilter): Promise<PaginateResult<IProductDocument>> {
+    const options = createPaginationOptions(
+      page,
+      {
+        select: "_id name description price stock status createdAt",
+        sort: { createdAt: filter.sort === SORT_ORDER.ASC ? 1 : -1 }
+      }
+    );
+
+    const filterQuery: FilterQuery<IProductDocument> = {};
+    if (filter) {
+      const { fromDate, toDate, ...otherFilters } = filter;
+
+      // Handle date range 
+      addDateRangeFilter(filterQuery, fromDate, toDate);
+
+      // Handle other filters
+      const recordFilter: Record<string, string> = Object.fromEntries(
+        Object.entries(otherFilters)
+          .filter(([key, v]) => v !== undefined && key !== 'sort' && key !== 'page'),
+      );
+
+      const searchFields = ["_id", "name"];
+      buildFilterQuery(recordFilter, filterQuery, searchFields);
+    }
+
+    const products = await this.productModel.paginate(filterQuery, options);
+    return products;
+  }
+
+  async getProductDetails(productId: IProductDocument['_id']): Promise<IProductDocument> {
+    const product = await this.productModel.findById(productId)
+      .select('-__v -updatedAt')
+      .lean()
+      .exec();
+
+    if (!product) {
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        Msg.ERROR_NOT_FOUND("product", productId)
+      );
+    }
+    return product;
+  }
+}
+
+export interface GetProductsFilter {
+  searchQuery?: string;
+  fromDate?: string;
+  toDate?: string;
+  category?: string;
+  vendor?: string;
+  sort?: SORT_ORDER;
 }

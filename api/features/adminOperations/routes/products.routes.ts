@@ -11,7 +11,6 @@ export class AdminOpsProductsRoutes {
     this.router = Router();
     this.initializeRoutes();
   }
-
   async initializeRoutes() {
     this.router
       .route("/category")
@@ -24,5 +23,13 @@ export class AdminOpsProductsRoutes {
     this.router
       .route("/:productId/reject")
       .patch(this.adminOpsForProductsController.rejectProduct);
+
+    this.router
+      .route("/")
+      .get(this.adminOpsForProductsController.getProductList);
+
+    this.router
+      .route("/:productId")
+      .get(this.adminOpsForProductsController.getProductDetails);
   }
 }

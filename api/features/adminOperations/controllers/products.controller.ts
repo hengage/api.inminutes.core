@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { capitalize, handleErrorResponse } from "../../../utils";
-import { AdminOpsForProductsService } from "../services/products.services";
+import { AdminOpsForProductsService, GetProductsFilter } from "../services/products.services";
 import { handleSuccessResponse } from "../../../utils/response.utils";
 import { HTTP_STATUS_CODES } from "../../../constants";
 
@@ -59,6 +59,31 @@ export class AdminOpsForProductsController {
       );
     } catch (error: unknown) {
       console.error("Error rejecting product:", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  }
+
+  getProductList = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const filter: GetProductsFilter = req.query;
+      const page = Number(req.query.page) || 1;
+      const products = await this.adminOpsForProductsService.getList(page, filter);
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { products });
+    } catch (error: unknown) {
+      console.error("Error fetching products list:", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  }
+
+  getProductDetails = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { productId } = req.params;
+      const product = await this.adminOpsForProductsService.getProductDetails(productId);
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { product });
+    } catch (error: unknown) {
+      console.error("Error fetching product details:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
