@@ -117,6 +117,20 @@ export class AdminOpsForProductsService {
 
     return { approved, pending, rejected };
   }
+
+  async pendingProducts(page = 1): Promise<PaginateResult<IProductDocument>> {
+    const options = createPaginationOptions(
+      page,
+      { select: "_id name description price stock status createdAt", }
+    );
+
+    const query: FilterQuery<IProductDocument> = {
+      status: PRODUCT_STATUS.PENDING,
+    };
+
+    const products = await this.productModel.paginate(query, options);
+    return products;
+  }
 }
 
 export interface GetProductsFilter {

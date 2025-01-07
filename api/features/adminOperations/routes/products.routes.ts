@@ -31,10 +31,9 @@ export class AdminOpsProductsRoutes {
     this.router
       .route('/metrics')
       .get(this.adminOpsForProductsController.metrics)
-
     this.router
-      .route("/:productId")
-      .get(this.adminOpsForProductsController.getProductDetails);
+      .route('/pending')
+      .get(this.adminOpsForProductsController.pendingProducts);
 
   }
 }

@@ -99,4 +99,16 @@ export class AdminOpsForProductsController {
       res.status(statusCode).json(errorJSON);
     }
   }
+
+  pendingProducts = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const products = await this.adminOpsForProductsService.
+        pendingProducts(Number(req.query.page))
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { products })
+    } catch (error: unknown) {
+      console.error("Error fetching products:", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  }
 }
