@@ -131,6 +131,11 @@ export class AdminOpsForProductsService {
     const products = await this.productModel.paginate(query, options);
     return products;
   }
+
+  async getCategories(): Promise<IProductCategoryDocument[]> {
+    const categories = await ProductCategory.find().select('_id name').lean().exec();
+    return categories;
+  }
 }
 
 export interface GetProductsFilter {
