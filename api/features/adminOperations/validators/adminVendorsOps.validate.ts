@@ -2,31 +2,27 @@ import Joi from "joi";
 import { HandleException, Msg } from "../../../utils";
 import { ACCOUNT_STATUS, HTTP_STATUS_CODES } from "../../../constants";
 import { ICreateCategory, ICreateSubCategory } from "../services/vendorsCategory.service";
+import { validateSchema } from "../../../utils/validation.utils";
 
 export class ValidateAdminVendorsOps {
   createCategory = async (createCategoryData: ICreateCategory) => {
-    const createCategorySchema = Joi.object({
+    const schema = Joi.object({
       name: Joi.string().required(),
       image: Joi.string().required(),
     });
 
-    const { error } = createCategorySchema.validate(createCategoryData, {
-      allowUnknown: false,
-      abortEarly: false,
-    });
 
-    if (error) {
-      throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
-    }
+    validateSchema(schema, createCategoryData);
+    return;
   };
 
   createSubCategory = async (createSubCategoryData: ICreateSubCategory) => {
-    const createSubCategorySchema = Joi.object({
+    const schema = Joi.object({
       name: Joi.string().required(),
       category: Joi.string().required(),
     });
 
-    const { error } = createSubCategorySchema.validate(createSubCategoryData, {
+    const { error } = schema.validate(createSubCategoryData, {
       allowUnknown: false,
       abortEarly: false,
     });
@@ -34,6 +30,8 @@ export class ValidateAdminVendorsOps {
     if (error) {
       throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
     }
+    validateSchema(schema, createSubCategoryData);
+    return;
   };
 
   updateAccountStatus = async (updateAccountStatusData: { status: string }) => {
@@ -46,13 +44,7 @@ export class ValidateAdminVendorsOps {
         }),
     });
 
-    const { error } = schema.validate(updateAccountStatusData, {
-      allowUnknown: false,
-      abortEarly: false,
-    });
-
-    if (error) {
-      throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
-    }
+    validateSchema(schema, updateAccountStatusData);
+    return;
   };
 }

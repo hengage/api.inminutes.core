@@ -1,6 +1,7 @@
 import joi from "joi";
-import { HandleException, Msg } from "../../../utils";
-import { ORDER_STATUS, HTTP_STATUS_CODES, SORT_ORDER } from "../../../constants";
+import { ORDER_STATUS, SORT_ORDER } from "../../../constants";
+import { Msg } from "../../../utils";
+import { validateSchema } from "../../../utils/validation.utils";
 import { GetOrdersFilter } from "../services/orders.services";
 
 export class ValidateAdminOpsOrders {
@@ -26,14 +27,7 @@ export class ValidateAdminOpsOrders {
                 .messages({ "any.only": Msg.ERROR_INVALID_SORT_ORDER() }),
         });
 
-        const { error } = schema.validate(getListData, {
-            allowUnknown: false,
-            abortEarly: false,
-        });
-
-        if (error) {
-            throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
-        }
+        validateSchema(schema, getListData);
         return;
     };
 
@@ -42,14 +36,7 @@ export class ValidateAdminOpsOrders {
             orderId: joi.string().required().label("Order ID"),
         });
 
-        const { error } = schema.validate(getDetailsData, {
-            allowUnknown: false,
-            abortEarly: false,
-        });
-
-        if (error) {
-            throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
-        }
+        validateSchema(schema, getDetailsData);
         return;
     };
 
@@ -59,14 +46,7 @@ export class ValidateAdminOpsOrders {
             riderId: joi.string().required().label("Rider ID"),
         });
 
-        const { error } = schema.validate(assignRiderData, {
-            allowUnknown: false,
-            abortEarly: false,
-        });
-
-        if (error) {
-            throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
-        }
+        validateSchema(schema, assignRiderData);
         return;
     };
 
@@ -80,14 +60,7 @@ export class ValidateAdminOpsOrders {
                 }),
         });
 
-        const { error } = schema.validate(updateStatusData, {
-            allowUnknown: false,
-            abortEarly: false,
-        });
-
-        if (error) {
-            throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
-        }
+        validateSchema(schema, updateStatusData);
         return;
     };
 }

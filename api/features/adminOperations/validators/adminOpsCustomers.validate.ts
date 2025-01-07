@@ -1,7 +1,8 @@
 
 import joi from "joi";
-import { HandleException, Msg } from "../../../utils";
-import { ACCOUNT_STATUS, HTTP_STATUS_CODES } from "../../../constants";
+import { Msg } from "../../../utils";
+import { ACCOUNT_STATUS } from "../../../constants";
+import { validateSchema } from "../../../utils/validation.utils";
 
 export class ValidateAdminOpsCustomers {
     static setAccountStatus = async (setAccountStatusData: { status: string }) => {
@@ -13,14 +14,7 @@ export class ValidateAdminOpsCustomers {
                 }),
         });
 
-        const { error } = schema.validate(setAccountStatusData, {
-            allowUnknown: false,
-            abortEarly: false,
-        });
-
-        if (error) {
-            throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
-        }
+        validateSchema(schema, setAccountStatusData);
         return;
     };
 }
