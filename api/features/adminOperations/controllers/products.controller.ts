@@ -30,7 +30,7 @@ export class AdminOpsForProductsController {
     }
   }
 
-  async approveProduct(req: Request, res: Response): Promise<void> {
+  approveProduct = async (req: Request, res: Response): Promise<void> => {
     try {
       await this.adminOpsForProductsService.approveProduct(
         req.params.productId,
@@ -39,7 +39,7 @@ export class AdminOpsForProductsController {
         res,
         HTTP_STATUS_CODES.OK,
         null,
-        "Product has been approved",
+        `Product '${req.params.productId}' has been approved`,
       );
     } catch (error: unknown) {
       console.log("Error approving product: ", error);
@@ -48,14 +48,14 @@ export class AdminOpsForProductsController {
     }
   }
 
-  async rejectProduct(req: Request, res: Response): Promise<void> {
+  rejectProduct = async (req: Request, res: Response): Promise<void> => {
     try {
       await this.adminOpsForProductsService.rejectProduct(req.params.productId);
       handleSuccessResponse(
         res,
         HTTP_STATUS_CODES.OK,
         null,
-        "Product has been rejected",
+        `Product '${req.params.productId}' has been rejected`,
       );
     } catch (error: unknown) {
       console.error("Error rejecting product:", error);
