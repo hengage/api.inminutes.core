@@ -29,7 +29,12 @@ export class AdminOpsProductsRoutes {
       .get(this.adminOpsForProductsController.getProductList);
 
     this.router
+      .route('/metrics')
+      .get(this.adminOpsForProductsController.metrics)
+
+    this.router
       .route("/:productId")
       .get(this.adminOpsForProductsController.getProductDetails);
+
   }
 }

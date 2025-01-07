@@ -101,6 +101,22 @@ export class AdminOpsForProductsService {
     }
     return product;
   }
+
+  async metrics(): Promise<{ approved: number; pending: number; rejected: number }> {
+    const approved = await this.productModel.countDocuments({
+      status: PRODUCT_STATUS.APPROVED,
+    });
+
+    const pending = await this.productModel.countDocuments({
+      status: PRODUCT_STATUS.PENDING,
+    });
+
+    const rejected = await this.productModel.countDocuments({
+      status: PRODUCT_STATUS.REJECTED,
+    });
+
+    return { approved, pending, rejected };
+  }
 }
 
 export interface GetProductsFilter {

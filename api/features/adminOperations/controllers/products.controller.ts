@@ -88,4 +88,15 @@ export class AdminOpsForProductsController {
       res.status(statusCode).json(errorJSON);
     }
   }
+
+  metrics = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const metrics = await this.adminOpsForProductsService.metrics();
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { metrics });
+    } catch (error: unknown) {
+      console.error("Error fetching product metrics:", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  }
 }
