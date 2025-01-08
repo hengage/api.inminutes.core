@@ -1,7 +1,8 @@
 import joi from "joi";
-import { HandleException, Msg } from "../../../utils";
-import { HTTP_STATUS_CODES, SORT_ORDER } from "../../../constants";
+import { Msg } from "../../../utils";
+import { SORT_ORDER } from "../../../constants";
 import { GetProductsFilter } from "../services/products.services";
+import { validateSchema } from "../../../utils/validation.utils";
 
 export class ValidateAdminOpsProducts {
     static getList = async (getListData: GetProductsFilter & { page: number | string }) => {
@@ -19,14 +20,7 @@ export class ValidateAdminOpsProducts {
                 .messages({ "any.only": Msg.ERROR_INVALID_SORT_ORDER() }),
         });
 
-        const { error } = schema.validate(getListData, {
-            allowUnknown: false,
-            abortEarly: false,
-        });
-
-        if (error) {
-            throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
-        }
+        validateSchema(schema, getListData);
         return;
     };
 
@@ -35,14 +29,7 @@ export class ValidateAdminOpsProducts {
             productId: joi.string().required().label("Product ID"),
         });
 
-        const { error } = schema.validate(getProductDetailsData, {
-            allowUnknown: false,
-            abortEarly: false,
-        });
-
-        if (error) {
-            throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
-        }
+        validateSchema(schema, getProductDetailsData);
         return;
     };
 
@@ -51,14 +38,7 @@ export class ValidateAdminOpsProducts {
             name: joi.string().required().label("Name"),
         });
 
-        const { error } = schema.validate(createCategoryData, {
-            allowUnknown: false,
-            abortEarly: false,
-        });
-
-        if (error) {
-            throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
-        }
+        validateSchema(schema, createCategoryData);
         return;
     };
 
@@ -67,14 +47,7 @@ export class ValidateAdminOpsProducts {
             productId: joi.string().required().label("Product ID"),
         });
 
-        const { error } = schema.validate(approveProductData, {
-            allowUnknown: false,
-            abortEarly: false,
-        });
-
-        if (error) {
-            throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
-        }
+        validateSchema(schema, approveProductData);
         return;
     };
 
@@ -83,14 +56,7 @@ export class ValidateAdminOpsProducts {
             productId: joi.string().required().label("Product ID"),
         });
 
-        const { error } = schema.validate(rejectProductData, {
-            allowUnknown: false,
-            abortEarly: false,
-        });
-
-        if (error) {
-            throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
-        }
+        validateSchema(schema, rejectProductData);
         return;
     };
 
@@ -102,14 +68,7 @@ export class ValidateAdminOpsProducts {
             ).optional().label("Page"),
         });
 
-        const { error } = schema.validate(pendingProductsData, {
-            allowUnknown: false,
-            abortEarly: false,
-        });
-
-        if (error) {
-            throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
-        }
+        validateSchema(schema, pendingProductsData);
         return;
     };
 }
