@@ -98,11 +98,12 @@ export function addDateRangeFilter<T>(
 
 export function createPaginationOptions(
   page: number,
-  customOptions: Record<string, any> = {}
+  customOptions: Record<string, any> = {},
+  limit?: number
 ): Record<string, any> {
   const defaultOptions: PaginateQueryOptions = {
     page,
-    limit: QUERY_LIMIT,
+    limit: limit ?? QUERY_LIMIT,
     select: "",
     lean: true,
     leanWithId: false,
