@@ -1,7 +1,10 @@
+import { ACCOUNT_STATUS } from "../../../constants";
+
 export interface GetCustomersFilter {
     searchQuery: string;
     fromDateJoined?: string;
     toDateJoined?: string;
+    accountStatus?: ACCOUNT_STATUS; 
 }
 
 export interface CustomerSummaryResponse {

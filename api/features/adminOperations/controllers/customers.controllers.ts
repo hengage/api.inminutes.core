@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { AdminOpsForCustomersService } from "../services/customers.services";
 import { handleErrorResponse, Msg } from "../../../utils";
 import { handleSuccessResponse } from "../../../utils/response.utils";
-import { HTTP_STATUS_CODES } from "../../../constants";
+import { ACCOUNT_STATUS, HTTP_STATUS_CODES } from "../../../constants";
 import { ValidateAdminOpsCustomers } from "../validators/adminOpsCustomers.validate";
 import { CustomerMetricsRange, GetCustomersFilter } from "../Interfaces/customer.interface";
 
@@ -14,7 +14,8 @@ export const AdminOpsForCustomersController = {
             const filter: GetCustomersFilter = {
                 searchQuery: req.query.searchQuery as string,
                 fromDateJoined: req.query.fromDateJoined as string,
-                toDateJoined: req.query.toDateJoined as string
+                toDateJoined: req.query.toDateJoined as string,
+                accountStatus: req.query.status as ACCOUNT_STATUS
             };
 
             const customers = await AdminOpsForCustomersService.getList(page, filter);
@@ -59,7 +60,8 @@ export const AdminOpsForCustomersController = {
             const filter: GetCustomersFilter = {
                 searchQuery: req.query.searchQuery as string,
                 fromDateJoined: req.query.fromDateJoined as string,
-                toDateJoined: req.query.toDateJoined as string
+                toDateJoined: req.query.toDateJoined as string,
+                accountStatus: req.query.status as ACCOUNT_STATUS
             };
 
             const topCustomers = await AdminOpsForCustomersService.getTopList(page, filter, limit);
