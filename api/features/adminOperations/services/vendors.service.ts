@@ -1,11 +1,13 @@
 import { PaginateResult, FilterQuery } from "mongoose";
 import { IVendorDocument, Vendor } from "../../vendors";
 import { ACCOUNT_STATUS, DB_SCHEMA, HTTP_STATUS_CODES, ORDER_STATUS } from "../../../constants";
-import { HandleException, Msg } from "../../../utils";
+import { formatPhoneNumberforDB, HandleException, Msg } from "../../../utils";
 import { addDateRangeFilter, buildFilterQuery, createPaginationOptions } from "../../../utils/db.utils";
 import { Product } from "../../products";
 import { GetVendorsFilter, ProductMetrics, VendorMetricsRange, VendorMetricsResponse, VendorSummaryResponse } from "../interfaces/vendor.interface";
 import { Order } from "../../orders";
+import { IVendorSignupData } from "../../vendors/vendors.interface";
+import { ClientSession } from "mongoose";
 
 export class AdminOpsVendorsService {
   private vendorModel = Vendor;
@@ -271,6 +273,52 @@ export class AdminOpsVendorsService {
       ]);
 
       return vendorMetrics;
+  }
+
+  async updateVendor(
+    vendorId: string,
+    updateData: Partial<IVendorSignupData>,
+    session?: ClientSession
+  ): Promise<IVendorDocument> {
+
+    const updateObject: Partial<IVendorSignupData> = { ...updateData };
+  
+    if (updateData.phoneNumber) {
+      updateObject.phoneNumber = formatPhoneNumberforDB(updateData.phoneNumber);
+    }
+  
+    // Update the vendor
+    const vendor = await Vendor.findByIdAndUpdate(
+      vendorId,
+      updateObject,
+      { new: true, session }
+    ).select("-password -__v");
+  
+    if (!vendor) {
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        Msg.ERROR_VENDOR_NOT_FOUND(vendorId)
+      );
+    }
+  
+    return vendor;
+  }
+
+  async deleteVendor(vendorId: string, session?: ClientSession): Promise<Boolean> {
+    const vendor = await Vendor.findByIdAndUpdate(
+      vendorId,
+      { isDeleted: true },
+      { new: true, session }
+    );
+  
+    if (!vendor) {
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        Msg.ERROR_VENDOR_NOT_FOUND(vendorId)
+      );
+    }
+  
+    return true;
   }
 }
 

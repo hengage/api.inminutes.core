@@ -24,6 +24,9 @@ export class AdminOpsVendorsRoutes {
       .route("/sub-category")
       .post(this.adminOpsVendorCategoryController.createSubCategory);
     this.router.route("/").get(this.adminOpsVendorsController.getAllVendors);
+    this.router.route("/top").get(this.adminOpsVendorsController.getTopList);
+    this.router.route("/summary").get(this.adminOpsVendorsController.getVendorSummary);
+    this.router.route("/metrics").get(this.adminOpsVendorsController.getVendorMetrics);
     this.router
       .route("/:vendorId")
       .get(this.adminOpsVendorsController.getVendor);
@@ -36,5 +39,8 @@ export class AdminOpsVendorsRoutes {
     this.router
       .route("/:vendorId/products-metrics")
       .get(this.adminOpsVendorsController.productMetrics);
+    this.router.route("/post").post(this.adminOpsVendorsController.registerVendor);
+    this.router.route("/update/:vendorId").put(this.adminOpsVendorsController.updateVendor);
+    this.router.route("/:vendorId").delete(this.adminOpsVendorsController.deleteVendor);
   }
 }
