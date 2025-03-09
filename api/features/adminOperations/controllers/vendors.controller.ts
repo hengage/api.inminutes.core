@@ -20,6 +20,8 @@ export class AdminOpsVendorsController {
           category: req.query.category as string,
           subCategory: req.query.subCategory as string,
           searchQuery: req.query.searchQuery as string,
+          startDate: req.query.startDate as string,
+          endDate: req.query.endDate as string,
         },
       );
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { vendors });
@@ -94,4 +96,53 @@ export class AdminOpsVendorsController {
       res.status(statusCode).json(errorJSON);
     }
   };
+
+  getTopList = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const topVendors = await this.vendorsService.getTopList(
+        req.query.page as unknown as number,
+        {
+          accountStatus: req.query.accountStatus as ACCOUNT_STATUS,
+          category: req.query.category as string,
+          subCategory: req.query.subCategory as string,
+          searchQuery: req.query.searchQuery as string,
+          startDate: req.query.startDate as string,
+          endDate: req.query.endDate as string,
+        },
+        req.query.limit as unknown as number,
+      );
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { topVendors });
+    } catch (error) {
+      console.error("Error getting top vendors: ", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  };
+
+  getVendorSummary = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const summary = await this.vendorsService.getVendorSummary();
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { summary });
+    } catch (error) {
+      console.error("Error getting vendor summary: ", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  };
+
+  getVendorMetrics = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const metrics = await this.vendorsService.getVendorMetrics({
+        startDate: req.query.startDate as string,
+        endDate: req.query.endDate as string,
+      });
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { metrics });
+    } catch (error) {
+      console.error("Error getting vendor metrics: ", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  };
+
+
 }
