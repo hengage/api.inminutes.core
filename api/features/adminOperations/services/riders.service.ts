@@ -6,8 +6,12 @@ import {
   ACCOUNT_STATUS,
   HTTP_STATUS_CODES,
   USER_APPROVAL_STATUS,
+  USER_TYPE,
 } from "../../../constants";
-import { HandleException, Msg } from "../../../utils";
+import { formatPhoneNumberforDB, HandleException, Msg } from "../../../utils";
+import { ClientSession } from "mongoose";
+import { Wallet } from "../../wallet";
+import { IWalletDocument } from "../../wallet/wallet.interface";
 
 export const adminOpsRidersService = {
   async getRiders(
@@ -81,6 +85,45 @@ export const adminOpsRidersService = {
     rider.approvalStatus = approved;
     await rider.save();
   },
+
+  
+  async updateRider(
+    riderId: string,
+    updateData: Partial<any>,
+    session?: ClientSession
+  ): Promise<IRiderDocument> {
+
+    const updateObject: Partial<any> = { ...updateData };
+  
+    if (updateData.phoneNumber) {
+      updateObject.phoneNumber = formatPhoneNumberforDB(updateData.phoneNumber);
+    }
+  
+
+    const rider = await Rider.findByIdAndUpdate(
+      riderId,
+      updateObject,
+      { new: true, session }
+    ).select("-password -__v");
+  
+    if (!rider) {
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        Msg.ERROR_VENDOR_NOT_FOUND(riderId)
+      );
+    }
+  
+    return rider;
+  },
+
+  async getRiderWallet(riderId: string): Promise<IWalletDocument>{
+    const wallet = await Wallet.findOne({merchantId: riderId, merchantType: USER_TYPE.RIDER});
+    if(!wallet) {
+      throw new HandleException(HTTP_STATUS_CODES.NOT_FOUND, Msg.ERROR_RIDER_WALLET_NOT_FOUND(riderId));
+    }
+    return wallet;
+  } ,
+  
 };
 
 interface GetRidersFilter {
