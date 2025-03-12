@@ -19,6 +19,7 @@ export interface IProductDocument extends Document {
   category: IProductCategoryDocument;
   vendor: IVendorDocument["_id"];
   status: PRODUCT_STATUS;
+  isDeleted: boolean;
 }
 
 export interface IAddProductData extends Document {

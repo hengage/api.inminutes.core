@@ -1,8 +1,8 @@
 import joi from "joi";
 import { Msg } from "../../../utils";
 import { SORT_ORDER } from "../../../constants";
-import { GetProductsFilter } from "../services/products.services";
 import { validateSchema } from "../../../utils/validation.utils";
+import { GetProductsFilter } from "../interfaces/product.interface";
 
 export class ValidateAdminOpsProducts {
     static getList = async (getListData: GetProductsFilter & { page: number | string }) => {

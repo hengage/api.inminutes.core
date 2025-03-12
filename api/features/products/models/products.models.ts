@@ -25,6 +25,8 @@ const productCategorySchema = new Schema<IProductCategoryDocument>(
   { timestamps: true },
 );
 
+productCategorySchema.plugin(paginate);
+
 const productSchema = new Schema<IProductDocument>(
   {
     _id: {
@@ -51,6 +53,7 @@ const productSchema = new Schema<IProductDocument>(
       default: PRODUCT_STATUS.PENDING,
       enum: Object.values(PRODUCT_STATUS),
     },
+    isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true },
 );
@@ -66,7 +69,7 @@ const wishListSchema = new Schema<IWishListDocument>({
   products: [{ type: String, ref: DB_SCHEMA.PRODUCT }],
 });
 
-export const ProductCategory = model<IProductCategoryDocument>(
+export const ProductCategory = model<IProductCategoryDocument, PaginateModel<IProductCategoryDocument>>(
   DB_SCHEMA.PRODUCT_CATEGORY,
   productCategorySchema,
 );
