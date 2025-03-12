@@ -32,5 +32,6 @@ export class AdminOpsRidersRoutes {
     this.router.route("/").post(this.adminOpsForRidersController.createRider);
     this.router.route("/:riderId").put(this.adminOpsForRidersController.updateRider);
     this.router.route("/:riderId").delete(this.adminOpsForRidersController.deleteRider);
+    this.router.route("/:riderId/deliveries").get(this.adminOpsForRidersController.getRiderDeliveries);
   }
 }

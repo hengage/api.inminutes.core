@@ -15,7 +15,7 @@ import { ClientSession } from "mongoose";
 import { Wallet } from "../../wallet";
 import { IWalletDocument } from "../../wallet/wallet.interface";
 import { GetRiderRangeFilter, GetRidersFilter, RiderSummaryResponse } from "../interfaces/rider.interface";
-import { Order } from "../../orders";
+import { IOrdersDocument, Order } from "../../orders";
 
 export const adminOpsRidersService = {
   async getRiders(
@@ -291,6 +291,14 @@ export const adminOpsRidersService = {
       }
     
       return true;
+    },
+    async getRiderDeliveries(riderId: string): Promise<any>{
+      try {
+        return await Order.find({ rider: riderId }).exec();
+      } catch (error) {
+        console.error("Error fetching rider deliveries:", error);
+        throw new Error("Could not fetch rider deliveries");
+      }
     }
   
 };
