@@ -21,6 +21,9 @@ export class AdminOpsVendorsRoutes {
       .route("/category")
       .post(this.adminOpsVendorCategoryController.createCategory);
     this.router
+      .route("/category")
+      .get(this.adminOpsVendorCategoryController.getCategories);
+    this.router
       .route("/sub-category")
       .post(this.adminOpsVendorCategoryController.createSubCategory);
     this.router.route("/").get(this.adminOpsVendorsController.getAllVendors);
