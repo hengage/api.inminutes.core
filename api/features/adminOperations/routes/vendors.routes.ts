@@ -42,7 +42,7 @@ export class AdminOpsVendorsRoutes {
     this.router
       .route("/:vendorId/products-metrics")
       .get(this.adminOpsVendorsController.productMetrics);
-    this.router.route("/post").post(this.adminOpsVendorsController.registerVendor);
+    this.router.route("/").post(this.adminOpsVendorsController.registerVendor);
     this.router.route("/update/:vendorId").put(this.adminOpsVendorsController.updateVendor);
     this.router.route("/:vendorId").delete(this.adminOpsVendorsController.deleteVendor);
   }
