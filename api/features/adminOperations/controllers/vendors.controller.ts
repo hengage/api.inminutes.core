@@ -177,7 +177,7 @@ export class AdminOpsVendorsController {
 
   updateVendor = async(req: Request, res: Response): Promise<void> => {
     try {
-      await this.validateVendor.signUp(req.body);
+      await this.validateVendor.update(req.body);
       const vendor = await this.adminVendorsService.updateVendor(req.params.vendorId, req.body);
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, vendor, "Vendor updated successfully");
     } catch (error: unknown) {
