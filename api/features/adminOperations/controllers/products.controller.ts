@@ -1,15 +1,40 @@
 import { Request, Response } from "express";
 import { capitalize, handleErrorResponse } from "../../../utils";
-import { AdminOpsForProductsService, GetProductsFilter } from "../services/products.services";
+import { AdminOpsForProductsService } from "../services/products.services";
 import { handleSuccessResponse } from "../../../utils/response.utils";
 import { HTTP_STATUS_CODES } from "../../../constants";
 import { ValidateAdminOpsProducts } from "../validators/products.validate";
+import { GetProductRangeFilter, GetProductsFilter } from "../interfaces/product.interface";
+import { validateProducts } from "../../products/validators/products.validators";
+import { ProductsRepository } from "../../products";
 
 export class AdminOpsForProductsController {
   private adminOpsForProductsService: AdminOpsForProductsService;
+  private productsRepo: ProductsRepository;
 
   constructor() {
     this.adminOpsForProductsService = new AdminOpsForProductsService();
+    this.productsRepo = new ProductsRepository();
+  }
+
+  createProduct = async (req: Request, res: Response): Promise<void> => {
+    try {
+      await validateProducts.addProduct(req.body);
+      const product = await this.productsRepo.addProduct(req.body, req.params.userId);
+
+
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.CREATED,
+        { product },
+        "Product added",
+      );
+    } catch (error: unknown) {
+      console.log("Error adding product: ", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+      
   }
 
   createCategory = async (req: Request, res: Response): Promise<void> => {
@@ -124,6 +149,83 @@ export class AdminOpsForProductsController {
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { categories });
     } catch (error: unknown) {
       console.error("Error fetching product categories:", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  }
+
+  getTopProducts = async (req: Request, res: Response): Promise<void> => {
+    try {
+      try {
+        const filter: GetProductsFilter = req.query;
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 5;
+        await ValidateAdminOpsProducts.getList({ ...filter, page });
+        console.log({filter, page, limit})
+        const products = await this.adminOpsForProductsService.getTopList(page, filter, limit);
+        handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { products });
+      } catch (error: unknown) {
+        console.error("Error fetching products list:", error);
+        const { statusCode, errorJSON } = handleErrorResponse(error);
+        res.status(statusCode).json(errorJSON);
+      }
+    } catch (error) {
+      console.log(error)
+      console.error("Error fetching top product:", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  }
+
+  getProductSummary = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const productSummary = await this.adminOpsForProductsService.getProductSummary();
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { productSummary });
+    } catch (error: unknown) {
+      console.error("Error fetching product summary:", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  }
+
+  getProductMetrics = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { startDate, endDate } : GetProductRangeFilter = req.query;
+      const productMetrics = await this.adminOpsForProductsService.getProductMetrics({ startDate, endDate });
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { productMetrics });
+    } catch (error: unknown) {
+      console.error("Error fetching product metrics:", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  }
+
+  deleteProduct = async (req: Request, res: Response): Promise<void> => {
+    try {
+      await this.adminOpsForProductsService.deleteProduct(req.params.productId);
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.NO_CONTENT,
+        null,
+        `Product '${req.params.productId}' has been deleted`
+      )
+    } catch (error) {
+      console.error("Error while deleting product", error)
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  }
+
+  getTopCategories = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const filter: GetProductsFilter = req.query;
+      const page = Number(req.query.page) || 1;
+      const limit = Number(req.query.limit) || 5;
+      await ValidateAdminOpsProducts.getList({ ...filter, page });
+      const categories = await this.adminOpsForProductsService.getTopCategories(page, filter, limit);
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { categories });
+    } catch (error: unknown) {
+      console.error("Error fetching top categories:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }

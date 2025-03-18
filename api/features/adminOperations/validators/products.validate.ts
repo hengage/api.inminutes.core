@@ -1,8 +1,8 @@
 import joi from "joi";
 import { Msg } from "../../../utils";
 import { SORT_ORDER } from "../../../constants";
-import { GetProductsFilter } from "../services/products.services";
 import { validateSchema } from "../../../utils/validation.utils";
+import { GetProductsFilter } from "../interfaces/product.interface";
 
 export class ValidateAdminOpsProducts {
     static getList = async (getListData: GetProductsFilter & { page: number | string }) => {
@@ -11,6 +11,10 @@ export class ValidateAdminOpsProducts {
                 joi.number().integer().min(1),
                 joi.string().min(1)
             ).optional().label("Page"),
+            limit: joi.alternatives().try(
+                joi.number().integer().min(1),
+                joi.string().min(1)
+            ).optional().label("Limit"),
             searchQuery: joi.string().optional().allow('').label("Search Query"),
             fromDate: joi.string().optional().allow('').label("From Date"),
             toDate: joi.string().optional().allow('').label("To Date"),
