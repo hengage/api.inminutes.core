@@ -5,12 +5,36 @@ import { handleSuccessResponse } from "../../../utils/response.utils";
 import { HTTP_STATUS_CODES } from "../../../constants";
 import { ValidateAdminOpsProducts } from "../validators/products.validate";
 import { GetProductRangeFilter, GetProductsFilter } from "../interfaces/product.interface";
+import { validateProducts } from "../../products/validators/products.validators";
+import { ProductsRepository } from "../../products";
 
 export class AdminOpsForProductsController {
   private adminOpsForProductsService: AdminOpsForProductsService;
+  private productsRepo: ProductsRepository;
 
   constructor() {
     this.adminOpsForProductsService = new AdminOpsForProductsService();
+    this.productsRepo = new ProductsRepository();
+  }
+
+  createProduct = async (req: Request, res: Response): Promise<void> => {
+    try {
+      await validateProducts.addProduct(req.body);
+      const product = await this.productsRepo.addProduct(req.body, req.params.userId);
+
+
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.CREATED,
+        { product },
+        "Product added",
+      );
+    } catch (error: unknown) {
+      console.log("Error adding product: ", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+      
   }
 
   createCategory = async (req: Request, res: Response): Promise<void> => {
@@ -137,6 +161,7 @@ export class AdminOpsForProductsController {
         const page = Number(req.query.page) || 1;
         const limit = Number(req.query.limit) || 5;
         await ValidateAdminOpsProducts.getList({ ...filter, page });
+        console.log({filter, page, limit})
         const products = await this.adminOpsForProductsService.getTopList(page, filter, limit);
         handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { products });
       } catch (error: unknown) {
@@ -145,7 +170,10 @@ export class AdminOpsForProductsController {
         res.status(statusCode).json(errorJSON);
       }
     } catch (error) {
-      
+      console.log(error)
+      console.error("Error fetching top product:", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
     }
   }
 

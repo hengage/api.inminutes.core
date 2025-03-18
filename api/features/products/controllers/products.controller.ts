@@ -31,12 +31,7 @@ export class ProductsController {
       await validateProducts.addProduct(req.body);
       const vendor = (req as any).user._id;
       const product = await this.productsRepo.addProduct(req.body, vendor);
-
-      res.status(HTTP_STATUS_CODES.CREATED).json({
-        message: "Success",
-        data: { product },
-      });
-
+      
       handleSuccessResponse(
         res,
         HTTP_STATUS_CODES.CREATED,

@@ -13,6 +13,9 @@ export class AdminOpsProductsRoutes {
   }
   async initializeRoutes() {
     this.router
+      .route("/register/:userId")
+      .post(this.adminOpsForProductsController.createProduct);
+    this.router
       .route("/category")
       .post(this.adminOpsForProductsController.createCategory);
     this.router
