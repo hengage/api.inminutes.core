@@ -30,6 +30,7 @@ export interface IVendorDocument extends Document {
     ratingCount: number;
     averageRating: number;
   };
+  isDeleted: boolean;
 }
 
 export interface IVendorSignupData {

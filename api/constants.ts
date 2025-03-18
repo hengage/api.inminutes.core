@@ -124,7 +124,7 @@ export enum USER_TYPE {
 }
 
 export enum GEOLOCATION {
-  POINT = "point",
+  POINT = "Point",
   LOCATION_INDEX = "2dsphere",
   MAX_DISTANCE_TO_SEARCH = 17000,
 }

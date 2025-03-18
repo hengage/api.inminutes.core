@@ -9,11 +9,11 @@ class ValidateVendor {
       .object({
         businessName: joi.string().required().label("Business name"),
         businessLogo: joi.string().required().label("Business logo"),
-        phoneNumber: joi.string().required().label("Phone number"),
-        password: joi
+        password: joi.string().required().label("Password"),
+        phoneNumber: joi
           .string()
           .required()
-          .label("Password")
+          .label("Phone number")
           .pattern(
             /^([0]{1}|\+?[2][3][4])([7-9]{1})([0|1]{1})([\d]{1})([\d]{7})$/,
           )
@@ -93,6 +93,41 @@ class ValidateVendor {
     });
 
     const { error } = schema.validate(payload, {
+      allowUnknown: false,
+      abortEarly: false,
+    });
+
+    if (error) {
+      throw new HandleException(HTTP_STATUS_CODES.BAD_REQUEST, error.message);
+    }
+  };
+
+  update = async (payload: Partial<IVendorSignupData>) => {
+    const updateSchema = joi
+      .object({
+        businessName: joi.string().optional().label("Business name"),
+        businessLogo: joi.string().optional().label("Business logo"),
+        password: joi.string().optional().label("Password"),
+        phoneNumber: joi
+          .string()
+          .optional()
+          .label("Phone number")
+          .pattern(/^(\+234|0)[7-9]0\d{8}$/)
+          .message(Msg.ERROR_INVALID_PHONE_FORMAT()),
+        email: joi.forbidden().label("Email cannot be updated"), // ❌ Email not allowed
+        address: joi.string().optional().label("Address"),
+        residentialAddress: joi.string().optional().label("Residential address"),
+        category: joi.string().optional().label("Category"),
+        subCategory: joi.string().optional().label("Subcategory"),
+        location: joi
+          .array()
+          .items(joi.number())
+          .optional()
+          .label("Location"),
+      })
+      .unknown(false);
+
+    const { error } = updateSchema.validate(payload, {
       allowUnknown: false,
       abortEarly: false,
     });
