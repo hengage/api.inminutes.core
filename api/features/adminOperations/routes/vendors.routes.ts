@@ -19,10 +19,12 @@ export class AdminOpsVendorsRoutes {
   async initializeRoutes() {
     this.router
       .route("/category")
-      .post(this.adminOpsVendorCategoryController.createCategory);
-    this.router
-      .route("/category")
+      .post(this.adminOpsVendorCategoryController.createCategory)
       .get(this.adminOpsVendorCategoryController.getCategories);
+    this.router
+      .route("/sub-category/:category")
+      .get(this.adminOpsVendorCategoryController.getSubCategory)
+      
     this.router
       .route("/sub-category")
       .post(this.adminOpsVendorCategoryController.createSubCategory);
