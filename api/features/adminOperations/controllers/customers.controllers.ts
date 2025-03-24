@@ -5,7 +5,7 @@ import { handleErrorResponse, Msg } from "../../../utils";
 import { handleSuccessResponse } from "../../../utils/response.utils";
 import { ACCOUNT_STATUS, HTTP_STATUS_CODES } from "../../../constants";
 import { ValidateAdminOpsCustomers } from "../validators/adminOpsCustomers.validate";
-import { CustomerMetricsRange, GetCustomersFilter } from "../Interfaces/customer.interface";
+import { CustomerMetricsRange, GetCustomersFilter } from "../interfaces/customer.interface";
 
 export const AdminOpsForCustomersController = {
     async getList(req: Request, res: Response) {

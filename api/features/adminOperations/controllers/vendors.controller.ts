@@ -26,7 +26,7 @@ export class AdminOpsVendorsController {
           accountStatus: req.query.accountStatus as ACCOUNT_STATUS,
           category: req.query.category as string,
           subCategory: req.query.subCategory as string,
-          searchQuery: req.query.searchQuery as string,
+          searchQuery: req.query.search as string,
           startDate: req.query.startDate as string,
           endDate: req.query.endDate as string,
         },
@@ -74,13 +74,13 @@ export class AdminOpsVendorsController {
     try {
       await this.adminVendorsService.setApprovalStatus(
         req.params.vendorId,
-        req.body.approved,
+        req.body.approve,
       );
       handleSuccessResponse(
         res,
         HTTP_STATUS_CODES.OK,
         null,
-        req.body.approved
+        req.body.approve
           ? Msg.APPROVED("vendor", req.params.vendorId)
           : Msg.DISAPPROVED("vendor", req.params.vendorId),
       );
@@ -108,14 +108,6 @@ export class AdminOpsVendorsController {
     try {
       const topVendors = await this.adminVendorsService.getTopList(
         req.query.page as unknown as number,
-        {
-          accountStatus: req.query.accountStatus as ACCOUNT_STATUS,
-          category: req.query.category as string,
-          subCategory: req.query.subCategory as string,
-          searchQuery: req.query.searchQuery as string,
-          startDate: req.query.startDate as string,
-          endDate: req.query.endDate as string,
-        },
         req.query.limit as unknown as number,
       );
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { topVendors });

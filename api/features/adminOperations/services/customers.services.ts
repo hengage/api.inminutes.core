@@ -4,7 +4,7 @@ import { FilterQuery } from "mongoose";
 import { addDateRangeFilter, buildFilterQuery, createPaginationOptions, HandleException, Msg } from "../../../utils";
 import { ACCOUNT_STATUS, DB_SCHEMA, HTTP_STATUS_CODES, ORDER_STATUS } from "../../../constants";
 import { Order } from "../../orders";
-import { CustomerMetricsRange, CustomerMetricsResponse, CustomerSummaryResponse, GetCustomersFilter } from "../Interfaces/customer.interface";
+import { CustomerMetricsRange, CustomerMetricsResponse, CustomerSummaryResponse, GetCustomersFilter } from "../interfaces/customer.interface";
 
 export const AdminOpsForCustomersService = {
     async getList(page = 1, filter: GetCustomersFilter): Promise<PaginateResult<ICustomerDocument>> {

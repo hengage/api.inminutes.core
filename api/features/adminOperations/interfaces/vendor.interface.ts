@@ -23,11 +23,25 @@ export interface VendorSummaryResponse {
 export interface VendorMetricsRange {
   startDate?: Date | string;
   endDate?: Date | string;
+  limit?: string;
+  page?: string;
 }
 
-export interface VendorMetricsResponse {
+export interface VendorMetricResponse {
   month: string; 
-  totalCustomers: number 
+  totalCustomers: number
 }
 
-  
+export interface Responses {
+  page: number,
+  pages:number,
+  total: number,
+  limit: number
+} 
+export interface VendorMetricsResponse extends Responses {
+  data: VendorMetricResponse[]
+}
+
+export interface ITopVendors extends Responses {
+  data: any[]
+} 

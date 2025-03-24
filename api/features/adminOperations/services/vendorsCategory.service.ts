@@ -1,4 +1,4 @@
-import { HTTP_STATUS_CODES } from "../../../constants";
+import { DB_SCHEMA, HTTP_STATUS_CODES } from "../../../constants";
 import { capitalize, HandleException } from "../../../utils";
 import { VendorCategory, VendorSubCategory } from "../../vendors";
 import {
@@ -67,13 +67,36 @@ export class AdminOpsVendorsCategoryService {
     };
   }
 
-  async getCategories(): Promise<IVendorCategoryDocument[]> {
-    const categories = await this.vendorCategoryModel
-      .find()
-      .select("name image")
+  async getSubCategories(category: string): Promise<IVendorSubCategoryDocument[]> {
+    const subCategories = await this.vendorSubCategoryModel
+      .find({ category})
+      .select("name category")
       .lean()
       .exec();
 
+    return subCategories;
+  }
+
+  async getCategories(): Promise<IVendorCategoryDocument[]> {
+    const categories = await VendorCategory.aggregate([
+      {
+        $lookup: {
+          from: DB_SCHEMA.VENDOR_SUB_CATEGORY,
+          localField: "_id",
+          foreignField: "category",
+          as: "subcategories",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          image: 1,
+          subcategoryCount: { $size: "$subcategories" },
+        },
+      },
+    ]).exec();
+  
     return categories;
   }
 

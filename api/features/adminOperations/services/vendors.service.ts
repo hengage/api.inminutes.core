@@ -1,13 +1,14 @@
 import { PaginateResult, FilterQuery } from "mongoose";
 import { IVendorDocument, Vendor } from "../../vendors";
-import { ACCOUNT_STATUS, DB_SCHEMA, HTTP_STATUS_CODES, ORDER_STATUS } from "../../../constants";
+import { ACCOUNT_STATUS, DB_SCHEMA, HTTP_STATUS_CODES, ORDER_STATUS, USER_APPROVAL_STATUS } from "../../../constants";
 import { formatPhoneNumberforDB, HandleException, Msg } from "../../../utils";
-import { addDateRangeFilter, buildFilterQuery, createPaginationOptions } from "../../../utils/db.utils";
+import { addDateRangeFilter, buildFilterQuery, createPaginationOptions, IMetricsQueryOptions, metricsQuery } from "../../../utils/db.utils";
 import { Product } from "../../products";
-import { GetVendorsFilter, ProductMetrics, VendorMetricsRange, VendorMetricsResponse, VendorSummaryResponse } from "../interfaces/vendor.interface";
+import { GetVendorsFilter, ITopVendors, ProductMetrics, VendorMetricsRange, VendorMetricsResponse, VendorSummaryResponse } from "../interfaces/vendor.interface";
 import { Order } from "../../orders";
 import { IVendorSignupData } from "../../vendors/vendors.interface";
 import { ClientSession } from "mongoose";
+import { DateTime } from "luxon";
 
 export class AdminOpsVendorsService {
   private vendorModel = Vendor;
@@ -18,9 +19,7 @@ export class AdminOpsVendorsService {
     page = 1,
     filter: GetVendorsFilter,
   ): Promise<PaginateResult<IVendorDocument>> {
-
-    const options = createPaginationOptions(page, { select: "_id businessName businessLogo" });
-
+    const options = createPaginationOptions(page, { select: "_id businessName businessLogo accountStatus email createdAt" });
     const filterQuery: FilterQuery<IVendorDocument> = {};
     if (filter) {
       addDateRangeFilter(filterQuery, filter.startDate as string, filter.endDate as string);
@@ -30,8 +29,9 @@ export class AdminOpsVendorsService {
 
       const searchFields = ["businessName", "email", "phoneNumber"];
       buildFilterQuery(recordFilter, filterQuery, searchFields);
+      delete filterQuery.startDate;
+      delete filterQuery.endDate;
     }
-
     const vendors = await this.vendorModel.paginate(filterQuery, options);
     return vendors;
   }
@@ -82,14 +82,15 @@ export class AdminOpsVendorsService {
   ): Promise<void> {
     const vendor = await this.vendorModel
       .findById(vendorId)
-      .select("_id approved");
+      .select("_id approvalStatus");
     if (!vendor) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
         Msg.ERROR_VENDOR_NOT_FOUND(vendorId),
       );
     }
-    vendor.approved = approved;
+    approved ?
+    vendor.approvalStatus = USER_APPROVAL_STATUS.APPROVED : vendor.approvalStatus = USER_APPROVAL_STATUS.REJECTED;
     await vendor.save();
   }
 
@@ -132,22 +133,13 @@ export class AdminOpsVendorsService {
 
   async getTopList(
       page = 1,
-      filter: GetVendorsFilter,
       limit = 5
-  ): Promise<PaginateResult<IVendorDocument>> {
-    const options = createPaginationOptions(page, { select: "_id businessName businessLogo" }, limit);
+  ): Promise<ITopVendors> {
 
-    const filterQuery: FilterQuery<IVendorDocument> = {};
-    if (filter) {
-      addDateRangeFilter(filterQuery, filter.startDate as string, filter.endDate as string);
-      const recordFilter: Record<string, string> = Object.fromEntries(
-        Object.entries(filter).filter(([_, v]) => v !== undefined),
-      );
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
 
-      const searchFields = ["businessName", "email", "phoneNumber"];
-      buildFilterQuery(recordFilter, filterQuery, searchFields);
-      }
-
+    const skip = (pageNum - 1) * limitNum;
       const topVendors = await this.orderModel.aggregate([
           {
               $match: { status: ORDER_STATUS.DELIVERED }
@@ -161,7 +153,7 @@ export class AdminOpsVendorsService {
           { $sort: { totalDeliveries: -1 } },
           {
               $lookup: {
-                  from: DB_SCHEMA.VENDOR,
+                  from: "vendors",
                   localField: "_id",
                   foreignField: "_id",
                   as: "vendorDetails"
@@ -176,27 +168,32 @@ export class AdminOpsVendorsService {
                   phoneNumber: "$vendorDetails.phoneNumber",
                   totalDeliveries: 1
               }
-          }
+          },
+          { $skip: skip },
+          { $limit: limitNum }
       ]);
 
-      const vendorIds = topVendors.map(vendor => vendor._id);
-      const totalDeliveriesMap = new Map(topVendors.map(c => [c._id.toString(), c.totalDeliveries]));
+      const totalCount = await this.orderModel.aggregate([
+        {
+            $match: { status: ORDER_STATUS.DELIVERED }
+        },
+        {
+            $group: {
+                _id: "$vendor"
+            }
+        },
+        { $count: "total" }
+    ]);
 
-      const paginatedVendors: PaginateResult<IVendorDocument> = await Vendor.paginate(
-          { _id: { $in: vendorIds }, ...filterQuery },
-          options
-      );
-
-      paginatedVendors.docs = paginatedVendors.docs.map(vendor => {
-        const vendorObj = vendor.toObject();
-        return {
-            ...vendorObj,
-            totalDeliveries: totalDeliveriesMap.get(vendor._id.toString()) || 0
-        };
-    });
-      return paginatedVendors;
+    return {
+        data: topVendors,
+        page: pageNum,
+        pages: Math.ceil((totalCount[0]?.total || 0) / limit),
+        total: totalCount[0]?.total || 0,
+        limit: limitNum
+    };
   }
-
+  
   async getVendorSummary(): Promise<VendorSummaryResponse> {
       const totalVendors = await Vendor.countDocuments({});
 
@@ -231,13 +228,14 @@ export class AdminOpsVendorsService {
       };
   }
 
-  async getVendorMetrics(data: VendorMetricsRange): Promise<VendorMetricsResponse[]> {
+  async getVendorMetrics(data: IMetricsQueryOptions): Promise<VendorMetricsResponse> {
+      const { $gte, $lte, $skip, $limit, page } = metricsQuery(data)
       const vendorMetrics = await Vendor.aggregate([
           {
               $match: {
                   createdAt: {
-                      $gte: data.startDate,
-                      $lte: data.endDate
+                      $gte,
+                      $lte
                   }
               }
           },
@@ -269,10 +267,40 @@ export class AdminOpsVendorsService {
           },
           {
               $sort: { month: 1 }
-          }
+          },
+          { $skip },
+          { $limit }
       ]);
 
-      return vendorMetrics;
+      const totalCountResult = await Vendor.aggregate([
+        {
+            $match: {
+                createdAt: {
+                    $gte,
+                    $lte
+                }
+            }
+        },
+        {
+            $group: {
+                _id: {
+                    year: { $year: "$createdAt" },
+                    month: { $month: "$createdAt" }
+                }
+            }
+        },
+        { $count: "total" }
+    ]);
+
+    const total = totalCountResult.length > 0 ? totalCountResult[0].total : 0;
+    const pages = Math.ceil(total / Number($limit));
+      return {
+        data: vendorMetrics,
+        page,
+        limit: $limit,
+        total,
+        pages,
+      }
   }
 
   async updateVendor(
@@ -321,4 +349,5 @@ export class AdminOpsVendorsService {
     return true;
   }
 }
+
 
