@@ -41,14 +41,22 @@ export const adminOpsWorkAreaService = {
     areaId: string,
     date: Date,
   ): Promise<Partial<IWorkSlotSessionDocument>[]> {
+    const startOfDay = new Date(date);
+    startOfDay.setUTCHours(0, 0, 0, 0); 
+    
+    const endOfDay = new Date(date);
+    endOfDay.setUTCHours(23, 59, 59, 999);
+
     const timeSlots = await RidersWorkSlotSession.find({
       area: areaId,
-      date,
+      date: {
+        $gte: startOfDay,
+        $lte: endOfDay,
+      },
     })
-      .select("")
+      // .select("")
       .lean()
       .exec();
-
     return timeSlots;
   },
 

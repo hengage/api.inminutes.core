@@ -10,17 +10,17 @@ export const AdminOpsForOrdersController = {
         try {
             const { page, searchQuery, fromDate, toDate, sort } = req.query;
 
-            await ValidateAdminOpsOrders.getList({
-                page: req.query.page as unknown as number,
-                searchQuery: searchQuery as string,
-                fromDate: fromDate as string,
-                toDate: toDate as string,
-                sort: sort as SORT_ORDER,
-                type: req.query.type as ORDER_TYPE,
-                rider: req.query.rider as string,
-                customer: req.query.customer as string,
-                vendor: req.query.vendor as string,
-            });
+            // await ValidateAdminOpsOrders.getList({
+            //     page: req.query.page as unknown as number,
+            //     searchQuery: searchQuery as string,
+            //     fromDate: fromDate as string,
+            //     toDate: toDate as string,
+            //     sort: sort as SORT_ORDER,
+            //     type: req.query.type as ORDER_TYPE,
+            //     rider: req.query.rider as string,
+            //     customer: req.query.customer as string,
+            //     vendor: req.query.vendor as string,
+            // });
 
             const filter: GetOrdersFilter = req.query;
             const orders = await AdminOpsForOrdersService.getList(

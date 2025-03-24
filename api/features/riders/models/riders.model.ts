@@ -61,6 +61,7 @@ const riderSchema = new Schema<IRiderDocument>(
       type: String,
       default: USER_APPROVAL_STATUS.PENDING,
     },
+    isDeleted: {type: Boolean, default:false},
     rating: {
       totalRatingSum: { type: Number, default: 0 },
       ratingCount: { type: Number, default: 0 },
