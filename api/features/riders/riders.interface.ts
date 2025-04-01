@@ -24,6 +24,7 @@ export interface IRiderDocument extends Document {
   currentlyWorking: boolean;
   accountStatus: ACCOUNT_STATUS;
   approvalStatus: USER_APPROVAL_STATUS;
+  isDeleted: Boolean;
   rating: {
     totalRatingSum: number;
     ratingCount: number;
