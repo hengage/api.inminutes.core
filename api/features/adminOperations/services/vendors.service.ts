@@ -4,11 +4,11 @@ import { ACCOUNT_STATUS, DB_SCHEMA, HTTP_STATUS_CODES, ORDER_STATUS, USER_APPROV
 import { formatPhoneNumberforDB, HandleException, Msg } from "../../../utils";
 import { addDateRangeFilter, buildFilterQuery, createPaginationOptions, IMetricsQueryOptions, metricsQuery } from "../../../utils/db.utils";
 import { Product } from "../../products";
-import { GetVendorsFilter, ITopVendors, ProductMetrics, VendorMetricsRange, VendorMetricsResponse, VendorSummaryResponse } from "../interfaces/vendor.interface";
 import { Order } from "../../orders";
 import { IVendorSignupData } from "../../vendors/vendors.interface";
 import { ClientSession } from "mongoose";
 import { DateTime } from "luxon";
+import { GetVendorsFilter, ITopVendors, ProductMetrics, VendorMetricsResponse, VendorSummaryResponse } from "../Interfaces/vendor.interface";
 
 export class AdminOpsVendorsService {
   private vendorModel = Vendor;
