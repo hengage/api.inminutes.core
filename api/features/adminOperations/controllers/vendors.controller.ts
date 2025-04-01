@@ -23,7 +23,7 @@ export class AdminOpsVendorsController {
       const vendors = await this.adminVendorsService.getAllVendors(
         req.query.page as unknown as number,
         {
-          accountStatus: req.query.accountStatus as ACCOUNT_STATUS,
+          accountStatus: req.query.status as ACCOUNT_STATUS,
           category: req.query.category as string,
           subCategory: req.query.subCategory as string,
           searchQuery: req.query.search as string,
