@@ -8,7 +8,7 @@ import { Order } from "../../orders";
 import { IVendorSignupData } from "../../vendors/vendors.interface";
 import { ClientSession } from "mongoose";
 import { DateTime } from "luxon";
-import { GetVendorsFilter, ITopVendors, ProductMetrics, VendorMetricsResponse, VendorSummaryResponse } from "../Interfaces/vendor.interface";
+import { GetVendorsFilter, ITopVendors, ProductMetrics, VendorMetricsResponse, VendorSummaryResponse } from "../interfaces/vendor.interface";
 
 export class AdminOpsVendorsService {
   private vendorModel = Vendor;
