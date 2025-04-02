@@ -46,6 +46,7 @@ export class AdminOpsVendorsService {
     const vendor = await this.vendorModel
       .findById(vendorId)
       .select("-updatedAt -__v -password")
+      .populate({ path: "category", select: "name image" })
       .lean()
       .exec();
 
