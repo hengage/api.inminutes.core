@@ -6,6 +6,8 @@ import {
   IVendorSubCategoryDocument,
 } from "../vendors.interface";
 import { DB_SCHEMA } from "../../../constants";
+import paginate  from "mongoose-paginate-v2";
+import { PaginateModel } from "mongoose";
 
 const vendorCategorySchema = new Schema<IVendorCategoryDocument>(
   {
@@ -33,12 +35,14 @@ const vendorSubCategorySchema = new Schema<IVendorSubCategoryDocument>(
   { timestamps: true, _id: false },
 );
 
+vendorCategorySchema.plugin(paginate);
+interface VendorCategoryModel extends PaginateModel<IVendorCategoryDocument> {}
 export const VendorSubCategory = model<IVendorSubCategoryDocument>(
   DB_SCHEMA.VENDOR_SUB_CATEGORY,
   vendorSubCategorySchema,
 );
 
-export const VendorCategory = model<IVendorCategoryDocument>(
+export const VendorCategory = model<IVendorCategoryDocument, VendorCategoryModel>(
   DB_SCHEMA.VENDOR_CATEGORY,
   vendorCategorySchema,
 );

@@ -19,7 +19,13 @@ export class AdminOpsVendorsService {
     page = 1,
     filter: GetVendorsFilter,
   ): Promise<PaginateResult<IVendorDocument>> {
-    const options = createPaginationOptions(page, { select: "_id businessName businessLogo accountStatus email createdAt" });
+    const options = createPaginationOptions(page, { 
+      select: "_id businessName businessLogo accountStatus email createdAt",
+      populate: {
+        path: "category",
+        select: "name image",
+      },
+     });
     const filterQuery: FilterQuery<IVendorDocument> = {};
     if (filter) {
       addDateRangeFilter(filterQuery, filter.startDate as string, filter.endDate as string);
@@ -40,6 +46,7 @@ export class AdminOpsVendorsService {
     const vendor = await this.vendorModel
       .findById(vendorId)
       .select("-updatedAt -__v -password")
+      .populate({ path: "category", select: "name image" })
       .lean()
       .exec();
 

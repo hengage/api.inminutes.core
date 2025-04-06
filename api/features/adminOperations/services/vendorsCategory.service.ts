@@ -77,8 +77,16 @@ export class AdminOpsVendorsCategoryService {
     return subCategories;
   }
 
-  async getCategories(): Promise<IVendorCategoryDocument[]> {
-    const categories = await VendorCategory.aggregate([
+  async getCategories(
+    page: number = 1,
+    limit: number = 10
+  ): Promise<{
+    categories: IVendorCategoryDocument[];
+    total: number;
+    page: number;
+    pages: number;
+  }> {
+    const result = await VendorCategory.aggregate([
       {
         $lookup: {
           from: DB_SCHEMA.VENDOR_SUB_CATEGORY,
@@ -88,16 +96,51 @@ export class AdminOpsVendorsCategoryService {
         },
       },
       {
+        $lookup: {
+          from: DB_SCHEMA.VENDOR,
+          localField: "_id",
+          foreignField: "category",
+          as: "vendors",
+        },
+      },
+      {
+        $facet: {
+          categories: [
+            { $skip: (page - 1) * limit },
+            { $limit: limit },
+            {
+              $project: {
+                _id: 1,
+                name: 1,
+                image: 1,
+                subcategoryCount: { $size: "$subcategories" },
+                vendorCount: { $size: "$vendors" },
+              },
+            },
+          ],
+          total: [{ $count: "count" }],
+        },
+      },
+      {
         $project: {
-          _id: 1,
-          name: 1,
-          image: 1,
-          subcategoryCount: { $size: "$subcategories" },
+          categories: 1,
+          total: { $arrayElemAt: ["$total.count", 0] },
+          page: { $literal: page },
+          pages: {
+            $ceil: {
+              $divide: [{ $arrayElemAt: ["$total.count", 0] }, limit],
+            },
+          },
         },
       },
     ]).exec();
   
-    return categories;
+    return {
+      categories: result[0].categories,
+      total: result[0].total || 0,
+      page,
+      pages: result[0].pages || 1,
+    };
   }
 
   async getCategory(categoryId: string): Promise<IVendorCategoryDocument> {

@@ -77,7 +77,7 @@ export class AdminOpsVendorsCategoryController {
   getCategories = async (req: Request, res: Response): Promise<void> => {
     try {
       const categories =
-        await this.adminOpsVendorsCategoryService.getCategories();
+        await this.adminOpsVendorsCategoryService.getCategories(Number(req.query.page), Number(req.query.limit));
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { categories });
     } catch (error: unknown) {
       console.log("Error getting categories: ", error);
