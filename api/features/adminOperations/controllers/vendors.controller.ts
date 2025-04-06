@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { AdminOpsVendorsService } from "../services/vendors.service";
-import { ACCOUNT_STATUS, HTTP_STATUS_CODES } from "../../../constants";
+import { ACCOUNT_STATUS, HTTP_STATUS_CODES, USER_APPROVAL_STATUS } from "../../../constants";
 import { Msg } from "../../../utils";
 import {
   handleErrorResponse,
@@ -24,6 +24,7 @@ export class AdminOpsVendorsController {
         req.query.page as unknown as number,
         {
           accountStatus: req.query.status as ACCOUNT_STATUS,
+          approvalStatus: req.query.approvalStatus as USER_APPROVAL_STATUS,
           category: req.query.category as string,
           subCategory: req.query.subCategory as string,
           searchQuery: req.query.search as string,

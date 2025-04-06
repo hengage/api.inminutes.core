@@ -1,7 +1,8 @@
-import { ACCOUNT_STATUS } from "../../../constants";
+import { ACCOUNT_STATUS, USER_APPROVAL_STATUS } from "../../../constants";
 
 export interface GetVendorsFilter extends VendorMetricsRange {
     accountStatus?: ACCOUNT_STATUS;
+    approvalStatus?: USER_APPROVAL_STATUS,
     category?: string;
     subCategory?: string;
     searchQuery: string;
