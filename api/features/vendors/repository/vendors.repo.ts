@@ -9,7 +9,7 @@ import {
 } from "../../../utils";
 import { Vendor } from "../models/vendors.model";
 import { IVendorDocument, IVendorSignupData } from "../vendors.interface";
-import { Events, GEOLOCATION, HTTP_STATUS_CODES } from "../../../constants";
+import { Events, GEOLOCATION, HTTP_STATUS_CODES, USER_APPROVAL_STATUS } from "../../../constants";
 import { Coordinates } from "../../../types";
 
 /**
@@ -31,6 +31,7 @@ class VendorsRepository {
       location: {
         coordinates: vendorData.location,
       },
+      approvalStatus: USER_APPROVAL_STATUS.PENDING
     });
 
     emitEvent.emit(Events.CREATE_WALLET, {
@@ -48,7 +49,7 @@ class VendorsRepository {
 
   async login(email: string, password: string) {
     const vendor = await Vendor.findOne({ email }).select(
-      "email phoneNumber password isDeleted",
+      "email phoneNumber password",
     );
 
     if (!vendor) {
@@ -56,13 +57,6 @@ class VendorsRepository {
         HTTP_STATUS_CODES.NOT_FOUND,
         Msg.ERROR_INVALID_LOGIN_CREDENTIALS(),
       );
-    }
-
-    if(vendor.isDeleted){
-      throw new HandleException(
-        HTTP_STATUS_CODES.BAD_REQUEST,
-        Msg.ERROR_ACCOUNT_DELETED()
-      )
     }
 
     const passwordsMatch = await compareValues(password, vendor.password);
