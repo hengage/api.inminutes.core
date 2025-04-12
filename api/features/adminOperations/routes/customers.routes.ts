@@ -11,10 +11,14 @@ export class AdminOpsCustomersRoutes {
 
     initializeRoutes() {
         this.router.route("/").get(AdminOpsForCustomersController.getList);
+        this.router.route("/top").get(AdminOpsForCustomersController.getTopList);
+        this.router.route("/summary").get(AdminOpsForCustomersController.getCustomerSummary);
+        this.router.route("/metrics").get(AdminOpsForCustomersController.getCustomerMetrics);
         this.router.route("/:customerId").get(AdminOpsForCustomersController.customerDetails);
         this.router
             .route("/:customerId/status")
             .patch(AdminOpsForCustomersController.setAccountStatus);
+        
     }
 }
 

@@ -1,4 +1,4 @@
-import { HTTP_STATUS_CODES } from "../../../constants";
+import { DB_SCHEMA, HTTP_STATUS_CODES } from "../../../constants";
 import { capitalize, HandleException } from "../../../utils";
 import { VendorCategory, VendorSubCategory } from "../../vendors";
 import {
@@ -67,14 +67,80 @@ export class AdminOpsVendorsCategoryService {
     };
   }
 
-  async getCategories(): Promise<IVendorCategoryDocument[]> {
-    const categories = await this.vendorCategoryModel
-      .find()
-      .select("name image")
+  async getSubCategories(category: string): Promise<IVendorSubCategoryDocument[]> {
+    const subCategories = await this.vendorSubCategoryModel
+      .find({ category})
+      .select("name category")
       .lean()
       .exec();
 
-    return categories;
+    return subCategories;
+  }
+
+  async getCategories(
+    page: number = 1,
+    limit: number = 10
+  ): Promise<{
+    categories: IVendorCategoryDocument[];
+    total: number;
+    page: number;
+    pages: number;
+  }> {
+    const result = await VendorCategory.aggregate([
+      {
+        $lookup: {
+          from: DB_SCHEMA.VENDOR_SUB_CATEGORY,
+          localField: "_id",
+          foreignField: "category",
+          as: "subcategories",
+        },
+      },
+      {
+        $lookup: {
+          from: DB_SCHEMA.VENDOR,
+          localField: "_id",
+          foreignField: "category",
+          as: "vendors",
+        },
+      },
+      {
+        $facet: {
+          categories: [
+            { $skip: (page - 1) * limit },
+            { $limit: limit },
+            {
+              $project: {
+                _id: 1,
+                name: 1,
+                image: 1,
+                subcategoryCount: { $size: "$subcategories" },
+                vendorCount: { $size: "$vendors" },
+              },
+            },
+          ],
+          total: [{ $count: "count" }],
+        },
+      },
+      {
+        $project: {
+          categories: 1,
+          total: { $arrayElemAt: ["$total.count", 0] },
+          page: { $literal: page },
+          pages: {
+            $ceil: {
+              $divide: [{ $arrayElemAt: ["$total.count", 0] }, limit],
+            },
+          },
+        },
+      },
+    ]).exec();
+  
+    return {
+      categories: result[0].categories,
+      total: result[0].total || 0,
+      page,
+      pages: result[0].pages || 1,
+    };
   }
 
   async getCategory(categoryId: string): Promise<IVendorCategoryDocument> {

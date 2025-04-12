@@ -55,10 +55,29 @@ export class AdminOpsVendorsCategoryController {
     }
   };
 
+  getSubCategory = async (req: Request, res: Response): Promise<void> => {
+    try {
+
+      const subCategories =
+        await this.adminOpsVendorsCategoryService.getSubCategories(req.params.category);
+
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.CREATED,
+        subCategories,
+        `sub-categories successfully fetched`,
+      );
+    } catch (error: unknown) {
+      console.log("Error fetching sub-category: ", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  };
+
   getCategories = async (req: Request, res: Response): Promise<void> => {
     try {
       const categories =
-        await this.adminOpsVendorsCategoryService.getCategories();
+        await this.adminOpsVendorsCategoryService.getCategories(Number(req.query.page), Number(req.query.limit));
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { categories });
     } catch (error: unknown) {
       console.log("Error getting categories: ", error);

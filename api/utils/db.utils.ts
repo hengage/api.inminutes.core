@@ -111,3 +111,26 @@ export function createPaginationOptions(
   };
   return { ...defaultOptions, ...customOptions };
 }
+
+export function metricsQuery(data: IMetricsQueryOptions){
+  const $gte = DateTime.fromISO(data.startDate as string).startOf('day').toJSDate();
+    const $lte = DateTime.fromISO(data.endDate as string).startOf('day').toJSDate();
+    const $limit = Number(data.limit) || 10;
+    const page = Number(data.page) || 1;
+    const $skip = (page - 1) * $limit;
+
+    return {
+      $gte,
+      $lte,
+      $limit,
+      $skip,
+      page,
+    }
+}
+
+export interface IMetricsQueryOptions {
+  startDate?: Date | string;
+  endDate?: Date | string;
+  limit?: string;
+  page?: string;
+}
