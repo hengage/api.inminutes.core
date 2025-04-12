@@ -13,7 +13,7 @@ export class AdminOpsProductsRoutes {
   }
   async initializeRoutes() {
     this.router
-      .route("/register/:userId")
+      .route("/register/:vendorId")
       .post(this.adminOpsForProductsController.createProduct);
     this.router
       .route("/category")

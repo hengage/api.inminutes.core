@@ -63,7 +63,7 @@ class VendorsRepository {
     if(vendor.approvalStatus != USER_APPROVAL_STATUS.APPROVED || vendor.accountStatus != ACCOUNT_STATUS.ACTIVE){
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_VENDOR_NOT_ACTIVE(),
+        Msg.ERROR_NOT_ACTIVE(),
       );
     }
 

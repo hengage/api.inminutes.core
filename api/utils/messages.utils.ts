@@ -20,8 +20,8 @@ export const Msg = {
   ERROR_VENDOR_NOT_FOUND(data: unknown) {
     return `No vendor found at (${JSON.stringify(data)})`;
   },
-  ERROR_VENDOR_NOT_ACTIVE() {
-    return `Vendor not active or approved`;
+  ERROR_NOT_ACTIVE() {
+    return `not active or approved`;
   },
   ERROR_AUNAUTHORIZED_USER() {
     return "Unauthorized user";
