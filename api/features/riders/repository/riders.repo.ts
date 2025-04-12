@@ -67,6 +67,7 @@ export class RidersRepository {
     const rider = await Rider.create({
       ...riderData,
       phoneNumber: formattedPhoneNumber,
+      approvalStatus: USER_APPROVAL_STATUS.PENDING
     });
 
     emitEvent.emit(Events.CREATE_WALLET, {
@@ -105,6 +106,13 @@ export class RidersRepository {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
         Msg.ERROR_INVALID_LOGIN_CREDENTIALS(),
+      );
+    }
+
+    if(rider.approvalStatus != USER_APPROVAL_STATUS.APPROVED || rider.accountStatus != ACCOUNT_STATUS.ACTIVE){
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        Msg.ERROR_NOT_ACTIVE(),
       );
     }
 

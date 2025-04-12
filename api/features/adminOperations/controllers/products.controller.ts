@@ -20,7 +20,7 @@ export class AdminOpsForProductsController {
   createProduct = async (req: Request, res: Response): Promise<void> => {
     try {
       await validateProducts.addProduct(req.body);
-      const product = await this.productsRepo.addProduct(req.body, req.params.userId);
+      const product = await this.productsRepo.addProduct(req.body, req.params.vendorId);
 
 
       handleSuccessResponse(
