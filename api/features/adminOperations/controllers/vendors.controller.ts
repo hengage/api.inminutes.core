@@ -22,7 +22,6 @@ export class AdminOpsVendorsController {
   
   getAllVendors = async (req: Request, res: Response): Promise<void> => {
     try {
-
       const {page, status, approvalStatus, category, subCategory, search, startDate, endDate} = req.query
       const vendors = await this.adminVendorsService.getAllVendors(
         page as unknown as number,
