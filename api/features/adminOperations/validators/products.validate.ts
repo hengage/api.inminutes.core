@@ -18,6 +18,9 @@ export class ValidateAdminOpsProducts {
             searchQuery: joi.string().optional().allow('').label("Search Query"),
             fromDate: joi.string().optional().allow('').label("From Date"),
             toDate: joi.string().optional().allow('').label("To Date"),
+            maxPrice: joi.string().optional().allow('').label("Max Price"),
+            minPrice: joi.string().optional().allow('').label("Min Price"),
+            status: joi.string().optional().allow('').label("Status"),
             category: joi.string().optional().allow("").label("Category"),
             vendor: joi.string().optional().allow("").label("Vendor"),
             sort: joi.string().valid(...Object.values(SORT_ORDER)).label("Sort")

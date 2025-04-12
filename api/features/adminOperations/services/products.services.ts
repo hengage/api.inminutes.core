@@ -6,6 +6,7 @@ import { IProductCategoryDocument, IProductDocument } from "../../products/produ
 import { PaginateResult } from "mongoose";
 import { Order } from "../../orders";
 import { GetProductRangeFilter, GetProductsFilter, ProductSummaryResponse } from "../interfaces/product.interface";
+import { addPriceRangeFilter } from "../../../utils/db.utils";
 
 export class AdminOpsForProductsService {
   private productCategoryModel = ProductCategory;
@@ -70,10 +71,12 @@ export class AdminOpsForProductsService {
 
     const filterQuery: FilterQuery<IProductDocument> = {};
     if (filter) {
-      const { fromDate, toDate, ...otherFilters } = filter;
+      const { fromDate, toDate, minPrice, maxPrice, ...otherFilters } = filter;
 
       // Handle date range 
       addDateRangeFilter(filterQuery, fromDate, toDate);
+
+      addPriceRangeFilter(filterQuery, minPrice, maxPrice);
 
       // Handle other filters
       const recordFilter: Record<string, string> = Object.fromEntries(

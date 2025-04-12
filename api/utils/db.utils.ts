@@ -96,6 +96,50 @@ export function addDateRangeFilter<T>(
   }
 }
 
+/**
+ * Adds price range filters to a MongoDB filter query
+ * Assumes the "cost" field is stored as a string, so conversion is required.
+ * @param filterQuery - The filter query to modify
+ * @param minPrice - Optional minimum price
+ * @param maxPrice - Optional maximum price
+ * @param costField - The field name to filter on (defaults to 'cost')
+ */
+export function addPriceRangeFilter<T>(
+  filterQuery: FilterQuery<T>,
+  minPrice?: string,
+  maxPrice?: string,
+  costField = "cost"
+): void {
+  if (minPrice || maxPrice) {
+    const priceExprConditions: any[] = [];
+
+    if (minPrice) {
+      priceExprConditions.push({
+        $gte: [{ $toDouble: `${costField}` }, parseFloat(minPrice)],
+      });
+    }
+
+    if (maxPrice) {
+      priceExprConditions.push({
+        $lte: [{ $toDouble: `${costField}` }, parseFloat(maxPrice)],
+      });
+    }
+
+    // Merge with existing $expr if any
+    if ((filterQuery as any).$expr && (filterQuery as any).$expr.$and) {
+      (filterQuery as any).$expr.$and.push(...priceExprConditions);
+    } else if ((filterQuery as any).$expr) {
+      // Convert single $expr to $and if needed
+      const existingExpr = (filterQuery as any).$expr;
+      (filterQuery as any).$expr = { $and: [existingExpr, ...priceExprConditions] };
+    } else {
+      (filterQuery as any).$expr = priceExprConditions.length === 1
+        ? priceExprConditions[0]
+        : { $and: priceExprConditions };
+    }
+  }
+}
+
 export function createPaginationOptions(
   page: number,
   customOptions: Record<string, any> = {},
