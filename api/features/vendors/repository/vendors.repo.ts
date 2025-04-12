@@ -9,7 +9,7 @@ import {
 } from "../../../utils";
 import { Vendor } from "../models/vendors.model";
 import { IVendorDocument, IVendorSignupData } from "../vendors.interface";
-import { Events, GEOLOCATION, HTTP_STATUS_CODES, USER_APPROVAL_STATUS } from "../../../constants";
+import { ACCOUNT_STATUS, Events, GEOLOCATION, HTTP_STATUS_CODES, USER_APPROVAL_STATUS } from "../../../constants";
 import { Coordinates } from "../../../types";
 
 
@@ -57,6 +57,13 @@ class VendorsRepository {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
         Msg.ERROR_INVALID_LOGIN_CREDENTIALS(),
+      );
+    }
+
+    if(vendor.approvalStatus != USER_APPROVAL_STATUS.APPROVED || vendor.accountStatus != ACCOUNT_STATUS.ACTIVE){
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        Msg.ERROR_VENDOR_NOT_ACTIVE(),
       );
     }
 
