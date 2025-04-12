@@ -12,10 +12,7 @@ import { IVendorDocument, IVendorSignupData } from "../vendors.interface";
 import { Events, GEOLOCATION, HTTP_STATUS_CODES, USER_APPROVAL_STATUS } from "../../../constants";
 import { Coordinates } from "../../../types";
 
-/**
-Repository for managing vendors.
-@class
-*/
+
 class VendorsRepository {
 
   async signup(
