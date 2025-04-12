@@ -17,5 +17,8 @@ export interface GetProductsFilter {
     toDate?: string;
     category?: string;
     vendor?: string;
+    status?: string;
+    maxPrice?: string;
+    minPrice?: string;
     sort?: SORT_ORDER;
   }
