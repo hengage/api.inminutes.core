@@ -9,15 +9,16 @@ import { Request, Response } from "express";
 export const adminOpsRidersController: AdminOpsRidersController = {
   async getRiders(req: Request, res: Response): Promise<void> {
     try {
-      const riders = await adminOpsRidersService.getRiders(
-        req.query.page as unknown as number,
+      const { page, searchQuery, vehicleType, currentlyWorking, accountStatus, startDate, endDate} = req.query
+       const riders = await adminOpsRidersService.getRiders(
+        page as unknown as number,
         {
-          searchQuery: req.query.searchQuery as string,
-          vehicleType: req.query.vehicleType as string,
-          currentlyWorking: req.query.currentlyWorking as string,
-          accountStatus: req.query.accountStatus as ACCOUNT_STATUS,
-          startDate: req.query.startDate as string,
-          endDate: req.query.endDate as string
+          searchQuery: searchQuery as string,
+          vehicleType: vehicleType as string,
+          currentlyWorking: currentlyWorking as string,
+          accountStatus: accountStatus as ACCOUNT_STATUS,
+          startDate: startDate as string,
+          endDate: endDate as string
         },
       );
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { riders });
@@ -126,15 +127,16 @@ export const adminOpsRidersController: AdminOpsRidersController = {
 
   async getTopRiders(req: Request, res: Response): Promise<void> {
     try {
+      const { page, searchQuery, vehicleType, currentlyWorking, accountStatus, startDate, endDate} = req.query
       const topRiders = await adminOpsRidersService.getTopList(
-        req.query.page as unknown as number,
+        page as unknown as number,
         {
-          searchQuery: req.query.searchQuery as string,
-          vehicleType: req.query.vehicleType as string,
-          currentlyWorking: req.query.currentlyWorking as string,
-          accountStatus: req.query.accountStatus as ACCOUNT_STATUS,
-          startDate: req.query.startDate as string,
-          endDate: req.query.endDate as string
+          searchQuery: searchQuery as string,
+          vehicleType: vehicleType as string,
+          currentlyWorking: currentlyWorking as string,
+          accountStatus: accountStatus as ACCOUNT_STATUS,
+          startDate: startDate as string,
+          endDate: endDate as string
         }
       );
       handleSuccessResponse(
