@@ -17,11 +17,7 @@ Repository for managing vendors.
 @class
 */
 class VendorsRepository {
-  /**
-   @async
-  Creates new vendor account.
-  @param {object} vendorData - The vendor signup data.
-  */
+
   async signup(
     vendorData: IVendorSignupData,
   ): Promise<Partial<IVendorDocument>> {
