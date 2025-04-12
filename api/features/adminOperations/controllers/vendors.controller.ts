@@ -11,12 +11,14 @@ import { validateVendor } from "../../vendors/validators/vendors.validators";
 import { vendorsService } from "../../vendors/services/vendor.services";
 import { vendorsRepo } from "../../vendors";
 
+
 export class AdminOpsVendorsController {
   private adminVendorsService = new AdminOpsVendorsService();
   private validateAdminVendorsOps = new ValidateAdminVendorsOps();
   private vendorService = vendorsService;
   private validateVendor = validateVendor;
   private vendorRepo = vendorsRepo;
+  
   
   getAllVendors = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -32,7 +34,7 @@ export class AdminOpsVendorsController {
           searchQuery: search as string,
           startDate: startDate as string,
           endDate: endDate as string,
-        },
+        }
       );
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { vendors });
     } catch (error) {
@@ -77,7 +79,7 @@ export class AdminOpsVendorsController {
     try {
       await this.adminVendorsService.setApprovalStatus(
         req.params.vendorId,
-        req.body.approve,
+        req.body.approve
       );
       handleSuccessResponse(
         res,
