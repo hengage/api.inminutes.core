@@ -13,6 +13,9 @@ export class AdminOpsProductsRoutes {
   }
   async initializeRoutes() {
     this.router
+      .route("/register/:userId")
+      .post(this.adminOpsForProductsController.createProduct);
+    this.router
       .route("/category")
       .post(this.adminOpsForProductsController.createCategory);
     this.router
@@ -36,6 +39,30 @@ export class AdminOpsProductsRoutes {
     this.router
       .route('/pending')
       .get(this.adminOpsForProductsController.pendingProducts);
+
+      this.router
+      .route("/top")
+      .get(this.adminOpsForProductsController.getTopProducts);
+
+      this.router
+      .route("/summary")
+      .get(this.adminOpsForProductsController.getProductSummary);
+
+      this.router
+      .route("/metrics")
+      .get(this.adminOpsForProductsController.getProductMetrics);
+
+      this.router
+      .route("/:productId")
+      .get(this.adminOpsForProductsController.getProductDetails);
+
+      this.router
+      .route("/:productId")
+      .delete(this.adminOpsForProductsController.deleteProduct);
+
+      this.router
+      .route("/top-categories")
+      .get(this.adminOpsForProductsController.getTopCategories);
 
   }
 }

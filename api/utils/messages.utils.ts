@@ -30,6 +30,9 @@ export const Msg = {
   ERROR_INVALID_LOGIN_CREDENTIALS() {
     return "Invalid credentials";
   },
+  ERROR_ACCOUNT_DELETED() {
+    return "Account has been deleted";
+  },
   ERROR_UNAUTHORIZED_USER() {
     return "Unauthorized user";
   },

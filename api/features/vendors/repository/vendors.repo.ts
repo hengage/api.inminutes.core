@@ -48,7 +48,7 @@ class VendorsRepository {
 
   async login(email: string, password: string) {
     const vendor = await Vendor.findOne({ email }).select(
-      "email phoneNumber password",
+      "email phoneNumber password isDeleted",
     );
 
     if (!vendor) {
@@ -56,6 +56,13 @@ class VendorsRepository {
         HTTP_STATUS_CODES.NOT_FOUND,
         Msg.ERROR_INVALID_LOGIN_CREDENTIALS(),
       );
+    }
+
+    if(vendor.isDeleted){
+      throw new HandleException(
+        HTTP_STATUS_CODES.BAD_REQUEST,
+        Msg.ERROR_ACCOUNT_DELETED()
+      )
     }
 
     const passwordsMatch = await compareValues(password, vendor.password);

@@ -20,16 +20,18 @@ export class AdminOpsVendorsController {
   
   getAllVendors = async (req: Request, res: Response): Promise<void> => {
     try {
+
+      const {page, status, approvalStatus, category, subCategory, search, startDate, endDate} = req.query
       const vendors = await this.adminVendorsService.getAllVendors(
-        req.query.page as unknown as number,
+        page as unknown as number,
         {
-          accountStatus: req.query.status as ACCOUNT_STATUS,
-          approvalStatus: req.query.approvalStatus as USER_APPROVAL_STATUS,
-          category: req.query.category as string,
-          subCategory: req.query.subCategory as string,
-          searchQuery: req.query.search as string,
-          startDate: req.query.startDate as string,
-          endDate: req.query.endDate as string,
+          accountStatus: status as ACCOUNT_STATUS,
+          approvalStatus: approvalStatus as USER_APPROVAL_STATUS,
+          category: category as string,
+          subCategory: subCategory as string,
+          searchQuery: search as string,
+          startDate: startDate as string,
+          endDate: endDate as string,
         },
       );
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { vendors });
