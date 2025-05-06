@@ -60,13 +60,14 @@ export class AdminOpsForProductsService {
     );
   }
 
-  async getList(page = 1, filter: GetProductsFilter): Promise<PaginateResult<IProductDocument>> {
+  async getList(page = 1, limit = 10, filter: GetProductsFilter): Promise<PaginateResult<IProductDocument>> {
     const options = createPaginationOptions(
       page,
       {
         select: "_id name description price stock status createdAt",
         sort: { createdAt: filter.sort === SORT_ORDER.ASC ? 1 : -1 }
-      }
+      },
+      limit
     );
 
     const filterQuery: FilterQuery<IProductDocument> = {};
@@ -77,17 +78,20 @@ export class AdminOpsForProductsService {
       addDateRangeFilter(filterQuery, fromDate, toDate);
 
       addPriceRangeFilter(filterQuery, minPrice, maxPrice);
-
       // Handle other filters
+      // const recordFilter: Record<string, string> = Object.fromEntries(
+      //   Object.entries(otherFilters)
+      //     .filter(([key, v]) => v !== undefined && key !== 'sort' && key !== 'page'),
+      // );
       const recordFilter: Record<string, string> = Object.fromEntries(
         Object.entries(otherFilters)
-          .filter(([key, v]) => v !== undefined && key !== 'sort' && key !== 'page'),
+          .filter(([key, v]) => 
+            v !== undefined && !['sort', 'page', 'limit'].includes(key)
+          )
       );
-
       const searchFields = ["_id", "name"];
       buildFilterQuery(recordFilter, filterQuery, searchFields);
     }
-
     const products = await this.productModel.paginate(filterQuery, options);
     return products;
   }
