@@ -64,8 +64,12 @@ export class AdminOpsForProductsService {
     const options = createPaginationOptions(
       page,
       {
-        select: "_id name description price stock status createdAt",
-        sort: { createdAt: filter.sort === SORT_ORDER.ASC ? 1 : -1 }
+        select: "_id name description price stock status cost createdAt category vendor",
+        sort: { createdAt: filter.sort === SORT_ORDER.ASC ? 1 : -1 },
+        populate: [
+          { path: "category", select: "name" },
+          { path: "vendor", select: "name" }
+        ]
       },
       limit
     );
