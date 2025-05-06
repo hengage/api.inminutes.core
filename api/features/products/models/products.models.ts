@@ -9,6 +9,7 @@ import {
   IProductDocument,
   IWishListDocument,
 } from "../products.interface";
+import { excludeDeletedPlugin } from "../../../utils/excludeDeleted.utils";
 
 const productCategorySchema = new Schema<IProductCategoryDocument>(
   {
@@ -59,7 +60,7 @@ const productSchema = new Schema<IProductDocument>(
 );
 
 productSchema.plugin(paginate);
-
+productSchema.plugin(excludeDeletedPlugin);
 const wishListSchema = new Schema<IWishListDocument>({
   _id: {
     type: String,
