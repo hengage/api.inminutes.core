@@ -7,6 +7,7 @@ import {
 } from "../../../utils";
 import { IRiderDocument } from "../riders.interface";
 import { ACCOUNT_STATUS, USER_APPROVAL_STATUS } from "../../../constants";
+import { excludeDeletedPlugin } from "../../../utils/excludeDeleted.utils";
 
 const riderSchema = new Schema<IRiderDocument>(
   {
@@ -73,6 +74,7 @@ const riderSchema = new Schema<IRiderDocument>(
 
 riderSchema.index({ location: "2dsphere" });
 riderSchema.plugin(paginate);
+riderSchema.plugin(excludeDeletedPlugin);
 
 riderSchema.pre("save", async function (next) {
   if (this.isModified("password")) {

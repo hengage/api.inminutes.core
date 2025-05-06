@@ -16,6 +16,7 @@ import {
   generateUniqueString,
   toLowerCaseSetter,
 } from "../../../utils";
+import { excludeDeletedPlugin } from "../../../utils/excludeDeleted.utils";
 
 const vendorSchema = new Schema<IVendorDocument>(
   {
@@ -83,6 +84,7 @@ const vendorSchema = new Schema<IVendorDocument>(
 );
 
 vendorSchema.plugin(paginate);
+vendorSchema.plugin(excludeDeletedPlugin);
 vendorSchema.index({ location: GEOLOCATION.LOCATION_INDEX });
 
 vendorSchema.pre("save", async function (next) {
