@@ -97,8 +97,9 @@ export class AdminOpsForProductsController {
     try {
       const filter: GetProductsFilter = req.query;
       const page = Number(req.query.page) || 1;
-      await ValidateAdminOpsProducts.getList({ ...filter, page });
-      const products = await this.adminOpsForProductsService.getList(page, filter);
+      const limit = Number(req.query.limit) || 10;
+      await ValidateAdminOpsProducts.getList({ ...filter, page, limit});
+      const products = await this.adminOpsForProductsService.getList(page, limit, filter);
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { products });
     } catch (error: unknown) {
       console.error("Error fetching products list:", error);
@@ -160,7 +161,7 @@ export class AdminOpsForProductsController {
         const filter: GetProductsFilter = req.query;
         const page = Number(req.query.page) || 1;
         const limit = Number(req.query.limit) || 5;
-        await ValidateAdminOpsProducts.getList({ ...filter, page });
+        await ValidateAdminOpsProducts.getList({ ...filter, page, limit });
         console.log({filter, page, limit})
         const products = await this.adminOpsForProductsService.getTopList(page, filter, limit);
         handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { products });
@@ -221,7 +222,7 @@ export class AdminOpsForProductsController {
       const filter: GetProductsFilter = req.query;
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 5;
-      await ValidateAdminOpsProducts.getList({ ...filter, page });
+      await ValidateAdminOpsProducts.getList({ ...filter, page, limit });
       const categories = await this.adminOpsForProductsService.getTopCategories(page, filter, limit);
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { categories });
     } catch (error: unknown) {

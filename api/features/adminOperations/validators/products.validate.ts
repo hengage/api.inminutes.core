@@ -5,7 +5,7 @@ import { validateSchema } from "../../../utils/validation.utils";
 import { GetProductsFilter } from "../interfaces/product.interface";
 
 export class ValidateAdminOpsProducts {
-    static getList = async (getListData: GetProductsFilter & { page: number | string }) => {
+    static getList = async (getListData: GetProductsFilter & { page: number | string } & { limit: number | string } ) => {
         const schema = joi.object({
             page: joi.alternatives().try(
                 joi.number().integer().min(1),

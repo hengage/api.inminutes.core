@@ -61,6 +61,12 @@ export interface IWorkAreaDocument extends Document {
   };
   maxSlotsRequired: number;
 }
+export interface ITimeSlotDocument extends Document {
+  _id: string;
+  startTime: Number;
+  endTime: Number;
+  status: string;
+}
 
 export interface IRiderBookingDocument extends Document {
   rider: string;
