@@ -68,7 +68,7 @@ export class AdminOpsForProductsService {
         sort: { createdAt: filter.sort === SORT_ORDER.ASC ? 1 : -1 },
         populate: [
           { path: "category", select: "name" },
-          { path: "vendor", select: "name" }
+          { path: "vendor", select: "businessName" }
         ]
       },
       limit
@@ -103,6 +103,14 @@ export class AdminOpsForProductsService {
   async getProductDetails(productId: IProductDocument['_id']): Promise<IProductDocument> {
     const product = await this.productModel.findById(productId)
       .select('-__v -updatedAt')
+      .populate({
+        path: 'category',
+        select: 'name',
+      })
+      .populate({
+        path: 'vendor',
+        select: 'businessName',
+      })
       .lean()
       .exec();
 
