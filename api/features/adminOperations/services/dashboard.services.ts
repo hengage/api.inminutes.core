@@ -51,6 +51,8 @@ export const AdminOpsForDashboardService = {
       async graphData(service: "customers" | "riders" | "vendors", timeframe?: Timeframe, startDate?: string, endDate?: string) {
         try {
           let Model;
+          let filterActive;
+          let filterInActive;
           switch (service) {
             case "customers":
               Model = Customer;
@@ -146,15 +148,15 @@ export const AdminOpsForDashboardService = {
               }
             },
             {
-              $group: {
-                _id: "$group",
-                active: {
-                  $sum: { $cond: [{ $eq: ["$isActive", true] }, 1, 0] }
-                },
-                inactive: {
-                  $sum: { $cond: [{ $eq: ["$isActive", false] }, 1, 0] }
+                $group: {
+                    _id: "$group",
+                    active: {
+                    $sum: { $cond: [{ $eq: ["$accountStatus", "active"] }, 1, 0] }
+                    },
+                    inactive: {
+                    $sum: { $cond: [{ $ne: ["$accountStatus", "active"] }, 1, 0] }
+                    }
                 }
-              }
             },
             { $sort: { _id: 1 } }
           ]);
