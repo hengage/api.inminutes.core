@@ -9,8 +9,8 @@ export const AdminOpsForDashboardController = {
     async getTotalStats(req: Request, res: Response) {
         try {
             const {startDate, endDate} = req.query;
-            const customers = await AdminOpsForDashboardService.getStats(startDate as string, endDate as string);
-            handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { customers });
+            const data = await AdminOpsForDashboardService.getStats(startDate as string, endDate as string);
+            handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { data });
         } catch (error) {
             const { statusCode, errorJSON } = handleErrorResponse(error);
             res.status(statusCode).json(errorJSON);
@@ -25,8 +25,8 @@ export const AdminOpsForDashboardController = {
                 startDate: string;
                 endDate: string;
             } = req.query as any;
-            const customer = await AdminOpsForDashboardService.graphData(service , timeframe, startDate, endDate)
-            handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { customer });
+            const data = await AdminOpsForDashboardService.graphData(service , timeframe, startDate, endDate)
+            handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { data });
         } catch (error) {
             const { statusCode, errorJSON } = handleErrorResponse(error);
             res.status(statusCode).json(errorJSON);
