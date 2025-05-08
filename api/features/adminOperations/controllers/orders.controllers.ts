@@ -8,7 +8,7 @@ import { ValidateAdminOpsOrders } from "../validators/adminOpsOrders.validate";
 export const AdminOpsForOrdersController = {
     async getList(req: Request, res: Response) {
         try {
-            const { page, searchQuery, fromDate, toDate, sort } = req.query;
+            const { page, searchQuery, fromDate, toDate, sort, limit } = req.query;
 
             // await ValidateAdminOpsOrders.getList({
             //     page: req.query.page as unknown as number,
@@ -25,7 +25,8 @@ export const AdminOpsForOrdersController = {
             const filter: GetOrdersFilter = req.query;
             const orders = await AdminOpsForOrdersService.getList(
                 Number(page),
-                filter
+                filter,
+                Number(limit)
             );
 
             handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { orders })

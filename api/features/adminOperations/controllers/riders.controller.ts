@@ -9,7 +9,7 @@ import { Request, Response } from "express";
 export const adminOpsRidersController: AdminOpsRidersController = {
   async getRiders(req: Request, res: Response): Promise<void> {
     try {
-      const { page, searchQuery, vehicleType, currentlyWorking, accountStatus, startDate, endDate} = req.query
+      const { page, searchQuery, vehicleType, currentlyWorking, accountStatus, startDate, endDate, limit} = req.query
        const riders = await adminOpsRidersService.getRiders(
         page as unknown as number,
         {
@@ -20,6 +20,7 @@ export const adminOpsRidersController: AdminOpsRidersController = {
           startDate: startDate as string,
           endDate: endDate as string
         },
+        limit as unknown as number
       );
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { riders });
     } catch (error) {
