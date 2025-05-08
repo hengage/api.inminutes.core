@@ -8,7 +8,7 @@ import { RidersRepository } from "../../riders";
 import { OrdersRepository } from "../../orders/repository/orders.repo";
 
 export const AdminOpsForOrdersService = {
-    async getList(page = 1, filter: GetOrdersFilter, limit = 10): Promise<PaginateResult<IOrdersDocument>> {
+    async getList(page: number, filter: GetOrdersFilter, limit?: number): Promise<PaginateResult<IOrdersDocument>> {
         const options = createPaginationOptions(
             page,
             {
@@ -32,13 +32,14 @@ export const AdminOpsForOrdersService = {
             // Handle other filters
             const recordFilter: Record<string, string> = Object.fromEntries(
                 Object.entries(otherFilters)
-                    .filter(([key, v]) => v !== undefined && key !== 'sort' && key !== 'page'),
+                .filter(([key, v]) =>
+                    v !== undefined && !['sort', 'page', 'limit'].includes(key)
+                ),
             );
 
             const searchFields = ["_id", "status"];
             buildFilterQuery(recordFilter, filterQuery, searchFields);
         }
-
         const orders = await Order.paginate(filterQuery, options);
         return orders;
     },

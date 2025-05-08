@@ -24,9 +24,9 @@ export const AdminOpsForOrdersController = {
 
             const filter: GetOrdersFilter = req.query;
             const orders = await AdminOpsForOrdersService.getList(
-                Number(page),
+                Number(page) || 1,
                 filter,
-                Number(limit)
+                Number(limit) || 10
             );
 
             handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { orders })

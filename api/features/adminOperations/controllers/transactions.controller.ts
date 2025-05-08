@@ -17,7 +17,8 @@ export const adminOpsTransactionsController = {
                     highestAmount: req.query.highestAmount as string,
                     fromDate: req.query.fromDate as string,
                     toDate: req.query.toDate as string
-                }
+                },
+                req.query.limit as unknown as number,
             )
 
             handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { transactions })
