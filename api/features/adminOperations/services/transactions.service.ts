@@ -6,11 +6,12 @@ import { FilterQuery } from "mongoose";
 import { addAmountRangeFilter, addDateRangeFilter, buildFilterQuery, createPaginationOptions, HandleException, Msg } from "../../../utils";
 
 export const adminOpsTransactionsService = {
-    async getTransactions(page = 1, filter: GetTransactionsFilter): Promise<PaginateResult<ITransactionDocument>> {
+    async getTransactions(page = 1, filter: GetTransactionsFilter, limit = 10): Promise<PaginateResult<ITransactionDocument>> {
 
         const options = createPaginationOptions(
-            page,
-            { select: "amount reason status _id reference createdAt" }
+            page || 1,
+            { select: "amount reason status _id reference createdAt" },
+            limit || 10
         );
 
         const filterQuery: FilterQuery<ITransactionDocument> = {};
