@@ -21,9 +21,10 @@ export const adminOpsRidersService = {
   async getRiders(
     page = 1,
     filter: GetRidersFilter,
+    limit = 10
   ): Promise<PaginateResult<IRiderDocument>> {
 
-    const options = createPaginationOptions(page, { select: "_id fullName phoneNumber photo" });
+    const options = createPaginationOptions(page, { select: "_id fullName phoneNumber photo email displayName currentlyWorking" }, limit);
 
     const filterQuery: FilterQuery<IRiderDocument> = {};
     if (filter) {
@@ -35,7 +36,6 @@ export const adminOpsRidersService = {
       const searchFields = ["fullName", "phoneNumber", "email"];
       buildFilterQuery(recordFilter, filterQuery, searchFields);
     }
-
     const riders = await Rider.paginate(filterQuery, options);
     return riders;
   },

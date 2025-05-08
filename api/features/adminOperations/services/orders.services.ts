@@ -8,13 +8,18 @@ import { RidersRepository } from "../../riders";
 import { OrdersRepository } from "../../orders/repository/orders.repo";
 
 export const AdminOpsForOrdersService = {
-    async getList(page = 1, filter: GetOrdersFilter): Promise<PaginateResult<IOrdersDocument>> {
+    async getList(page = 1, filter: GetOrdersFilter, limit = 10): Promise<PaginateResult<IOrdersDocument>> {
         const options = createPaginationOptions(
             page,
             {
-                select: "_id  totalCost status createdAt",
-                sort: { createdAt: filter.sort === SORT_ORDER.ASC ? 1 : -1 }
-            }
+                select: "_id  totalCost type status createdAt totalCost totalProductsCost deliveryFee, rider, customer",
+                sort: { createdAt: filter.sort === SORT_ORDER.ASC ? 1 : -1 },
+                populate: [
+                    { path: "customer", select: "fullName displayName email" },
+                    { path: "rider", select: "fullName displayName email" }
+                  ]
+            },
+            limit
         );
 
         const filterQuery: FilterQuery<IOrdersDocument> = {};
