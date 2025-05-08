@@ -12,7 +12,7 @@ export class AdminOpsErrandsRoutes {
     async initializeRoutes() {
         this.router
             .route("/")
-            .get(AdminOpsForErrandsController.getList)
+            .get(AdminOpsForErrandsController.getErrands)
 
         this.router
             .route("/:errandId")

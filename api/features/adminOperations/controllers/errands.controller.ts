@@ -19,6 +19,29 @@ export const AdminOpsForErrandsController = {
         }
     },
 
+    async getErrands(req: Request, res: Response){
+        try {
+          const { userId, page, limit, status, search, startDate, endDate } = req.query; 
+          const errands = await AdminOpsForErrandsService.getErrands(
+            {
+              userId: userId as string, 
+              page: Number(page), 
+              limit: Number(limit),
+              status: status as string,
+              search: search as string,
+              startDate: startDate as string,
+              endDate: endDate as string
+            }
+          );
+    
+          handleSuccessResponse(res, HTTP_STATUS_CODES.OK, errands);
+        } catch (error: unknown) {
+          console.log("Error getting errand: ", error);
+          const { statusCode, errorJSON } = handleErrorResponse(error);
+          res.status(statusCode).json(errorJSON);
+        }
+      },
+
     async getDetails(req: Request, res: Response) {
         try {
             const { errandId } = req.params;

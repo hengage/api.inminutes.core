@@ -4,6 +4,7 @@ import { addDateRangeFilter, buildFilterQuery, createPaginationOptions, HandleEx
 import { Errand, ErrandPackageType } from "../../errand/";
 import { IErrandDocument } from "../../errand";
 import { IErrandPackageTypeDocument } from "../../errand/errand.interface";
+import { PaginatedQueryResult } from "../../../types";
 
 export const AdminOpsForErrandsService = {
     async getList(page = 1, filter: GetErrandsFilter): Promise<PaginateResult<IErrandDocument>> {
@@ -32,6 +33,76 @@ export const AdminOpsForErrandsService = {
 
         const errands = await Errand.paginate(filterQuery, options);
         return errands;
+    },
+
+    async getErrands({
+        userId,
+        page,
+        limit,
+        status,
+        search,
+        startDate,
+        endDate
+    }: {
+        userId?: string;
+        page?: number;
+        limit?: number;
+        status?: string;
+        search?: string;
+        startDate?: string
+        endDate?: string,
+
+    }): Promise<PaginatedQueryResult> {
+
+        let query: any = {};
+
+        if(userId){
+            query = {
+                $or: [{ customer: userId }, { rider: userId }],
+            };
+        }
+        const safePage = Number(page) || 1;
+        const safeLimit = Number(limit) || 10;
+
+        // Status filter
+        if (status) {
+            query.status = status;
+        }
+
+        // Search filter (example: pickup or dropoff address)
+        if (search) {
+            query.$or = [
+            ...(query.$or || []),
+            { pickupAddress: { $regex: search, $options: "i" } },
+            { dropoffAddress: { $regex: search, $options: "i" } },
+            { description: { $regex: search, $options: "i" } },
+            ];
+        }
+
+        // Date range filter
+        if (startDate || endDate) {
+            query.createdAt = {};
+            if (startDate) query.createdAt.$gte = new Date(startDate);
+            if (endDate) query.createdAt.$lte = new Date(endDate);
+        }
+            const options = createPaginationOptions(
+            safePage,
+            {
+                select: "-updatedAt -dropoffCoordinates -scheduledPickupTime -pickupCoordinates",
+                populate: [
+                { path: "customer", select: "fullName phoneNumber" },
+                { path: "rider", select: "fullName phoneNumber" },
+                ],
+            },
+            safeLimit
+            );
+            
+            const errands = (await Errand.paginate(
+            query,
+            options,
+            )) as PaginatedQueryResult;
+
+            return errands;
     },
 
     async getDetails(errandId: IErrandDocument['_id']): Promise<IErrandDocument> {
