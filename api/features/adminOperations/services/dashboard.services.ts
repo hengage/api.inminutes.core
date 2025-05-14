@@ -51,8 +51,6 @@ export const AdminOpsForDashboardService = {
       async graphData(service: "customers" | "riders" | "vendors", timeframe?: Timeframe, startDate?: string, endDate?: string) {
         try {
           let Model;
-          let filterActive;
-          let filterInActive;
           switch (service) {
             case "customers":
               Model = Customer;

@@ -4,7 +4,7 @@ import { AdminOpsForProductsService } from "../services/products.services";
 import { handleSuccessResponse } from "../../../utils/response.utils";
 import { HTTP_STATUS_CODES } from "../../../constants";
 import { ValidateAdminOpsProducts } from "../validators/products.validate";
-import { GetProductRangeFilter, GetProductsFilter } from "../interfaces/product.interface";
+import { GetProductRangeFilter, GetProductsFilter, GetCategoriesQuery } from "../interfaces/product.interface";
 import { validateProducts } from "../../products/validators/products.validators";
 import { ProductsRepository } from "../../products";
 
@@ -144,16 +144,38 @@ export class AdminOpsForProductsController {
     }
   }
 
+  // listProductCategories = async (req: Request, res: Response): Promise<void> => {
+  //   try {
+  //     const categories = await this.adminOpsForProductsService.getCategories();
+  //     handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { categories });
+  //   } catch (error: unknown) {
+  //     console.error("Error fetching product categories:", error);
+  //     const { statusCode, errorJSON } = handleErrorResponse(error);
+  //     res.status(statusCode).json(errorJSON);
+  //   }
+  // }
+
   listProductCategories = async (req: Request, res: Response): Promise<void> => {
     try {
-      const categories = await this.adminOpsForProductsService.getCategories();
-      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { categories });
+      const { searchQuery, page, limit } = req.query;
+      console.log({page, limit})
+      const categories = await this.adminOpsForProductsService.getCategories({
+        searchQuery: String(searchQuery || ''),
+        page: parseInt(page as string, 10) || 1,
+        limit: parseInt(limit as string, 10) || 10,
+      });
+  
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { 
+        message: 'Categories fetched successfully',
+        ...categories
+      });
     } catch (error: unknown) {
       console.error("Error fetching product categories:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
-  }
+  };
+  
 
   getTopProducts = async (req: Request, res: Response): Promise<void> => {
     try {

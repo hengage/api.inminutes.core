@@ -22,3 +22,9 @@ export interface GetProductsFilter {
     minPrice?: string;
     sort?: SORT_ORDER;
   }
+
+export interface GetCategoriesQuery {
+    searchQuery?: string;
+    page: number;
+    limit: number;
+  }
