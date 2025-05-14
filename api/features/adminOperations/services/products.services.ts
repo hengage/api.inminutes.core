@@ -5,8 +5,9 @@ import { Product, ProductCategory } from "../../products";
 import { IProductCategoryDocument, IProductDocument } from "../../products/products.interface";
 import { PaginateResult } from "mongoose";
 import { Order } from "../../orders";
-import { GetProductRangeFilter, GetProductsFilter, ProductSummaryResponse } from "../interfaces/product.interface";
+import { GetProductRangeFilter, GetProductsFilter, ProductSummaryResponse, GetCategoriesQuery } from "../interfaces/product.interface";
 import { addPriceRangeFilter } from "../../../utils/db.utils";
+import { PipelineStage } from 'mongoose';
 
 export class AdminOpsForProductsService {
   private productCategoryModel = ProductCategory;
@@ -153,9 +154,63 @@ export class AdminOpsForProductsService {
     return products;
   }
 
-  async getCategories(): Promise<IProductCategoryDocument[]> {
-    const categories = await ProductCategory.find().select('_id name').lean().exec();
-    return categories;
+  // async getCategories(): Promise<IProductCategoryDocument[]> {
+  //   const categories = await ProductCategory.find().select('_id name').lean().exec();
+  //   return categories;
+  // }
+  
+  async getCategories(query: GetCategoriesQuery): Promise<{
+    data: { _id: string; name: string; totalProducts: number }[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
+    const { searchQuery, page, limit} = query;
+  
+    const matchStage = {
+      name: { $regex: searchQuery, $options: 'i' },
+    };
+  
+    const aggregatePipeline: PipelineStage[] = [
+      { $match: matchStage },
+      {
+        $lookup: {
+          from: DB_SCHEMA.PRODUCT,
+          let: { categoryId: '$_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ['$category', '$$categoryId'] },
+                isDeleted: false,
+              },
+            },
+          ],
+          as: 'products',
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          totalProducts: { $size: '$products' },
+        },
+      },
+      { $sort: { name: 1 as 1 | -1 } },
+      { $skip: ((page ?? 1) - 1) * (limit ?? 10) },
+      { $limit: limit },
+    ];
+  
+    const data = await ProductCategory.aggregate(aggregatePipeline);
+  
+    // For total count (without pagination)
+    const total = await ProductCategory.countDocuments(matchStage);
+  
+    return {
+      data,
+      total,
+      page,
+      limit,
+    };
   }
 
   async getTopList(
