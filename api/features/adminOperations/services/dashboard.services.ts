@@ -17,37 +17,113 @@ export type Timeframe =
 
 export const AdminOpsForDashboardService = {
 
-    async getStats(startDate?: string, endDate?: string): Promise<any> {
-        try {
-          const dateFilter = startDate && endDate ? {
-            createdAt: {
-              $gte: new Date(startDate),
-              $lte: new Date(endDate)
-            }
-          } : {};
+    // async getStats(startDate?: string, endDate?: string): Promise<any> {
+    //     try {
+    //       const dateFilter = startDate && endDate ? {
+    //         createdAt: {
+    //           $gte: new Date(startDate),
+    //           $lte: new Date(endDate)
+    //         }
+    //       } : {};
     
-          const [customerCount, orderCount, riderCount, vendorCount] = await Promise.all([
-            Customer.countDocuments(dateFilter),
-            Order.countDocuments(dateFilter),
-            Rider.countDocuments(dateFilter),
-            Vendor.countDocuments(dateFilter)
+    //       const [customerCount, orderCount, riderCount, vendorCount] = await Promise.all([
+    //         Customer.countDocuments(dateFilter),
+    //         Order.countDocuments(dateFilter),
+    //         Rider.countDocuments(dateFilter),
+    //         Vendor.countDocuments(dateFilter)
+    //       ]);
+    
+    //       return {
+    //         customers: customerCount,
+    //         orders: orderCount,
+    //         riders: riderCount,
+    //         vendors: vendorCount,
+    //         message: "Dashboard stats retrieved"
+    //       };
+    //     } catch (error: any) {
+    //         throw new HandleException(
+    //             HTTP_STATUS_CODES.BAD_REQUEST,
+    //             error.message
+    //         );
+    //     }
+    //   },
+
+      async getStats(startDate?: string, endDate?: string): Promise<any> {
+        try {
+          let currentFilter = {};
+          let previousFilter = {};
+          
+          if (startDate && endDate) {
+            const currentStart = new Date(startDate);
+            const currentEnd = new Date(endDate);
+    
+            const previousStart = new Date(
+              currentStart.getTime() - (currentEnd.getTime() - currentStart.getTime())
+            );
+            const previousEnd = new Date(currentStart);
+    
+            currentFilter = {
+              createdAt: {
+                $gte: currentStart,
+                $lte: currentEnd
+              }
+            };
+    
+            previousFilter = {
+              createdAt: {
+                $gte: previousStart,
+                $lte: previousEnd
+              }
+            };
+          }
+    
+          const [
+            currentCustomerCount,
+            currentOrderCount,
+            currentRiderCount,
+            currentVendorCount,
+            prevCustomerCount,
+            prevOrderCount,
+            prevRiderCount,
+            prevVendorCount
+          ] = await Promise.all([
+            Customer.countDocuments(currentFilter),
+            Order.countDocuments(currentFilter),
+            Rider.countDocuments(currentFilter),
+            Vendor.countDocuments(currentFilter),
+            Customer.countDocuments(previousFilter),
+            Order.countDocuments(previousFilter),
+            Rider.countDocuments(previousFilter),
+            Vendor.countDocuments(previousFilter)
           ]);
     
+          function calculateGrowth(current: number, previous: number): number {
+            if (previous === 0) return current > 0 ? 100 : 0;
+            return ((current - previous) / previous) * 100;
+          }
+    
           return {
-            customers: customerCount,
-            orders: orderCount,
-            riders: riderCount,
-            vendors: vendorCount,
+            customers: currentCustomerCount,
+            orders: currentOrderCount,
+            riders: currentRiderCount,
+            vendors: currentVendorCount,
+            growth: {
+              customers: calculateGrowth(currentCustomerCount, prevCustomerCount),
+              orders: calculateGrowth(currentOrderCount, prevOrderCount),
+              riders: calculateGrowth(currentRiderCount, prevRiderCount),
+              vendors: calculateGrowth(currentVendorCount, prevVendorCount)
+            },
             message: "Dashboard stats retrieved"
           };
         } catch (error: any) {
-            throw new HandleException(
-                HTTP_STATUS_CODES.BAD_REQUEST,
-                error.message
-            );
+          throw new HandleException(
+            HTTP_STATUS_CODES.BAD_REQUEST,
+            error.message
+          );
         }
       },
-
+  
+  
       async graphData(service: "customers" | "riders" | "vendors", timeframe?: Timeframe, startDate?: string, endDate?: string) {
         try {
           let Model;
