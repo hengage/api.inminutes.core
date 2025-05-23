@@ -84,10 +84,6 @@ export class AdminOpsForProductsService {
 
       addPriceRangeFilter(filterQuery, minPrice, maxPrice);
       // Handle other filters
-      // const recordFilter: Record<string, string> = Object.fromEntries(
-      //   Object.entries(otherFilters)
-      //     .filter(([key, v]) => v !== undefined && key !== 'sort' && key !== 'page'),
-      // );
       const recordFilter: Record<string, string> = Object.fromEntries(
         Object.entries(otherFilters)
           .filter(([key, v]) => 
@@ -154,11 +150,6 @@ export class AdminOpsForProductsService {
     return products;
   }
 
-  // async getCategories(): Promise<IProductCategoryDocument[]> {
-  //   const categories = await ProductCategory.find().select('_id name').lean().exec();
-  //   return categories;
-  // }
-  
   async getCategories(query: GetCategoriesQuery): Promise<{
     data: { _id: string; name: string; totalProducts: number }[];
     total: number;
