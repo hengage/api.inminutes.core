@@ -17,37 +17,6 @@ export type Timeframe =
 
 export const AdminOpsForDashboardService = {
 
-    // async getStats(startDate?: string, endDate?: string): Promise<any> {
-    //     try {
-    //       const dateFilter = startDate && endDate ? {
-    //         createdAt: {
-    //           $gte: new Date(startDate),
-    //           $lte: new Date(endDate)
-    //         }
-    //       } : {};
-    
-    //       const [customerCount, orderCount, riderCount, vendorCount] = await Promise.all([
-    //         Customer.countDocuments(dateFilter),
-    //         Order.countDocuments(dateFilter),
-    //         Rider.countDocuments(dateFilter),
-    //         Vendor.countDocuments(dateFilter)
-    //       ]);
-    
-    //       return {
-    //         customers: customerCount,
-    //         orders: orderCount,
-    //         riders: riderCount,
-    //         vendors: vendorCount,
-    //         message: "Dashboard stats retrieved"
-    //       };
-    //     } catch (error: any) {
-    //         throw new HandleException(
-    //             HTTP_STATUS_CODES.BAD_REQUEST,
-    //             error.message
-    //         );
-    //     }
-    //   },
-
       async getStats(startDate?: string, endDate?: string): Promise<any> {
         try {
           let currentFilter = {};
