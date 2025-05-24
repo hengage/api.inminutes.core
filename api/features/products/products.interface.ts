@@ -7,6 +7,12 @@ export interface IProductCategoryDocument extends Document {
   name: string;
 }
 
+export interface IProductSubCategoryDocument extends Document {
+  _id: string;
+  name: string;
+  category: IProductCategoryDocument;
+}
+
 export interface IProductDocument extends Document {
   _id: string;
   name: string;

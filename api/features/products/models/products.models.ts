@@ -7,6 +7,7 @@ import { generateUniqueString } from "../../../utils";
 import {
   IProductCategoryDocument,
   IProductDocument,
+  IProductSubCategoryDocument,
   IWishListDocument,
 } from "../products.interface";
 import { excludeDeletedPlugin } from "../../../utils/excludeDeleted.utils";
@@ -21,6 +22,26 @@ const productCategorySchema = new Schema<IProductCategoryDocument>(
       type: String,
       required: true,
       unique: true,
+    },
+  },
+  { timestamps: true },
+);
+
+const productSubCategorySchema = new Schema<IProductSubCategoryDocument>(
+  {
+    _id: {
+      type: String,
+      default: () => generateUniqueString(5),
+    },
+    name: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    category: { 
+      type: String, 
+      required: true, 
+      ref: DB_SCHEMA.PRODUCT_CATEGORY 
     },
   },
   { timestamps: true },
@@ -74,6 +95,12 @@ export const ProductCategory = model<IProductCategoryDocument, PaginateModel<IPr
   DB_SCHEMA.PRODUCT_CATEGORY,
   productCategorySchema,
 );
+
+export const ProductSubCategory = model<IProductSubCategoryDocument, PaginateModel<IProductSubCategoryDocument>>(
+  DB_SCHEMA.PRODUCT_SUB_CATEGORY,
+  productSubCategorySchema,
+);
+
 export const Product = model<IProductDocument, PaginateModel<IProductDocument>>(
   DB_SCHEMA.PRODUCT,
   productSchema,

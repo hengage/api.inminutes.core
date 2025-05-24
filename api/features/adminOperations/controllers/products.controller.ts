@@ -57,6 +57,26 @@ export class AdminOpsForProductsController {
     }
   }
 
+  createSubCategory = async (req: Request, res: Response): Promise<void> => {
+    try {
+      // await ValidateAdminOpsProducts.createSubCategory(req.body);
+      const subCategory = await this.adminOpsForProductsService.createSubCategory(
+        req.body,
+      );
+
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.CREATED,
+        { subCategory },
+        `${capitalize(subCategory.name)} sub category created`,
+      );
+    } catch (error: unknown) {
+      console.log("Error creating sub category: ", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  }
+
   approveProduct = async (req: Request, res: Response): Promise<void> => {
     try {
       await ValidateAdminOpsProducts.approveProduct({ productId: req.params.productId });

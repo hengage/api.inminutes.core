@@ -1,8 +1,8 @@
 import { ClientSession, FilterQuery } from "mongoose";
 import { DB_SCHEMA, HTTP_STATUS_CODES, ORDER_STATUS, PRODUCT_STATUS, SORT_ORDER } from "../../../constants";
 import { HandleException, Msg, addDateRangeFilter, buildFilterQuery, capitalize, createPaginationOptions } from "../../../utils";
-import { Product, ProductCategory } from "../../products";
-import { IProductCategoryDocument, IProductDocument } from "../../products/products.interface";
+import { Product, ProductCategory, ProductSubCategory } from "../../products";
+import { IProductCategoryDocument, IProductDocument, IProductSubCategoryDocument } from "../../products/products.interface";
 import { PaginateResult } from "mongoose";
 import { Order } from "../../orders";
 import { GetProductRangeFilter, GetProductsFilter, ProductSummaryResponse, GetCategoriesQuery } from "../interfaces/product.interface";
@@ -11,11 +11,12 @@ import { PipelineStage } from 'mongoose';
 
 export class AdminOpsForProductsService {
   private productCategoryModel = ProductCategory;
+  private productSubCategoryModel = ProductSubCategory;
   private productModel = Product;
 
   constructor() { }
 
-  async createCategory(payload: {
+  async createCategory(payload: { 
     name: string;
   }): Promise<Pick<IProductCategoryDocument, "_id" | "name">> {
     const categoryExists = await this.productCategoryModel
@@ -38,6 +39,35 @@ export class AdminOpsForProductsService {
     return {
       _id: category._id,
       name: category.name,
+    };
+  }
+
+  async createSubCategory(payload: {
+    name: string;
+    category: string;
+  }): Promise<Pick<IProductSubCategoryDocument, "_id" | "name" | "category">> {
+    const subCategoryExists = await this.productSubCategoryModel
+      .findOne({ name: payload.name })
+      .select("name")
+      .lean()
+      .exec();
+
+    if (subCategoryExists) {
+      throw new HandleException(
+        HTTP_STATUS_CODES.CONFLICT,
+        `${capitalize(payload.name)} is an existing product sub category`,
+      );
+    }
+
+    const subCategory = await this.productSubCategoryModel.create({
+      name: payload.name,
+      category: payload.category,
+    });
+
+    return {
+      _id: subCategory._id,
+      name: subCategory.name,
+      category: subCategory.category,
     };
   }
 

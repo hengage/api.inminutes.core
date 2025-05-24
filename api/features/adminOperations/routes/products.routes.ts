@@ -19,6 +19,9 @@ export class AdminOpsProductsRoutes {
       .route("/category")
       .post(this.adminOpsForProductsController.createCategory);
     this.router
+      .route("/sub-category")
+      .post(this.adminOpsForProductsController.createSubCategory);
+    this.router
       .route('/categories')
       .get(this.adminOpsForProductsController.listProductCategories);
     this.router
