@@ -46,8 +46,18 @@ export class AdminOpsForProductsService {
     name: string;
     category: string;
   }): Promise<Pick<IProductSubCategoryDocument, "_id" | "name" | "category">> {
+
+    const category = await this.productCategoryModel.findById(payload.category)
+    .select("name")
+    .lean().exec();
+    if (!category) {
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        Msg.ERROR_NOT_FOUND("category", payload.category),
+      );
+    }
     const subCategoryExists = await this.productSubCategoryModel
-      .findOne({ name: payload.name })
+      .findOne({ name: payload.name, category: payload.category })
       .select("name")
       .lean()
       .exec();
@@ -55,7 +65,7 @@ export class AdminOpsForProductsService {
     if (subCategoryExists) {
       throw new HandleException(
         HTTP_STATUS_CODES.CONFLICT,
-        `${capitalize(payload.name)} is an existing product sub category`,
+        `${capitalize(payload.name)} is an existing sub-category for this category`,
       );
     }
 

@@ -36,7 +36,6 @@ const productSubCategorySchema = new Schema<IProductSubCategoryDocument>(
     name: {
       type: String,
       required: true,
-      unique: true,
     },
     category: { 
       type: String, 
@@ -78,6 +77,12 @@ const productSchema = new Schema<IProductDocument>(
     isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true },
+);
+
+
+productSubCategorySchema.index(
+  { name: 1, category: 1 }, 
+  { unique: true }
 );
 
 productSchema.plugin(paginate);
