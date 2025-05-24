@@ -59,7 +59,7 @@ export class AdminOpsForProductsController {
 
   createSubCategory = async (req: Request, res: Response): Promise<void> => {
     try {
-      // await ValidateAdminOpsProducts.createSubCategory(req.body);
+      await ValidateAdminOpsProducts.createSubCategory(req.body);
       const subCategory = await this.adminOpsForProductsService.createSubCategory(
         req.body,
       );

@@ -49,6 +49,24 @@ export class ValidateAdminOpsProducts {
         return;
     };
 
+    static createSubCategory = async (createSubCategoryData: { name: string; category: string }) => {
+        const schema = joi.object({
+            name: joi.string()
+            .required()
+            .messages({
+                "any.required": Msg.ERROR_REQUIRED("name"),
+            }),
+            category: joi.string()
+            .required()
+            .messages({
+                "any.required": Msg.ERROR_REQUIRED("category"),
+            }),
+        });
+
+        validateSchema(schema, createSubCategoryData);
+        return;
+    };
+
     static approveProduct = async (approveProductData: { productId: string }) => {
         const schema = joi.object({
             productId: joi.string().required().label("Product ID"),
