@@ -68,6 +68,7 @@ const productSchema = new Schema<IProductDocument>(
       },
     ],
     category: { type: String, required: true, ref: DB_SCHEMA.PRODUCT_CATEGORY },
+    subCategory: { type: String, ref: DB_SCHEMA.PRODUCT_SUB_CATEGORY },
     vendor: { type: String, required: true, ref: DB_SCHEMA.VENDOR },
     status: {
       type: String,
