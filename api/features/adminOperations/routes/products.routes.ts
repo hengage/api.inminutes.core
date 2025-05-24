@@ -25,6 +25,9 @@ export class AdminOpsProductsRoutes {
       .route('/categories')
       .get(this.adminOpsForProductsController.listProductCategories);
     this.router
+      .route('/category/:categoryId/sub-categories')
+      .get(this.adminOpsForProductsController.getCategorySubCategories);
+    this.router
       .route("/:productId/approve")
       .patch(this.adminOpsForProductsController.approveProduct);
 

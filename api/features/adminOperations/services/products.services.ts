@@ -5,7 +5,7 @@ import { Product, ProductCategory, ProductSubCategory } from "../../products";
 import { IProductCategoryDocument, IProductDocument, IProductSubCategoryDocument } from "../../products/products.interface";
 import { PaginateResult } from "mongoose";
 import { Order } from "../../orders";
-import { GetProductRangeFilter, GetProductsFilter, ProductSummaryResponse, GetCategoriesQuery } from "../interfaces/product.interface";
+import { GetProductRangeFilter, GetProductsFilter, ProductSummaryResponse, GetCategoriesQuery, CategorySubCategoriesResponse } from "../interfaces/product.interface";
 import { addPriceRangeFilter } from "../../../utils/db.utils";
 import { PipelineStage } from 'mongoose';
 
@@ -77,6 +77,49 @@ export class AdminOpsForProductsService {
     return {
       _id: subCategory._id,
       name: subCategory.name,
+    };
+  }
+
+  async getCategorySubCategories(
+    categoryId: string
+  ): Promise<CategorySubCategoriesResponse> {
+    const category = await this.productCategoryModel
+      .findById(categoryId)
+      .select("name _id")
+      .lean()
+      .exec();
+  
+    if (!category) {
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        Msg.ERROR_NOT_FOUND("category", categoryId),
+      );
+    }
+  
+    const subCategories = await this.productSubCategoryModel.aggregate([
+      { $match: { category: categoryId } },
+      {
+        $lookup: {
+          from: DB_SCHEMA.PRODUCT,
+          localField: "_id",
+          foreignField: "subCategory",
+          as: "products"
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          productCount: { $size: "$products" }
+        }
+      },
+      { $sort: { name: 1 } } 
+    ]);
+  
+    return {
+      category,
+      data: subCategories,
+      totalSubCategories: subCategories.length,
     };
   }
 

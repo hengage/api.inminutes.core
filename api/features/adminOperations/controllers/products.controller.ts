@@ -77,6 +77,23 @@ export class AdminOpsForProductsController {
     }
   }
 
+  getCategorySubCategories = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const subCategories = await this.adminOpsForProductsService.getCategorySubCategories(
+        req.params.categoryId,
+      );
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        { subCategories },
+      );
+    } catch (error: unknown) {
+      console.log("Error fetching sub categories: ", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  }
+
   approveProduct = async (req: Request, res: Response): Promise<void> => {
     try {
       await ValidateAdminOpsProducts.approveProduct({ productId: req.params.productId });
