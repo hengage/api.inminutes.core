@@ -45,7 +45,7 @@ export class AdminOpsForProductsService {
   async createSubCategory(payload: {
     name: string;
     category: string;
-  }): Promise<Pick<IProductSubCategoryDocument, "_id" | "name" | "category">> {
+  }): Promise<Pick<IProductSubCategoryDocument, "_id" | "name">> {
 
     const category = await this.productCategoryModel.findById(payload.category)
     .select("name")
@@ -77,7 +77,6 @@ export class AdminOpsForProductsService {
     return {
       _id: subCategory._id,
       name: subCategory.name,
-      category: subCategory.category,
     };
   }
 
