@@ -1,4 +1,11 @@
-export { addAmountRangeFilter, addDateRangeFilter, buildFilterQuery, createPaginationOptions } from "./db.utils";
+export { excludeDeletedPlugin } from "./db.utils";
+
+export {
+  addAmountRangeFilter,
+  addDateRangeFilter,
+  buildFilterQuery,
+  createPaginationOptions,
+} from "./db.utils";
 
 export { Msg } from "./messages.utils";
 

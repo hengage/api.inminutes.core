@@ -4,10 +4,10 @@ import {
   encryptValue,
   generateUniqueString,
   toLowerCaseSetter,
+  excludeDeletedPlugin,
 } from "../../../utils";
 import { IRiderDocument } from "../riders.interface";
 import { ACCOUNT_STATUS, USER_APPROVAL_STATUS } from "../../../constants";
-import { excludeDeletedPlugin } from "../../../utils/excludeDeleted.utils";
 
 const riderSchema = new Schema<IRiderDocument>(
   {
@@ -62,14 +62,14 @@ const riderSchema = new Schema<IRiderDocument>(
       type: String,
       default: USER_APPROVAL_STATUS.PENDING,
     },
-    isDeleted: {type: Boolean, default:false},
+    isDeleted: { type: Boolean, default: false },
     rating: {
       totalRatingSum: { type: Number, default: 0 },
       ratingCount: { type: Number, default: 0 },
       averageRating: { type: Number, default: 0 },
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 riderSchema.index({ location: "2dsphere" });
@@ -88,5 +88,5 @@ riderSchema.pre("save", async function (next) {
 
 export const Rider = model<IRiderDocument, PaginateModel<IRiderDocument>>(
   "Rider",
-  riderSchema,
+  riderSchema
 );

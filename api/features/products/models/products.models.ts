@@ -3,14 +3,13 @@ import { PaginateModel, Schema, model } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 
 import { DB_SCHEMA, PRODUCT_STATUS } from "../../../constants";
-import { generateUniqueString } from "../../../utils";
+import { generateUniqueString, excludeDeletedPlugin } from "../../../utils";
 import {
   IProductCategoryDocument,
   IProductDocument,
   IProductSubCategoryDocument,
   IWishListDocument,
 } from "../products.interface";
-import { excludeDeletedPlugin } from "../../../utils/excludeDeleted.utils";
 
 const productCategorySchema = new Schema<IProductCategoryDocument>(
   {
@@ -24,7 +23,7 @@ const productCategorySchema = new Schema<IProductCategoryDocument>(
       unique: true,
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 const productSubCategorySchema = new Schema<IProductSubCategoryDocument>(
@@ -37,13 +36,13 @@ const productSubCategorySchema = new Schema<IProductSubCategoryDocument>(
       type: String,
       required: true,
     },
-    category: { 
-      type: String, 
-      required: true, 
-      ref: DB_SCHEMA.PRODUCT_CATEGORY 
+    category: {
+      type: String,
+      required: true,
+      ref: DB_SCHEMA.PRODUCT_CATEGORY,
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 productCategorySchema.plugin(paginate);
@@ -77,14 +76,10 @@ const productSchema = new Schema<IProductDocument>(
     },
     isDeleted: { type: Boolean, default: false },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
-
-productSubCategorySchema.index(
-  { name: 1, category: 1 }, 
-  { unique: true }
-);
+productSubCategorySchema.index({ name: 1, category: 1 }, { unique: true });
 productSchema.index({ subCategory: 1 });
 productSchema.plugin(paginate);
 productSchema.plugin(excludeDeletedPlugin);
@@ -98,22 +93,22 @@ const wishListSchema = new Schema<IWishListDocument>({
   products: [{ type: String, ref: DB_SCHEMA.PRODUCT }],
 });
 
-export const ProductCategory = model<IProductCategoryDocument, PaginateModel<IProductCategoryDocument>>(
-  DB_SCHEMA.PRODUCT_CATEGORY,
-  productCategorySchema,
-);
+export const ProductCategory = model<
+  IProductCategoryDocument,
+  PaginateModel<IProductCategoryDocument>
+>(DB_SCHEMA.PRODUCT_CATEGORY, productCategorySchema);
 
-export const ProductSubCategory = model<IProductSubCategoryDocument, PaginateModel<IProductSubCategoryDocument>>(
-  DB_SCHEMA.PRODUCT_SUB_CATEGORY,
-  productSubCategorySchema,
-);
+export const ProductSubCategory = model<
+  IProductSubCategoryDocument,
+  PaginateModel<IProductSubCategoryDocument>
+>(DB_SCHEMA.PRODUCT_SUB_CATEGORY, productSubCategorySchema);
 
 export const Product = model<IProductDocument, PaginateModel<IProductDocument>>(
   DB_SCHEMA.PRODUCT,
-  productSchema,
+  productSchema
 );
 
 export const WishList = model<IWishListDocument>(
   DB_SCHEMA.WISHLIST,
-  wishListSchema,
+  wishListSchema
 );
