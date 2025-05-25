@@ -67,6 +67,9 @@ export const Msg = {
   ERROR_USER_TYPE_MISSING() {
     return "User type is required";
   },
+  ERROR_REQUIRED(field: string) {
+    return `${field} is required`;
+  },
   ERROR_UNKNOWN_ERROR() {
     return "An unknown error occurred";
   },

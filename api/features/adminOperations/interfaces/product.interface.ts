@@ -1,4 +1,5 @@
 import { SORT_ORDER } from "../../../constants";
+import { IProductCategoryDocument, IProductSubCategoryDocument } from "../../products/products.interface";
 
 export interface ProductSummaryResponse {
     totalProducts: number;
@@ -28,3 +29,9 @@ export interface GetCategoriesQuery {
     page: number;
     limit: number;
   }
+
+export interface CategorySubCategoriesResponse {
+    subCategories: IProductSubCategoryDocument['name' | 'id'][];
+    totalSubCategories: number;
+    category: IProductCategoryDocument['name' | 'id'];
+}
