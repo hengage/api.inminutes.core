@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { capitalize, handleErrorResponse } from "../../../utils";
 import { AdminOpsForProductsService } from "../services/products.services";
 import { handleSuccessResponse } from "../../../utils/response.utils";
-import { HTTP_STATUS_CODES } from "../../../constants";
+import { HTTP_STATUS_CODES, QUERY_LIMIT } from "../../../constants";
 import { ValidateAdminOpsProducts } from "../validators/products.validate";
 import { GetProductRangeFilter, GetProductsFilter, GetCategoriesQuery } from "../interfaces/product.interface";
 import { validateProducts } from "../../products/validators/products.validators";
@@ -134,7 +134,7 @@ export class AdminOpsForProductsController {
     try {
       const filter: GetProductsFilter = req.query;
       const page = Number(req.query.page) || 1;
-      const limit = Number(req.query.limit) || 10;
+      const limit = Number(req.query.limit) || QUERY_LIMIT;
       await ValidateAdminOpsProducts.getList({ ...filter, page, limit});
       const products = await this.adminOpsForProductsService.getList(page, limit, filter);
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { products });
