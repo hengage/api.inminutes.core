@@ -141,7 +141,7 @@ export class AdminOpsForProductsService {
     );
   }
 
-  async getList(page = 1, limit = 10, filter: GetProductsFilter): Promise<PaginateResult<IProductDocument>> {
+  async getList(page = 1, limit: number, filter: GetProductsFilter): Promise<PaginateResult<IProductDocument>> {
     const options = createPaginationOptions(
       page,
       {
