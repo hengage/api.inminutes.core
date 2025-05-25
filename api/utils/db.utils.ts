@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { DateTime } from "luxon";
-import { FilterQuery } from "mongoose";
+import { FilterQuery, Schema } from "mongoose";
 import { QUERY_LIMIT } from "../constants";
 import { PaginateQueryOptions } from "../types";
 
@@ -15,7 +15,7 @@ import { PaginateQueryOptions } from "../types";
 export function buildFilterQuery<T>(
   filter: Record<string, string>,
   filterQuery: FilterQuery<T> = {},
-  searchFields?: string[],
+  searchFields?: string[]
 ): FilterQuery<T> {
   // Handle non-search filters
   Object.entries(filter).forEach(([key, value]) => {
@@ -32,7 +32,7 @@ export function buildFilterQuery<T>(
   ) {
     const sanitizedSearch = filter.searchQuery.replace(
       /[.*+?^${}()|[\]\\]/g,
-      "\\$&",
+      "\\$&"
     );
     const searchRegex = new RegExp(sanitizedSearch, "i");
     (filterQuery as any).$or = searchFields!.map((field) => ({
@@ -42,7 +42,6 @@ export function buildFilterQuery<T>(
 
   return filterQuery;
 }
-
 
 /**
  * Adds amount range filters to a MongoDB filter query
@@ -57,16 +56,22 @@ export function addAmountRangeFilter<T>(
 ): void {
   if (lowestAmount || highestAmount) {
     (filterQuery as any).$expr = {
-      $and: []
+      $and: [],
     };
     if (lowestAmount) {
       (filterQuery as any).$expr.$and.push({
-        $gte: [{ $convert: { input: "$amount", to: "double" } }, parseFloat(lowestAmount)]
+        $gte: [
+          { $convert: { input: "$amount", to: "double" } },
+          parseFloat(lowestAmount),
+        ],
       });
     }
     if (highestAmount) {
       (filterQuery as any).$expr.$and.push({
-        $lte: [{ $convert: { input: "$amount", to: "double" } }, parseFloat(highestAmount)]
+        $lte: [
+          { $convert: { input: "$amount", to: "double" } },
+          parseFloat(highestAmount),
+        ],
       });
     }
   }
@@ -83,15 +88,19 @@ export function addDateRangeFilter<T>(
   filterQuery: FilterQuery<T>,
   fromDate?: string,
   toDate?: string,
-  dateField: string = 'createdAt'
+  dateField: string = "createdAt"
 ): void {
   if (fromDate || toDate) {
     (filterQuery as any)[dateField] = {};
     if (fromDate) {
-      (filterQuery as any)[dateField].$gte = DateTime.fromISO(fromDate).startOf('day').toJSDate();
+      (filterQuery as any)[dateField].$gte = DateTime.fromISO(fromDate)
+        .startOf("day")
+        .toJSDate();
     }
     if (toDate) {
-      (filterQuery as any)[dateField].$lte = DateTime.fromISO(toDate).endOf('day').toJSDate();
+      (filterQuery as any)[dateField].$lte = DateTime.fromISO(toDate)
+        .endOf("day")
+        .toJSDate();
     }
   }
 }
@@ -131,11 +140,14 @@ export function addPriceRangeFilter<T>(
     } else if ((filterQuery as any).$expr) {
       // Convert single $expr to $and if needed
       const existingExpr = (filterQuery as any).$expr;
-      (filterQuery as any).$expr = { $and: [existingExpr, ...priceExprConditions] };
+      (filterQuery as any).$expr = {
+        $and: [existingExpr, ...priceExprConditions],
+      };
     } else {
-      (filterQuery as any).$expr = priceExprConditions.length === 1
-        ? priceExprConditions[0]
-        : { $and: priceExprConditions };
+      (filterQuery as any).$expr =
+        priceExprConditions.length === 1
+          ? priceExprConditions[0]
+          : { $and: priceExprConditions };
     }
   }
 }
@@ -156,20 +168,72 @@ export function createPaginationOptions(
   return { ...defaultOptions, ...customOptions };
 }
 
-export function metricsQuery(data: IMetricsQueryOptions){
-  const $gte = DateTime.fromISO(data.startDate as string).startOf('day').toJSDate();
-    const $lte = DateTime.fromISO(data.endDate as string).startOf('day').toJSDate();
-    const $limit = Number(data.limit) || 10;
-    const page = Number(data.page) || 1;
-    const $skip = (page - 1) * $limit;
+export function metricsQuery(data: IMetricsQueryOptions) {
+  const $gte = DateTime.fromISO(data.startDate as string)
+    .startOf("day")
+    .toJSDate();
+  const $lte = DateTime.fromISO(data.endDate as string)
+    .startOf("day")
+    .toJSDate();
+  const $limit = Number(data.limit) || 10;
+  const page = Number(data.page) || 1;
+  const $skip = (page - 1) * $limit;
 
-    return {
-      $gte,
-      $lte,
-      $limit,
-      $skip,
-      page,
+  return {
+    $gte,
+    $lte,
+    $limit,
+    $skip,
+    page,
+  };
+}
+
+/**
+ * Mongoose plugin that automatically excludes soft-deleted documents from queries.
+ *  @example
+ * // Apply plugin to a schema
+ * const userSchema = new Schema({
+ *   name: String,
+ *   email: String,
+ *   isDeleted: { type: Boolean, default: false }
+ * });
+ * userSchema.plugin(excludeDeletedPlugin);
+ *
+ * @note
+ * - Ensure` documents have an `isDeleted` field (preferably boolean)
+ *
+ * @bypass
+ * Use `includeDeleted: true` in query options to bypass this filter and include deleted documents.
+ *
+ * For populate operations, set `includeDeleted: true` in the populate options
+ */
+
+export function excludeDeletedPlugin(schema: Schema) {
+  // Apply to .find()
+  schema.pre(
+    ["find", "findOne", "findOneAndUpdate", "countDocuments"],
+    function () {
+      // Check if includeDeleted option is set
+      if (!this.getOptions().includeDeleted) {
+        this.where({ isDeleted: false });
+      }
     }
+  );
+
+  // Apply to .findById()
+  schema.pre("findOne", function () {
+    const query = this.getQuery();
+    if (query._id && !this.getOptions().includeDeleted) {
+      this.where({ isDeleted: false });
+    }
+  });
+
+  // Optional: exclude from .aggregate()
+  schema.pre("aggregate", function () {
+    if (!this.options.includeDeleted) {
+      this.pipeline().unshift({ $match: { isDeleted: false } });
+    }
+  });
 }
 
 export interface IMetricsQueryOptions {

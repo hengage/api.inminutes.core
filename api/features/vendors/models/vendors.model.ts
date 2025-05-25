@@ -15,8 +15,8 @@ import {
   encryptValue,
   generateUniqueString,
   toLowerCaseSetter,
+  excludeDeletedPlugin,
 } from "../../../utils";
-import { excludeDeletedPlugin } from "../../../utils/excludeDeleted.utils";
 
 const vendorSchema = new Schema<IVendorDocument>(
   {
@@ -80,7 +80,7 @@ const vendorSchema = new Schema<IVendorDocument>(
     },
     isDeleted: { type: Boolean, default: false },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 vendorSchema.plugin(paginate);
@@ -99,5 +99,5 @@ vendorSchema.pre("save", async function (next) {
 
 export const Vendor = model<IVendorDocument, PaginateModel<IVendorDocument>>(
   DB_SCHEMA.VENDOR,
-  vendorSchema,
+  vendorSchema
 );
