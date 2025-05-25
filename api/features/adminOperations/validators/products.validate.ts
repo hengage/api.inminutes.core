@@ -22,6 +22,7 @@ export class ValidateAdminOpsProducts {
             minPrice: joi.string().optional().allow('').label("Min Price"),
             status: joi.string().optional().allow('').label("Status"),
             category: joi.string().optional().allow("").label("Category"),
+            subCategory: joi.string().optional().allow("").label("Sub Category"),
             vendor: joi.string().optional().allow("").label("Vendor"),
             sort: joi.string().valid(...Object.values(SORT_ORDER)).label("Sort")
                 .messages({ "any.only": Msg.ERROR_INVALID_SORT_ORDER() }),
