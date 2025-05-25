@@ -85,9 +85,10 @@ productSubCategorySchema.index(
   { name: 1, category: 1 }, 
   { unique: true }
 );
-
+productSchema.index({ subCategory: 1 });
 productSchema.plugin(paginate);
 productSchema.plugin(excludeDeletedPlugin);
+
 const wishListSchema = new Schema<IWishListDocument>({
   _id: {
     type: String,

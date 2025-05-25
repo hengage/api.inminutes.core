@@ -31,7 +31,7 @@ export interface GetCategoriesQuery {
   }
 
 export interface CategorySubCategoriesResponse {
-    data: IProductSubCategoryDocument['name' | 'id'][];
+    subCategories: IProductSubCategoryDocument['name' | 'id'][];
     totalSubCategories: number;
     category: IProductCategoryDocument['name' | 'id'];
 }

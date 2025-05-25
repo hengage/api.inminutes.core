@@ -95,31 +95,29 @@ export class AdminOpsForProductsService {
         Msg.ERROR_NOT_FOUND("category", categoryId),
       );
     }
-  
-    const subCategories = await this.productSubCategoryModel.aggregate([
-      { $match: { category: categoryId } },
-      {
-        $lookup: {
-          from: DB_SCHEMA.PRODUCT,
-          localField: "_id",
-          foreignField: "subCategory",
-          as: "products"
-        }
-      },
-      {
-        $project: {
-          _id: 1,
-          name: 1,
-          productCount: { $size: "$products" }
-        }
-      },
-      { $sort: { name: 1 } } 
-    ]);
+
+    const subCategories = await this.productSubCategoryModel
+    .find({ category: categoryId })
+    .select('_id name')
+    .lean()
+    .exec();
+
+    const subCategoriesWithCounts = await Promise.all(
+      subCategories.map(async (subCat) => {
+        const count = await this.productModel.countDocuments({ 
+          subCategory: subCat._id 
+        });
+        return {
+          ...subCat,
+          productCount: count
+        };
+      })
+    );
   
     return {
       category,
-      data: subCategories,
-      totalSubCategories: subCategories.length,
+      subCategories: subCategoriesWithCounts,
+      totalSubCategories: subCategoriesWithCounts.length,
     };
   }
 

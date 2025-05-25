@@ -85,7 +85,7 @@ export class AdminOpsForProductsController {
       handleSuccessResponse(
         res,
         HTTP_STATUS_CODES.OK,
-        { subCategories },
+        subCategories,
       );
     } catch (error: unknown) {
       console.log("Error fetching sub categories: ", error);
