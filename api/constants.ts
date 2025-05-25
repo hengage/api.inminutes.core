@@ -140,6 +140,7 @@ export enum DB_SCHEMA {
   VENDOR_SUB_CATEGORY = "VendorSubCategory",
   PRODUCT = "Product",
   PRODUCT_CATEGORY = "ProductCategory",
+  PRODUCT_SUB_CATEGORY = "ProductSubCategory",
   WISHLIST = "WishList", //Todo: use lowercase 'l' for wishlist
   ERRAND = "Errand",
   ERRAND_PACKAGE_TYPE = "ErrandPackageType",

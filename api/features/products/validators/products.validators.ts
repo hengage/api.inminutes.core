@@ -11,6 +11,7 @@ class ValidateProducts {
       quantity: Joi.number().required().label("Quantity"),
       cost: Joi.string().required().label("Cost"),
       category: Joi.string().required().label("Category"),
+      subCategory: Joi.string(),
       addOns: Joi.array().label("Add Ons"),
       tags: Joi.array().label("Tags"),
     });

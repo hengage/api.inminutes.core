@@ -7,6 +7,12 @@ export interface IProductCategoryDocument extends Document {
   name: string;
 }
 
+export interface IProductSubCategoryDocument extends Document {
+  _id: string;
+  name: string;
+  category: IProductCategoryDocument;
+}
+
 export interface IProductDocument extends Document {
   _id: string;
   name: string;
@@ -16,7 +22,8 @@ export interface IProductDocument extends Document {
   cost: string;
   tags: string[];
   addOns: [{ item: string; cost: string }];
-  category: IProductCategoryDocument;
+  category: IProductCategoryDocument['_id'];
+  subCategory: IProductSubCategoryDocument['_id'];
   vendor: IVendorDocument["_id"];
   status: PRODUCT_STATUS;
   isDeleted: boolean;
@@ -28,7 +35,8 @@ export interface IAddProductData extends Document {
   description: string;
   quantity: number;
   cost: string;
-  category: string;
+  category: IProductCategoryDocument['_id'];
+  subCategory: IProductSubCategoryDocument['_id'];
   tags: Array<string>;
   addOns: Array<string>;
 }

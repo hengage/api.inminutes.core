@@ -7,6 +7,7 @@ import { generateUniqueString } from "../../../utils";
 import {
   IProductCategoryDocument,
   IProductDocument,
+  IProductSubCategoryDocument,
   IWishListDocument,
 } from "../products.interface";
 import { excludeDeletedPlugin } from "../../../utils/excludeDeleted.utils";
@@ -21,6 +22,25 @@ const productCategorySchema = new Schema<IProductCategoryDocument>(
       type: String,
       required: true,
       unique: true,
+    },
+  },
+  { timestamps: true },
+);
+
+const productSubCategorySchema = new Schema<IProductSubCategoryDocument>(
+  {
+    _id: {
+      type: String,
+      default: () => generateUniqueString(5),
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    category: { 
+      type: String, 
+      required: true, 
+      ref: DB_SCHEMA.PRODUCT_CATEGORY 
     },
   },
   { timestamps: true },
@@ -48,6 +68,7 @@ const productSchema = new Schema<IProductDocument>(
       },
     ],
     category: { type: String, required: true, ref: DB_SCHEMA.PRODUCT_CATEGORY },
+    subCategory: { type: String, ref: DB_SCHEMA.PRODUCT_SUB_CATEGORY },
     vendor: { type: String, required: true, ref: DB_SCHEMA.VENDOR },
     status: {
       type: String,
@@ -59,8 +80,15 @@ const productSchema = new Schema<IProductDocument>(
   { timestamps: true },
 );
 
+
+productSubCategorySchema.index(
+  { name: 1, category: 1 }, 
+  { unique: true }
+);
+productSchema.index({ subCategory: 1 });
 productSchema.plugin(paginate);
 productSchema.plugin(excludeDeletedPlugin);
+
 const wishListSchema = new Schema<IWishListDocument>({
   _id: {
     type: String,
@@ -74,6 +102,12 @@ export const ProductCategory = model<IProductCategoryDocument, PaginateModel<IPr
   DB_SCHEMA.PRODUCT_CATEGORY,
   productCategorySchema,
 );
+
+export const ProductSubCategory = model<IProductSubCategoryDocument, PaginateModel<IProductSubCategoryDocument>>(
+  DB_SCHEMA.PRODUCT_SUB_CATEGORY,
+  productSubCategorySchema,
+);
+
 export const Product = model<IProductDocument, PaginateModel<IProductDocument>>(
   DB_SCHEMA.PRODUCT,
   productSchema,
