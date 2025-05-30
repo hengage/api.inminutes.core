@@ -7,18 +7,18 @@ import { PaginateQueryOptions } from "../types";
 /**
  * Builds a MongoDB filter query based on the provided filter object.
  *
- * @param filter - An object containing the filter criteria.
+ * @param filterFields - An object containing the model fields to filter by.
  * @param filterQuery - An optional initial filter query object.
  * @param searchFields - An optional array of field names to search within.
  * @returns The updated filter query object.
  */
 export function buildFilterQuery<T>(
-  filter: Record<string, string>,
+  filterFields: Record<string, string>,
   filterQuery: FilterQuery<T> = {},
   searchFields?: string[]
 ): FilterQuery<T> {
   // Handle non-search filters
-  Object.entries(filter).forEach(([key, value]) => {
+  Object.entries(filterFields).forEach(([key, value]) => {
     if (value && key !== "searchQuery") {
       (filterQuery as any)[key] = value;
     }
@@ -26,11 +26,11 @@ export function buildFilterQuery<T>(
 
   // Handle search
   if (
-    filter.searchQuery &&
-    filter.searchQuery.length >= 2 &&
-    filter.searchQuery.length <= 20
+    filterFields.searchQuery &&
+    filterFields.searchQuery.length >= 2 &&
+    filterFields.searchQuery.length <= 20
   ) {
-    const sanitizedSearch = filter.searchQuery.replace(
+    const sanitizedSearch = filterFields.searchQuery.replace(
       /[.*+?^${}()|[\]\\]/g,
       "\\$&"
     );
