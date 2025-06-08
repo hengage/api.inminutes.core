@@ -22,7 +22,11 @@ export const AdminOpsForErrandsService = {
     const options = createPaginationOptions(
       page,
       {
-        select: "_id  pickupAddress type status createdAt",
+        select: "_id  pickupAddress type status createdAt deliveryFee",
+        populate: [
+          { path: "customer", select: "fullName" },
+          { path: "rider", select: "fullName" },
+        ],
         sort: { createdAt: filter.sort === SORT_ORDER.ASC ? 1 : -1 },
       },
       isNaN(limit) ? undefined : limit
