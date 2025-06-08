@@ -1,4 +1,5 @@
 import { ACCOUNT_STATUS } from "../../../constants";
+import { ICustomerDocument } from "../../customers";
 
 export interface GetCustomersFilter {
     searchQuery: string;
@@ -22,4 +23,9 @@ export interface CustomerMetricsRange {
 export interface CustomerMetricsResponse { 
     month: string; 
     totalCustomers: number 
+}
+
+export interface ICustomerDetailsWithStats extends Omit<ICustomerDocument, keyof Document> {
+    totalOrders: number;
+    totalErrands: number;
 }
