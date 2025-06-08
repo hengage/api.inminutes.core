@@ -3,8 +3,9 @@ import { Customer, ICustomerDocument } from "../../customers"
 import { FilterQuery } from "mongoose";
 import { addDateRangeFilter, buildFilterQuery, createPaginationOptions, HandleException, Msg } from "../../../utils";
 import { ACCOUNT_STATUS, DB_SCHEMA, HTTP_STATUS_CODES, ORDER_STATUS } from "../../../constants";
-import { Order } from "../../orders";
-import { CustomerMetricsRange, CustomerMetricsResponse, CustomerSummaryResponse, GetCustomersFilter } from "../interfaces/customer.interface";
+import { IOrdersDocument, Order } from "../../orders";
+import { CustomerMetricsRange, CustomerMetricsResponse, CustomerSummaryResponse, GetCustomersFilter, ICustomerDetailsWithStats } from "../interfaces/customer.interface";
+import { Errand } from "../../errand";
 
 export const AdminOpsForCustomersService = {
     async getList(page = 1, filter: GetCustomersFilter): Promise<PaginateResult<ICustomerDocument>> {
@@ -36,11 +37,15 @@ export const AdminOpsForCustomersService = {
         return transactions;
     },
 
-    async customerDetails(customerId: string): Promise<ICustomerDocument> {
-        const customer = await Customer.findById(customerId)
-            .select('-__v -password -deliveryAddressCoords')
-            .lean()
-            .exec()
+    async customerDetails(customerId: string): Promise<ICustomerDetailsWithStats> {
+        const [totalOrders, totalErrands, customer] = await Promise.all([
+            Order.countDocuments({ customer: customerId }),
+            Errand.countDocuments({ customer: customerId }),
+            Customer.findById(customerId)
+                .select('-__v -password -deliveryAddressCoords')
+                .lean()
+                .exec()
+        ]);
 
         if (!customer) {
             throw new HandleException(
@@ -48,7 +53,11 @@ export const AdminOpsForCustomersService = {
                 Msg.ERROR_NOT_FOUND('customer', customerId
                 ));
         }
-        return customer
+        return {
+            ...customer,
+            totalOrders,
+            totalErrands
+        };
     },
 
     /**
