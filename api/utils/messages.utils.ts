@@ -76,6 +76,10 @@ export const Msg = {
   ERROR_INVALID_ACCOUNT_STATUS() {
     return `Status must be one of: ${Object.values(ACCOUNT_STATUS).join(", ")}`;
   },
+
+  ERROR_FIELD_MUST_BE_TRUE(field: string) {
+    return `${field} must either be true or removed from the request`;
+  },
   ERROR_INVALID_ORDER_STATUS() {
     return "Invalid order status";
   },

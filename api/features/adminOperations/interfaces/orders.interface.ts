@@ -12,4 +12,5 @@ export interface GetOrdersQueryParams {
   vendor?: string;
   type?: ORDER_TYPE;
   sort?: SORT_ORDER;
+  onlyOngoing?: boolean; // Optional filter for ongoing orders
 }

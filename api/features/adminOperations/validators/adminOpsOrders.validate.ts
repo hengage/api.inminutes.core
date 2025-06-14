@@ -29,6 +29,11 @@ export class ValidateAdminOpsOrders {
         .string()
         .valid(...Object.values(SORT_ORDER))
         .messages({ "any.only": Msg.ERROR_INVALID_SORT_ORDER() }),
+      onlyOngoing: joi
+        .boolean()
+        .optional()
+        .valid(true)
+        .messages({ "any.only": Msg.ERROR_FIELD_MUST_BE_TRUE("{{#label}}") }),
     });
 
     validateSchema(schema, getListData);

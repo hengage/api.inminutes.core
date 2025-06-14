@@ -44,13 +44,24 @@ export const AdminOpsForOrdersService = {
     if (filter) {
       const { fromDate, toDate, ...otherFilters } = filter;
 
+      // Filter for only ongoing orders filter if requested
+      if (filter.onlyOngoing) {
+        console.log("Filtering for ongoing orders");
+        filterQuery.status = {
+          $nin: [ORDER_STATUS.DELIVERED, ORDER_STATUS.CANCELLED],
+        };
+      }
+
       // Handle date range
       addDateRangeFilter(filterQuery, fromDate, toDate);
 
-      const queryFilters: Record<string, string> = excludeObjectKeys(
-        otherFilters,
-        ["sort", "page", "limit"]
-      );
+      const queryFilters: Record<string, string | number | boolean> =
+        excludeObjectKeys(otherFilters, [
+          "sort",
+          "page",
+          "limit",
+          "onlyOngoing",
+        ]);
 
       const searchFields = ["_id"];
       buildFilterQuery(queryFilters, filterQuery, searchFields);
