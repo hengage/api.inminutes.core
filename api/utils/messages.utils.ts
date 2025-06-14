@@ -42,7 +42,7 @@ export const Msg = {
   ERROR_EMAIL_TAKEN(email: string) {
     return `Email ${email} already taken by an existing user.`;
   },
-  ERROR_RIDER_WALLET_NOT_FOUND(id: string){
+  ERROR_RIDER_WALLET_NOT_FOUND(id: string) {
     return `Rider wallet with id '${id}' not found`;
   },
   ERROR_NOT_FOUND(type: string, id: string) {
@@ -100,5 +100,5 @@ export const Msg = {
   },
   DELETE_SUCCESS(doc: string) {
     return `Successfully deleted ${doc}`;
-  }
+  },
 };

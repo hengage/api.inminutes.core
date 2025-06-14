@@ -13,7 +13,7 @@ import { PaginateQueryOptions } from "../types";
  * @returns The updated filter query object.
  */
 export function buildFilterQuery<T>(
-  filterFields: Record<string, string>,
+  filterFields: Record<string, string | number | boolean>,
   filterQuery: FilterQuery<T> = {},
   searchFields?: string[]
 ): FilterQuery<T> {
@@ -25,15 +25,10 @@ export function buildFilterQuery<T>(
   });
 
   // Handle search
-  if (
-    filterFields.searchQuery &&
-    filterFields.searchQuery.length >= 2 &&
-    filterFields.searchQuery.length <= 20
-  ) {
-    const sanitizedSearch = filterFields.searchQuery.replace(
-      /[.*+?^${}()|[\]\\]/g,
-      "\\$&"
-    );
+  const { searchQuery } = filterFields as { searchQuery: string };
+
+  if (searchQuery && searchQuery.length >= 2 && searchQuery.length <= 20) {
+    const sanitizedSearch = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const searchRegex = new RegExp(sanitizedSearch, "i");
     (filterQuery as any).$or = searchFields!.map((field) => ({
       [field]: searchRegex,
