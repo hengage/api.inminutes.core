@@ -37,14 +37,14 @@ export const AdminOpsForOrdersService = {
           { path: "rider", select: "fullName displayName email" },
         ],
       },
-      limit
+      isNaN(limit) ? undefined : limit
     );
 
     const filterQuery: FilterQuery<IOrdersDocument> = {};
     if (filter) {
       const { fromDate, toDate, ...otherFilters } = filter;
 
-      // Filter for only ongoing orders filter if requested
+      // Filter for only ongoing orders if requested
       if (filter.onlyOngoing) {
         filterQuery.status = {
           $nin: [ORDER_STATUS.DELIVERED, ORDER_STATUS.CANCELLED],
