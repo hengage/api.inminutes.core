@@ -127,16 +127,6 @@ export const AdminOpsForOrdersService = {
         select: "fullName",
         options: { lean: true },
       })
-      .populate({
-        path: DB_SCHEMA.CUSTOMER.toLowerCase(),
-        select: "fullName",
-        options: { lean: true },
-      })
-      .populate({
-        path: DB_SCHEMA.VENDOR.toLowerCase(),
-        select: "businessName businessLogo",
-        options: { lean: true },
-      })
       .lean();
     return updatedOrder;
   },
