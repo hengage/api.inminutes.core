@@ -1,17 +1,19 @@
 import { Request, Response } from "express";
+import { AdminOpsForErrandsService } from "../services/errands.services";
 import {
-  AdminOpsForErrandsService,
-  GetErrandsFilter,
-} from "../services/errands.services";
-import { handleErrorResponse, Msg } from "../../../utils";
-import { handleSuccessResponse } from "../../../utils/response.utils";
+  handleErrorResponse,
+  Msg,
+  handleSuccessResponse,
+} from "../../../utils";
 import { HTTP_STATUS_CODES } from "../../../constants";
+import { GetErrandsQueryParams } from "../interfaces/errands.interface";
 
 export const AdminOpsForErrandsController = {
   async getList(req: Request, res: Response) {
     try {
-      const filter: GetErrandsFilter = req.query;
-      const errands = await AdminOpsForErrandsService.getList(filter);
+      const errands = await AdminOpsForErrandsService.getList(
+        req.query as GetErrandsQueryParams
+      );
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { errands });
     } catch (error) {
       const { statusCode, errorJSON } = handleErrorResponse(error);

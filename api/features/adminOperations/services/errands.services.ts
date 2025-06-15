@@ -1,5 +1,5 @@
 import { FilterQuery, PaginateResult } from "mongoose";
-import { HTTP_STATUS_CODES, ORDER_TYPE, SORT_ORDER } from "../../../constants";
+import { HTTP_STATUS_CODES, SORT_ORDER } from "../../../constants";
 import {
   addDateRangeFilter,
   buildFilterQuery,
@@ -11,10 +11,11 @@ import {
 import { Errand, ErrandPackageType } from "../../errand/";
 import { IErrandDocument } from "../../errand";
 import { IErrandPackageTypeDocument } from "../../errand/errand.interface";
+import { GetErrandsQueryParams } from "../interfaces/errands.interface";
 
 export const AdminOpsForErrandsService = {
   async getList(
-    filter: GetErrandsFilter
+    filter: GetErrandsQueryParams
   ): Promise<PaginateResult<IErrandDocument>> {
     const page = filter.page ? Number(filter.page) : 1;
     const limit = Number(filter.limit);
@@ -38,13 +39,13 @@ export const AdminOpsForErrandsService = {
 
       addDateRangeFilter(filterQuery, fromDate, toDate);
 
-      const recordFilter: Record<string, string> = excludeObjectKeys(
+      const queryFilters: Record<string, string> = excludeObjectKeys(
         otherFilters,
         ["sort", "page", "limit"]
       );
 
       const searchFields = ["_id"];
-      buildFilterQuery(recordFilter, filterQuery, searchFields);
+      buildFilterQuery(queryFilters, filterQuery, searchFields);
     }
 
     const errands = await Errand.paginate(filterQuery, options);
@@ -125,16 +126,3 @@ export const AdminOpsForErrandsService = {
     }
   },
 };
-
-export interface GetErrandsFilter {
-  fromDate?: string;
-  toDate?: string;
-  status?: string;
-  customer?: string;
-  rider?: string;
-  searchQuery?: string;
-  sort?: SORT_ORDER;
-  type?: ORDER_TYPE;
-  page?: number | string;
-  limit?: number | string;
-}
