@@ -3,7 +3,7 @@ import { capitalize, handleErrorResponse } from "../../../utils";
 import { AdminOpsForProductsService } from "../services/products.services";
 import { handleSuccessResponse } from "../../../utils/response.utils";
 import { HTTP_STATUS_CODES } from "../../../constants";
-import { ValidateAdminOpsProducts } from "../validators/products.validate";
+import { ValidateAdminOpsProducts } from "../validators/adminOpsProducts.validate";
 import {
   GetProductRangeFilter,
   ListProductsQueryParams,

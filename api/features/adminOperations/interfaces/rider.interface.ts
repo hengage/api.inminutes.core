@@ -1,15 +1,18 @@
-import { ACCOUNT_STATUS } from "../../../constants";
+import { ACCOUNT_STATUS, SORT_ORDER } from "../../../constants";
 
-export interface GetRidersFilter extends GetRiderRangeFilter {
-  searchQuery?: string;
+export interface GetRidersQueryparams extends GetRiderRangeFilter {
   vehicleType?: string;
-  currentlyWorking?: string;
-  accountStatus: ACCOUNT_STATUS;
+  currentlyWorking?: boolean;
+  accountStatus?: ACCOUNT_STATUS;
+  searchQuery?: string;
+  sortOrder?: SORT_ORDER;
+  page?: number | string;
+  limit?: number | string;
 }
 
 export interface GetRiderRangeFilter {
-  startDate?: String;
-  endDate?: String;
+  fromDate?: string;
+  toDate?: string;
 }
 
 export interface RiderSummaryResponse {

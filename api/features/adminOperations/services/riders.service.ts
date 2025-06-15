@@ -14,41 +14,46 @@ import {
   USER_APPROVAL_STATUS,
   USER_TYPE,
 } from "../../../constants";
-import { formatPhoneNumberforDB, HandleException, Msg } from "../../../utils";
+import {
+  excludeObjectKeys,
+  formatPhoneNumberforDB,
+  HandleException,
+  Msg,
+} from "../../../utils";
 import { ClientSession } from "mongoose";
 import { Wallet } from "../../wallet";
 import { IWalletDocument } from "../../wallet/wallet.interface";
 import {
   GetRiderRangeFilter,
-  GetRidersFilter,
+  GetRidersQueryparams,
   RiderSummaryResponse,
 } from "../interfaces/rider.interface";
 import { IOrdersDocument, Order } from "../../orders";
 
 export const adminOpsRidersService = {
   async getRiders(
-    page = 1,
-    filter: GetRidersFilter,
-    limit = 10
+    filter: GetRidersQueryparams
   ): Promise<PaginateResult<IRiderDocument>> {
+    const page = Number(filter.page);
+    const limit = Number(filter.limit);
+
     const options = createPaginationOptions(
       {
         select:
           "_id fullName phoneNumber photo email displayName currentlyWorking",
       },
-      page,
-      limit
+      isNaN(page) ? undefined : page,
+      isNaN(limit) ? undefined : limit
     );
 
     const filterQuery: FilterQuery<IRiderDocument> = {};
     if (filter) {
-      addDateRangeFilter(
-        filterQuery,
-        filter.startDate as string,
-        filter.endDate as string
-      );
-      const queryFilters: Record<string, string> = Object.fromEntries(
-        Object.entries(filter).filter(([, v]) => v !== undefined)
+      const { fromDate, toDate, ...otherFilters } = filter;
+      addDateRangeFilter(filterQuery, fromDate, toDate);
+
+      const queryFilters: Partial<GetRidersQueryparams> = excludeObjectKeys(
+        otherFilters,
+        ["page", "limit", "sortOrder"]
       );
 
       const searchFields = ["fullName", "phoneNumber", "email"];
@@ -151,7 +156,7 @@ export const adminOpsRidersService = {
 
   async getTopList(
     page = 1,
-    filter: GetRidersFilter,
+    filter: GetRidersQueryparams,
     limit = 5
   ): Promise<PaginateResult<IRiderDocument>> {
     const options = createPaginationOptions(
@@ -164,10 +169,10 @@ export const adminOpsRidersService = {
     if (filter) {
       addDateRangeFilter(
         filterQuery,
-        filter.startDate as string,
-        filter.endDate as string
+        filter.fromDate as string,
+        filter.toDate as string
       );
-      const recordFilter: Record<string, string> = Object.fromEntries(
+      const recordFilter: Partial<GetRidersQueryparams> = Object.fromEntries(
         Object.entries(filter).filter(([, v]) => v !== undefined)
       );
 
@@ -264,8 +269,8 @@ export const adminOpsRidersService = {
       {
         $match: {
           createdAt: {
-            $gte: data.startDate,
-            $lte: data.endDate,
+            $gte: data.fromDate,
+            $lte: data.toDate,
           },
         },
       },
