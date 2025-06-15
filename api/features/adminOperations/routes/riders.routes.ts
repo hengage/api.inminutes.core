@@ -15,10 +15,18 @@ export class AdminOpsRidersRoutes {
   async initializeRoutes() {
     this.router.route("/").get(this.adminOpsForRidersController.getRiders);
 
-    this.router.route("/top").get(this.adminOpsForRidersController.getTopRiders);
-    this.router.route("/:riderId/wallet").get(this.adminOpsForRidersController.getRiderWallet);
-    this.router.route("/summary").get(this.adminOpsForRidersController.getRidersSummary);
-    this.router.route("/metrics").get(this.adminOpsForRidersController.getRiderMetrics);
+    this.router
+      .route("/top")
+      .get(this.adminOpsForRidersController.getTopRiders);
+    this.router
+      .route("/:riderId/wallet")
+      .get(this.adminOpsForRidersController.getRiderWallet);
+    this.router
+      .route("/summary")
+      .get(this.adminOpsForRidersController.getRidersSummary);
+    this.router
+      .route("/metrics")
+      .get(this.adminOpsForRidersController.getRiderMetrics);
 
     this.router
       .route("/:riderId")
@@ -30,8 +38,11 @@ export class AdminOpsRidersRoutes {
       .route("/:riderId/approval")
       .patch(this.adminOpsForRidersController.setApprovalStatus);
     this.router.route("/").post(this.adminOpsForRidersController.createRider);
-    this.router.route("/:riderId").put(this.adminOpsForRidersController.updateRider);
-    this.router.route("/:riderId").delete(this.adminOpsForRidersController.deleteRider);
-    this.router.route("/:riderId/deliveries").get(this.adminOpsForRidersController.getRiderDeliveries);
+    this.router
+      .route("/:riderId")
+      .put(this.adminOpsForRidersController.updateRider);
+    this.router
+      .route("/:riderId")
+      .delete(this.adminOpsForRidersController.deleteRider);
   }
 }
