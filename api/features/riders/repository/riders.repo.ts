@@ -9,7 +9,13 @@ import {
 } from "../../../utils";
 import { Rider } from "../models/riders.model";
 import { ICreateRiderData, IRiderDocument } from "../riders.interface";
-import { ACCOUNT_STATUS, DB_SCHEMA, Events, HTTP_STATUS_CODES, USER_APPROVAL_STATUS } from "../../../constants";
+import {
+  ACCOUNT_STATUS,
+  DB_SCHEMA,
+  Events,
+  HTTP_STATUS_CODES,
+  USER_APPROVAL_STATUS,
+} from "../../../constants";
 
 /**
 Repository for rider-related database operations.
@@ -27,7 +33,7 @@ export class RidersRepository {
     if (rider) {
       throw new HandleException(
         HTTP_STATUS_CODES.CONFLICT,
-        Msg.ERROR_EMAIL_TAKEN(email),
+        Msg.ERROR_EMAIL_TAKEN(email)
       );
     }
 
@@ -50,7 +56,7 @@ export class RidersRepository {
       throw new HandleException(
         HTTP_STATUS_CODES.CONFLICT,
         `Looks like you already have a rider account, ` +
-        `please try to login instead`,
+          `please try to login instead`
       );
     }
 
@@ -67,7 +73,7 @@ export class RidersRepository {
     const rider = await Rider.create({
       ...riderData,
       phoneNumber: formattedPhoneNumber,
-      approvalStatus: USER_APPROVAL_STATUS.PENDING
+      approvalStatus: USER_APPROVAL_STATUS.PENDING,
     });
 
     emitEvent.emit(Events.CREATE_WALLET, {
@@ -91,13 +97,13 @@ export class RidersRepository {
   async login(loginData: { email: string; password: string }) {
     const { email, password } = loginData;
     const rider = await Rider.findOne({ email }).select(
-      "email phoneNumber password",
+      "email phoneNumber password"
     );
 
     if (!rider) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_INVALID_LOGIN_CREDENTIALS(),
+        Msg.ERROR_INVALID_LOGIN_CREDENTIALS()
       );
     }
 
@@ -105,14 +111,17 @@ export class RidersRepository {
     if (!passwordsMatch) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_INVALID_LOGIN_CREDENTIALS(),
+        Msg.ERROR_INVALID_LOGIN_CREDENTIALS()
       );
     }
 
-    if(rider.approvalStatus != USER_APPROVAL_STATUS.APPROVED || rider.accountStatus != ACCOUNT_STATUS.ACTIVE){
+    if (
+      rider.approvalStatus != USER_APPROVAL_STATUS.APPROVED ||
+      rider.accountStatus != ACCOUNT_STATUS.ACTIVE
+    ) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_NOT_ACTIVE(),
+        Msg.ERROR_NOT_ACTIVE()
       );
     }
 
@@ -135,7 +144,7 @@ export class RidersRepository {
     if (!rider) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_RIDER_NOT_FOUND(id),
+        Msg.ERROR_RIDER_NOT_FOUND(id)
       );
     }
 
@@ -155,7 +164,7 @@ export class RidersRepository {
       _id: riderId,
       accountStatus: ACCOUNT_STATUS.ACTIVE,
       approvalStatus: USER_APPROVAL_STATUS.APPROVED,
-    })
+    });
 
     if (selectFields) {
       query.select(selectFields);
@@ -169,9 +178,8 @@ export class RidersRepository {
         Msg.ERROR_NOT_FOUND(DB_SCHEMA.RIDER, riderId)
       );
     }
-    return rider
+    return rider;
   }
-
 
   /**
   @async
@@ -189,7 +197,7 @@ export class RidersRepository {
     if (!rider) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_RIDER_NOT_FOUND(riderId),
+        Msg.ERROR_RIDER_NOT_FOUND(riderId)
       );
     }
     rider.location.coordinates = coordinates;
@@ -209,6 +217,7 @@ export class RidersRepository {
     const { coordinates, distanceInKM } = params;
     // const origin = convertLatLngToCell(coordinates);
     // const riders = await Rider.find({ h3Index: origin }).select("_id fullName");
+    console.log({ coordinates, distanceInKM });
 
     const riders = await Rider.aggregate([
       {
@@ -217,22 +226,32 @@ export class RidersRepository {
           distanceField: "distance",
           maxDistance: distanceInKM * 1000, // convert kilometers to meters
           spherical: true,
+          distanceMultiplier: 0.001, // convert to kilometers for result
+          includeLocs: "location",
+          query: {
+            currentlyWorking: true,
+            isDeleted: false,
+            accountStatus: ACCOUNT_STATUS.ACTIVE,
+            approvalStatus: USER_APPROVAL_STATUS.APPROVED,
+          },
         },
-      },
-      {
-        $match: { currentlyWorking: true },
       },
       {
         $project: {
           _id: 1,
-          firstName: 1,
+          fullName: 1,
           lastName: 1,
           phoneNumber: 1,
-          distance: 1,
+          distanceText: {
+            $concat: [
+              { $toString: { $round: ["$distance", 1] } },
+              " kilometers away from pickup location",
+            ],
+          },
         },
       },
       {
-        $limit: 10,
+        $limit: 15,
       },
     ]);
 
@@ -258,7 +277,7 @@ export class RidersRepository {
       {
         $set: { currentlyWorking },
       },
-      { new: true },
+      { new: true }
     )
       .select("currentlyWorking")
       .exec();
@@ -274,7 +293,7 @@ export class RidersRepository {
   */
   updateRating = async (
     ratingData: { riderId: string; rating: number },
-    session: ClientSession,
+    session: ClientSession
   ) => {
     const { riderId, rating } = ratingData;
     try {
@@ -285,7 +304,7 @@ export class RidersRepository {
       if (!rider) {
         throw new HandleException(
           HTTP_STATUS_CODES.NOT_FOUND,
-          Msg.ERROR_RIDER_NOT_FOUND(riderId),
+          Msg.ERROR_RIDER_NOT_FOUND(riderId)
         );
       }
 
@@ -294,10 +313,7 @@ export class RidersRepository {
       await rider.save({ session });
     } catch (error: unknown) {
       if (error instanceof HandleException) {
-        throw new HandleException(
-          error.status,
-          error.message
-        );
+        throw new HandleException(error.status, error.message);
       }
       throw new HandleException(
         HTTP_STATUS_CODES.SERVER_ERROR,

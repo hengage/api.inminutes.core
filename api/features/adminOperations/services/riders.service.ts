@@ -19,7 +19,7 @@ import {
   createPaginationOptions,
 } from "../../../utils/db.utils";
 import { Order } from "../../orders";
-import { IRiderDocument, Rider } from "../../riders";
+import { IRiderDocument, Rider, RidersRepository } from "../../riders";
 import { Wallet } from "../../wallet";
 import { IWalletDocument } from "../../wallet/wallet.interface";
 import {
@@ -27,8 +27,10 @@ import {
   GetRidersQueryparams,
   RiderSummaryResponse,
 } from "../interfaces/rider.interface";
+import { Coordinates } from "../../../types";
 
 export const adminOpsRidersService = {
+  ridersRepo: new RidersRepository(),
   async getRiders(
     filter: GetRidersQueryparams
   ): Promise<PaginateResult<IRiderDocument>> {
@@ -304,6 +306,18 @@ export const adminOpsRidersService = {
     ]);
 
     return riderMetrics;
+  },
+
+  async findNearbyRiders(params: {
+    coordinates: Coordinates;
+    distanceInKM: number;
+  }): Promise<IRiderDocument[]> {
+    const { coordinates, distanceInKM } = params;
+    const riders = await this.ridersRepo.findNearbyRiders({
+      coordinates,
+      distanceInKM,
+    });
+    return riders;
   },
 
   async deleteRider(riderId: string, session?: ClientSession) {
