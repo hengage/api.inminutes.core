@@ -13,6 +13,7 @@ import {
   buildFilterQuery,
   capitalize,
   createPaginationOptions,
+  excludeObjectKeys,
 } from "../../../utils";
 import { Product, ProductCategory, ProductSubCategory } from "../../products";
 import {
@@ -24,10 +25,10 @@ import { PaginateResult } from "mongoose";
 import { Order } from "../../orders";
 import {
   GetProductRangeFilter,
-  GetProductsFilter,
   ProductSummaryResponse,
   GetCategoriesQuery,
   CategorySubCategoriesResponse,
+  ListProductsQueryParams,
 } from "../interfaces/product.interface";
 import { addPriceRangeFilter } from "../../../utils/db.utils";
 import { PipelineStage } from "mongoose";
@@ -166,41 +167,38 @@ export class AdminOpsForProductsService {
   }
 
   async getList(
-    page = 1,
-    limit: number,
-    filter: GetProductsFilter
+    filter: ListProductsQueryParams
   ): Promise<PaginateResult<IProductDocument>> {
+    const page = filter.page ? Number(filter.page) : 1;
+    const limit = Number(filter.limit);
+
     const options = createPaginationOptions(
-      page,
       {
-        select:
-          "_id image name description price stock status cost createdAt category vendor",
-        sort: { createdAt: filter.sort === SORT_ORDER.ASC ? 1 : -1 },
+        select: "_id image name price  status cost category vendor",
+        sort: { name: filter.sortOrder === SORT_ORDER.DESC ? -1 : 1 },
         populate: [
           { path: "category", select: "name" },
           { path: "vendor", select: "businessName" },
         ],
       },
-      limit
+      isNaN(page) ? undefined : page,
+      isNaN(limit) ? undefined : limit
     );
 
     const filterQuery: FilterQuery<IProductDocument> = {};
     if (filter) {
       const { fromDate, toDate, minPrice, maxPrice, ...otherFilters } = filter;
 
-      // Handle date range
       addDateRangeFilter(filterQuery, fromDate, toDate);
-
       addPriceRangeFilter(filterQuery, minPrice, maxPrice);
-      // Handle other filters
-      const recordFilter: Record<string, string> = Object.fromEntries(
-        Object.entries(otherFilters).filter(
-          ([key, v]) =>
-            v !== undefined && !["sort", "page", "limit"].includes(key)
-        )
-      );
+
+      const queryFilters = excludeObjectKeys(otherFilters, [
+        "sortOrder",
+        "page",
+        "limit",
+      ]);
       const searchFields = ["_id", "name"];
-      buildFilterQuery(recordFilter, filterQuery, searchFields);
+      buildFilterQuery(queryFilters, filterQuery, searchFields);
     }
     const products = await this.productModel.paginate(filterQuery, options);
     return products;
@@ -251,19 +249,6 @@ export class AdminOpsForProductsService {
     });
 
     return { approved, pending, rejected };
-  }
-
-  async pendingProducts(page = 1): Promise<PaginateResult<IProductDocument>> {
-    const options = createPaginationOptions(page, {
-      select: "_id name description price stock status createdAt",
-    });
-
-    const query: FilterQuery<IProductDocument> = {
-      status: PRODUCT_STATUS.PENDING,
-    };
-
-    const products = await this.productModel.paginate(query, options);
-    return products;
   }
 
   async getCategories(query: GetCategoriesQuery): Promise<{
@@ -321,16 +306,16 @@ export class AdminOpsForProductsService {
   }
 
   async getTopList(
-    page = 1,
-    filter: GetProductsFilter,
-    limit = 5
+    filter: ListProductsQueryParams
   ): Promise<PaginateResult<IProductDocument>> {
+    const page = filter.page ? Number(filter.page) : 1;
+    const limit = Number(filter.limit);
     const options = createPaginationOptions(
-      page,
       {
         select: "_id name description price stock status createdAt",
-        sort: { createdAt: filter.sort === SORT_ORDER.ASC ? 1 : -1 },
+        sort: { createdAt: filter.sortOrder === SORT_ORDER.ASC ? 1 : -1 },
       },
+      page,
       limit
     );
 
@@ -341,15 +326,13 @@ export class AdminOpsForProductsService {
       // Handle date range
       addDateRangeFilter(filterQuery, fromDate, toDate);
 
-      // Handle other filters
-      const recordFilter: Record<string, string> = Object.fromEntries(
-        Object.entries(otherFilters).filter(
-          ([key, v]) => v !== undefined && key !== "sort" && key !== "page"
-        )
-      );
+      const queryFilters = excludeObjectKeys(otherFilters, [
+        "sortOrder",
+        "page",
+      ]);
 
       const searchFields = ["_id", "name"];
-      buildFilterQuery(recordFilter, filterQuery, searchFields);
+      buildFilterQuery(queryFilters, filterQuery, searchFields);
     }
 
     const topProducts = await Order.aggregate([
@@ -384,7 +367,9 @@ export class AdminOpsForProductsService {
       },
     ]);
 
-    const productIds = topProducts.map((product: any) => product._id);
+    const productIds = topProducts.map(
+      (product: IProductDocument) => product._id
+    );
     const totalDeliveriesMap = new Map(
       topProducts.map((c) => [c._id.toString(), c.totalDeliveries])
     );
@@ -395,13 +380,15 @@ export class AdminOpsForProductsService {
         options
       );
 
-    paginatedProducts.docs = paginatedProducts.docs.map((product: any) => {
-      const productObj = product.toObject();
-      return {
-        ...productObj,
-        totalDeliveries: totalDeliveriesMap.get(product._id.toString()) || 0,
-      };
-    });
+    paginatedProducts.docs = paginatedProducts.docs.map(
+      (product: IProductDocument) => {
+        const productObj = product.toObject();
+        return {
+          ...productObj,
+          totalDeliveries: totalDeliveriesMap.get(product._id.toString()) || 0,
+        };
+      }
+    );
     return paginatedProducts;
   }
 
@@ -439,7 +426,7 @@ export class AdminOpsForProductsService {
     };
   }
 
-  async getProductMetrics(data: GetProductRangeFilter): Promise<any[]> {
+  async getProductMetrics(data: GetProductRangeFilter) {
     const productMetrics = await this.productModel.aggregate([
       {
         $match: {
@@ -486,7 +473,7 @@ export class AdminOpsForProductsService {
   async deleteProduct(
     productId: string,
     session?: ClientSession
-  ): Promise<Boolean> {
+  ): Promise<void> {
     const product = await this.productModel.findByIdAndUpdate(
       productId,
       { isDeleted: true },
@@ -499,20 +486,18 @@ export class AdminOpsForProductsService {
         Msg.ERROR_RIDER_NOT_FOUND(productId)
       );
     }
-
-    return true;
   }
   async getTopCategories(
     page = 1,
-    filter: GetProductsFilter,
+    filter: ListProductsQueryParams,
     limit = 5
   ): Promise<PaginateResult<IProductCategoryDocument>> {
     const options = createPaginationOptions(
-      page,
       {
         select: "_id name createdAt",
-        sort: { createdAt: filter.sort === SORT_ORDER.ASC ? 1 : -1 },
+        sort: { createdAt: filter.sortOrder === SORT_ORDER.ASC ? 1 : -1 },
       },
+      page,
       limit
     );
 
@@ -523,15 +508,13 @@ export class AdminOpsForProductsService {
       // Handle date range
       addDateRangeFilter(filterQuery, fromDate, toDate);
 
-      // Handle other filters
-      const recordFilter: Record<string, string> = Object.fromEntries(
-        Object.entries(otherFilters).filter(
-          ([key, v]) => v !== undefined && key !== "sort" && key !== "page"
-        )
-      );
+      const queryFilters = excludeObjectKeys(otherFilters, [
+        "sortOrder",
+        "page",
+      ]);
 
       const searchFields = ["_id", "name"];
-      buildFilterQuery(recordFilter, filterQuery, searchFields);
+      buildFilterQuery(queryFilters, filterQuery, searchFields);
     }
 
     const topCategories = await Order.aggregate([
@@ -575,7 +558,9 @@ export class AdminOpsForProductsService {
       },
     ]);
 
-    const categoryIds = topCategories.map((category: any) => category._id);
+    const categoryIds = topCategories.map(
+      (category: IProductCategoryDocument) => category._id
+    );
     const totalDeliveriesMap = new Map(
       topCategories.map((c) => [c._id.toString(), c.totalDeliveries])
     );
@@ -586,13 +571,15 @@ export class AdminOpsForProductsService {
         options
       );
 
-    paginatedCategories.docs = paginatedCategories.docs.map((category: any) => {
-      const categoryObj = category.toObject();
-      return {
-        ...categoryObj,
-        totalDeliveries: totalDeliveriesMap.get(category._id.toString()) || 0,
-      };
-    });
+    paginatedCategories.docs = paginatedCategories.docs.map(
+      (category: IProductCategoryDocument) => {
+        const categoryObj = category.toObject();
+        return {
+          ...categoryObj,
+          totalDeliveries: totalDeliveriesMap.get(category._id.toString()) || 0,
+        };
+      }
+    );
 
     return paginatedCategories;
   }

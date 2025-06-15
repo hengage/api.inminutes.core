@@ -22,11 +22,9 @@ export class TransactionRepository {
   */
   async createHistory(
     createTransactionData: ICreateTransactionData,
-    session?: ClientSession,
+    session?: ClientSession
   ): Promise<ITransactionDocument> {
-    const transaction = new this.TransactionModel(
-      createTransactionData,
-    );
+    const transaction = new this.TransactionModel(createTransactionData);
     await transaction.save({ session });
     return transaction.toObject();
   }
@@ -39,12 +37,12 @@ export class TransactionRepository {
   @param {string} updateTransactionData.status - The new status of the transaction.
   */
   async updateStatus(
-    updateTransactionData: IUpdateTransactionData,
+    updateTransactionData: IUpdateTransactionData
   ): Promise<void> {
     const { reference, ...updateFields } = updateTransactionData;
     await this.TransactionModel.findOneAndUpdate(
       { reference },
-      { $set: updateFields },
+      { $set: updateFields }
     );
     console.log(`Updated transaction with reference:  ${reference}`);
   }
@@ -58,7 +56,7 @@ export class TransactionRepository {
     if (!transaction) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        "Transaction now found",
+        "Transaction now found"
       );
     }
 
@@ -83,10 +81,13 @@ export class TransactionRepository {
       };
     }
 
-    const options = createPaginationOptions(page || 1, {
-      select: "createdAt amount status reason",
-      limit: 20
-    });
+    const options = createPaginationOptions(
+      {
+        select: "createdAt amount status reason",
+        limit: 20,
+      },
+      page || 1
+    );
 
     return await this.TransactionModel.paginate(query, options);
   }

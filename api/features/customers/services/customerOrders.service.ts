@@ -51,11 +51,11 @@ export class CustomersOrdersService {
     const query: { customer: typeof customerId } = { customer: customerId };
 
     const options = createPaginationOptions(
-      page,
       {
         select: "deliveryAddress status",
-        populate: [{ path: "vendor", select: "businessName" }]
-      }
+        populate: [{ path: "vendor", select: "businessName" }],
+      },
+      page
     );
 
     const orders = await this.orderModel.paginate(query, options);

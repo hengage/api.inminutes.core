@@ -1,27 +1,20 @@
-import { ACCOUNT_STATUS, HTTP_STATUS_CODES } from "../../../constants";
+import { Request, Response } from "express";
+import { HTTP_STATUS_CODES } from "../../../constants";
 import { handleErrorResponse } from "../../../utils";
 import { handleSuccessResponse } from "../../../utils/response.utils";
 import { ridersService } from "../../riders";
 import { validateRider } from "../../riders/validators/riders.validators";
+import { GetRidersQueryparams } from "../interfaces/rider.interface";
 import { adminOpsRidersService } from "../services/riders.service";
-import { Request, Response } from "express";
+import { ValidateAdminOpsRiders } from "../validators/adminOpsRiders.validate";
 
 export const adminOpsRidersController: AdminOpsRidersController = {
   async getRiders(req: Request, res: Response): Promise<void> {
     try {
-      const { page, searchQuery, vehicleType, currentlyWorking, accountStatus, startDate, endDate, limit} = req.query
-       const riders = await adminOpsRidersService.getRiders(
-        page as unknown as number,
-        {
-          searchQuery: searchQuery as string,
-          vehicleType: vehicleType as string,
-          currentlyWorking: currentlyWorking as string,
-          accountStatus: accountStatus as ACCOUNT_STATUS,
-          startDate: startDate as string,
-          endDate: endDate as string
-        },
-        limit as unknown as number
-      );
+      const query: GetRidersQueryparams = req.query;
+
+      await ValidateAdminOpsRiders.getRiders(query);
+      const riders = await adminOpsRidersService.getRiders(query);
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { riders });
     } catch (error) {
       console.error("Error getting riders: ", error);
@@ -33,7 +26,7 @@ export const adminOpsRidersController: AdminOpsRidersController = {
   async riderDetails(req: Request, res: Response): Promise<void> {
     try {
       const rider = await adminOpsRidersService.riderDetails(
-        req.params.riderId,
+        req.params.riderId
       );
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { rider });
     } catch (error) {
@@ -47,7 +40,7 @@ export const adminOpsRidersController: AdminOpsRidersController = {
     try {
       await adminOpsRidersService.setAccountStatus(
         req.params.riderId,
-        req.body.status,
+        req.body.status
       );
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, {
         message: `Rider is now ${req.body.status.toLowerCase()}`,
@@ -63,7 +56,7 @@ export const adminOpsRidersController: AdminOpsRidersController = {
     try {
       await adminOpsRidersService.setApprovalStatus(
         req.params.riderId,
-        req.body.status,
+        req.body.status
       );
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, {
         message: `Rider approval request has been ${req.body.status.toLowerCase()}`,
@@ -84,9 +77,9 @@ export const adminOpsRidersController: AdminOpsRidersController = {
         res,
         HTTP_STATUS_CODES.CREATED,
         rider,
-        "Rider account created",
+        "Rider account created"
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error signing up rider:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
@@ -95,14 +88,12 @@ export const adminOpsRidersController: AdminOpsRidersController = {
 
   async updateRider(req: Request, res: Response): Promise<void> {
     try {
-      const {params, body} = req
-      const rider = await adminOpsRidersService.updateRider(params.riderId, body )
-      handleSuccessResponse(
-        res,
-        HTTP_STATUS_CODES.OK,
-        rider,
-        "Rider account updated successfully",
+      const { params, body } = req;
+      const rider = await adminOpsRidersService.updateRider(
+        params.riderId,
+        body
       );
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, rider);
     } catch (error) {
       console.error("Error updating rider:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
@@ -112,13 +103,15 @@ export const adminOpsRidersController: AdminOpsRidersController = {
 
   async getRiderWallet(req: Request, res: Response): Promise<void> {
     try {
-      const wallet = await adminOpsRidersService.getRiderWallet(req.params.riderId);
+      const wallet = await adminOpsRidersService.getRiderWallet(
+        req.params.riderId
+      );
       handleSuccessResponse(
         res,
         HTTP_STATUS_CODES.OK,
         wallet,
         "Rider Wallet is successfully"
-      )
+      );
     } catch (error) {
       console.error("Error fetching  rider wallet:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
@@ -128,24 +121,16 @@ export const adminOpsRidersController: AdminOpsRidersController = {
 
   async getTopRiders(req: Request, res: Response): Promise<void> {
     try {
-      const { page, searchQuery, vehicleType, currentlyWorking, accountStatus, startDate, endDate} = req.query
       const topRiders = await adminOpsRidersService.getTopList(
-        page as unknown as number,
-        {
-          searchQuery: searchQuery as string,
-          vehicleType: vehicleType as string,
-          currentlyWorking: currentlyWorking as string,
-          accountStatus: accountStatus as ACCOUNT_STATUS,
-          startDate: startDate as string,
-          endDate: endDate as string
-        }
+        req.query.page as unknown as number,
+        req.query as unknown as GetRidersQueryparams
       );
       handleSuccessResponse(
         res,
         HTTP_STATUS_CODES.OK,
         topRiders,
         "Top Riders are successfully fetched"
-      )
+      );
     } catch (error) {
       console.error("Error fetching top riders:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
@@ -160,7 +145,7 @@ export const adminOpsRidersController: AdminOpsRidersController = {
         HTTP_STATUS_CODES.OK,
         riderSummary,
         "Rider Summary is successfully fetched"
-      )
+      );
     } catch (error) {
       console.error("Error fetching rider summary:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
@@ -169,18 +154,16 @@ export const adminOpsRidersController: AdminOpsRidersController = {
   },
   async getRiderMetrics(req: Request, res: Response): Promise<void> {
     try {
-      const riderMetrics = await adminOpsRidersService.getRiderMetrics(
-        {
-          startDate: req.query.startDate as string,
-          endDate: req.query.endDate as string
-        }
-      );
+      const riderMetrics = await adminOpsRidersService.getRiderMetrics({
+        fromDate: req.query.fromDate as string,
+        toDate: req.query.toDate as string,
+      });
       handleSuccessResponse(
         res,
         HTTP_STATUS_CODES.OK,
         riderMetrics,
         "Rider Metrics are successfully fetched"
-      )
+      );
     } catch (error) {
       console.error("Error fetching rider metrics:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
@@ -190,7 +173,12 @@ export const adminOpsRidersController: AdminOpsRidersController = {
   async deleteRider(req: Request, res: Response): Promise<void> {
     try {
       await adminOpsRidersService.deleteRider(req.params.riderId);
-      handleSuccessResponse(res, HTTP_STATUS_CODES.NO_CONTENT, null, "Rider deleted successfully");
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.NO_CONTENT,
+        null,
+        "Rider deleted successfully"
+      );
     } catch (error) {
       console.error("Error deleting rider:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
@@ -199,19 +187,21 @@ export const adminOpsRidersController: AdminOpsRidersController = {
   },
   async getRiderDeliveries(req: Request, res: Response): Promise<void> {
     try {
-      const deliveries = await adminOpsRidersService.getRiderDeliveries(req.params.riderId);
+      const deliveries = await adminOpsRidersService.getRiderDeliveries(
+        req.params.riderId
+      );
       handleSuccessResponse(
         res,
         HTTP_STATUS_CODES.OK,
         deliveries,
         "Rider Deliveries are successfully fetched"
-      )
+      );
     } catch (error) {
       console.error("Error fetching rider deliveries:", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
-  }
+  },
 };
 
 interface AdminOpsRidersController {
@@ -223,7 +213,7 @@ interface AdminOpsRidersController {
   updateRider(req: Request, res: Response): Promise<void>;
   getRiderWallet(req: Request, res: Response): Promise<void>;
   getTopRiders(req: Request, res: Response): Promise<void>;
-  getRidersSummary(req:Request, res: Response): Promise<void>;
+  getRidersSummary(req: Request, res: Response): Promise<void>;
   getRiderMetrics(req: Request, res: Response): Promise<void>;
   getRiderDeliveries(req: Request, res: Response): Promise<void>;
   deleteRider(req: Request, res: Response): Promise<void>;

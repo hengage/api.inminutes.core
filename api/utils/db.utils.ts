@@ -148,12 +148,12 @@ export function addPriceRangeFilter<T>(
 }
 
 export function createPaginationOptions(
-  page: number,
   customOptions: Record<string, any> = {},
+  page?: number,
   limit?: number
 ): Record<string, any> {
   const defaultOptions: PaginateQueryOptions = {
-    page,
+    page: page ?? 1,
     limit: limit ?? QUERY_LIMIT,
     select: "",
     lean: true,

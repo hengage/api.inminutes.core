@@ -12,7 +12,7 @@ class VendorsService {
     if (vendor) {
       throw new HandleException(
         HTTP_STATUS_CODES.CONFLICT,
-        "Business name already taken. Contact admin if this is your business name",
+        "Business name already taken. Contact admin if this is your business name"
       );
     }
 
@@ -25,7 +25,7 @@ class VendorsService {
     if (vendor) {
       throw new HandleException(
         HTTP_STATUS_CODES.CONFLICT,
-        "Email already taken",
+        "Email already taken"
       );
     }
 
@@ -40,7 +40,7 @@ class VendorsService {
     if (vendor) {
       throw new HandleException(
         HTTP_STATUS_CODES.CONFLICT,
-        "Phone number is already taken",
+        "Phone number is already taken"
       );
     }
 
@@ -50,9 +50,13 @@ class VendorsService {
   async getProducts(vendorId: string, page: number) {
     const query = { vendor: vendorId };
 
-    const options = createPaginationOptions(page, {
-      select: "name image cost",
-    });
+    const options = createPaginationOptions(
+      {
+        select: "name image cost",
+        sort: { name: 1 },
+      },
+      page
+    );
 
     const products = await Product.paginate(query, options);
     return products;
