@@ -5,6 +5,7 @@ import {
   addDateRangeFilter,
   buildFilterQuery,
   createPaginationOptions,
+  excludeObjectKeys,
   HandleException,
   Msg,
 } from "../../../utils";
@@ -19,19 +20,22 @@ import {
   CustomerMetricsRange,
   CustomerMetricsResponse,
   CustomerSummaryResponse,
-  GetCustomersFilter,
+  GetCustomersQueryParams,
   ICustomerDetailsWithStats,
 } from "../interfaces/customer.interface";
 import { Errand } from "../../errand";
 
 export const AdminOpsForCustomersService = {
   async getList(
-    page = 1,
-    filter: GetCustomersFilter
+    filter: GetCustomersQueryParams
   ): Promise<PaginateResult<ICustomerDocument>> {
+    const page = Number(filter.page);
+    const limit = Number(filter.limit);
+
     const options = createPaginationOptions(
       { select: "_id fullName email phoneNumber" },
-      page
+      isNaN(page) ? undefined : page,
+      isNaN(limit) ? undefined : limit
     );
 
     const filterQuery: FilterQuery<ICustomerDocument> = {};
@@ -45,14 +49,13 @@ export const AdminOpsForCustomersService = {
       // Handle date range
       addDateRangeFilter(filterQuery, fromDate, toDate);
 
-      // Handle other filters
-      const recordFilter: Record<string, string> = Object.fromEntries(
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        Object.entries(otherFilters).filter(([_, v]) => v !== undefined)
+      const queryFilters: Record<string, string> = excludeObjectKeys(
+        otherFilters,
+        ["page", "limit", "sortOrder"]
       );
 
       const searchFields = ["fullname", "email", "phoneNumber"];
-      buildFilterQuery(recordFilter, filterQuery, searchFields);
+      buildFilterQuery(queryFilters, filterQuery, searchFields);
     }
 
     const transactions = await Customer.paginate(filterQuery, options);
@@ -107,7 +110,7 @@ export const AdminOpsForCustomersService = {
 
   async getTopList(
     page = 1,
-    filter: GetCustomersFilter,
+    filter: GetCustomersQueryParams,
     limit = 5
   ): Promise<PaginateResult<ICustomerDocument>> {
     const options = createPaginationOptions(
@@ -126,12 +129,12 @@ export const AdminOpsForCustomersService = {
 
       addDateRangeFilter(filterQuery, fromDate, toDate);
 
-      const recordFilter: Record<string, string> = Object.fromEntries(
+      const queryFilters: Record<string, string | number> = Object.fromEntries(
         Object.entries(otherFilters).filter(([, v]) => v !== undefined)
       );
 
       const searchFields = ["fullName", "email", "phoneNumber"];
-      buildFilterQuery(recordFilter, filterQuery, searchFields);
+      buildFilterQuery(queryFilters, filterQuery, searchFields);
     }
 
     const topCustomers = await Order.aggregate([
