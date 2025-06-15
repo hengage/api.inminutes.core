@@ -15,29 +15,24 @@ export class ValidateOrders {
   */
   create = async (payload: ICreateOrderData) => {
     const schema = Joi.object({
-      recipientPhoneNumber: Joi.string()
-        .label("Recipient's phone number")
-        .required(),
+      recipientPhoneNumber: Joi.string().required(),
       items: Joi.array().min(1).required(),
-      vendor: Joi.string().label("Vendor").required(),
-      deliveryAddress: Joi.string().label("Delivery address").required(),
-      deliveryLocation: Joi.array()
-        .items(Joi.number())
-        .length(2)
-        .label("Delivery location")
-        .required(),
-      deliveryFee: Joi.string().label("Delivery fee").required(),
-      serviceFee: Joi.string().label("Service fee"),
-      totalProductsCost: Joi.string().label("Total products cost").required(),
-      totalCost: Joi.string().label("Total cost").required(),
-      instruction: Joi.string().label("Instruction"),
+      vendor: Joi.string().required(),
+      deliveryAddress: Joi.string().required(),
+      deliveryLocation: Joi.array().items(Joi.number()).length(2).required(),
+      deliveryFee: Joi.string().required(),
+      serviceFee: Joi.string(),
+      totalProductsCost: Joi.string().required(),
+      totalCost: Joi.string().required(),
+      instruction: Joi.string(),
       type: Joi.string()
         .valid(ORDER_TYPE.INSTANT, ORDER_TYPE.SCHEDULED)
-        .label("Order type")
         .required(),
       scheduledDeliveryTime: Joi.string().when("type", {
         is: ORDER_TYPE.SCHEDULED,
-        then: Joi.string().label("Scheduled delivery time").required(),
+        then: Joi.string().required().messages({
+          "any.required": Msg.ERROR_SCHEDULED_REQUIRED(),
+        }),
         otherwise: Joi.forbidden().messages({
           "any.unknown": Msg.ERROR_SCHEDULED_FORBIDDEN(),
         }),
@@ -60,10 +55,13 @@ export class ValidateOrders {
   @param {object} payload - The assign rider payload.
   @throws {HandleException error} If the payload is invalid.
   */
-  assignRider = async (assignRiderData: { orderId: string; riderId: string }) => {
+  assignRider = async (assignRiderData: {
+    orderId: string;
+    riderId: string;
+  }) => {
     const schema = Joi.object({
-      orderId: Joi.string().label("Order id").required(),
-      riderId: Joi.string().label("Rider id").required(),
+      orderId: Joi.string().required(),
+      riderId: Joi.string().required(),
     });
 
     const { error } = schema.validate(assignRiderData, {
@@ -85,20 +83,16 @@ export class ValidateOrders {
   */
   orderFeedback = async (orderFeedbackData: { rating: number }) => {
     const schema = Joi.object({
-      vendorRating: Joi.number().integer().min(1).max(5).label("rating"),
-      riderRating: Joi.number().integer().min(1).max(5).label("rating"),
-      remarkOnVendor: Joi.string().label("remark on vendor"),
-      remarkOnRider: Joi.string().label("remark on rider"),
-      vendorId: Joi.string()
-        .when("vendorRating", {
-          then: Joi.string().required(),
-        })
-        .label("Vendor"),
-      riderId: Joi.string()
-        .when("riderRating", {
-          then: Joi.string().required(),
-        })
-        .label("Rider"),
+      vendorRating: Joi.number().integer().min(1).max(5),
+      riderRating: Joi.number().integer().min(1).max(5),
+      remarkOnVendor: Joi.string(),
+      remarkOnRider: Joi.string(),
+      vendorId: Joi.string().when("vendorRating", {
+        then: Joi.string().required(),
+      }),
+      riderId: Joi.string().when("riderRating", {
+        then: Joi.string().required(),
+      }),
     });
 
     const { error } = schema.validate(orderFeedbackData, {

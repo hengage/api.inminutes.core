@@ -54,6 +54,10 @@ export const Msg = {
   ERROR_SCHEDULED_FORBIDDEN() {
     return "Scheduled pickup time is forbidden when errand type is not sheduled";
   },
+
+  ERROR_SCHEDULED_REQUIRED() {
+    return "Scheduled pickup time is required when errand type is sheduled";
+  },
   ERROR_INVALID_PHONE_FORMAT() {
     return "Invalid phone number format";
   },
