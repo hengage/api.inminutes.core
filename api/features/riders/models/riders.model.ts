@@ -74,7 +74,7 @@ const riderSchema = new Schema<IRiderDocument>(
 
 riderSchema.index({ location: "2dsphere" });
 riderSchema.plugin(paginate);
-riderSchema.plugin(excludeDeletedPlugin);
+// riderSchema.plugin(excludeDeletedPlugin);
 
 riderSchema.pre("save", async function (next) {
   if (this.isModified("password")) {

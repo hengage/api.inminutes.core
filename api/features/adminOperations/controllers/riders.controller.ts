@@ -7,6 +7,7 @@ import { validateRider } from "../../riders/validators/riders.validators";
 import { GetRidersQueryparams } from "../interfaces/rider.interface";
 import { adminOpsRidersService } from "../services/riders.service";
 import { ValidateAdminOpsRiders } from "../validators/adminOpsRiders.validate";
+import { Coordinates } from "../../../types";
 
 export const adminOpsRidersController: AdminOpsRidersController = {
   async getRiders(req: Request, res: Response): Promise<void> {
@@ -170,6 +171,25 @@ export const adminOpsRidersController: AdminOpsRidersController = {
       res.status(statusCode).json(errorJSON);
     }
   },
+
+  async findNearbyRiders(req: Request, res: Response): Promise<void> {
+    try {
+      const { coordinates, distanceInKM } = req.body as {
+        coordinates: Coordinates;
+        distanceInKM: number;
+      };
+      const riders = await adminOpsRidersService.findNearbyRiders({
+        coordinates,
+        distanceInKM,
+      });
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, riders);
+    } catch (error) {
+      console.log("Error finding nearby riders:", error);
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  },
+
   async deleteRider(req: Request, res: Response): Promise<void> {
     try {
       await adminOpsRidersService.deleteRider(req.params.riderId);
@@ -198,5 +218,6 @@ interface AdminOpsRidersController {
   getTopRiders(req: Request, res: Response): Promise<void>;
   getRidersSummary(req: Request, res: Response): Promise<void>;
   getRiderMetrics(req: Request, res: Response): Promise<void>;
+  findNearbyRiders(req: Request, res: Response): Promise<void>;
   deleteRider(req: Request, res: Response): Promise<void>;
 }

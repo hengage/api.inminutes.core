@@ -27,7 +27,9 @@ export class AdminOpsRidersRoutes {
     this.router
       .route("/metrics")
       .get(this.adminOpsForRidersController.getRiderMetrics);
-
+    this.router
+      .route("/nearby-working")
+      .get(this.adminOpsForRidersController.findNearbyRiders);
     this.router
       .route("/:riderId")
       .get(this.adminOpsForRidersController.riderDetails);
