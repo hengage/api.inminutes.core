@@ -122,19 +122,10 @@ export const AdminOpsForOrdersService = {
       { rider: rider!._id },
       { new: true }
     )
+      .select("_id")
       .populate({
         path: DB_SCHEMA.RIDER.toLowerCase(),
         select: "fullName",
-        options: { lean: true },
-      })
-      .populate({
-        path: DB_SCHEMA.CUSTOMER.toLowerCase(),
-        select: "fullName",
-        options: { lean: true },
-      })
-      .populate({
-        path: DB_SCHEMA.VENDOR.toLowerCase(),
-        select: "businessName businessLogo",
         options: { lean: true },
       })
       .lean();

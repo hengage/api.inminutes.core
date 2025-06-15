@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { AdminOpsForOrdersService } from "../services/orders.services";
-import { handleErrorResponse } from "../../../utils";
+import { capitalize, handleErrorResponse } from "../../../utils";
 import { handleSuccessResponse } from "../../../utils/response.utils";
 import { HTTP_STATUS_CODES } from "../../../constants";
 import { ValidateAdminOpsOrders } from "../validators/adminOpsOrders.validate";
@@ -49,7 +49,14 @@ export const AdminOpsForOrdersController = {
         req.params.orderId,
         req.body.riderId
       );
-      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { order });
+
+      const riderName = capitalize(order?.rider?.fullName as string);
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        { order },
+        `You have assigned ${riderName} (id: ${order?.rider?._id}) to this order`
+      );
     } catch (error: unknown) {
       console.log("Error asigning rider: ", error);
       const { statusCode, errorJSON } = handleErrorResponse(error);

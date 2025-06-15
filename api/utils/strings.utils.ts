@@ -25,14 +25,14 @@ export async function encryptValue(value: string): Promise<string> {
 
 export async function compareValues(
   plainValue: string,
-  hashValue: string,
+  hashValue: string
 ): Promise<boolean> {
   return bcrypt.compare(plainValue, hashValue);
 }
 
 export function generateJWTToken(
   payload: jwt.JwtPayload,
-  expiresIn: string,
+  expiresIn: string
 ): string {
   return jwt.sign(payload, `${JWT_SECRET_KEY}`, {
     algorithm: JWT_ALGORITHMS.HS256,
@@ -86,6 +86,7 @@ export function formatPhoneNumberforDB(phoneNumber: string): string {
  */
 export function capitalize(name: string): string {
   return name
+    .trim()
     .split(" ")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
