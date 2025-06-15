@@ -42,7 +42,7 @@ export const Msg = {
   ERROR_EMAIL_TAKEN(email: string) {
     return `Email ${email} already taken by an existing user.`;
   },
-  ERROR_RIDER_WALLET_NOT_FOUND(id: string){
+  ERROR_RIDER_WALLET_NOT_FOUND(id: string) {
     return `Rider wallet with id '${id}' not found`;
   },
   ERROR_NOT_FOUND(type: string, id: string) {
@@ -76,6 +76,10 @@ export const Msg = {
   ERROR_INVALID_ACCOUNT_STATUS() {
     return `Status must be one of: ${Object.values(ACCOUNT_STATUS).join(", ")}`;
   },
+
+  ERROR_FIELD_MUST_BE_TRUE(field: string) {
+    return `${field} must either be true or removed from the request`;
+  },
   ERROR_INVALID_ORDER_STATUS() {
     return "Invalid order status";
   },
@@ -100,5 +104,5 @@ export const Msg = {
   },
   DELETE_SUCCESS(doc: string) {
     return `Successfully deleted ${doc}`;
-  }
+  },
 };
