@@ -46,7 +46,6 @@ export const AdminOpsForOrdersService = {
 
       // Filter for only ongoing orders filter if requested
       if (filter.onlyOngoing) {
-        console.log("Filtering for ongoing orders");
         filterQuery.status = {
           $nin: [ORDER_STATUS.DELIVERED, ORDER_STATUS.CANCELLED],
         };

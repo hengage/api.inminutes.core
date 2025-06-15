@@ -29,9 +29,20 @@ export class ValidateAdminOpsOrders {
         .string()
         .valid(...Object.values(SORT_ORDER))
         .messages({ "any.only": Msg.ERROR_INVALID_SORT_ORDER() }),
+      status: joi
+        .string()
+        .optional()
+        .valid(...Object.values(ORDER_STATUS)),
       onlyOngoing: joi
         .boolean()
         .optional()
+        .when("status", {
+          is: joi.exist(),
+          then: joi.forbidden().messages({
+            "any.unknown": `{{#label}} is forbidden when status exists in the query`,
+          }),
+          otherwise: joi.optional(),
+        })
         .valid(true)
         .messages({ "any.only": Msg.ERROR_FIELD_MUST_BE_TRUE("{{#label}}") }),
     });
