@@ -40,9 +40,6 @@ export class AdminOpsProductsRoutes {
     this.router
       .route("/metrics")
       .get(this.adminOpsForProductsController.metrics);
-    this.router
-      .route("/pending")
-      .get(this.adminOpsForProductsController.pendingProducts);
 
     this.router
       .route("/top")

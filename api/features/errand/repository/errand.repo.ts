@@ -1,4 +1,8 @@
-import { createPaginationOptions, formatPhoneNumberforDB, HandleException } from "../../../utils";
+import {
+  createPaginationOptions,
+  formatPhoneNumberforDB,
+  HandleException,
+} from "../../../utils";
 import { ErrandStatus, HTTP_STATUS_CODES } from "../../../constants";
 import { ICreateErrandData, IErrandDocument } from "../errand.interface";
 import { Errand } from "../models/errand.models";
@@ -6,7 +10,7 @@ import { PaginatedQueryResult } from "../../../types";
 
 export class ErrandRepository {
   create = async (
-    createErrandData: ICreateErrandData,
+    createErrandData: ICreateErrandData
   ): Promise<IErrandDocument> => {
     const data = {
       ...createErrandData,
@@ -19,7 +23,7 @@ export class ErrandRepository {
       receiver: {
         name: createErrandData.receiver.name,
         phoneNumber: formatPhoneNumberforDB(
-          createErrandData.receiver.phoneNumber,
+          createErrandData.receiver.phoneNumber
         ),
       },
     };
@@ -48,7 +52,7 @@ export class ErrandRepository {
     if (errand?.rider) {
       throw new HandleException(
         HTTP_STATUS_CODES.CONFLICT,
-        "A rider is already asssigned to this errand",
+        "A rider is already asssigned to this errand"
       );
     }
     return;
@@ -62,7 +66,7 @@ export class ErrandRepository {
     const errand = await Errand.findByIdAndUpdate(
       errandId,
       { $set: { rider: riderId, status: ErrandStatus.RIDER_ASSIGNED } },
-      { new: true },
+      { new: true }
     )
       .select("status rider")
       .exec();
@@ -78,7 +82,7 @@ export class ErrandRepository {
     const errand = await Errand.findByIdAndUpdate(
       errandId,
       { $set: { status } },
-      { new: true },
+      { new: true }
     )
       .select("-__v -updatedAt")
       .exec();
@@ -98,6 +102,7 @@ export class ErrandRepository {
     userType,
     userId,
     page = 1,
+    limit,
   }: {
     userType: "customer" | "rider";
     userId: string;
@@ -109,19 +114,20 @@ export class ErrandRepository {
     };
 
     const options = createPaginationOptions(
-      page,
       {
-        select: "-updatedAt -dropoffCoordinates -scheduledPickupTime -pickupCoordinates",
+        select:
+          "-updatedAt -dropoffCoordinates -scheduledPickupTime -pickupCoordinates",
         populate: [
           { path: "customer", select: "fullName phoneNumber" },
           { path: "rider", select: "fullName phoneNumber" },
         ],
-      }
-
+      },
+      page,
+      limit
     );
     const errands = (await Errand.paginate(
       query,
-      options,
+      options
     )) as PaginatedQueryResult;
 
     return errands;

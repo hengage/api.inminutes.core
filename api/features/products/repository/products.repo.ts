@@ -12,7 +12,7 @@ export class ProductsRepository {
   private productCategoryModel = ProductCategory;
   private wishListModel = WishList;
 
-  constructor() { }
+  constructor() {}
 
   /**
   @async
@@ -62,7 +62,7 @@ export class ProductsRepository {
     if (!product) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_NOT_FOUND('product', productId),
+        Msg.ERROR_NOT_FOUND("product", productId)
       );
     }
     product.quantity -= quantity;
@@ -103,7 +103,7 @@ export class ProductsRepository {
     if (result.deletedCount === 0) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_NOT_FOUND('product', productId),
+        Msg.ERROR_NOT_FOUND("product", productId)
       );
     }
 
@@ -121,11 +121,11 @@ export class ProductsRepository {
     const query = { name: { $regex: params.term, $options: "i" } };
 
     const options = createPaginationOptions(
-      params.page,
       {
         select: "name cost image",
-        populate: [{ path: "vendor", select: "businessName" }]
-      }
+        populate: [{ path: "vendor", select: "businessName" }],
+      },
+      isNaN(params.page) ? undefined : params.page
     );
 
     const products = await this.productModel.paginate(query, options);
@@ -140,10 +140,15 @@ export class ProductsRepository {
   async getProductsByCategory(params: { categoryId: string; page: number }) {
     const query = { category: params.categoryId };
 
-    const options = createPaginationOptions(params.page, {
-      select: "name cost image",
-      populate: [{ path: "vendor", select: "businessName location.coordinates" }]
-    });
+    const options = createPaginationOptions(
+      {
+        select: "name cost image",
+        populate: [
+          { path: "vendor", select: "businessName location.coordinates" },
+        ],
+      },
+      isNaN(params.page) ? undefined : params.page
+    );
 
     const products = await Product.paginate(query, options);
     return products;
@@ -159,7 +164,7 @@ export class ProductsRepository {
     const wishList = await WishList.findOneAndUpdate(
       { customer: customerId },
       { $addToSet: { products: productId } },
-      { upsert: true, new: true },
+      { upsert: true, new: true }
     );
 
     return wishList;
@@ -175,7 +180,7 @@ export class ProductsRepository {
     const wishList = await WishList.findOneAndUpdate(
       { customer: customerId },
       { $pull: { products: productId } },
-      { new: true },
+      { new: true }
     );
 
     return wishList;

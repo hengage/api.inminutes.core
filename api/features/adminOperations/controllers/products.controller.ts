@@ -177,22 +177,6 @@ export class AdminOpsForProductsController {
     }
   };
 
-  pendingProducts = async (req: Request, res: Response): Promise<void> => {
-    try {
-      await ValidateAdminOpsProducts.pendingProducts({
-        page: Number(req.query.page),
-      });
-      const products = await this.adminOpsForProductsService.pendingProducts(
-        Number(req.query.page)
-      );
-      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { products });
-    } catch (error: unknown) {
-      console.error("Error fetching products:", error);
-      const { statusCode, errorJSON } = handleErrorResponse(error);
-      res.status(statusCode).json(errorJSON);
-    }
-  };
-
   // listProductCategories = async (req: Request, res: Response): Promise<void> => {
   //   try {
   //     const categories = await this.adminOpsForProductsService.getCategories();

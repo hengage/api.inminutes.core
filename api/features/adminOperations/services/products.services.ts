@@ -173,7 +173,6 @@ export class AdminOpsForProductsService {
     const limit = Number(filter.limit);
 
     const options = createPaginationOptions(
-      page,
       {
         select: "_id image name price  status cost category vendor",
         sort: { name: filter.sortOrder === SORT_ORDER.DESC ? -1 : 1 },
@@ -182,6 +181,7 @@ export class AdminOpsForProductsService {
           { path: "vendor", select: "businessName" },
         ],
       },
+      isNaN(page) ? undefined : page,
       isNaN(limit) ? undefined : limit
     );
 
@@ -251,19 +251,6 @@ export class AdminOpsForProductsService {
     return { approved, pending, rejected };
   }
 
-  async pendingProducts(page = 1): Promise<PaginateResult<IProductDocument>> {
-    const options = createPaginationOptions(page, {
-      select: "_id name description price stock status createdAt",
-    });
-
-    const query: FilterQuery<IProductDocument> = {
-      status: PRODUCT_STATUS.PENDING,
-    };
-
-    const products = await this.productModel.paginate(query, options);
-    return products;
-  }
-
   async getCategories(query: GetCategoriesQuery): Promise<{
     data: { _id: string; name: string; totalProducts: number }[];
     total: number;
@@ -324,11 +311,11 @@ export class AdminOpsForProductsService {
     const page = filter.page ? Number(filter.page) : 1;
     const limit = Number(filter.limit);
     const options = createPaginationOptions(
-      page,
       {
         select: "_id name description price stock status createdAt",
         sort: { createdAt: filter.sortOrder === SORT_ORDER.ASC ? 1 : -1 },
       },
+      page,
       limit
     );
 
@@ -506,11 +493,11 @@ export class AdminOpsForProductsService {
     limit = 5
   ): Promise<PaginateResult<IProductCategoryDocument>> {
     const options = createPaginationOptions(
-      page,
       {
         select: "_id name createdAt",
         sort: { createdAt: filter.sortOrder === SORT_ORDER.ASC ? 1 : -1 },
       },
+      page,
       limit
     );
 

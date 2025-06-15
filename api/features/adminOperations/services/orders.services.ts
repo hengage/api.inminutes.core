@@ -23,11 +23,10 @@ export const AdminOpsForOrdersService = {
   async getList(
     filter: GetOrdersQueryParams
   ): Promise<PaginateResult<IOrdersDocument>> {
-    const page = filter.page ? Number(filter.page) : 1;
+    const page = Number(filter.page);
     const limit = Number(filter.limit);
 
     const options = createPaginationOptions(
-      page,
       {
         select:
           "_id  totalCost type status createdAt totalCost totalProductsCost deliveryFee, rider, customer",
@@ -37,6 +36,7 @@ export const AdminOpsForOrdersService = {
           { path: "rider", select: "fullName displayName email" },
         ],
       },
+      isNaN(page) ? undefined : page,
       isNaN(limit) ? undefined : limit
     );
 

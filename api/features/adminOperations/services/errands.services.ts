@@ -17,11 +17,10 @@ export const AdminOpsForErrandsService = {
   async getList(
     filter: GetErrandsQueryParams
   ): Promise<PaginateResult<IErrandDocument>> {
-    const page = filter.page ? Number(filter.page) : 1;
+    const page = Number(filter.page);
     const limit = Number(filter.limit);
 
     const options = createPaginationOptions(
-      page,
       {
         select: "_id  pickupAddress type status createdAt deliveryFee",
         populate: [
@@ -30,6 +29,7 @@ export const AdminOpsForErrandsService = {
         ],
         sort: { createdAt: filter.sort === SORT_ORDER.ASC ? 1 : -1 },
       },
+      isNaN(page) ? undefined : page,
       isNaN(limit) ? undefined : limit
     );
 
