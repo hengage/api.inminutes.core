@@ -1,31 +1,29 @@
-import { PaginateResult } from "mongoose";
-import { ITransactionDocument } from "../../transactions/transactions.interface";
-import { Transaction } from "../../transactions/models/transaction.model";
+import { FilterQuery, PaginateResult } from "mongoose";
 import { HTTP_STATUS_CODES } from "../../../constants";
-import { FilterQuery } from "mongoose";
 import {
   addAmountRangeFilter,
   addDateRangeFilter,
   buildFilterQuery,
   createPaginationOptions,
+  excludeObjectKeys,
   HandleException,
   Msg,
 } from "../../../utils";
+import { Transaction } from "../../transactions/models/transaction.model";
+import { ITransactionDocument } from "../../transactions/transactions.interface";
+import { GetTransactionsQueryParams } from "../interfaces/transactions.interface";
 
 export const adminOpsTransactionsService = {
   async getTransactions(
-    page: string | number,
-    filter: GetTransactionsFilter,
-    limit: string | number
+    filter: GetTransactionsQueryParams
   ): Promise<PaginateResult<ITransactionDocument>> {
-    const pageNum = Number(page) || 1;
-    const limitNum = Number(limit) || 10;
+    const page = Number(filter.page);
+    const limit = Number(filter.limit);
 
     const options = createPaginationOptions(
       { select: "amount reason status _id reference createdAt" },
-      pageNum,
-
-      limitNum
+      isNaN(page) ? undefined : page,
+      isNaN(limit) ? undefined : limit
     );
 
     const filterQuery: FilterQuery<ITransactionDocument> = {};
@@ -39,13 +37,11 @@ export const adminOpsTransactionsService = {
       // Handle date range
       addDateRangeFilter(filterQuery, fromDate, toDate);
 
-      // Handle other filters
-      const recordFilter: Record<string, string> = Object.fromEntries(
-        Object.entries(otherFilters).filter(([, v]) => v !== undefined)
-      );
+      const queryFilters: Partial<GetTransactionsQueryParams> =
+        excludeObjectKeys(otherFilters, ["page", "limit", "sortOrder"]);
 
       const searchFields = ["reference", "transferCode"];
-      buildFilterQuery(recordFilter, filterQuery, searchFields);
+      buildFilterQuery(queryFilters, filterQuery, searchFields);
     }
     const transactions = await Transaction.paginate(filterQuery, options);
     return transactions;
@@ -67,14 +63,3 @@ export const adminOpsTransactionsService = {
     return transaction as ITransactionDocument;
   },
 };
-
-interface GetTransactionsFilter {
-  searchQuery?: string;
-  status?: string;
-  reason?: string;
-  type?: string;
-  lowestAmount?: string;
-  highestAmount?: string;
-  fromDate?: string;
-  toDate?: string;
-}
