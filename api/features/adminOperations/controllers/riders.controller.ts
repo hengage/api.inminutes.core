@@ -6,12 +6,14 @@ import { ridersService } from "../../riders";
 import { validateRider } from "../../riders/validators/riders.validators";
 import { GetRidersQueryparams } from "../interfaces/rider.interface";
 import { adminOpsRidersService } from "../services/riders.service";
+import { ValidateAdminOpsRiders } from "../validators/adminOpsRiders.validate";
 
 export const adminOpsRidersController: AdminOpsRidersController = {
   async getRiders(req: Request, res: Response): Promise<void> {
     try {
       const query: GetRidersQueryparams = req.query;
 
+      await ValidateAdminOpsRiders.getRiders(query);
       const riders = await adminOpsRidersService.getRiders(query);
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { riders });
     } catch (error) {
