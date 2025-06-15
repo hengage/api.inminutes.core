@@ -1,4 +1,4 @@
-import joi from "joi";
+import Joi from "joi";
 import { Msg } from "../../../utils";
 import { SORT_ORDER } from "../../../constants";
 import { validateSchema } from "../../../utils/validation.utils";
@@ -6,28 +6,25 @@ import { ListProductsQueryParams } from "../interfaces/product.interface";
 
 export class ValidateAdminOpsProducts {
   static getList = async (getListData: ListProductsQueryParams) => {
-    const schema = joi.object({
-      page: joi
-        .alternatives()
-        .try(joi.number().integer().min(1), joi.string().min(1))
+    const schema = Joi.object({
+      page: Joi.alternatives()
+        .try(Joi.number().integer().min(1), Joi.string().min(1))
         .optional()
         .label("Page"),
-      limit: joi
-        .alternatives()
-        .try(joi.number().integer().min(1), joi.string().min(1))
+      limit: Joi.alternatives()
+        .try(Joi.number().integer().min(1), Joi.string().min(1))
         .optional()
         .label("Limit"),
-      searchQuery: joi.string().optional(),
-      fromDate: joi.string().optional(),
-      toDate: joi.string().optional(),
-      maxPrice: joi.string().optional(),
-      minPrice: joi.string().optional(),
-      status: joi.string().optional(),
-      category: joi.string().optional(),
-      subCategory: joi.string().optional(),
-      vendor: joi.string().optional(),
-      sortOrder: joi
-        .string()
+      searchQuery: Joi.string().optional(),
+      fromDate: Joi.string().optional(),
+      toDate: Joi.string().optional(),
+      maxPrice: Joi.string().optional(),
+      minPrice: Joi.string().optional(),
+      status: Joi.string().optional(),
+      category: Joi.string().optional(),
+      subCategory: Joi.string().optional(),
+      vendor: Joi.string().optional(),
+      sortOrder: Joi.string()
         .valid(...Object.values(SORT_ORDER))
         .messages({ "any.only": Msg.ERROR_INVALID_SORT_ORDER() }),
     });
@@ -39,8 +36,8 @@ export class ValidateAdminOpsProducts {
   static getProductDetails = async (getProductDetailsData: {
     productId: string;
   }) => {
-    const schema = joi.object({
-      productId: joi.string().required().label("Product ID"),
+    const schema = Joi.object({
+      productId: Joi.string().required().label("Product ID"),
     });
 
     validateSchema(schema, getProductDetailsData);
@@ -48,8 +45,8 @@ export class ValidateAdminOpsProducts {
   };
 
   static createCategory = async (createCategoryData: { name: string }) => {
-    const schema = joi.object({
-      name: joi.string().required().label("Name"),
+    const schema = Joi.object({
+      name: Joi.string().required().label("Name"),
     });
 
     validateSchema(schema, createCategoryData);
@@ -60,15 +57,13 @@ export class ValidateAdminOpsProducts {
     name: string;
     category: string;
   }) => {
-    const schema = joi.object({
-      name: joi
-        .string()
+    const schema = Joi.object({
+      name: Joi.string()
         .required()
         .messages({
           "any.required": Msg.ERROR_REQUIRED("name"),
         }),
-      category: joi
-        .string()
+      category: Joi.string()
         .required()
         .messages({
           "any.required": Msg.ERROR_REQUIRED("category"),
@@ -80,8 +75,8 @@ export class ValidateAdminOpsProducts {
   };
 
   static approveProduct = async (approveProductData: { productId: string }) => {
-    const schema = joi.object({
-      productId: joi.string().required().label("Product ID"),
+    const schema = Joi.object({
+      productId: Joi.string().required().label("Product ID"),
     });
 
     validateSchema(schema, approveProductData);
@@ -89,8 +84,8 @@ export class ValidateAdminOpsProducts {
   };
 
   static rejectProduct = async (rejectProductData: { productId: string }) => {
-    const schema = joi.object({
-      productId: joi.string().required().label("Product ID"),
+    const schema = Joi.object({
+      productId: Joi.string().required().label,
     });
 
     validateSchema(schema, rejectProductData);
@@ -100,10 +95,9 @@ export class ValidateAdminOpsProducts {
   static pendingProducts = async (pendingProductsData: {
     page: number | string;
   }) => {
-    const schema = joi.object({
-      page: joi
-        .alternatives()
-        .try(joi.number().integer().min(1), joi.string().min(1))
+    const schema = Joi.object({
+      page: Joi.alternatives()
+        .try(Joi.number().integer().min(1), Joi.string().min(1))
         .optional()
         .label("Page"),
     });
