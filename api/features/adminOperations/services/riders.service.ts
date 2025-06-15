@@ -1,11 +1,4 @@
-import { PaginateResult } from "mongoose";
-import { IRiderDocument, Rider } from "../../riders";
-import {
-  addDateRangeFilter,
-  buildFilterQuery,
-  createPaginationOptions,
-} from "../../../utils/db.utils";
-import { FilterQuery } from "mongoose";
+import { ClientSession, FilterQuery, PaginateResult } from "mongoose";
 import {
   ACCOUNT_STATUS,
   DB_SCHEMA,
@@ -20,7 +13,13 @@ import {
   HandleException,
   Msg,
 } from "../../../utils";
-import { ClientSession } from "mongoose";
+import {
+  addDateRangeFilter,
+  buildFilterQuery,
+  createPaginationOptions,
+} from "../../../utils/db.utils";
+import { Order } from "../../orders";
+import { IRiderDocument, Rider } from "../../riders";
 import { Wallet } from "../../wallet";
 import { IWalletDocument } from "../../wallet/wallet.interface";
 import {
@@ -28,7 +27,6 @@ import {
   GetRidersQueryparams,
   RiderSummaryResponse,
 } from "../interfaces/rider.interface";
-import { IOrdersDocument, Order } from "../../orders";
 
 export const adminOpsRidersService = {
   async getRiders(
@@ -320,14 +318,6 @@ export const adminOpsRidersService = {
         HTTP_STATUS_CODES.NOT_FOUND,
         Msg.ERROR_RIDER_NOT_FOUND(riderId)
       );
-    }
-  },
-  async getRiderDeliveries(riderId: string): Promise<IOrdersDocument[]> {
-    try {
-      return await Order.find({ rider: riderId }).exec();
-    } catch (error) {
-      console.error("Error fetching rider deliveries:", error);
-      throw new Error("Could not fetch rider deliveries");
     }
   },
 };

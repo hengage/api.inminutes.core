@@ -185,23 +185,6 @@ export const adminOpsRidersController: AdminOpsRidersController = {
       res.status(statusCode).json(errorJSON);
     }
   },
-  async getRiderDeliveries(req: Request, res: Response): Promise<void> {
-    try {
-      const deliveries = await adminOpsRidersService.getRiderDeliveries(
-        req.params.riderId
-      );
-      handleSuccessResponse(
-        res,
-        HTTP_STATUS_CODES.OK,
-        deliveries,
-        "Rider Deliveries are successfully fetched"
-      );
-    } catch (error) {
-      console.error("Error fetching rider deliveries:", error);
-      const { statusCode, errorJSON } = handleErrorResponse(error);
-      res.status(statusCode).json(errorJSON);
-    }
-  },
 };
 
 interface AdminOpsRidersController {
@@ -215,6 +198,5 @@ interface AdminOpsRidersController {
   getTopRiders(req: Request, res: Response): Promise<void>;
   getRidersSummary(req: Request, res: Response): Promise<void>;
   getRiderMetrics(req: Request, res: Response): Promise<void>;
-  getRiderDeliveries(req: Request, res: Response): Promise<void>;
   deleteRider(req: Request, res: Response): Promise<void>;
 }
