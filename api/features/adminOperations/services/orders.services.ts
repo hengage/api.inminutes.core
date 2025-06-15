@@ -122,6 +122,7 @@ export const AdminOpsForOrdersService = {
       { rider: rider!._id },
       { new: true }
     )
+      .select("_id")
       .populate({
         path: DB_SCHEMA.RIDER.toLowerCase(),
         select: "fullName",
