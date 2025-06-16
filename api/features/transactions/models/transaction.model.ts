@@ -4,7 +4,12 @@ import paginate from "mongoose-paginate-v2";
 
 import { generateUniqueString } from "../../../utils";
 import { ITransactionDocument } from "../transactions.interface";
-import { Currency, DB_SCHEMA, TRANSACTION_TYPE } from "../../../constants";
+import {
+  Currency,
+  DB_SCHEMA,
+  TRANSACTION_STATUS,
+  TRANSACTION_TYPE,
+} from "../../../constants";
 
 const transactionSchema = new Schema<ITransactionDocument>(
   {
@@ -27,11 +32,15 @@ const transactionSchema = new Schema<ITransactionDocument>(
     accountName: { type: String },
     accountNumber: { type: String },
     transactionFee: { type: String, default: "0" },
-    status: { type: String, default: "pending" },
+    status: {
+      type: String,
+      enum: Object.values(TRANSACTION_STATUS),
+      default: TRANSACTION_STATUS.ONGOING,
+    },
     paidAt: { type: Date },
     currency: { type: String, default: Currency.NGN },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 transactionSchema.plugin(paginate);

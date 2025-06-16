@@ -1,3 +1,4 @@
+import { TRANSACTION_STATUS, TRANSACTION_TYPE } from "../../constants";
 import { IWalletDocument } from "../wallet/wallet.interface";
 
 export interface IInitializeTransaction {
@@ -51,8 +52,8 @@ export interface ICreateTransactionData {
   accountNumber?: string;
   accountName?: string;
   transferCode?: string;
-  status: string;
-  type?: "credit" | "debit";
+  status: TRANSACTION_STATUS;
+  type?: TRANSACTION_TYPE;
   reason: string;
 }
 

@@ -13,7 +13,13 @@ import { TransactionRepository } from "../repository/transaction.repo";
 import { cashoutTransferService } from "./cashoutTransfer.service";
 import { SocketServer } from "../../../services/socket/socket.services";
 import { ClientSession } from "mongoose";
-import { Events, HTTP_STATUS_CODES, PAYMENT_CHANNELS, PAYMENT_PURPOSE } from "../../../constants";
+import {
+  Events,
+  HTTP_STATUS_CODES,
+  PAYMENT_CHANNELS,
+  PAYMENT_PURPOSE,
+  TRANSACTION_STATUS,
+} from "../../../constants";
 
 /**
 Service for managing transactions and interacting with Paystack API.
@@ -54,7 +60,7 @@ class PaymentTransactionService {
         payload,
         {
           headers: this.headers,
-        },
+        }
       );
 
       console.log({ reponseData: response.data });
@@ -64,7 +70,7 @@ class PaymentTransactionService {
         reason: initializeTransactionData.metadata.reason,
         customer: initializeTransactionData.metadata.customerId,
         reference: response.data.data.reference,
-        status: "pending",
+        status: TRANSACTION_STATUS.ONGOING,
       })
         .then((createdHistory) => console.log(createdHistory))
         .catch((error: unknown) => {
@@ -76,8 +82,10 @@ class PaymentTransactionService {
       if (error instanceof HandleException) {
         throw new HandleException(error.status, error.message);
       } else {
-        throw new HandleException(HTTP_STATUS_CODES.SERVER_ERROR,
-          Msg.ERROR_UNKNOWN_ERROR());
+        throw new HandleException(
+          HTTP_STATUS_CODES.SERVER_ERROR,
+          Msg.ERROR_UNKNOWN_ERROR()
+        );
       }
     }
   }
@@ -88,7 +96,7 @@ class PaymentTransactionService {
    */
   webhook(req: Request) {
     const hash = createHmac("sha512", `${PAYSTACK_SECRET_KEY}`).update(
-      JSON.stringify(req.body),
+      JSON.stringify(req.body)
     );
     const digest = hash.digest("hex");
 
@@ -98,18 +106,17 @@ class PaymentTransactionService {
       const { reference, status, paid_at: paidAt } = event.data;
 
       switch (event.event) {
-        case "charge.success":
-          {
-            this.transactionRepo.updateStatus({ reference, status, paidAt });
-            const { purpose, orderId, vendorId } = event.data.metadata;
-            if (purpose === PAYMENT_PURPOSE.ORDER) {
-              emitEvent.emit(Events.NOTIFY_VENDOR_OF_ORDER, {
-                orderId,
-                vendorId,
-              });
-            }
-            break;
+        case "charge.success": {
+          this.transactionRepo.updateStatus({ reference, status, paidAt });
+          const { purpose, orderId, vendorId } = event.data.metadata;
+          if (purpose === PAYMENT_PURPOSE.ORDER) {
+            emitEvent.emit(Events.NOTIFY_VENDOR_OF_ORDER, {
+              orderId,
+              vendorId,
+            });
           }
+          break;
+        }
         case "transfer.success":
         case "transfer.failed":
           this.transactionRepo.updateStatus({ reference, status });
@@ -125,7 +132,7 @@ class PaymentTransactionService {
     } else {
       throw new HandleException(
         HTTP_STATUS_CODES.BAD_REQUEST,
-        "Invalid signature",
+        "Invalid signature"
       );
     }
   }
@@ -137,18 +144,18 @@ class PaymentTransactionService {
   */
   async createHistory(
     createTransactionData: ICreateTransactionData,
-    session?: ClientSession,
+    session?: ClientSession
   ) {
     return await this.transactionRepo.createHistory(
       createTransactionData,
-      session,
+      session
     );
   }
 
   async getTransactionByReference(reference: string, selectFields: string) {
     return this.transactionRepo.getTransactionByReference(
       reference,
-      selectFields,
+      selectFields
     );
   }
 
@@ -170,7 +177,7 @@ calling the cashoutTransferService.reverseDebit method
         trxReference: reference,
         transferCode,
         recipientCode,
-        status,
+        status: status as TRANSACTION_STATUS,
       });
 
       const socketServer = SocketServer.getInstance();
@@ -180,7 +187,7 @@ calling the cashoutTransferService.reverseDebit method
           _id: wallet?._id,
           balance: wallet?.balance,
         },
-        wallet?.merchantId,
+        wallet?.merchantId
       );
     } catch (error) {
       console.error({ error });
@@ -218,4 +225,4 @@ interface PaystackTransferEvent {
       recipient_code: string;
     };
   };
-};
+}
