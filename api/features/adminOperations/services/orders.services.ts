@@ -30,7 +30,7 @@ export const AdminOpsForOrdersService = {
       {
         select:
           "_id  totalCost type status createdAt totalCost totalProductsCost deliveryFee, rider, customer",
-        sort: { createdAt: filter.sort === SORT_ORDER.ASC ? 1 : -1 },
+        sort: { createdAt: filter.sortOrder === SORT_ORDER.ASC ? 1 : -1 },
         populate: [
           { path: "customer", select: "fullName displayName email" },
           { path: "rider", select: "fullName displayName email" },
@@ -56,7 +56,7 @@ export const AdminOpsForOrdersService = {
 
       const queryFilters: Record<string, string | number | boolean> =
         excludeObjectKeys(otherFilters, [
-          "sort",
+          "sortOrder",
           "page",
           "limit",
           "onlyOngoing",

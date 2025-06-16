@@ -1,5 +1,5 @@
 import joi from "joi";
-import { ORDER_STATUS, SORT_ORDER } from "../../../constants";
+import { ORDER_STATUS, ORDER_TYPE, SORT_ORDER } from "../../../constants";
 import { Msg } from "../../../utils";
 import { validateSchema } from "../../../utils/validation.utils";
 import { GetOrdersQueryParams } from "../interfaces/orders.interface";
@@ -24,8 +24,8 @@ export class ValidateAdminOpsOrders {
       type: joi
         .string()
         .optional()
-        .valid(...Object.values(ORDER_STATUS)),
-      sort: joi
+        .valid(...Object.values(ORDER_TYPE)),
+      sortOrder: joi
         .string()
         .valid(...Object.values(SORT_ORDER))
         .messages({ "any.only": Msg.ERROR_INVALID_SORT_ORDER() }),
