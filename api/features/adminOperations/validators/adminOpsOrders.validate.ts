@@ -15,12 +15,12 @@ export class ValidateAdminOpsOrders {
         .alternatives()
         .try(joi.number().integer().min(1), joi.string().min(1))
         .optional(),
-      searchQuery: joi.string().optional().allow("").label("Search Query"),
-      fromDate: joi.string().optional().allow("").label("From Date"),
-      toDate: joi.string().optional().allow("").label("To Date"),
-      customer: joi.string().optional().allow("").label("Customer"),
-      rider: joi.string().optional().allow("").label("Rider"),
-      vendor: joi.string().optional().allow("").label("Vendor"),
+      searchQuery: joi.string().optional().allow(""),
+      fromDate: joi.string().optional().allow(""),
+      toDate: joi.string().optional().allow(""),
+      customer: joi.string().optional().allow(""),
+      rider: joi.string().optional().allow(""),
+      vendor: joi.string().optional().allow(""),
       type: joi
         .string()
         .optional()
@@ -53,7 +53,7 @@ export class ValidateAdminOpsOrders {
 
   static getDetails = async (getDetailsData: { orderId: string }) => {
     const schema = joi.object({
-      orderId: joi.string().required().label("Order ID"),
+      orderId: joi.string().required(),
     });
 
     validateSchema(schema, getDetailsData);
@@ -65,8 +65,8 @@ export class ValidateAdminOpsOrders {
     riderId: string;
   }) => {
     const schema = joi.object({
-      orderId: joi.string().required().label("Order ID"),
-      riderId: joi.string().required().label("Rider ID"),
+      orderId: joi.string().required(),
+      riderId: joi.string().required(),
     });
 
     validateSchema(schema, assignRiderData);
@@ -78,7 +78,7 @@ export class ValidateAdminOpsOrders {
     status: ORDER_STATUS;
   }) => {
     const schema = joi.object({
-      orderId: joi.string().required().label("Order ID"),
+      orderId: joi.string().required(),
       status: joi
         .string()
         .valid(...Object.values(ORDER_STATUS))
