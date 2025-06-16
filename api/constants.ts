@@ -42,6 +42,17 @@ export enum WALLET_STATUS {
   CLOSED = "closed",
 }
 
+export enum TRANSACTION_STATUS {
+  ONGOING = "ongoing",
+  PENDING = "pending",
+  APPROVED = "approved",
+  SUCCESS = "success",
+  PROCESSING = "processing",
+  FAILED = "failed",
+  REVERSED = "reversed",
+  ABANDONED = "abandoned",
+}
+
 export enum CASHOUT_CHANNEL {
   BANK_TRANSFER = "bank transfer",
   MOBILE_MONEY = "mobile money",
@@ -151,8 +162,8 @@ export enum DB_SCHEMA {
 }
 
 export enum SORT_ORDER {
-  ASC = 'asc',
-  DESC = 'desc'
+  ASC = "asc",
+  DESC = "desc",
 }
 
 export enum AGENDA {
@@ -181,5 +192,4 @@ export enum WORK_SLOT_SESSIONS {
   FOURTH = "6pm-9pm",
 }
 
-
-export const QUERY_LIMIT = 30
+export const QUERY_LIMIT = 30;

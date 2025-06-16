@@ -10,6 +10,7 @@ import {
 import { walletRepo, walletService } from "../../wallet";
 import { paymentTransactionService } from "./paymentTransaction.service";
 import { NotificationService } from "../../notifications";
+import { TRANSACTION_STATUS, TRANSACTION_TYPE } from "../../../constants";
 
 /**
 Service for managing cashout transfers for merchanrs.
@@ -37,7 +38,7 @@ class CashoutTransferService {
     try {
       await walletService.checkDuplicateAccountNumber(
         walletId,
-        payload.accountNumber,
+        payload.accountNumber
       );
 
       const data = {
@@ -54,7 +55,7 @@ class CashoutTransferService {
       const response = await axios.post(
         "https://api.paystack.co/transferrecipient/",
         data,
-        { headers: this.headers },
+        { headers: this.headers }
       );
       const {
         currency,
@@ -81,13 +82,11 @@ class CashoutTransferService {
       };
 
       await walletRepo.addCashoutAccount(cashoutAccount, walletId);
-
-      //   return response.data.data;
     } catch (error: any) {
       console.error({ error: error });
       throw new HandleException(
         error.status || error.response.status,
-        error.message || error.response.data,
+        error.message || error.response.data
       );
     }
   }
@@ -125,7 +124,7 @@ class CashoutTransferService {
       const response = await axios.post(
         "https://api.paystack.co/transfer",
         data,
-        { headers: this.headers },
+        { headers: this.headers }
       );
       const { status, transfer_code: transferCode } = response.data.data;
 
@@ -135,7 +134,7 @@ class CashoutTransferService {
           reason,
           reference,
           wallet: walletId,
-          type: "debit",
+          type: TRANSACTION_TYPE.DEBIT,
           recipientCode,
           bankName,
           accountName,
@@ -143,7 +142,7 @@ class CashoutTransferService {
           transferCode,
           status,
         },
-        session,
+        session
       );
 
       await session.commitTransaction();
@@ -154,7 +153,7 @@ class CashoutTransferService {
       await session.abortTransaction();
       throw new HandleException(
         error.status || error.response.status,
-        error.message || error.response.data,
+        error.message || error.response.data
       );
     } finally {
       session.endSession();
@@ -172,7 +171,7 @@ class CashoutTransferService {
     trxReference: string;
     recipientCode: string;
     transferCode: string;
-    status: string;
+    status: TRANSACTION_STATUS;
   }) {
     const { amount, trxReference, recipientCode, transferCode, status } = data;
 
@@ -183,12 +182,12 @@ class CashoutTransferService {
       const transaction =
         await paymentTransactionService.getTransactionByReference(
           trxReference,
-          "wallet",
+          "wallet"
         );
       const walletId = transaction.wallet;
       const wallet = await walletService.creditWallet(
         { amount, walletId },
-        session,
+        session
       );
 
       await paymentTransactionService.createHistory(
@@ -197,12 +196,12 @@ class CashoutTransferService {
           reason: "reversal",
           reference: trxReference,
           wallet: walletId,
-          type: "credit",
+          type: TRANSACTION_TYPE.CREDIT,
           recipientCode,
           transferCode,
           status,
         },
-        session,
+        session
       );
 
       await session.commitTransaction();
