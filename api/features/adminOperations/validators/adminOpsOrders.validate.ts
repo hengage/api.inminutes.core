@@ -15,12 +15,12 @@ export class ValidateAdminOpsOrders {
         .alternatives()
         .try(joi.number().integer().min(1), joi.string().min(1))
         .optional(),
-      searchQuery: joi.string().optional().allow(""),
-      fromDate: joi.string().optional().allow(""),
-      toDate: joi.string().optional().allow(""),
-      customer: joi.string().optional().allow(""),
-      rider: joi.string().optional().allow(""),
-      vendor: joi.string().optional().allow(""),
+      searchQuery: joi.string().optional(),
+      fromDate: joi.string().optional(),
+      toDate: joi.string().optional(),
+      customer: joi.string().optional(),
+      rider: joi.string().optional(),
+      vendor: joi.string().optional(),
       type: joi
         .string()
         .optional()
