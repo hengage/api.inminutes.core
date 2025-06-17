@@ -1,6 +1,6 @@
 import Joi from "joi";
 import { validateSchema } from "../../../utils/validation.utils";
-import { GetRidersQueryparams } from "../interfaces/rider.interface";
+import { FindNearbyRidersParams, GetRidersQueryparams } from "../interfaces/rider.interface";
 import { ACCOUNT_STATUS, SORT_ORDER } from "../../../constants";
 
 export class ValidateAdminOpsRiders {
@@ -26,6 +26,17 @@ export class ValidateAdminOpsRiders {
     });
 
     validateSchema(schema, queryData);
+    return;
+  };
+
+  static findNearbyRiders = async (data: FindNearbyRidersParams) => {
+    const schema = Joi.object({
+      lng: Joi.number().required().min(-180).max(180),
+      lat: Joi.number().required().min(-90).max(90),
+      distanceInKM: Joi.number().required().min(0.1).max(100),
+    });
+
+    validateSchema(schema, data);
     return;
   };
 }

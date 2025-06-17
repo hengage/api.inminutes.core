@@ -4,7 +4,10 @@ import { handleErrorResponse } from "../../../utils";
 import { handleSuccessResponse } from "../../../utils/response.utils";
 import { ridersService } from "../../riders";
 import { validateRider } from "../../riders/validators/riders.validators";
-import { GetRidersQueryparams } from "../interfaces/rider.interface";
+import {
+  FindNearbyRidersParams,
+  GetRidersQueryparams,
+} from "../interfaces/rider.interface";
 import { adminOpsRidersService } from "../services/riders.service";
 import { ValidateAdminOpsRiders } from "../validators/adminOpsRiders.validate";
 import { Coordinates } from "../../../types";
@@ -174,10 +177,16 @@ export const adminOpsRidersController: AdminOpsRidersController = {
 
   async findNearbyRiders(req: Request, res: Response): Promise<void> {
     try {
-      const { coordinates, distanceInKM } = req.body as {
-        coordinates: Coordinates;
-        distanceInKM: number;
-      };
+      await ValidateAdminOpsRiders.findNearbyRiders(
+        req.query as unknown as FindNearbyRidersParams
+      );
+
+      const coordinates: Coordinates = [
+        parseFloat(req.query.lng as string),
+        parseFloat(req.query.lat as string),
+      ];
+      const distanceInKM: number = parseFloat(req.query.distanceInKM as string);
+
       const riders = await adminOpsRidersService.findNearbyRiders({
         coordinates,
         distanceInKM,
