@@ -7,10 +7,12 @@ import {
 } from "../../../utils";
 import { HTTP_STATUS_CODES } from "../../../constants";
 import { GetErrandsQueryParams } from "../interfaces/errands.interface";
+import { ValidateAdminOpsErrands } from "../validators/adminOpsErrands.validate";
 
 export const AdminOpsForErrandsController = {
   async getList(req: Request, res: Response) {
     try {
+      ValidateAdminOpsErrands.getList(req.query);
       const errands = await AdminOpsForErrandsService.getList(
         req.query as GetErrandsQueryParams
       );
