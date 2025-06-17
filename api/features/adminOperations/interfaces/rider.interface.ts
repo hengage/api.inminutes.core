@@ -20,3 +20,9 @@ export interface RiderSummaryResponse {
   newRiders: number;
   returningRiders: any;
 }
+
+export interface FindNearbyRidersParams {
+  lng: string;
+  lat: string;
+  distanceInKM: string;
+}
