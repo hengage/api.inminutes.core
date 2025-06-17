@@ -1,5 +1,9 @@
 import { FilterQuery, PaginateResult } from "mongoose";
-import { HTTP_STATUS_CODES, SORT_ORDER } from "../../../constants";
+import {
+  ErrandStatus,
+  HTTP_STATUS_CODES,
+  SORT_ORDER,
+} from "../../../constants";
 import {
   addDateRangeFilter,
   buildFilterQuery,
@@ -27,7 +31,7 @@ export const AdminOpsForErrandsService = {
           { path: "customer", select: "fullName" },
           { path: "rider", select: "fullName" },
         ],
-        sort: { createdAt: filter.sort === SORT_ORDER.ASC ? 1 : -1 },
+        sort: { createdAt: filter.sortOrder === SORT_ORDER.ASC ? 1 : -1 },
       },
       isNaN(page) ? undefined : page,
       isNaN(limit) ? undefined : limit
@@ -37,11 +41,18 @@ export const AdminOpsForErrandsService = {
     if (filter) {
       const { fromDate, toDate, ...otherFilters } = filter;
 
+      // Filter for only ongoing orders if requested
+      if (filter.onlyOngoing) {
+        filterQuery.status = {
+          $nin: [ErrandStatus.DELIVERED, ErrandStatus.CANCELLED],
+        };
+      }
+
       addDateRangeFilter(filterQuery, fromDate, toDate);
 
       const queryFilters: Record<string, string> = excludeObjectKeys(
         otherFilters,
-        ["sort", "page", "limit"]
+        ["sortOrder", "page", "limit", "onlyOngoing"]
       );
 
       const searchFields = ["_id"];

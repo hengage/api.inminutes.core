@@ -8,7 +8,8 @@ export interface GetErrandsQueryParams {
   rider?: string;
   searchQuery?: string;
   type?: ORDER_TYPE;
-  sort?: SORT_ORDER;
+  sortOrder?: SORT_ORDER;
+  onlyOngoing?: true;
   page?: number | string;
   limit?: number | string;
 }
