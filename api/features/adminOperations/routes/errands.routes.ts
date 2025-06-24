@@ -25,5 +25,9 @@ export class AdminOpsErrandsRoutes {
     this.router
       .route("/package-types/:packageTypeId")
       .delete(AdminOpsForErrandsController.deletePackageType);
+
+    this.router
+      .route("/:errandId/assign-rider")
+      .patch(AdminOpsForErrandsController.assignRider);
   }
 }

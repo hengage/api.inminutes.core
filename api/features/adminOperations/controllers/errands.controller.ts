@@ -4,6 +4,7 @@ import {
   handleErrorResponse,
   Msg,
   handleSuccessResponse,
+  capitalize,
 } from "../../../utils";
 import { HTTP_STATUS_CODES } from "../../../constants";
 import { GetErrandsQueryParams } from "../interfaces/errands.interface";
@@ -68,6 +69,26 @@ export const AdminOpsForErrandsController = {
         message: Msg.DELETE_SUCCESS("package type"),
       });
     } catch (error: unknown) {
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  },
+
+  async assignRider(req: Request, res: Response) {
+    try {
+      const errand = await AdminOpsForErrandsService.assignRider(
+        req.params.errandId,
+        req.body.riderId
+      );
+      const riderName = capitalize(errand?.rider?.fullName as string);
+
+      handleSuccessResponse(
+        res,
+        HTTP_STATUS_CODES.OK,
+        { errand },
+        `You have assigned ${riderName} (id: ${errand?.rider?._id}) to this errand`
+      );
+    } catch (error) {
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
     }
