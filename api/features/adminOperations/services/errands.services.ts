@@ -1,5 +1,6 @@
 import { FilterQuery, PaginateResult } from "mongoose";
 import {
+  DB_SCHEMA,
   ErrandStatus,
   HTTP_STATUS_CODES,
   SORT_ORDER,
@@ -16,6 +17,7 @@ import { Errand, ErrandPackageType } from "../../errand/";
 import { IErrandDocument } from "../../errand";
 import { IErrandPackageTypeDocument } from "../../errand/errand.interface";
 import { GetErrandsQueryParams } from "../interfaces/errands.interface";
+import { RidersRepository } from "../../riders";
 
 export const AdminOpsForErrandsService = {
   async getList(
@@ -135,5 +137,47 @@ export const AdminOpsForErrandsService = {
         Msg.ERROR_NOT_FOUND("package type", packageTypeId)
       );
     }
+  },
+
+  async assignRider(
+    errandId: IErrandDocument["_id"],
+    riderId: string
+  ): Promise<IErrandDocument | null> {
+    const ridersRepo = new RidersRepository();
+
+    const [errand, rider] = await Promise.all([
+      Errand.findById(errandId)
+        .select(DB_SCHEMA.RIDER.toLocaleLowerCase())
+        .lean(),
+      ridersRepo.findActiveRider(riderId, ["_id", "currentlyWorking"]),
+    ]);
+
+    if (!errand) {
+      throw new HandleException(
+        HTTP_STATUS_CODES.NOT_FOUND,
+        Msg.ERROR_NOT_FOUND(DB_SCHEMA.ERRAND, errandId)
+      );
+    }
+
+    if (rider!.currentlyWorking !== true) {
+      throw new HandleException(
+        HTTP_STATUS_CODES.UNPROCESSABLE_ENTITY,
+        Msg.ERROR_RIDER_NOT_WORKING()
+      );
+    }
+
+    const updatedErrand = await Errand.findOneAndUpdate(
+      { _id: errandId },
+      { rider: rider!._id },
+      { new: true }
+    )
+      .select("_id")
+      .populate({
+        path: DB_SCHEMA.RIDER.toLowerCase(),
+        select: "fullName",
+        options: { lean: true },
+      })
+      .lean();
+    return updatedErrand;
   },
 };

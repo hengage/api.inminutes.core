@@ -12,7 +12,7 @@ export interface IErrandDocument extends Document {
     name: string;
     phoneNumber: string;
   };
-  rider: IRiderDocument["_id"];
+  rider: IRiderDocument;
   description?: string;
   pickupAddress: string;
   pickupCoordinates: {
