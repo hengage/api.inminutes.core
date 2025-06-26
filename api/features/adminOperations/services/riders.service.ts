@@ -28,6 +28,7 @@ import {
   RiderSummaryResponse,
 } from "../interfaces/rider.interface";
 import { Coordinates } from "../../../types";
+import { Errand } from "../../errand";
 
 export const adminOpsRidersService = {
   ridersRepo: new RidersRepository(),
@@ -63,10 +64,19 @@ export const adminOpsRidersService = {
     return riders;
   },
 
-  async riderDetails(riderId: string): Promise<IRiderDocument | null> {
-    const rider = await Rider.findById(riderId)
-      .select("-__v -updatedAt -location.type -password")
-      .lean();
+  async riderDetails(riderId: string) {
+    const [rider, totalOrders, totalErrands] = await Promise.all([
+      Rider.findById(riderId)
+        .select("-__v -updatedAt -location.type -password")
+        .lean(),
+
+      Order.countDocuments({
+        rider: riderId,
+      }),
+      Errand.countDocuments({
+        rider: riderId,
+      }),
+    ]);
 
     if (!rider) {
       throw new HandleException(
@@ -74,7 +84,11 @@ export const adminOpsRidersService = {
         Msg.ERROR_RIDER_NOT_FOUND(riderId)
       );
     }
-    return rider;
+
+    return {
+      rider,
+      totalDeliveries: totalOrders + totalErrands,
+    };
   },
 
   /**

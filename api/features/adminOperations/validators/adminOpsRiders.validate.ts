@@ -1,7 +1,14 @@
 import Joi from "joi";
 import { validateSchema } from "../../../utils/validation.utils";
-import { FindNearbyRidersParams, GetRidersQueryparams } from "../interfaces/rider.interface";
-import { ACCOUNT_STATUS, SORT_ORDER } from "../../../constants";
+import {
+  FindNearbyRidersParams,
+  GetRidersQueryparams,
+} from "../interfaces/rider.interface";
+import {
+  ACCOUNT_STATUS,
+  SORT_ORDER,
+  USER_APPROVAL_STATUS,
+} from "../../../constants";
 
 export class ValidateAdminOpsRiders {
   static getRiders = async (queryData: GetRidersQueryparams) => {
@@ -11,6 +18,9 @@ export class ValidateAdminOpsRiders {
       accountStatus: Joi.string()
         .optional()
         .valid(...Object.values(ACCOUNT_STATUS)),
+      approvalStatus: Joi.string()
+        .optional()
+        .valid(...Object.values(USER_APPROVAL_STATUS)),
       fromDate: Joi.string().isoDate().optional(),
       toDate: Joi.string().isoDate().optional(),
       searchQuery: Joi.string().optional(),
