@@ -37,7 +37,7 @@ export const adminOpsWorkAreaService = {
     return workAreas;
   },
 
-  async getWorkSlotSessionsPerArea(
+  async getWorkSessionsPerArea(
     areaId: string,
     date: Date
   ): Promise<Partial<IWorkSlotSessionDocument>[]> {
