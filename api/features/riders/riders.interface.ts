@@ -24,7 +24,7 @@ export interface IRiderDocument extends Document {
   currentlyWorking: boolean;
   accountStatus: ACCOUNT_STATUS;
   approvalStatus: USER_APPROVAL_STATUS;
-  isDeleted: Boolean;
+  isDeleted: boolean;
   rating: {
     totalRatingSum: number;
     ratingCount: number;
@@ -61,12 +61,6 @@ export interface IWorkAreaDocument extends Document {
   };
   maxSlotsRequired: number;
 }
-export interface ITimeSlotDocument extends Document {
-  _id: string;
-  startTime: Number;
-  endTime: Number;
-  status: string;
-}
 
 export interface IRiderBookingDocument extends Document {
   rider: string;
@@ -78,14 +72,12 @@ export interface IBookSlotData {
   riderId: IRiderDocument["_id"];
   areaId: IWorkAreaDocument["_id"];
   date: Date;
-  session: IWorkSlotSessions;
+  session: WORK_SLOT_SESSIONS;
 }
 
 export interface ICreateWorkSlotSession {
   areaId: IWorkAreaDocument["_id"];
   date: Date;
-  session: string;
+  session: WORK_SLOT_SESSIONS;
   maxSlots: number;
 }
-
-export type IWorkSlotSessions = `${WORK_SLOT_SESSIONS}`;

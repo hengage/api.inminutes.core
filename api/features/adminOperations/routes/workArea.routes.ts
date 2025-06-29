@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { AdminOpsworkAreaController } from "../controllers/workArea.Controller";
+import { AdminOpsworkAreaController } from "../controllers/workAreaAndSessions.Controller";
 
 export class AdminOpsWorkAreaRoutes {
   public router: Router;
@@ -17,7 +17,7 @@ export class AdminOpsWorkAreaRoutes {
     this.router.route("/").get(this.adminOpsworkAreaController.getWorkAreas);
     this.router
       .route("/:workAreaId/sessions")
-      .get(this.adminOpsworkAreaController.getWorkSlotSessionsPerArea);
+      .get(this.adminOpsworkAreaController.getWorkSessionsPerArea);
     this.router
       .route("/:workAreaId/sessions/:workSessionId/riders")
       .get(this.adminOpsworkAreaController.getBookedRidersForSession);

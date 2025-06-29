@@ -12,7 +12,7 @@ import {
 
 export const adminOpsWorkAreaService = {
   async addWorkArea(
-    workAreaData: addWorkAreaData,
+    workAreaData: addWorkAreaData
   ): Promise<Partial<IWorkAreaDocument>> {
     const workArea = await WorkArea.create({
       name: workAreaData.name,
@@ -37,31 +37,23 @@ export const adminOpsWorkAreaService = {
     return workAreas;
   },
 
-  async getWorkSlotSessionsPerArea(
+  async getWorkSessionsPerArea(
     areaId: string,
-    date: Date,
+    date: Date
   ): Promise<Partial<IWorkSlotSessionDocument>[]> {
-    const startOfDay = new Date(date);
-    startOfDay.setUTCHours(0, 0, 0, 0); 
-    
-    const endOfDay = new Date(date);
-    endOfDay.setUTCHours(23, 59, 59, 999);
-
+    const parsedDate = new Date(date);
     const timeSlots = await RidersWorkSlotSession.find({
       area: areaId,
-      date: {
-        $gte: startOfDay,
-        $lte: endOfDay,
-      },
+      date: parsedDate,
     })
-      // .select("")
+      .sort({ session: "asc" })
       .lean()
       .exec();
     return timeSlots;
   },
 
   async getBookedRidersForSession(
-    workSessionId: IWorkSlotSessionDocument["_id"],
+    workSessionId: IWorkSlotSessionDocument["_id"]
   ): Promise<IRiderBookingDocument["rider"][]> {
     const riderBookings = await RiderBooking.find({
       workSlotSession: workSessionId,
