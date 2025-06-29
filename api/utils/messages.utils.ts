@@ -1,5 +1,6 @@
 import { ACCOUNT_STATUS } from "../constants";
 import { UserId } from "../types";
+import { capitalize } from "./strings.utils";
 
 export const Msg = {
   ERROR_NO_USER_FOUND(data: unknown) {
@@ -89,6 +90,9 @@ export const Msg = {
   },
   ERROR_INVALID_SORT_ORDER() {
     return "Invalid sort order. Must be  either 'asc' or 'desc'";
+  },
+  ERROR_WORK_AREA_ALREADY_EXISTS(areaName: string) {
+    return `A work area named ${capitalize(areaName)} is already registered in the system`;
   },
   WALLET_CREDITED(amount: string) {
     return (
