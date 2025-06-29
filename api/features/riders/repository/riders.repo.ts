@@ -115,16 +115,6 @@ export class RidersRepository {
       );
     }
 
-    if (
-      rider.approvalStatus != USER_APPROVAL_STATUS.APPROVED ||
-      rider.accountStatus != ACCOUNT_STATUS.ACTIVE
-    ) {
-      throw new HandleException(
-        HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_NOT_ACTIVE()
-      );
-    }
-
     return {
       _id: rider._id,
       phoneNumber: rider.phoneNumber,

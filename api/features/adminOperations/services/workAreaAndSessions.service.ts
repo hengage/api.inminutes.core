@@ -1,4 +1,6 @@
+import { HTTP_STATUS_CODES } from "../../../constants";
 import { Coordinates } from "../../../types";
+import { HandleException, Msg } from "../../../utils";
 import {
   IWorkAreaDocument,
   RiderBooking,
@@ -14,8 +16,20 @@ export const adminOpsWorkAreaService = {
   async addWorkArea(
     workAreaData: addWorkAreaData
   ): Promise<Partial<IWorkAreaDocument>> {
+    const { name: areaName } = workAreaData;
+
+    const existingWorkArea = await WorkArea.findOne({
+      name: areaName.toLowerCase(),
+    });
+    if (existingWorkArea) {
+      throw new HandleException(
+        HTTP_STATUS_CODES.CONFLICT,
+        Msg.ERROR_WORK_AREA_ALREADY_EXISTS(areaName)
+      );
+    }
+
     const workArea = await WorkArea.create({
-      name: workAreaData.name,
+      name: areaName.toLowerCase(),
       location: {
         coordinates: workAreaData.coordinates,
       },
