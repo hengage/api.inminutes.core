@@ -37,7 +37,7 @@ class WorkSlotRepository {
     if (workSlotSession.availableSlots === 0) {
       throw new HandleException(
         400,
-        "The location is fully booked for this session. Please choose another session.",
+        "The location is fully booked for this session. Please choose another session."
       );
     }
     workSlotSession.availableSlots -= 1;
@@ -51,17 +51,17 @@ class WorkSlotRepository {
     });
     await booking.save();
 
-    return workSlotSession;
+    return booking;
   }
 
   private async validateWorkAreaExists(
-    areaId: string,
+    areaId: string
   ): Promise<IWorkAreaDocument> {
     const area = await WorkArea.findById(areaId);
     if (!area) {
       throw new HandleException(
         400,
-        "The location is invalid or has not been added yet",
+        "The location is invalid or has not been added yet"
       );
     }
     return area;
@@ -72,7 +72,7 @@ class WorkSlotRepository {
    */
   private async checkExistingBooking(
     riderId: IRiderDocument["_id"],
-    workSlotSessionId: IWorkSlotSessionDocument["_id"],
+    workSlotSessionId: IWorkSlotSessionDocument["_id"]
   ): Promise<void> {
     const existingBooking = await RiderBooking.exists({
       rider: riderId,
@@ -88,7 +88,7 @@ class WorkSlotRepository {
    * Gets or creates a work slot session
    */
   private async getOrCreateWorkSlotSession(
-    createWorkSessionData: ICreateWorkSlotSession,
+    createWorkSessionData: ICreateWorkSlotSession
   ): Promise<IWorkSlotSessionDocument> {
     const { areaId, date, session, maxSlots } = createWorkSessionData;
 
@@ -127,7 +127,7 @@ class WorkSlotRepository {
       {
         $set: { status: status },
       },
-      { new: true, session },
+      { new: true, session }
     ).select("status");
     console.log({ slot });
     return slot;
