@@ -85,10 +85,10 @@ export const adminOpsRidersService = {
       );
     }
 
-    return {
-      rider,
-      totalDeliveries: totalOrders + totalErrands,
-    };
+    const totalDeliveries = totalOrders + totalErrands;
+    const riderObj = rider as IRiderDocument & { totalDeliveries: number };
+    riderObj.totalDeliveries = totalDeliveries;
+    return riderObj;
   },
 
   /**
