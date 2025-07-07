@@ -1,5 +1,7 @@
 import { ORDER_STATUS, USER_APPROVAL_STATUS } from "../../../constants";
+import { Errand } from "../../errand";
 import { Order } from "../../orders";
+import { Rider } from "../../riders";
 import { Vendor, VendorCategory, VendorSubCategory } from "../../vendors";
 
 export const AdminOpsMetricsService = {
@@ -155,5 +157,96 @@ export const AdminOpsMetricsService = {
     ]);
 
     return topCategories;
+  },
+
+  async getRidersSummary() {
+    const [
+      totalRiders,
+      totalPendingRiders,
+      totalOrdersForRiders,
+      totalErrandsForRiders,
+    ] = await Promise.all([
+      Rider.countDocuments({
+        isDeleted: false,
+        approvalStatus: USER_APPROVAL_STATUS.APPROVED,
+      }),
+      Rider.countDocuments({ approvalStatus: USER_APPROVAL_STATUS.PENDING }),
+      Order.countDocuments({ rider: { $exists: true } }),
+      Errand.countDocuments({ rider: { $exists: true } }),
+    ]);
+
+    return {
+      totalRiders,
+      totalPendingRiders,
+      totalOrdersForRiders,
+      totalErrandsForRiders,
+    };
+  },
+
+  async getTopRiders() {
+    const orderDeliveries = await Order.aggregate([
+      {
+        $match: {
+          status: ORDER_STATUS.DELIVERED,
+          rider: { $ne: null },
+        },
+      },
+      {
+        $group: {
+          _id: "$rider",
+          orderCount: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const errandDeliveries = await Errand.aggregate([
+      {
+        $match: {
+          status: ORDER_STATUS.DELIVERED,
+          rider: { $ne: null },
+        },
+      },
+      {
+        $group: {
+          _id: "$rider",
+          errandCount: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const deliveryMap = new Map<string, number>();
+
+    for (const order of orderDeliveries) {
+      deliveryMap.set(order._id, order.orderCount);
+    }
+
+    for (const errand of errandDeliveries) {
+      const current = deliveryMap.get(errand._id) || 0;
+      deliveryMap.set(errand._id, current + errand.errandCount);
+    }
+
+    const topRiderIds = [...deliveryMap.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([riderId]) => riderId);
+
+    const riders = await Rider.find(
+      { _id: { $in: topRiderIds } },
+      { _id: 1, fullName: 1 }
+    ).lean();
+
+    return topRiderIds.reduce(
+      (acc, id) => {
+        const rider = riders.find((r) => r._id === id);
+        if (rider && rider._id) {
+          acc.push({
+            riderId: rider._id,
+            fullName: rider.fullName,
+          });
+        }
+        return acc;
+      },
+      [] as { riderId: string; fullName: string }[]
+    );
   },
 };

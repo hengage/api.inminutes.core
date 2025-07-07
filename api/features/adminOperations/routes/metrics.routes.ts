@@ -18,5 +18,9 @@ export class AdminOpsMetricsRoutes {
     this.router
       .route("/vendors/categories/top")
       .get(MetricsController.getTopVendorCategories);
+    this.router
+      .route("/riders/summary")
+      .get(MetricsController.getRidersSummary);
+    this.router.route("/riders/top").get(MetricsController.getTopRiders);
   }
 }

@@ -39,4 +39,24 @@ export const MetricsController = {
       res.status(statusCode).json(errorJSON);
     }
   },
+
+  async getRidersSummary(req: Request, res: Response) {
+    try {
+      const summary = await AdminOpsMetricsService.getRidersSummary();
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, summary);
+    } catch (error) {
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  },
+
+  async getTopRiders(req: Request, res: Response) {
+    try {
+      const topRiders = await AdminOpsMetricsService.getTopRiders();
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, topRiders);
+    } catch (error) {
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  },
 };
