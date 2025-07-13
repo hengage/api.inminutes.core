@@ -59,4 +59,14 @@ export const MetricsController = {
       res.status(statusCode).json(errorJSON);
     }
   },
+
+  async getTopProducts(req: Request, res: Response) {
+    try {
+      const topProducts = await AdminOpsMetricsService.getTopProducts();
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, topProducts);
+    } catch (error) {
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  },
 };

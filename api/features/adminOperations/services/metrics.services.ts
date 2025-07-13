@@ -246,4 +246,105 @@ export const AdminOpsMetricsService = {
 
     return topRiders;
   },
+
+  async getTopProducts() {
+    const topProducts = await Order.aggregate([
+      {
+        $match: {
+          status: ORDER_STATUS.DELIVERED,
+        },
+      },
+      {
+        $unwind: "$items",
+      },
+      {
+        $group: {
+          _id: "$items.product",
+          totalQuantitySold: { $sum: "$items.quantity" },
+          orderCount: { $sum: 1 },
+          totalRevenue: {
+            $sum: {
+              $multiply: [
+                "$items.quantity",
+                {
+                  $toDouble: "$items.cost",
+                },
+              ],
+            },
+          },
+        },
+      },
+      {
+        $addFields: {
+          hybridScore: {
+            $add: [
+              { $multiply: ["$totalQuantitySold", 1] }, // Quantity weight: 1x
+              { $multiply: ["$orderCount", 2] }, // Popularity weight: 2x
+              { $multiply: ["$totalRevenue", 0.01] }, // Revenue weight: 0.01x
+            ],
+          },
+        },
+      },
+      {
+        $limit: 5,
+      },
+      {
+        $group: {
+          _id: null,
+          products: { $push: "$$ROOT" },
+          totalOrders: { $sum: "$orderCount" },
+        },
+      },
+      {
+        $unwind: "$products",
+      },
+      {
+        $addFields: {
+          "products.popularityPercentage": {
+            $round: [
+              {
+                $multiply: [
+                  { $divide: ["$products.orderCount", "$totalOrders"] },
+                  100,
+                ],
+              },
+              0,
+            ],
+          },
+        },
+      },
+      {
+        $replaceRoot: { newRoot: "$products" },
+      },
+
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "_id",
+          as: "productInfo",
+        },
+      },
+      {
+        $match: {
+          "productInfo.0": { $exists: true },
+        },
+      },
+      {
+        $sort: { popularityPercentage: -1 },
+      },
+      {
+        $project: {
+          productName: { $arrayElemAt: ["$productInfo.name", 0] },
+          totalQuantitySold: 1,
+          orderCount: 1,
+          totalRevenue: 1,
+          hybridScore: 1,
+          popularityPercentage: 1,
+        },
+      },
+    ]);
+
+    return topProducts;
+  },
 };
