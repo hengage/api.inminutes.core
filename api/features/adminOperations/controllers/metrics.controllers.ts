@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { HTTP_STATUS_CODES } from "../../../constants";
 import { handleErrorResponse, handleSuccessResponse } from "../../../utils";
 import { AdminOpsMetricsService } from "../services/metrics.services";
-import { get } from "mongoose";
 
 export const MetricsController = {
   async getVendorsSummary(req: Request, res: Response) {

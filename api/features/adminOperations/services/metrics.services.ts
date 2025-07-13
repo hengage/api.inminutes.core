@@ -9,7 +9,7 @@ import { Customer } from "../../customers";
 import { Errand } from "../../errand";
 import { Order } from "../../orders";
 import { Product, ProductCategory, ProductSubCategory } from "../../products";
-import { IRiderDocument, Rider } from "../../riders";
+import { Rider } from "../../riders";
 import { Vendor, VendorCategory, VendorSubCategory } from "../../vendors";
 
 export const AdminOpsMetricsService = {
