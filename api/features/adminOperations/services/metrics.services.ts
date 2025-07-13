@@ -1,6 +1,11 @@
-import { ORDER_STATUS, USER_APPROVAL_STATUS } from "../../../constants";
+import {
+  ORDER_STATUS,
+  PRODUCT_STATUS,
+  USER_APPROVAL_STATUS,
+} from "../../../constants";
 import { Errand } from "../../errand";
 import { Order } from "../../orders";
+import { Product, ProductCategory, ProductSubCategory } from "../../products";
 import { IRiderDocument, Rider } from "../../riders";
 import { Vendor, VendorCategory, VendorSubCategory } from "../../vendors";
 
@@ -247,6 +252,23 @@ export const AdminOpsMetricsService = {
     return topRiders;
   },
 
+  async getProductsSummary() {
+    const [totalProducts, categories, subCategories, productApplicants] =
+      await Promise.all([
+        Product.countDocuments({ isDeleted: false }),
+        ProductCategory.countDocuments(),
+        ProductSubCategory.countDocuments(),
+        Product.countDocuments({ status: PRODUCT_STATUS.PENDING }),
+      ]);
+
+    return {
+      totalProducts,
+      productApplicants,
+      categories,
+      subCategories,
+    };
+  },
+
   async getTopProducts() {
     const topProducts = await Order.aggregate([
       {
@@ -346,5 +368,44 @@ export const AdminOpsMetricsService = {
     ]);
 
     return topProducts;
+  },
+
+  async getTopProductCategories() {
+    const topCategories = await Product.aggregate([
+      {
+        $match: {
+          isDeleted: false, // Only active products
+        },
+      },
+      {
+        $group: {
+          _id: "$category",
+          productCount: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { productCount: -1 },
+      },
+      {
+        $limit: 5,
+      },
+      {
+        $lookup: {
+          from: "productcategories",
+          localField: "_id",
+          foreignField: "_id",
+          as: "categoryInfo",
+        },
+      },
+      {
+        $project: {
+          categoryId: "$_id",
+          categoryName: { $arrayElemAt: ["$categoryInfo.name", 0] },
+          productCount: 1,
+        },
+      },
+    ]);
+
+    return topCategories;
   },
 };

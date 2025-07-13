@@ -60,10 +60,31 @@ export const MetricsController = {
     }
   },
 
+  async getProductsSummary(req: Request, res: Response) {
+    try {
+      const summary = await AdminOpsMetricsService.getProductsSummary();
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, summary);
+    } catch (error) {
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  },
+
   async getTopProducts(req: Request, res: Response) {
     try {
       const topProducts = await AdminOpsMetricsService.getTopProducts();
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, topProducts);
+    } catch (error) {
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  },
+
+  async getTopProductCategories(req: Request, res: Response) {
+    try {
+      const topProductCategories =
+        await AdminOpsMetricsService.getTopProductCategories();
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, topProductCategories);
     } catch (error) {
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);

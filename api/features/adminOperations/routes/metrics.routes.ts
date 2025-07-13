@@ -22,6 +22,12 @@ export class AdminOpsMetricsRoutes {
       .route("/riders/summary")
       .get(MetricsController.getRidersSummary);
     this.router.route("/riders/top").get(MetricsController.getTopRiders);
+    this.router
+      .route("/products/summary")
+      .get(MetricsController.getProductsSummary);
     this.router.route("/products/top").get(MetricsController.getTopProducts);
+    this.router
+      .route("/products/categories/top")
+      .get(MetricsController.getTopProductCategories);
   }
 }
