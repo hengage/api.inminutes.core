@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { HTTP_STATUS_CODES } from "../../../constants";
 import { handleErrorResponse, handleSuccessResponse } from "../../../utils";
 import { AdminOpsMetricsService } from "../services/metrics.services";
+import { get } from "mongoose";
 
 export const MetricsController = {
   async getVendorsSummary(req: Request, res: Response) {
@@ -85,6 +86,26 @@ export const MetricsController = {
       const topProductCategories =
         await AdminOpsMetricsService.getTopProductCategories();
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, topProductCategories);
+    } catch (error) {
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  },
+
+  async getCustomersSummary(req: Request, res: Response) {
+    try {
+      const summary = await AdminOpsMetricsService.getCustomersSummary();
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, summary);
+    } catch (error) {
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  },
+
+  async getTopCustomers(req: Request, res: Response) {
+    try {
+      const topCustomers = await AdminOpsMetricsService.getTopCustomers();
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, topCustomers);
     } catch (error) {
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);

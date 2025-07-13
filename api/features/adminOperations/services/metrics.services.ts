@@ -1,8 +1,11 @@
 import {
+  ACCOUNT_STATUS,
+  ErrandStatus,
   ORDER_STATUS,
   PRODUCT_STATUS,
   USER_APPROVAL_STATUS,
 } from "../../../constants";
+import { Customer } from "../../customers";
 import { Errand } from "../../errand";
 import { Order } from "../../orders";
 import { Product, ProductCategory, ProductSubCategory } from "../../products";
@@ -407,5 +410,123 @@ export const AdminOpsMetricsService = {
     ]);
 
     return topCategories;
+  },
+
+  async getCustomersSummary() {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const _90DaysAgo = new Date();
+    _90DaysAgo.setDate(_90DaysAgo.getDate() - 90);
+
+    // Run all operations concurrently
+    const [totalCustomers, newCustomers, returningCustomersResult] =
+      await Promise.all([
+        Customer.countDocuments({
+          accountStatus: ACCOUNT_STATUS.ACTIVE,
+        }),
+
+        // New Customers (created in last 30 days)
+        Customer.countDocuments({
+          accountStatus: ACCOUNT_STATUS.ACTIVE,
+          createdAt: { $gte: thirtyDaysAgo },
+        }),
+
+        // Returning Customers (2+ orders in last 30 days)
+        Order.aggregate([
+          {
+            $match: {
+              createdAt: { $gte: _90DaysAgo },
+            },
+          },
+          {
+            $group: {
+              _id: "$customer",
+              orderCount: { $sum: 1 },
+            },
+          },
+          {
+            $match: {
+              orderCount: { $gt: 1 }, // More than 1 order in timeframe
+            },
+          },
+          {
+            $count: "returningCustomers",
+          },
+        ]),
+      ]);
+
+    const returningCustomers =
+      returningCustomersResult[0]?.returningCustomers || 0;
+
+    return {
+      totalCustomers,
+      newCustomers,
+      returningCustomers,
+    };
+  },
+
+  async getTopCustomers() {
+    const topCustomers = await Order.aggregate([
+      {
+        $match: {
+          status: ORDER_STATUS.DELIVERED,
+          customer: { $nin: [null, ""] },
+        },
+      },
+      {
+        $project: {
+          customer: 1,
+          deliveryType: { $literal: "order" },
+        },
+      },
+      {
+        $unionWith: {
+          coll: "errands",
+          pipeline: [
+            {
+              $match: {
+                status: ErrandStatus.DELIVERED,
+                customer: { $nin: [null, ""] },
+              },
+            },
+            {
+              $project: {
+                customer: 1,
+                deliveryType: { $literal: "errand" },
+              },
+            },
+          ],
+        },
+      },
+      {
+        $group: {
+          _id: "$customer",
+          totalDeliveries: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { totalDeliveries: -1 },
+      },
+      {
+        $limit: 5,
+      },
+      {
+        $lookup: {
+          from: "customers",
+          localField: "_id",
+          foreignField: "_id",
+          as: "customerInfo",
+        },
+      },
+      {
+        $project: {
+          fullName: { $arrayElemAt: ["$customerInfo.fullName", 0] },
+          totalDeliveries: 1,
+        },
+      },
+    ]);
+
+    return topCustomers;
   },
 };
