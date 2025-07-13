@@ -1,7 +1,7 @@
 import { ORDER_STATUS, USER_APPROVAL_STATUS } from "../../../constants";
 import { Errand } from "../../errand";
 import { Order } from "../../orders";
-import { Rider } from "../../riders";
+import { IRiderDocument, Rider } from "../../riders";
 import { Vendor, VendorCategory, VendorSubCategory } from "../../vendors";
 
 export const AdminOpsMetricsService = {
@@ -184,69 +184,66 @@ export const AdminOpsMetricsService = {
   },
 
   async getTopRiders() {
-    const orderDeliveries = await Order.aggregate([
+    const topRiders = await Order.aggregate([
       {
         $match: {
           status: ORDER_STATUS.DELIVERED,
-          rider: { $ne: null },
+          rider: { $nin: [null, ""] },
+        },
+      },
+      {
+        $project: {
+          rider: 1,
+          deliveryType: { $literal: "order" },
+        },
+      },
+      {
+        $unionWith: {
+          coll: "errands",
+          pipeline: [
+            {
+              $match: {
+                status: ORDER_STATUS.DELIVERED,
+                rider: { $nin: [null, ""] },
+              },
+            },
+            {
+              $project: {
+                rider: 1,
+                deliveryType: { $literal: "errand" },
+              },
+            },
+          ],
         },
       },
       {
         $group: {
           _id: "$rider",
-          orderCount: { $sum: 1 },
+          totalDeliveries: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { totalDeliveries: -1 },
+      },
+      {
+        $limit: 5,
+      },
+      {
+        $lookup: {
+          from: "riders",
+          localField: "_id",
+          foreignField: "_id",
+          as: "riderInfo",
+        },
+      },
+      {
+        $project: {
+          fullName: { $arrayElemAt: ["$riderInfo.fullName", 0] },
+          totalDeliveries: 1,
         },
       },
     ]);
 
-    const errandDeliveries = await Errand.aggregate([
-      {
-        $match: {
-          status: ORDER_STATUS.DELIVERED,
-          rider: { $ne: null },
-        },
-      },
-      {
-        $group: {
-          _id: "$rider",
-          errandCount: { $sum: 1 },
-        },
-      },
-    ]);
-
-    const deliveryMap = new Map<string, number>();
-
-    for (const order of orderDeliveries) {
-      deliveryMap.set(order._id, order.orderCount);
-    }
-
-    for (const errand of errandDeliveries) {
-      const current = deliveryMap.get(errand._id) || 0;
-      deliveryMap.set(errand._id, current + errand.errandCount);
-    }
-
-    const topRiderIds = [...deliveryMap.entries()]
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
-      .map(([riderId]) => riderId);
-
-    const riders = await Rider.find(
-      { _id: { $in: topRiderIds } },
-      { _id: 1, fullName: 1 }
-    ).lean();
-
-    return topRiderIds.reduce(
-      (acc, id) => {
-        const rider = riders.find((r) => r._id === id);
-        if (rider && rider._id) {
-          acc.push({
-            riderId: rider._id,
-            fullName: rider.fullName,
-          });
-        }
-        return acc;
-      },
-      [] as { riderId: string; fullName: string }[]
-    );
+    return topRiders;
   },
 };
