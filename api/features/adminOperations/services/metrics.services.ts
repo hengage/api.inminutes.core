@@ -167,6 +167,90 @@ export const AdminOpsMetricsService = {
     return topCategories;
   },
 
+  async getVendorsChart(fromDate: string, toDate: string) {
+    // Default to current year if no dates provided
+    const start = fromDate
+      ? new Date(fromDate)
+      : new Date(new Date().getFullYear(), 0, 1);
+    const end = toDate ? new Date(toDate) : new Date();
+
+    const vendorChart = await Vendor.aggregate([
+      {
+        $facet: {
+          // Monthly vendor registrations
+          totalVendors: [
+            {
+              $match: {
+                createdAt: { $gte: start, $lte: end },
+              },
+            },
+            {
+              $group: {
+                _id: {
+                  year: { $year: "$createdAt" },
+                  month: { $month: "$createdAt" },
+                },
+                count: { $sum: 1 },
+              },
+            },
+            {
+              $sort: { "_id.year": 1, "_id.month": 1 },
+            },
+          ],
+
+          // Monthly active vendors (vendors with orders)
+          activeVendors: [
+            {
+              $lookup: {
+                from: "orders",
+                let: { vendorId: "$_id" },
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: { $eq: ["$vendor", "$$vendorId"] },
+                      createdAt: { $gte: start, $lte: end },
+                      status: {
+                        $in: [
+                          ORDER_STATUS.REQUEST_CONFIRMED,
+                          ORDER_STATUS.READY,
+                          ORDER_STATUS.IN_TRANSIT,
+                          ORDER_STATUS.NEARBY,
+                          ORDER_STATUS.READY,
+                          ORDER_STATUS.ARRIVED,
+                          ORDER_STATUS.DELIVERED,
+                        ],
+                      },
+                    },
+                  },
+                ],
+                as: "orders",
+              },
+            },
+            {
+              $match: {
+                "orders.0": { $exists: true }, // Has at least one order
+              },
+            },
+            {
+              $group: {
+                _id: {
+                  year: { $year: "$createdAt" },
+                  month: { $month: "$createdAt" },
+                },
+                count: { $sum: 1 },
+              },
+            },
+            {
+              $sort: { "_id.year": 1, "_id.month": 1 },
+            },
+          ],
+        },
+      },
+    ]);
+
+    return vendorChart[0];
+  },
+
   async getRidersSummary() {
     const [
       totalRiders,
@@ -253,6 +337,117 @@ export const AdminOpsMetricsService = {
     ]);
 
     return topRiders;
+  },
+
+  async getRidersChart(fromDate: string, toDate: string) {
+    const start = fromDate
+      ? new Date(fromDate)
+      : new Date(new Date().getFullYear(), 0, 1);
+    const end = toDate ? new Date(toDate) : new Date();
+
+    const riderChart = await Rider.aggregate([
+      {
+        $facet: {
+          // Monthly rider registrations
+          totalRiders: [
+            {
+              $match: {
+                createdAt: { $gte: start, $lte: end },
+              },
+            },
+            {
+              $group: {
+                _id: {
+                  year: { $year: "$createdAt" },
+                  month: { $month: "$createdAt" },
+                },
+                count: { $sum: 1 },
+              },
+            },
+            {
+              $sort: { "_id.year": 1, "_id.month": 1 },
+            },
+          ],
+
+          // Monthly active riders (riders with orders/errands in progress)
+          activeRiders: [
+            {
+              $lookup: {
+                from: "orders",
+                let: { riderId: "$_id" },
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: { $eq: ["$rider", "$$riderId"] },
+                      createdAt: { $gte: start, $lte: end },
+                      status: {
+                        $in: [
+                          ORDER_STATUS.REQUEST_CONFIRMED,
+                          ORDER_STATUS.READY,
+                          ORDER_STATUS.PICKED_UP,
+                          ORDER_STATUS.IN_TRANSIT,
+                          ORDER_STATUS.NEARBY,
+                          ORDER_STATUS.ARRIVED,
+                          ORDER_STATUS.DELIVERED,
+                        ],
+                      },
+                    },
+                  },
+                ],
+                as: "orders",
+              },
+            },
+            {
+              $lookup: {
+                from: "errands",
+                let: { riderId: "$_id" },
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: { $eq: ["$rider", "$$riderId"] },
+                      createdAt: { $gte: start, $lte: end },
+                      status: {
+                        $in: [
+                          ErrandStatus.RIDER_ASSIGNED,
+                          ErrandStatus.PICKED_UP,
+                          ErrandStatus.IN_TRANSIT,
+                          ErrandStatus.NEARBY,
+                          ErrandStatus.ARRIVED_DELIVERY_LOCATION,
+                          ErrandStatus.DELIVERED,
+                        ],
+                      },
+                    },
+                  },
+                ],
+                as: "errands",
+              },
+            },
+            {
+              $match: {
+                $or: [
+                  { "orders.0": { $exists: true } },
+                  { "errands.0": { $exists: true } },
+                ],
+              },
+            },
+            {
+              $group: {
+                _id: {
+                  year: { $year: "$createdAt" },
+                  month: { $month: "$createdAt" },
+                },
+                count: { $sum: 1 },
+              },
+            },
+            {
+              $sort: { "_id.year": 1, "_id.month": 1 },
+            },
+          ],
+        },
+      },
+    ]);
+
+    return riderChart[0];
   },
 
   async getProductsSummary() {
@@ -412,6 +607,58 @@ export const AdminOpsMetricsService = {
     return topCategories;
   },
 
+  async getProductsChart(toDate: string, fromDate: string) {
+    const start = toDate
+      ? new Date(toDate)
+      : new Date(new Date().getFullYear(), 0, 1);
+    const end = fromDate ? new Date(fromDate) : new Date();
+
+    const productsChart = await Order.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: start, $lte: end },
+          status: {
+            $in: [
+              ORDER_STATUS.REQUEST_CONFIRMED,
+              ORDER_STATUS.READY,
+              ORDER_STATUS.PICKED_UP,
+              ORDER_STATUS.IN_TRANSIT,
+              ORDER_STATUS.NEARBY,
+              ORDER_STATUS.ARRIVED,
+              ORDER_STATUS.DELIVERED,
+            ],
+          },
+        },
+      },
+      {
+        $unwind: "$items",
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" },
+            product: "$items.product",
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            year: "$_id.year",
+            month: "$_id.month",
+          },
+          count: { $sum: 1 }, // Count unique products ordered
+        },
+      },
+      {
+        $sort: { "_id.year": 1, "_id.month": 1 },
+      },
+    ]);
+
+    return productsChart;
+  },
+
   async getCustomersSummary() {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -528,5 +775,78 @@ export const AdminOpsMetricsService = {
     ]);
 
     return topCustomers;
+  },
+
+  async getCustomersChart(toDate: string, fromDate: string) {
+    const start = toDate
+      ? new Date(toDate)
+      : new Date(new Date().getFullYear(), 0, 1);
+    const end = fromDate ? new Date(fromDate) : new Date();
+
+    const customersChart = await Order.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: start, $lte: end },
+          customer: { $nin: [null, ""] },
+          status: {
+            $in: [
+              ORDER_STATUS.REQUEST_CONFIRMED,
+              ORDER_STATUS.READY,
+              ORDER_STATUS.PICKED_UP,
+              ORDER_STATUS.IN_TRANSIT,
+              ORDER_STATUS.NEARBY,
+              ORDER_STATUS.ARRIVED,
+              ORDER_STATUS.DELIVERED,
+            ],
+          },
+        },
+      },
+      {
+        $unionWith: {
+          coll: "errands",
+          pipeline: [
+            {
+              $match: {
+                createdAt: { $gte: start, $lte: end },
+                customer: { $nin: [null, ""] },
+                status: {
+                  $in: [
+                    ErrandStatus.RIDER_ASSIGNED,
+                    ErrandStatus.PICKED_UP,
+                    ErrandStatus.IN_TRANSIT,
+                    ErrandStatus.NEARBY,
+                    ErrandStatus.ARRIVED_DELIVERY_LOCATION,
+                    ErrandStatus.DELIVERED,
+                  ],
+                },
+              },
+            },
+          ],
+        },
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" },
+            customer: "$customer",
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            year: "$_id.year",
+            month: "$_id.month",
+          },
+          count: { $sum: 1 }, // Count unique customers with orders/errands
+        },
+      },
+      {
+        $sort: { "_id.year": 1, "_id.month": 1 },
+      },
+    ]);
+
+    return customersChart;
   },
 };

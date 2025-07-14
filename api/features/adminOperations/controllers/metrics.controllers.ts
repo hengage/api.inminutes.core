@@ -40,6 +40,20 @@ export const MetricsController = {
     }
   },
 
+  async getVendorsChart(req: Request, res: Response) {
+    try {
+      const { fromDate, toDate } = req.query;
+      const metrics = await AdminOpsMetricsService.getVendorsChart(
+        fromDate as string,
+        toDate as string
+      );
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, metrics);
+    } catch (error) {
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  },
+
   async getRidersSummary(req: Request, res: Response) {
     try {
       const summary = await AdminOpsMetricsService.getRidersSummary();
@@ -54,6 +68,20 @@ export const MetricsController = {
     try {
       const topRiders = await AdminOpsMetricsService.getTopRiders();
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, topRiders);
+    } catch (error) {
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  },
+
+  async getRidersChart(req: Request, res: Response) {
+    try {
+      const { fromDate, toDate } = req.query;
+      const metrics = await AdminOpsMetricsService.getRidersChart(
+        fromDate as string,
+        toDate as string
+      );
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, metrics);
     } catch (error) {
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
@@ -91,6 +119,20 @@ export const MetricsController = {
     }
   },
 
+  async getProductsChart(req: Request, res: Response) {
+    try {
+      const { fromDate, toDate } = req.query;
+      const metrics = await AdminOpsMetricsService.getProductsChart(
+        fromDate as string,
+        toDate as string
+      );
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, metrics);
+    } catch (error) {
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  },
+
   async getCustomersSummary(req: Request, res: Response) {
     try {
       const summary = await AdminOpsMetricsService.getCustomersSummary();
@@ -105,6 +147,20 @@ export const MetricsController = {
     try {
       const topCustomers = await AdminOpsMetricsService.getTopCustomers();
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, topCustomers);
+    } catch (error) {
+      const { statusCode, errorJSON } = handleErrorResponse(error);
+      res.status(statusCode).json(errorJSON);
+    }
+  },
+
+  async getCustomersChart(req: Request, res: Response) {
+    try {
+      const { fromDate, toDate } = req.query;
+      const customersChart = await AdminOpsMetricsService.getCustomersChart(
+        fromDate as string,
+        toDate as string
+      );
+      handleSuccessResponse(res, HTTP_STATUS_CODES.OK, customersChart);
     } catch (error) {
       const { statusCode, errorJSON } = handleErrorResponse(error);
       res.status(statusCode).json(errorJSON);
