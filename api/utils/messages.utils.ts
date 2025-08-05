@@ -22,7 +22,7 @@ export const Msg = {
     return `No vendor found at (${JSON.stringify(data)})`;
   },
   ERROR_NOT_ACTIVE() {
-    return `not active or approved`;
+    return `Account is not active, please contact support for assistance`;
   },
   ERROR_AUNAUTHORIZED_USER() {
     return "Unauthorized user";

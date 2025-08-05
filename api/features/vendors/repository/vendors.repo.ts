@@ -9,14 +9,18 @@ import {
 } from "../../../utils";
 import { Vendor } from "../models/vendors.model";
 import { IVendorDocument, IVendorSignupData } from "../vendors.interface";
-import { ACCOUNT_STATUS, Events, GEOLOCATION, HTTP_STATUS_CODES, USER_APPROVAL_STATUS } from "../../../constants";
+import {
+  ACCOUNT_STATUS,
+  Events,
+  GEOLOCATION,
+  HTTP_STATUS_CODES,
+  USER_APPROVAL_STATUS,
+} from "../../../constants";
 import { Coordinates } from "../../../types";
 
-
 class VendorsRepository {
-
   async signup(
-    vendorData: IVendorSignupData,
+    vendorData: IVendorSignupData
   ): Promise<Partial<IVendorDocument>> {
     const vendor = await Vendor.create({
       ...vendorData,
@@ -24,7 +28,7 @@ class VendorsRepository {
       location: {
         coordinates: vendorData.location,
       },
-      approvalStatus: USER_APPROVAL_STATUS.PENDING
+      approvalStatus: USER_APPROVAL_STATUS.PENDING,
     });
 
     emitEvent.emit(Events.CREATE_WALLET, {
@@ -42,13 +46,13 @@ class VendorsRepository {
 
   async login(email: string, password: string) {
     const vendor = await Vendor.findOne({ email }).select(
-      "email phoneNumber password",
+      "email phoneNumber password accountStatus"
     );
 
     if (!vendor) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_INVALID_LOGIN_CREDENTIALS(),
+        Msg.ERROR_INVALID_LOGIN_CREDENTIALS()
       );
     }
 
@@ -56,14 +60,14 @@ class VendorsRepository {
     if (!passwordsMatch) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_INVALID_LOGIN_CREDENTIALS(),
+        Msg.ERROR_INVALID_LOGIN_CREDENTIALS()
       );
     }
 
-    if(vendor.approvalStatus != USER_APPROVAL_STATUS.APPROVED || vendor.accountStatus != ACCOUNT_STATUS.ACTIVE){
+    if (vendor.accountStatus !== ACCOUNT_STATUS.ACTIVE) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_NOT_ACTIVE(),
+        Msg.ERROR_NOT_ACTIVE()
       );
     }
 
@@ -81,7 +85,7 @@ class VendorsRepository {
     if (!vendor) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_VENDOR_NOT_FOUND(id),
+        Msg.ERROR_VENDOR_NOT_FOUND(id)
       );
     }
 
@@ -263,7 +267,7 @@ class VendorsRepository {
 */
   async updateRating(
     updateRatingDto: { vendorId: string; rating: number },
-    session: ClientSession,
+    session: ClientSession
   ) {
     const { vendorId, rating } = updateRatingDto;
     try {
@@ -274,7 +278,7 @@ class VendorsRepository {
       if (!vendor) {
         throw new HandleException(
           HTTP_STATUS_CODES.NOT_FOUND,
-          Msg.ERROR_VENDOR_NOT_FOUND(vendorId),
+          Msg.ERROR_VENDOR_NOT_FOUND(vendorId)
         );
       }
 
