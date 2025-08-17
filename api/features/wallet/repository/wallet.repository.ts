@@ -1,3 +1,4 @@
+import { ClientSession } from "mongoose";
 import { HTTP_STATUS_CODES } from "../../../constants";
 import { HandleException, Msg } from "../../../utils";
 import { Wallet } from "../models/wallet.model";
@@ -9,12 +10,16 @@ class WalletRepository {
 @class
 */
 class WalletRepository {
-  async create(payload: { merchantId?: string; merchantType?: string }) {
-    const wallet = await Wallet.create({
+  async create(
+    payload: { merchantId?: string; merchantType?: string },
+    session?: ClientSession
+  ) {
+    const wallet = new Wallet({
       merchantId: payload.merchantId,
       merchantType: payload.merchantType,
     });
 
+    await wallet.save({ session });
     return wallet;
   }
 
@@ -31,7 +36,7 @@ class WalletRepository {
       if (!wallet) {
         throw new HandleException(
           HTTP_STATUS_CODES.NOT_FOUND,
-          Msg.ERROR_NOT_FOUND('wallet', walletId),
+          Msg.ERROR_NOT_FOUND("wallet", walletId)
         );
       }
 

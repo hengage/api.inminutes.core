@@ -1,47 +1,61 @@
-import { ClientSession } from "mongoose";
-import { emitEvent } from "../../../services";
-import {
-  HandleException,
-  calculateAverageRating,
-  compareValues,
-  formatPhoneNumberforDB,
-  Msg,
-} from "../../../utils";
-import { Vendor } from "../models/vendors.model";
-import { IVendorDocument, IVendorSignupData } from "../vendors.interface";
+import { ClientSession, startSession } from "mongoose";
 import {
   ACCOUNT_STATUS,
-  Events,
   GEOLOCATION,
   HTTP_STATUS_CODES,
   USER_APPROVAL_STATUS,
+  USER_TYPE,
 } from "../../../constants";
 import { Coordinates } from "../../../types";
+import {
+  calculateAverageRating,
+  compareValues,
+  formatPhoneNumberforDB,
+  HandleException,
+  Msg,
+} from "../../../utils";
+import { walletRepo } from "../../wallet";
+import { Vendor } from "../models/vendors.model";
+import { IVendorDocument, IVendorSignupData } from "../vendors.interface";
 
 class VendorsRepository {
   async signup(
     vendorData: IVendorSignupData
   ): Promise<Partial<IVendorDocument>> {
-    const vendor = await Vendor.create({
-      ...vendorData,
-      phoneNumber: formatPhoneNumberforDB(vendorData.phoneNumber),
-      location: {
-        coordinates: vendorData.location,
-      },
-      approvalStatus: USER_APPROVAL_STATUS.PENDING,
-    });
+    const session = await startSession();
 
-    emitEvent.emit(Events.CREATE_WALLET, {
-      vendorId: vendor._id,
-    });
+    try {
+      return await session.withTransaction(async () => {
+        const vendor = new Vendor({
+          ...vendorData,
+          phoneNumber: formatPhoneNumberforDB(vendorData.phoneNumber),
+          location: {
+            coordinates: vendorData.location,
+          },
+          approvalStatus: USER_APPROVAL_STATUS.PENDING,
+        });
 
-    return {
-      _id: vendor._id,
-      businessName: vendor.businessName,
-      businessLogo: vendor.businessLogo,
-      email: vendor.email,
-      phoneNumber: vendor.phoneNumber,
-    };
+        await vendor.save({ session });
+
+        await walletRepo.create(
+          {
+            merchantId: vendor._id,
+            merchantType: USER_TYPE.VENDOR,
+          },
+          session
+        );
+
+        return {
+          _id: vendor._id,
+          businessName: vendor.businessName,
+          businessLogo: vendor.businessLogo,
+          email: vendor.email,
+          phoneNumber: vendor.phoneNumber,
+        };
+      });
+    } finally {
+      await session.endSession();
+    }
   }
 
   async login(email: string, password: string) {
