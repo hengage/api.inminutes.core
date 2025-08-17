@@ -1,4 +1,4 @@
-import { ClientSession } from "mongoose";
+import { ClientSession, startSession } from "mongoose";
 import { emitEvent } from "../../../services";
 import {
   HandleException,
@@ -12,10 +12,11 @@ import { ICreateRiderData, IRiderDocument } from "../riders.interface";
 import {
   ACCOUNT_STATUS,
   DB_SCHEMA,
-  Events,
   HTTP_STATUS_CODES,
   USER_APPROVAL_STATUS,
+  USER_TYPE,
 } from "../../../constants";
+import { walletRepo } from "../../wallet";
 
 /**
 Repository for rider-related database operations.
@@ -69,24 +70,35 @@ export class RidersRepository {
   @param {object} riderData - The rider data.
   */
   async signup(riderData: ICreateRiderData): Promise<Partial<IRiderDocument>> {
-    const formattedPhoneNumber = formatPhoneNumberforDB(riderData.phoneNumber);
-    const rider = await Rider.create({
-      ...riderData,
-      phoneNumber: formattedPhoneNumber,
-      approvalStatus: USER_APPROVAL_STATUS.PENDING,
-    });
+    const session = await startSession();
+    
+    try {
+      return await session.withTransaction(async () => {
+        const formattedPhoneNumber = formatPhoneNumberforDB(riderData.phoneNumber);
+        const rider = new Rider({
+          ...riderData,
+          phoneNumber: formattedPhoneNumber,
+          approvalStatus: USER_APPROVAL_STATUS.PENDING,
+        });
 
-    emitEvent.emit(Events.CREATE_WALLET, {
-      riderId: rider._id,
-    });
+        await rider.save({ session });
 
-    return {
-      _id: rider._id,
-      fullName: rider.fullName,
-      displayName: rider.displayName,
-      email: rider.email,
-      phoneNumber: rider.phoneNumber,
-    };
+        await walletRepo.create({
+          merchantId: rider._id,
+          merchantType: USER_TYPE.RIDER,
+        }, session);
+
+        return {
+          _id: rider._id,
+          fullName: rider.fullName,
+          displayName: rider.displayName,
+          email: rider.email,
+          phoneNumber: rider.phoneNumber,
+        };
+      });
+    } finally {
+      await session.endSession();
+    }
   }
 
   /**

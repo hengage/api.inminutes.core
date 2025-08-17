@@ -1,54 +1,72 @@
-import { ClientSession } from "mongoose";
-import { emitEvent } from "../../../services";
+import { ClientSession, startSession } from "mongoose";
 import {
-  HandleException,
+  ACCOUNT_STATUS,
+  GEOLOCATION,
+  HTTP_STATUS_CODES,
+  USER_APPROVAL_STATUS,
+  USER_TYPE,
+} from "../../../constants";
+import { Coordinates } from "../../../types";
+import {
   calculateAverageRating,
   compareValues,
   formatPhoneNumberforDB,
+  HandleException,
   Msg,
 } from "../../../utils";
+import { walletRepo } from "../../wallet";
 import { Vendor } from "../models/vendors.model";
 import { IVendorDocument, IVendorSignupData } from "../vendors.interface";
-import { ACCOUNT_STATUS, Events, GEOLOCATION, HTTP_STATUS_CODES, USER_APPROVAL_STATUS } from "../../../constants";
-import { Coordinates } from "../../../types";
-
 
 class VendorsRepository {
-
   async signup(
-    vendorData: IVendorSignupData,
+    vendorData: IVendorSignupData
   ): Promise<Partial<IVendorDocument>> {
-    const vendor = await Vendor.create({
-      ...vendorData,
-      phoneNumber: formatPhoneNumberforDB(vendorData.phoneNumber),
-      location: {
-        coordinates: vendorData.location,
-      },
-      approvalStatus: USER_APPROVAL_STATUS.PENDING
-    });
+    const session = await startSession();
 
-    emitEvent.emit(Events.CREATE_WALLET, {
-      vendorId: vendor._id,
-    });
+    try {
+      return await session.withTransaction(async () => {
+        const vendor = new Vendor({
+          ...vendorData,
+          phoneNumber: formatPhoneNumberforDB(vendorData.phoneNumber),
+          location: {
+            coordinates: vendorData.location,
+          },
+          approvalStatus: USER_APPROVAL_STATUS.PENDING,
+        });
 
-    return {
-      _id: vendor._id,
-      businessName: vendor.businessName,
-      businessLogo: vendor.businessLogo,
-      email: vendor.email,
-      phoneNumber: vendor.phoneNumber,
-    };
+        await vendor.save({ session });
+
+        await walletRepo.create(
+          {
+            merchantId: vendor._id,
+            merchantType: USER_TYPE.VENDOR,
+          },
+          session
+        );
+
+        return {
+          _id: vendor._id,
+          businessName: vendor.businessName,
+          businessLogo: vendor.businessLogo,
+          email: vendor.email,
+          phoneNumber: vendor.phoneNumber,
+        };
+      });
+    } finally {
+      await session.endSession();
+    }
   }
 
   async login(email: string, password: string) {
     const vendor = await Vendor.findOne({ email }).select(
-      "email phoneNumber password",
+      "email phoneNumber password"
     );
 
     if (!vendor) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_INVALID_LOGIN_CREDENTIALS(),
+        Msg.ERROR_INVALID_LOGIN_CREDENTIALS()
       );
     }
 
@@ -56,14 +74,17 @@ class VendorsRepository {
     if (!passwordsMatch) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_INVALID_LOGIN_CREDENTIALS(),
+        Msg.ERROR_INVALID_LOGIN_CREDENTIALS()
       );
     }
 
-    if(vendor.approvalStatus != USER_APPROVAL_STATUS.APPROVED || vendor.accountStatus != ACCOUNT_STATUS.ACTIVE){
+    if (
+      vendor.approvalStatus != USER_APPROVAL_STATUS.APPROVED ||
+      vendor.accountStatus != ACCOUNT_STATUS.ACTIVE
+    ) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_NOT_ACTIVE(),
+        Msg.ERROR_NOT_ACTIVE()
       );
     }
 
@@ -81,7 +102,7 @@ class VendorsRepository {
     if (!vendor) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
-        Msg.ERROR_VENDOR_NOT_FOUND(id),
+        Msg.ERROR_VENDOR_NOT_FOUND(id)
       );
     }
 
@@ -263,7 +284,7 @@ class VendorsRepository {
 */
   async updateRating(
     updateRatingDto: { vendorId: string; rating: number },
-    session: ClientSession,
+    session: ClientSession
   ) {
     const { vendorId, rating } = updateRatingDto;
     try {
@@ -274,7 +295,7 @@ class VendorsRepository {
       if (!vendor) {
         throw new HandleException(
           HTTP_STATUS_CODES.NOT_FOUND,
-          Msg.ERROR_VENDOR_NOT_FOUND(vendorId),
+          Msg.ERROR_VENDOR_NOT_FOUND(vendorId)
         );
       }
 
