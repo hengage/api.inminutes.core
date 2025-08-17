@@ -7,7 +7,7 @@ import { HTTP_STATUS_CODES } from "../../../constants";
 class VendorsCategoryController {
   async getCategories(req: Request, res: Response) {
     try {
-      const categories = await vendorsCategoryRepo.getCategories(Number(req.query.page), Number(req.query.limit));
+      const categories = await vendorsCategoryRepo.getCategories();
 
       handleSuccessResponse(res, HTTP_STATUS_CODES.OK, { categories });
     } catch (error: unknown) {

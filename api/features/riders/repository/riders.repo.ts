@@ -1,5 +1,4 @@
 import { ClientSession, startSession } from "mongoose";
-import { emitEvent } from "../../../services";
 import {
   HandleException,
   calculateAverageRating,
@@ -71,10 +70,12 @@ export class RidersRepository {
   */
   async signup(riderData: ICreateRiderData): Promise<Partial<IRiderDocument>> {
     const session = await startSession();
-    
+
     try {
       return await session.withTransaction(async () => {
-        const formattedPhoneNumber = formatPhoneNumberforDB(riderData.phoneNumber);
+        const formattedPhoneNumber = formatPhoneNumberforDB(
+          riderData.phoneNumber
+        );
         const rider = new Rider({
           ...riderData,
           phoneNumber: formattedPhoneNumber,
@@ -83,10 +84,13 @@ export class RidersRepository {
 
         await rider.save({ session });
 
-        await walletRepo.create({
-          merchantId: rider._id,
-          merchantType: USER_TYPE.RIDER,
-        }, session);
+        await walletRepo.create(
+          {
+            merchantId: rider._id,
+            merchantType: USER_TYPE.RIDER,
+          },
+          session
+        );
 
         return {
           _id: rider._id,

@@ -60,7 +60,7 @@ class VendorsRepository {
 
   async login(email: string, password: string) {
     const vendor = await Vendor.findOne({ email }).select(
-      "email phoneNumber password"
+      "email phoneNumber password accountStatus"
     );
 
     if (!vendor) {
@@ -78,10 +78,7 @@ class VendorsRepository {
       );
     }
 
-    if (
-      vendor.approvalStatus != USER_APPROVAL_STATUS.APPROVED ||
-      vendor.accountStatus != ACCOUNT_STATUS.ACTIVE
-    ) {
+    if (vendor.accountStatus !== ACCOUNT_STATUS.ACTIVE) {
       throw new HandleException(
         HTTP_STATUS_CODES.NOT_FOUND,
         Msg.ERROR_NOT_ACTIVE()
