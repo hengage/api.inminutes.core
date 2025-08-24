@@ -1,5 +1,5 @@
 import { Coordinates } from "../../../types";
-import { HandleException } from "../../../utils";
+import { createPaginationOptions, HandleException } from "../../../utils";
 import {
   RiderBooking,
   RidersWorkSlotSession,
@@ -13,6 +13,8 @@ import {
   IWorkAreaDocument,
   IWorkSlotSessionDocument,
 } from "../riders.interface";
+import { WORK_SLOT_SESSIONS } from "../../../constants";
+import { session } from "passport";
 
 /**
 Repository for managing time slots for riders.
@@ -139,6 +141,82 @@ class WorkSlotRepository {
     maxSlotsRequired: number;
   }) {
     return await new WorkArea(createWorkAreadata).save();
+  }
+
+  /**
+   * @async
+   * Retrieves a list of work areas.
+   * @param {object} params.query - Query parameters for filtering work areas.
+   * @param {number} params.page - The page number to retrieve.
+   */
+  async getWorkAreas(params: { limit?: number; page?: number }) {
+    const { limit, page } = params;
+    const options = createPaginationOptions(
+      {},
+      isNaN(Number(page)) ? undefined : page,
+      isNaN(Number(limit)) ? undefined : limit
+    );
+    const workAreas = await WorkArea.paginate({}, options);
+
+    return workAreas;
+  }
+
+  /**
+   * @async
+   * Retrieves a list of work sessions for a given area.
+   * @param {string} areaId - The ID of the area to retrieve work sessions for.
+   * @param {Date} date - The date to retrieve work sessions for.
+   */
+  async getWorkSessionsForArea(areaId: string, date: Date) {
+    const area = await WorkArea.findById(areaId);
+    if (!area) {
+      throw new HandleException(400, "Invalid work area");
+    }
+
+    // Get existing sessions
+    const existingSessions = await RidersWorkSlotSession.find({
+      area: areaId,
+      date,
+    })
+      .select("-__v -createdAt -updatedAt")
+      .lean();
+
+    // Create a map of existing sessions
+    const sessionMap = new Map(
+      existingSessions.map((session) => [session.session, session])
+    );
+
+    // Create all four sessions if they don't exist
+    const allSessions = Object.values(WORK_SLOT_SESSIONS).map((sessionTime) => {
+      const existingSession = sessionMap.get(sessionTime);
+      if (existingSession) {
+        return existingSession;
+      }
+
+      // Return default session object if not booked yet
+      return {
+        _id: null, // Will be created when first booked
+        area: areaId,
+        date,
+        session: sessionTime,
+        availableSlots: area.maxSlotsRequired,
+        numberOfSlotsBooked: 0,
+      };
+    });
+
+    // Sort sessions by time and determine bookability
+    return allSessions
+      .sort(
+        (a, b) =>
+          Object.values(WORK_SLOT_SESSIONS).indexOf(a.session) -
+          Object.values(WORK_SLOT_SESSIONS).indexOf(b.session)
+      )
+      .map((session) => {
+        return {
+          ...session,
+          isBookable: session.availableSlots > 0,
+        };
+      });
   }
 }
 

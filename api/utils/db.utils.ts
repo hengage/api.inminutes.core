@@ -152,6 +152,7 @@ export function createPaginationOptions(
   page?: number,
   limit?: number
 ): Record<string, any> {
+  console.log({ page, limit });
   const defaultOptions: PaginateQueryOptions = {
     page: page ?? 1,
     limit: limit ?? QUERY_LIMIT,
@@ -160,6 +161,7 @@ export function createPaginationOptions(
     leanWithId: false,
     sort: { createdAt: -1 },
   };
+  console.log({ customOptions });
   return { ...defaultOptions, ...customOptions };
 }
 

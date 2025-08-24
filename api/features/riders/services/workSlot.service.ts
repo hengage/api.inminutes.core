@@ -22,6 +22,14 @@ class WorkSlotService {
     this.jobscheduleService = SchedulerService.getInstance();
   }
 
+  async getWorkAreas(params: { limit: number; page: number }) {
+    return workSlotRepo.getWorkAreas(params);
+  }
+
+  async getWorkSessionsForArea(areaId: string, date: Date) {
+    return workSlotRepo.getWorkSessionsForArea(areaId, date);
+  }
+
   /**
    * @async
    * Books a work time slot for a rider in a specific area and time session.
@@ -87,13 +95,16 @@ class WorkSlotService {
       if (error instanceof HandleException) {
         throw new HandleException(error.status, error.message);
       } else {
-        throw new HandleException(HTTP_STATUS_CODES.SERVER_ERROR,
-          Msg.ERROR_UNKNOWN_ERROR());
+        throw new HandleException(
+          HTTP_STATUS_CODES.SERVER_ERROR,
+          Msg.ERROR_UNKNOWN_ERROR()
+        );
       }
     } finally {
       session.endSession();
     }
   }
+
   private getStartEndTimes(date: Date | string, session: string): [Date, Date] {
     let startTime = DateTime.fromISO(`${date}`),
       endTime = DateTime.fromISO(`${date}`);

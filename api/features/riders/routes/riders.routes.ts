@@ -30,6 +30,12 @@ class RidersRoutes {
     this.router
       .route("/errand")
       .get(errandHistoryMiddleware, this.riderErrandController.getHistory);
+
+    this.router.route("/work-areas").get(workSlotController.getWorkAreas);
+
+    this.router
+      .route("/work-areas/:areaId/sessions")
+      .get(workSlotController.getWorkSessionsForArea);
   }
 }
 

@@ -11,6 +11,8 @@ import {
   RIDER_WORK_SLOT_STATUS,
   WORK_SLOT_SESSIONS,
 } from "../../../constants";
+import paginate from "mongoose-paginate-v2";
+import { PaginateModel } from "mongoose";
 
 // const TimeSlotSchema = new Schema<IRiderTimeSlotDocument>(
 //   {
@@ -54,7 +56,7 @@ const workSlotSessionSchema = new Schema<IWorkSlotSessionDocument>(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 const riderBookingSchema = new Schema<IRiderBookingDocument>(
@@ -83,7 +85,7 @@ const riderBookingSchema = new Schema<IRiderBookingDocument>(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 const areaSchema = new Schema<IWorkAreaDocument>(
@@ -107,20 +109,22 @@ const areaSchema = new Schema<IWorkAreaDocument>(
   },
   {
     timestamps: true,
-  },
+  }
 );
+
+areaSchema.plugin(paginate);
 
 export const RiderBooking = model<IRiderBookingDocument>(
   DB_SCHEMA.RIDER_BOOKING,
-  riderBookingSchema,
+  riderBookingSchema
 );
 
-export const WorkArea = model<IWorkAreaDocument>(
-  DB_SCHEMA.WORK_AREA,
-  areaSchema,
-);
+export const WorkArea = model<
+  IWorkAreaDocument,
+  PaginateModel<IWorkAreaDocument>
+>(DB_SCHEMA.WORK_AREA, areaSchema);
 
 export const RidersWorkSlotSession = model<IWorkSlotSessionDocument>(
   DB_SCHEMA.WORK_TIME_SESSION,
-  workSlotSessionSchema,
+  workSlotSessionSchema
 );
