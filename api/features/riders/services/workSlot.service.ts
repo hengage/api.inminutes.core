@@ -10,7 +10,7 @@ import {
 import { SchedulerService } from "../../../services";
 import { HandleException, Msg } from "../../../utils";
 import { workSlotRepo } from "../repository/workSlot.repo";
-import { IBookSlotData } from "../riders.interface";
+import { IBookSlotData, IRiderDocument } from "../riders.interface";
 
 /**
 Service for managing time slots for riders.
@@ -26,8 +26,16 @@ class WorkSlotService {
     return workSlotRepo.getWorkAreas(params);
   }
 
-  async getWorkSessionsForArea(areaId: string, date: Date) {
-    return workSlotRepo.getWorkSessionsForArea(areaId, date);
+  async getWorkSessionsForArea({
+    areaId,
+    date,
+    riderId,
+  }: {
+    areaId: string;
+    date: Date;
+    riderId: IRiderDocument["_id"];
+  }) {
+    return workSlotRepo.getWorkSessionsForArea({ areaId, date, riderId });
   }
 
   /**

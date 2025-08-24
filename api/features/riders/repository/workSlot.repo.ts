@@ -167,7 +167,12 @@ class WorkSlotRepository {
    * @param {string} areaId - The ID of the area to retrieve work sessions for.
    * @param {Date} date - The date to retrieve work sessions for.
    */
-  async getWorkSessionsForArea(areaId: string, date: Date) {
+  async getWorkSessionsForArea(params: {
+    areaId: string;
+    date: Date;
+    riderId: IRiderDocument["_id"];
+  }) {
+    const { areaId, date, riderId } = params;
     const area = await WorkArea.findById(areaId);
     if (!area) {
       throw new HandleException(400, "Invalid work area");
@@ -181,6 +186,11 @@ class WorkSlotRepository {
       .select("-__v -createdAt -updatedAt")
       .lean();
 
+    const riderBookedSessionsIds = await this.getRiderBookedSessionsIds({
+      riderId,
+      existingSessions,
+    });
+
     // Create a map of existing sessions
     const sessionMap = new Map(
       existingSessions.map((session) => [session.session, session])
@@ -190,7 +200,10 @@ class WorkSlotRepository {
     const allSessions = Object.values(WORK_SLOT_SESSIONS).map((sessionTime) => {
       const existingSession = sessionMap.get(sessionTime);
       if (existingSession) {
-        return existingSession;
+        return {
+          ...existingSession,
+          isBookedByRider: riderBookedSessionsIds.has(existingSession._id),
+        };
       }
 
       // Return default session object if not booked yet
@@ -201,6 +214,7 @@ class WorkSlotRepository {
         session: sessionTime,
         availableSlots: area.maxSlotsRequired,
         numberOfSlotsBooked: 0,
+        isBookedByRider: false,
       };
     });
 
@@ -217,6 +231,24 @@ class WorkSlotRepository {
           isBookable: session.availableSlots > 0,
         };
       });
+  }
+
+  /**
+   * Get rider bookings and create a set of booked session IDs
+   * @private
+   */
+  private async getRiderBookedSessionsIds(params: {
+    riderId: IRiderDocument["_id"];
+    existingSessions: IWorkSlotSessionDocument[];
+  }): Promise<Set<string>> {
+    const { riderId, existingSessions } = params;
+
+    const riderBookings = await RiderBooking.find({
+      rider: riderId,
+      workSlotSession: { $in: existingSessions.map((session) => session._id) },
+    }).lean();
+
+    return new Set(riderBookings.map((booking) => booking.workSlotSession));
   }
 }
 

@@ -25,10 +25,11 @@ class WorkSlotController {
     const date = req.query.date;
     try {
       validateRider.getWorkSessionsForArea({ areaId, date: date as string });
-      const workSessions = await workSlotService.getWorkSessionsForArea(
+      const workSessions = await workSlotService.getWorkSessionsForArea({
         areaId,
-        new Date(date as string)
-      );
+        date: new Date(date as string),
+        riderId: (req as any).user._id,
+      });
       return handleSuccessResponse(res, HTTP_STATUS_CODES.OK, workSessions);
     } catch (error) {
       const { statusCode, errorJSON } = handleErrorResponse(error);
